@@ -1,0 +1,12 @@
+{
+    "name": "CardCollector",
+    "version": "0.1.0",
+    "hasSettingsIcon": true,
+    "hasRibbonIcon": true,
+    "contactEmailAddress": "blueylewiedev@gmail.com",
+    "requiredDependencies": { "prettyui": 6398181 },
+    "optionalDependencies": { "prettyui": 6398181 },
+    "requiredPermissions": [],
+    "optionalPermissions": [],
+    "urls": {}
+}

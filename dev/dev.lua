@@ -1,0 +1,83 @@
+-- dev/dev.lua
+-- Everything that is only for developing the plugin, in one place. main.lua loads this with
+-- pcall(require, "dev/dev"). The released plugin does not contain the dev folder, so there the
+-- load fails quietly and none of this exists.
+--
+-- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window, the saved camera
+-- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
+-- toggles), and a few debug extras at login and when XP is gained.
+
+local Cards = require("cards")
+local Storage = require("storage")
+local CardView = require("cardview")
+local Preview = require("dev/preview")
+local NpcBrowser = require("dev/npcbrowser")
+local Nearby = require("dev/nearby")
+local OutputWindow = require("dev/outputwindow")
+local Tuning = require("dev/tuning")
+
+local Dev = {}
+
+-- Called when a character's collection has just loaded: adds a credit (so you can see saving
+-- work across restarts) and a Hans card, and checks the card art names.
+function Dev.onLogin(state)
+    Storage.addCredits(state, 1)
+    local hans = Cards.variantKey("hans", "normal")
+    if Storage.countOwned(state, hans) == 0 then
+        Storage.addCard(state, hans, 1)
+    end
+    log("DEV: credits are now", state.credits)
+    Cards.checkArtNames()
+end
+
+-- Called when XP is gained, to log how it turned into credits.
+function Dev.onXp(skill, gain, state, earned, ticksSinceLoad)
+    log("skill", skill, "gained", gain, "xp | pool:", state.xpPool, "| credits earned:", earned,
+        "| total:", state.credits, "| ticks since load:", ticksSinceLoad)
+end
+
+-- The extra buttons for the Home window. `api` is the plugin's api (see main.lua) and
+-- `refresh` redraws the Home window.
+function Dev.buttons(api, refresh)
+    return {
+        { label = "+20 Credits", action = function()
+            local state = api.getState()
+            if state ~= nil then
+                Storage.addCredits(state, 20)
+                refresh()
+            end
+        end },
+        -- Takes the character back to the first-run difficulty choice, to try that screen.
+        { label = "Reset setup", action = function()
+            local state = api.getState()
+            if state ~= nil then
+                Storage.setDifficulty(state, nil)
+                api.saveNow()
+                refresh()
+            end
+        end },
+        { label = "Preview", action = Preview.toggle },
+        { label = "NPC Viewer", action = NpcBrowser.toggle },
+        { label = "Nearby NPCs", action = Nearby.toggle },
+        { label = "Output", action = OutputWindow.toggle },
+    }
+end
+
+-- Switches the saved camera tuning on and opens the preview window.
+function Dev.start()
+    Tuning.enabled = true                  -- apply the camera settings saved from the preview
+    CardView.artOverride = Tuning.get
+    local ok, err = pcall(Preview.show)
+    if not ok then
+        log("preview failed:", err)
+    end
+end
+
+function Dev.shutdown()
+    Preview.hide()
+    NpcBrowser.hide()
+    Nearby.hide()
+    OutputWindow.hide()
+end
+
+return Dev
