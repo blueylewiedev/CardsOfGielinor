@@ -21,9 +21,9 @@ local window = nil
 local jump = nil     -- set while the window is open: jump(id) shows that NPC id
 
 local WHITE = Vector4.new(1, 1, 1, 1)
-local WIN_W, WIN_H = 330, 380
+local WIN_W, WIN_H = 520, 380
 local BOX_W, BOX_H = 110, 150
-local HEAD_X, BODY_X = 35, 185     -- left edges of the two model boxes
+local HEAD_X, BODY_X = 130, 280    -- left edges of the two model boxes
 
 -- Looks up an NPC's config name and display name. Returns "?" for anything unreadable.
 -- Logs the member names of a userdata object, as far as the client lets us list them.
@@ -133,7 +133,7 @@ function NpcBrowser.show()
     text(BODY_X, 30, BOX_W, 22, "Body")
 
     local function button(label, x, y, w, onPress)
-        return Kit.button(content, label, x, y, w, 30, onPress)
+        return Kit.buttonAt(content, label, x, y, w, 30, onPress)
     end
 
     local function step(delta)
@@ -141,14 +141,21 @@ function NpcBrowser.show()
         refresh()
     end
 
+    -- PrettyUI makes a button at least as wide as its label needs, so the longer labels get
+    -- wider buttons (the widths below are estimated from how wide other labels came out, so adjust them if they overlap).
     local steps = { -1000, -100, -10, -1, 1, 10, 100, 1000 }
+    local widths = { 146, 121, 121, 96, 96, 121, 121, 146 }
+    local left = 5
     for i, delta in ipairs(steps) do
+        if i == 5 then
+            left = 5
+        end
         local row = (i <= 4) and 0 or 1
-        local col = (i - 1) % 4
         local label = (delta > 0 and "+" or "") .. delta
-        button(label, 5 + col * 80, 218 + row * 36, 80, function() step(delta) end)
+        button(label, left, 218 + row * 36, widths[i], function() step(delta) end)
+        left = left + widths[i] + 4
     end
-    button("Probe", 10, 331, 310, function()
+    button("Probe", 10, 331, WIN_W - 20, function()
         local ok, cfg = pcall(function() return config.NPC.FromID(npcId) end)
         if ok and cfg ~= nil then
             listMembers("config.NPC " .. npcId, cfg)
@@ -182,11 +189,11 @@ function NpcBrowser.show()
             log("npcbrowser probe: cannot list id.Model:", tostring(err))
         end
     end)
-    button("Has head", 10, 295, 150, function()
+    button("Has head", 10, 295, (WIN_W - 24) // 2, function()
         log("npcbrowser: mark", npcId, shownConfigName, "head = yes")
         OutputWindow.add(shownConfigName, npcId .. " " .. shownConfigName .. " head = yes")
     end)
-    button("No head", 170, 295, 150, function()
+    button("No head", 14 + (WIN_W - 24) // 2, 295, (WIN_W - 24) // 2, function()
         log("npcbrowser: mark", npcId, shownConfigName, "head = NO")
         OutputWindow.add(shownConfigName, npcId .. " " .. shownConfigName .. " head = NO")
     end)

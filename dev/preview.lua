@@ -70,12 +70,15 @@ local PW = math.floor(160 * PREVIEW_SCALE)      -- the card's size on screen
 local PH = math.floor(224 * PREVIEW_SCALE)
 local CARD_X, CARD_Y = 10, 10
 
--- The buttons are in a panel to the right of the card, in two columns.
+-- The buttons are in a panel to the right of the card, in two columns. PrettyUI makes a button
+-- at least as wide as its label needs ("ZOOM +" needs about 146), so a half-width button is 148.
 local PANEL_X = CARD_X + PW + 20
-local PANEL_W = 190
-local HALF_W = 94                               -- a button that shares its row with another
+local HALF_W = 148                              -- visible width of a button that shares its row
+local GAP = 4
+local PANEL_W = 2 * HALF_W + GAP
 local STEP = 36                                 -- height of a row of buttons
-local UNDER_Y = CARD_Y + PH + 12                -- the row of buttons under the card
+local UNDER_Y = CARD_Y + PH + 12                -- the rows of buttons under the card
+local UNDER_W = (PW - GAP) // 2                 -- width of each of the two buttons in a row there
 
 local CONTENT_W = PANEL_X + PANEL_W + 10
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1.0)
@@ -91,12 +94,12 @@ function Preview.show()
     -- Where each part of the right-hand panel starts.
     local cameraTop = 10
     local viewTop = cameraTop + 24 + 6 * STEP + 8
-    local animTop = viewTop + 24 + 3 * STEP + 8
-    local contentH = math.max(UNDER_Y + 40, animTop + 24 + 34 + 3 * STEP + 6) + 10
+    local animTop = viewTop + 24 + 4 * STEP + 8
+    local contentH = math.max(UNDER_Y + STEP + 30, animTop + 24 + 34 + 3 * STEP - 6) + 10
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Card Preview", CONTENT_W, contentH + Kit.titleBarHeight(),
-        function() Preview.hide() end, 0.4, 0.05)
+        function() Preview.hide() end, 0.4, 0.05, false, true)
 
     local index = 1
     local view = nil
@@ -193,9 +196,9 @@ function Preview.show()
     -- full-width one.
     local function panelButton(text, half, y, onPress, style)
         if half == nil then
-            return Kit.button(content, text, PANEL_X, y, PANEL_W, 30, onPress, style)
+            return Kit.buttonAt(content, text, PANEL_X, y, PANEL_W, 30, onPress, style)
         end
-        return Kit.button(content, text, PANEL_X + (half - 1) * (PANEL_W - HALF_W), y, HALF_W, 30, onPress, style)
+        return Kit.buttonAt(content, text, PANEL_X + (half - 1) * (HALF_W + GAP), y, HALF_W, 30, onPress, style)
     end
 
     local function section(title, y)
@@ -230,9 +233,12 @@ function Preview.show()
         withCamera(function(c) c.ty = c.ty - direction * 20 end)
     end
 
-    -- Under the card: Prev / Next / Save / Reset.
+    -- Under the card: Prev / Next on one row, Save / Reset on the next.
     local function underButton(text, slot, onPress, style)
-        return Kit.button(content, text, CARD_X + (slot - 1) * (PW // 4), UNDER_Y, PW // 4 - 2, 30, onPress, style)
+        local column = (slot - 1) % 2
+        local row = (slot - 1) // 2
+        return Kit.buttonAt(content, text, CARD_X + column * (UNDER_W + GAP), UNDER_Y + row * STEP, UNDER_W, 30,
+            onPress, style)
     end
     underButton("Prev", 1, function()
         index = index - 1
@@ -311,12 +317,13 @@ function Preview.show()
 
     local framesButton = nil
     y = y + STEP
-    framesButton = panelButton("Frames: On", 1, y, function()
+    framesButton = panelButton("Frames: On", nil, y, function()
         CardView.USE_FRAMES = not CardView.USE_FRAMES
         Kit.setLabel(framesButton, CardView.USE_FRAMES and "Frames: On" or "Frames: Off")
         showCard()
     end)
-    backButton = panelButton("Show: Back", 2, y, function()
+    y = y + STEP
+    backButton = panelButton("Show: Back", nil, y, function()
         if showingBack then
             showCard()
         else

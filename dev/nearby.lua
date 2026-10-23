@@ -95,7 +95,7 @@ local function showList()
         rows[#rows + 1] = Kit.text(content, 10, y + 15, WIDTH - 130, 16,
             "id " .. npc.id .. "   anim set " .. npc.bas .. "   " .. npc.distance .. " tiles", WHITE,
             ui.AlignMode.TOPLEFT)
-        rows[#rows + 1] = Kit.button(content, "View", WIDTH - 110, y + 1, 100, 30, function()
+        rows[#rows + 1] = Kit.buttonAt(content, "View", WIDTH - 110, y + 1, 100, 30, function()
             local line = "npc = \"" .. npc.configName .. "\"   -- id " .. npc.id .. ", anim set " .. npc.bas
             log("nearby:", npc.name, line)
             OutputWindow.add(npc.configName, line)
@@ -114,7 +114,7 @@ function Nearby.show()
 
     Kit.text(content, 10, 4, 100, 26, "Name filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 115, 4, 250, 26, 30, false)
-    Kit.button(content, "Scan", WIDTH - 130, 2, 120, 30, showList, "positive")
+    Kit.buttonAt(content, "Scan", WIDTH - 130, 2, 120, 30, showList, "positive")
     statusText = Kit.text(content, 10, 42, WIDTH - 20, 24, "Press Scan to list the NPCs around you.", WHITE,
         ui.AlignMode.TOPLEFT)
 end
