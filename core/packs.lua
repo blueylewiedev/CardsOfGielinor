@@ -1,9 +1,9 @@
--- packs.lua
+-- core/packs.lua
 -- Difficulty tiers and pack opening: what a pack costs and how its cards are rolled.
--- This file has no UI. The window that shows packs is in packwindow.lua.
+-- This file has no UI. The window that shows packs is in ui/packwindow.lua.
 
-local Cards = require("cards")
-local Storage = require("storage")
+local Cards = require("core/cards")
+local Storage = require("core/storage")
 
 local Packs = {}
 
@@ -11,7 +11,7 @@ local Packs = {}
 Packs.PACK_SIZE = 5
 
 -- Difficulty tiers, chosen once per character. Price is in credits (1,000 XP = 1 credit,
--- see earning.lua). `id` is what gets saved, so never change an id once players use it.
+-- see core/earning.lua). `id` is what gets saved, so never change an id once players use it.
 Packs.tiers = {
     { id = "easy",   name = "Easy",   price = 4 },
     { id = "normal", name = "Normal", price = 7 },

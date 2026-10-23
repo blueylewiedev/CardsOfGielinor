@@ -2,17 +2,24 @@
 -- Card Collector (working title)
 -- Earn credits, open packs, collect cards.
 --
+-- Folders:
+--   core/   the logic: cards (format, rarities, pack types), packs, storage, earning, settings
+--   ui/     everything that draws: kit (PrettyUI wrapper), cardview, the pack, collection,
+--           statistics and settings windows, and the ribbon page
+--   deck/   the cards themselves, by region (see deck/index.lua)
+--   dev/    developer tools, left out of the released plugin
+--
 -- Saves a collection per character, earns credits from XP, and logs its progress to the
 -- Lua console with log().
 
-local Storage = require("storage")
-local Earning = require("earning")
-local PackWindow = require("packwindow")
-local Viewer = require("viewer")
-local Stats = require("stats")
-local Settings = require("settings")
-local SettingsPage = require("settingspage")
-local Hub = require("hub")
+local Storage = require("core/storage")
+local Earning = require("core/earning")
+local PackWindow = require("ui/packwindow")
+local Viewer = require("ui/viewer")
+local Stats = require("ui/stats")
+local Settings = require("core/settings")
+local SettingsPage = require("ui/settingspage")
+local Hub = require("ui/hub")
 
 -- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
 -- That folder is left out of the released plugin, so there Dev is nil and nothing below runs.

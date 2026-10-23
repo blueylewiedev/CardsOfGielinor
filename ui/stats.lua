@@ -1,12 +1,12 @@
--- stats.lua
+-- ui/stats.lua
 -- The Stats window: lifetime numbers (packs opened, credits earned, pull rates) for the
--- logged-in character. The numbers come from state.stats (see storage.lua).
+-- logged-in character. The numbers come from state.stats (see core/storage.lua).
 --
 -- Stats.lines() turns the numbers into the lines of text to show. It has no UI, so it can be
 -- tested on its own.
 
-local Cards = require("cards")
-local Kit = require("kit")
+local Cards = require("core/cards")
+local Kit = require("ui/kit")
 
 local Stats = {}
 

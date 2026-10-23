@@ -1,9 +1,9 @@
--- settings.lua
+-- core/settings.lua
 -- Plugin-wide options the player can switch on and off (the settings page is in
--- settingspage.lua). They are saved once for the whole plugin, not per character.
+-- ui/settingspage.lua). They are saved once for the whole plugin, not per character.
 --
 -- Other files ask with Settings.get("shine"). The difficulty is not here: it is chosen per
--- character and lives in that character's collection (see storage.lua).
+-- character and lives in that character's collection (see core/storage.lua).
 
 local Settings = {}
 

@@ -7,9 +7,9 @@
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
 -- toggles), and a few debug extras at login and when XP is gained.
 
-local Cards = require("cards")
-local Storage = require("storage")
-local CardView = require("cardview")
+local Cards = require("core/cards")
+local Storage = require("core/storage")
+local CardView = require("ui/cardview")
 local Preview = require("dev/preview")
 local NpcBrowser = require("dev/npcbrowser")
 local Nearby = require("dev/nearby")
@@ -65,6 +65,9 @@ end
 
 -- Switches the saved camera tuning on and opens the preview window.
 function Dev.start()
+    if #Cards.drafts > 0 then
+        log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the sets folder)")
+    end
     Tuning.enabled = true                  -- apply the camera settings saved from the preview
     CardView.artOverride = Tuning.get
     local ok, err = pcall(Preview.show)

@@ -8,7 +8,7 @@
 --   Yaw -/+         : turn the camera left/right around the NPC
 --   Pitch -/+       : tilt the camera up/down
 --   Left / Right    : move the NPC across the card
---   Save / Reset    : keep this card's camera across reloads / go back to cards.lua's values
+--   Save / Reset    : keep this card's camera across reloads / go back to core/cards.lua's values
 --   Finish          : cycles Normal / Reverse / Holo to see the shine on the card
 --   Model: Head/Body: switches this card between its head and body model (back to the
 --                     card's own setting when you change card)
@@ -17,12 +17,12 @@
 --                     magenta and white backdrop, to check its transparency in the client
 --
 -- Every press logs a line to the console and to the Output window (toggle it from the Home
--- window) that can be pasted into the card's `art` entry in cards.lua, e.g.
+-- window) that can be pasted into the card's `art` entry in core/cards.lua, e.g.
 -- `cam = { ... }`, with `body = true, ` in front for a body model. Only created when DEBUG
 -- is on in main.lua.
 
-local Cards = require("cards")
-local CardView = require("cardview")
+local Cards = require("core/cards")
+local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
 
@@ -235,7 +235,7 @@ function Preview.show()
     modelButton.label = (view ~= nil and view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head"
 
     -- Save keeps the current camera for this card (until Reset), so it survives a reload and
-    -- applies everywhere the card is drawn. Reset goes back to what cards.lua says.
+    -- applies everywhere the card is drawn. Reset goes back to what core/cards.lua says.
     makeButton("Save", 10, 604, 85, function()
         if view ~= nil and view.cam ~= nil then
             local cam = view.cam

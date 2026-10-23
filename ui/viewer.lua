@@ -1,4 +1,4 @@
--- viewer.lua
+-- ui/viewer.lua
 -- The collection viewer: a paged grid of the cards the player owns.
 --
 -- Every variant the player owns (a card + finish) gets its own slot, so a
@@ -8,10 +8,10 @@
 --
 -- Cards are created directly in the window, one layer deep, as the preview window does.
 
-local Cards = require("cards")
-local Storage = require("storage")
-local CardView = require("cardview")
-local Kit = require("kit")
+local Cards = require("core/cards")
+local Storage = require("core/storage")
+local CardView = require("ui/cardview")
+local Kit = require("ui/kit")
 
 local Viewer = {}
 

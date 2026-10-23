@@ -1,11 +1,11 @@
--- storage.lua
+-- core/storage.lua
 -- Loads and saves one player's collection using PersistentDB.
 --
 -- PersistentDB is stored per plugin, not per account, so every character gets its own
 -- entry, keyed by character name. Without that, two accounts on one computer would
 -- share a single collection.
 
-local Cards = require("cards")
+local Cards = require("core/cards")
 
 local Storage = {}
 
@@ -20,7 +20,7 @@ end
 
 -- A fresh, empty collection.
 --   credits : spendable credits
---   difficulty : id of the pack price tier the player chose (see packs.lua), or nil
+--   difficulty : id of the pack price tier the player chose (see core/packs.lua), or nil
 --   xpPool  : XP gained that has not yet added up to a whole credit
 --   owned   : { [variantKey] = how many copies the player owns }, where the key is
 --             "<card id>|<finish>" (see Cards.variantKey). Each variant is

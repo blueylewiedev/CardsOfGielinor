@@ -1,4 +1,4 @@
--- settingspage.lua
+-- ui/settingspage.lua
 -- The plugin's settings, built with PrettyUI. They let the player change the pack difficulty
 -- of the logged-in character and switch the card effects on and off.
 --
@@ -6,10 +6,10 @@
 --   "client" : the plugin's page in the client's settings (needs "hasSettingsIcon" in plugin.json)
 --   "window" : a window of its own, opened by the Settings button in the main window
 
-local Packs = require("packs")
-local Settings = require("settings")
-local Storage = require("storage")
-local Kit = require("kit")
+local Packs = require("core/packs")
+local Settings = require("core/settings")
+local Storage = require("core/storage")
+local Kit = require("ui/kit")
 
 local SettingsPage = {}
 

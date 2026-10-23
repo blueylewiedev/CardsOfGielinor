@@ -6,7 +6,7 @@
 --
 -- Press Scan to list the NPCs within RANGE tiles, nearest first, one row for each different
 -- config. The Filter box narrows the list by name. View shows that NPC's models in the NPC
--- browser, and also writes the line to paste into cards.lua to the Output window.
+-- browser, and also writes the line to paste into core/cards.lua to the Output window.
 
 local OutputWindow = require("dev/outputwindow")
 local NpcBrowser = require("dev/npcbrowser")
