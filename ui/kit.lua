@@ -100,6 +100,17 @@ function Kit.button(parent, label, x, y, w, h, onPress, style)
     return plainButton(parent, label, x, y, w, h, onPress)
 end
 
+-- A button whose visible left edge is `left` and whose visible width is `visibleWidth`. Kit.button
+-- takes a box that PrettyUI then shrinks by BUTTON_INSET on each side, which is awkward when
+-- buttons are lined up; this does that sum. PrettyUI makes a button at least as wide as its label
+-- needs (a label such as "ZOOM +" needs about 146), so choose a width that fits the longest label.
+function Kit.buttonAt(parent, label, left, y, visibleWidth, height, onPress, style)
+    if Kit.available() and prettyui.FancyButton ~= nil then
+        return Kit.button(parent, label, left - BUTTON_INSET, y, visibleWidth + 2 * BUTTON_INSET, height, onPress, style)
+    end
+    return Kit.button(parent, label, left, y, visibleWidth, height, onPress, style)
+end
+
 -- A small button with just a picture on it. `sprite` is one of PrettyUI's sprite names, such as
 -- "SETTINGS" (a cog), "MENU" or "INFO". Without PrettyUI it becomes a plain button with
 -- `fallbackLabel` on it instead.
@@ -167,14 +178,16 @@ end
 -- things in. `onClose` is called when the player closes the window with its close button.
 -- With PrettyUI the frame has a title bar; without, it is the plain header-less group box.
 -- `scrollable` (PrettyUI only) lets the content be longer than the window and scroll.
+-- `resizable` (PrettyUI only) lets the player drag the window's edge to change its size. The
+-- contents keep their positions, so it only gives more or less room.
 -- PrettyUI windows can be dragged by their title bar.
-function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable)
+function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable)
     xAnchor, yAnchor = xAnchor or 0.2, yAnchor or 0.15
     if Kit.available() and prettyui.Window ~= nil then
         local ok, win = pcall(prettyui.Window.new, parent, {
             title = title, width = width, height = height,
             x = 0, y = 0, xAnchor = xAnchor, yAnchor = yAnchor,
-            scrollable = scrollable == true, onClose = onClose,
+            scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
         })
         if ok and win ~= nil and win.content ~= nil then
             return win, win.content

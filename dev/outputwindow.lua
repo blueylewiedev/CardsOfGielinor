@@ -6,9 +6,9 @@
 -- Each line is shown in its own text field, because a field's text can be selected with the
 -- mouse and copied (Ctrl+C), which plain text components do not allow.
 --
--- The newest line is at the top. The window scrolls, so older lines are reached by scrolling
--- down. If PrettyUI's scrolling does not work for you, set SCROLL to false: the window then
--- shows only the newest ROWS lines.
+-- The newest line is at the top. Older lines are reached with the Older / Newer buttons, one
+-- page of ROWS lines at a time (PrettyUI's `scrollable` window did not scroll lines placed at
+-- fixed positions like these).
 --
 -- Lines are remembered while the window is closed, so opening it shows what it missed.
 -- Only used by the developer tools (the dev folder).
@@ -17,12 +17,11 @@ local Kit = require("ui/kit")
 
 local OutputWindow = {}
 
-local SCROLL = true            -- show every remembered line in a scrolling window
 local WIDTH = 640
-local ROWS = 12                -- how many lines are visible at a time (and shown without scrolling)
+local ROWS = 14                -- how many lines are shown at a time
 local ROW_H = 30
-local TOP = 40                 -- space for the hint and the Clear button above the lines
-local KEEP = 200               -- how many lines are remembered
+local TOP = 44                 -- space for the buttons above the lines
+local KEEP = 300               -- how many lines are remembered
 local MAX_LENGTH = 400         -- longest line a field can hold
 
 local GREY = Vector4.new(0.85, 0.85, 0.85, 1.0)
@@ -32,6 +31,8 @@ local lines = {}               -- { label = "chicken", text = "body = true, cam 
 local window = nil
 local content = nil            -- where the window's contents go
 local rowParts = {}            -- the components of the rows currently shown
+local page = 0                 -- 0 shows the newest lines, 1 the ones before them, and so on
+local statusText = nil         -- "Lines 1-14 of 87"
 
 -- Adds a line. `label` is a short tag such as the card id; `text` is what gets copied.
 -- Works whether or not the window is open.
@@ -56,7 +57,13 @@ function OutputWindow.isOpen()
     return window ~= nil
 end
 
--- Rebuilds the rows. Newest line first, so it is always at the top.
+-- How many pages the remembered lines fill (at least one).
+local function pageCount()
+    return math.max(1, math.ceil(#lines / ROWS))
+end
+
+-- Rebuilds the rows and the line that says which ones are shown. Newest line first, so the
+-- newest is at the top of page 0.
 function OutputWindow.redraw()
     for _, part in ipairs(rowParts) do
         pcall(function() part:Destroy() end)
@@ -66,19 +73,22 @@ function OutputWindow.redraw()
         return
     end
 
-    local shown = (SCROLL and Kit.available()) and KEEP or ROWS
-    for row = 1, shown do
+    page = math.max(0, math.min(page, pageCount() - 1))
+    local first = page * ROWS + 1                        -- the newest line on this page
+    local last = math.min(#lines, first + ROWS - 1)
+    for row = first, last do
         local entry = lines[#lines - row + 1]
-        if entry == nil then
-            break
-        end
-        local y = TOP + (row - 1) * ROW_H
+        local y = TOP + (row - first) * ROW_H
 
         rowParts[#rowParts + 1] = Kit.text(content, 10, y, 110, 26, entry.label, GREY, ui.AlignMode.TOPLEFT)
 
         local field = Kit.inputField(content, 125, y, WIDTH - 150, 26, MAX_LENGTH, false)
         field.content = entry.text
         rowParts[#rowParts + 1] = field
+    end
+    if statusText ~= nil then
+        statusText.content = #lines == 0 and "No lines yet"
+            or ("Lines " .. first .. "-" .. last .. " of " .. #lines)
     end
 end
 
@@ -88,13 +98,21 @@ function OutputWindow.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Output", WIDTH, TOP + ROWS * ROW_H + 10 + Kit.titleBarHeight(),
-        function() OutputWindow.hide() end, 0.2, 0.55, SCROLL)
+        function() OutputWindow.hide() end, 0.2, 0.55)
 
-    -- The hint and the Clear button are not rebuilt on every redraw, so they are not in rowParts.
-    Kit.text(content, 10, 4, WIDTH - 140, 28,
-        "Click a line, Ctrl+A then Ctrl+C to copy it", WHITE, ui.AlignMode.TOPLEFT)
-    Kit.button(content, "Clear", WIDTH - 130, 2, 110, 30, function() OutputWindow.clear() end)
+    -- These are not rebuilt on every redraw, so they are not in rowParts.
+    Kit.buttonAt(content, "Newer", 10, 4, 120, 30, function()
+        page = page - 1
+        OutputWindow.redraw()
+    end)
+    Kit.buttonAt(content, "Older", 134, 4, 120, 30, function()
+        page = page + 1
+        OutputWindow.redraw()
+    end)
+    statusText = Kit.text(content, 264, 4, WIDTH - 264 - 140, 30, "", WHITE)
+    Kit.buttonAt(content, "Clear", WIDTH - 130, 4, 120, 30, function() OutputWindow.clear() end)
 
+    page = 0
     OutputWindow.redraw()
 end
 
@@ -118,6 +136,7 @@ function OutputWindow.hide()
     end
     window = nil
     content = nil
+    statusText = nil
 end
 
 function OutputWindow.toggle()
