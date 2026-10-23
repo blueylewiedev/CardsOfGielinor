@@ -66,6 +66,13 @@ Set.cards = {
         tags = { category = { "dragon" } },
     },
 
+    {
+        id = "giant_frog", name = "Giant frog", rarity = "common",
+        desc = "Croaks all day in the swamp.",
+        art = { npc = "GIANT_FROG" },
+        tags = { category = { "animal" } },
+    },
+
     -- Drafts (waiting for an NPC name)
 
     {
@@ -73,6 +80,7 @@ Set.cards = {
         desc = "Keeps the peace, wherever they stand.",
         art = { npc = "" },
         tags = { skills = { "thieving" }, category = { "guard" } },
+        note = "Candidates: GUARD1 (id 9, the plain guard), FAI_FALADOR_GUARD1 to 6.",
     },
 
     {
@@ -80,13 +88,7 @@ Set.cards = {
         desc = "Sells a little bit of everything.",
         art = { npc = "" },
         tags = { category = { "humanoid" } },
-    },
-
-    {
-        id = "giant_frog", name = "Giant frog", rarity = "common",
-        desc = "Croaks all day in the swamp.",
-        art = { npc = "" },
-        tags = { category = { "animal" } },
+        note = "Candidates: GENERALSHOPKEEPER1 to 8 (ids 520 and up); which one is the Lumbridge shop is not clear from the names.",
     },
 }
 

@@ -25,27 +25,93 @@ local Set = {}
 Set.defaults = { regions = { "kandarin" } }
 
 Set.cards = {
-    -- Drafts (waiting for an NPC name)
+    -- Live cards (these are in the game)
 
     {
         id = "king_lathas", name = "King Lathas", rarity = "epic",
         desc = "Rules Ardougne with a firm hand.",
-        art = { npc = "" },
+        art = { npc = "KINGLATHAS" },
         tags = { towns = { "ardougne" }, category = { "royalty" } },
     },
 
     {
         id = "edmond", name = "Edmond", rarity = "uncommon",
         desc = "Worries about his daughter Elena.",
-        art = { npc = "" },
+        art = { npc = "EDMOND" },
         tags = { towns = { "ardougne" }, category = { "humanoid" } },
     },
+
+    {
+        id = "head_mourner", name = "Head mourner", rarity = "rare",
+        desc = "Keeps the plague wall closed.",
+        art = { npc = "HEADMOURNER" },
+        tags = { towns = { "ardougne" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "ardougne_knight", name = "Knight of Ardougne", rarity = "common",
+        desc = "Guards the city and carries coin.",
+        art = { npc = "KNIGHT_OF_ARDOUGNE" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "knight" } },
+    },
+
+    {
+        id = "paladin", name = "Paladin", rarity = "rare",
+        desc = "A holy warrior with full pockets.",
+        art = { npc = "PALADIN" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "knight" } },
+    },
+
+    {
+        id = "hero", name = "Hero", rarity = "epic",
+        desc = "Rarely seen without a full pack.",
+        art = { npc = "HERO" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "adventurer" } },
+    },
+
+    {
+        id = "baker", name = "Baker", rarity = "common",
+        desc = "Sells fresh bread from a stall.",
+        art = { npc = "BAKER_MERCHANT" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
+    },
+
+    {
+        id = "silk_merchant", name = "Silk merchant", rarity = "uncommon",
+        desc = "Haggles over every roll of silk.",
+        art = { npc = "SILK_MERCHANT" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
+    },
+
+    {
+        id = "fur_trader", name = "Fur trader", rarity = "uncommon",
+        desc = "Keeps warm and prices high.",
+        art = { npc = "FUR_MERCHANT" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
+    },
+
+    {
+        id = "spice_seller", name = "Spice seller", rarity = "uncommon",
+        desc = "Smells of cinnamon and bargains.",
+        art = { npc = "SPICE_MERCHANT" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
+    },
+
+    {
+        id = "gem_merchant", name = "Gem merchant", rarity = "rare",
+        desc = "Keeps the best gems under glass.",
+        art = { npc = "GEM_MERCHANT" },
+        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
+    },
+
+    -- Drafts (waiting for an NPC name)
 
     {
         id = "elena", name = "Elena", rarity = "uncommon",
         desc = "Came to help against the plague.",
         art = { npc = "" },
         tags = { towns = { "ardougne" }, category = { "humanoid" } },
+        note = "Candidates: ELENAP (id 715), ELENA2 (id 335).",
     },
 
     {
@@ -53,69 +119,7 @@ Set.cards = {
         desc = "Hides behind a mask and a cloak.",
         art = { npc = "" },
         tags = { towns = { "ardougne" }, category = { "humanoid" } },
-    },
-
-    {
-        id = "head_mourner", name = "Head mourner", rarity = "rare",
-        desc = "Keeps the plague wall closed.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, category = { "humanoid" } },
-    },
-
-    {
-        id = "ardougne_knight", name = "Knight of Ardougne", rarity = "common",
-        desc = "Guards the city and carries coin.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "knight" } },
-    },
-
-    {
-        id = "paladin", name = "Paladin", rarity = "rare",
-        desc = "A holy warrior with full pockets.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "knight" } },
-    },
-
-    {
-        id = "hero", name = "Hero", rarity = "epic",
-        desc = "Rarely seen without a full pack.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "adventurer" } },
-    },
-
-    {
-        id = "baker", name = "Baker", rarity = "common",
-        desc = "Sells fresh bread from a stall.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
-    },
-
-    {
-        id = "silk_merchant", name = "Silk merchant", rarity = "uncommon",
-        desc = "Haggles over every roll of silk.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
-    },
-
-    {
-        id = "fur_trader", name = "Fur trader", rarity = "uncommon",
-        desc = "Keeps warm and prices high.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
-    },
-
-    {
-        id = "spice_seller", name = "Spice seller", rarity = "uncommon",
-        desc = "Smells of cinnamon and bargains.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
-    },
-
-    {
-        id = "gem_merchant", name = "Gem merchant", rarity = "rare",
-        desc = "Keeps the best gems under glass.",
-        art = { npc = "" },
-        tags = { towns = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
+        note = "Candidates: MOURNER1, MOURNER2, MOURNER3 (ids 717, 347, 348).",
     },
 }
 

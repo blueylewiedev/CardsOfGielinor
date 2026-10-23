@@ -97,6 +97,7 @@ Set.cards = {
         desc = "Knows every story about Lumbridge.",
         art = { npc = "" },
         tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+        note = "Not found by name (no COSAINTUS or HATIUS); look near him with Nearby NPCs.",
     },
 
     {
@@ -104,6 +105,7 @@ Set.cards = {
         desc = "Always certain the end is near.",
         art = { npc = "" },
         tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+        note = "Candidates: CWS_DOOMSAYER, TUTORIAL2_DOOMSAYER (neither is clearly the Lumbridge one).",
     },
 
     {
@@ -111,6 +113,7 @@ Set.cards = {
         desc = "Just wants its skull back.",
         art = { npc = "" },
         tags = { towns = { "lumbridge" }, category = { "undead" } },
+        note = "Not found by name; GHOST (id 103) is the generic ghost. Look near the swamp with Nearby NPCs.",
     },
 }
 

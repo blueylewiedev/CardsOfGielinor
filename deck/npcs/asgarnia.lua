@@ -33,62 +33,63 @@ Set.cards = {
         tags = { skills = { "smithing" }, category = { "shopkeeper" } },
     },
 
-    -- Drafts (waiting for an NPC name)
-
     {
         id = "sir_amik_varze", name = "Sir Amik Varze", rarity = "rare",
         desc = "Leads the White Knights proudly.",
-        art = { npc = "" },
+        art = { npc = "SIR_AMIK_VARZE" },
         tags = { towns = { "falador" }, category = { "knight" } },
     },
 
     {
         id = "sir_vyvin", name = "Sir Vyvin", rarity = "rare",
         desc = "Guards the castle and a secret.",
-        art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "knight" } },
-    },
-
-    {
-        id = "sir_tiffy", name = "Sir Tiffy Cashien", rarity = "uncommon",
-        desc = "Recruits new knights in the park.",
-        art = { npc = "" },
+        art = { npc = "SIR_VYVIN" },
         tags = { towns = { "falador" }, category = { "knight" } },
     },
 
     {
         id = "wayne", name = "Wayne", rarity = "uncommon",
         desc = "Chainmail for every budget.",
-        art = { npc = "" },
+        art = { npc = "WAYNE" },
         tags = { towns = { "falador" }, skills = { "smithing" }, category = { "shopkeeper" } },
     },
 
     {
         id = "flynn", name = "Flynn", rarity = "uncommon",
         desc = "Sells maces with a smile.",
-        art = { npc = "" },
+        art = { npc = "FLYNN" },
         tags = { towns = { "falador" }, category = { "shopkeeper" } },
     },
 
     {
         id = "cassie", name = "Cassie", rarity = "uncommon",
         desc = "Sells shields to the knights.",
-        art = { npc = "" },
+        art = { npc = "CASSIE" },
         tags = { towns = { "falador" }, category = { "shopkeeper" } },
     },
 
     {
         id = "herquin", name = "Herquin", rarity = "uncommon",
         desc = "Buys and sells gems.",
-        art = { npc = "" },
+        art = { npc = "HERQUIN" },
         tags = { towns = { "falador" }, category = { "shopkeeper" } },
     },
 
     {
         id = "hairdresser", name = "Hairdresser", rarity = "common",
         desc = "Offers a fresh new look.",
-        art = { npc = "" },
+        art = { npc = "HAIRDRESSER" },
         tags = { towns = { "falador" }, category = { "humanoid" } },
+    },
+
+    -- Drafts (waiting for an NPC name)
+
+    {
+        id = "sir_tiffy", name = "Sir Tiffy Cashien", rarity = "uncommon",
+        desc = "Recruits new knights in the park.",
+        art = { npc = "" },
+        tags = { towns = { "falador" }, category = { "knight" } },
+        note = "Candidates: VKQ1_SIRTIFFY, VKQ3_SIRTIFFY (quest versions); no plain one in the dump.",
     },
 
     {
@@ -96,6 +97,7 @@ Set.cards = {
         desc = "Sworn to defend Falador.",
         art = { npc = "" },
         tags = { towns = { "falador" }, category = { "knight" } },
+        note = "No plain White Knight in the dump; look near Falador with Nearby NPCs.",
     },
 }
 

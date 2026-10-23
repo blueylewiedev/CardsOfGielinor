@@ -52,6 +52,7 @@ Cards.odds = {
 --            a list of lower case words, for example
 --              tags = { skills = { "thieving" }, regions = { "misthalin" }, category = { "humanoid" } }
 --            Any key can be used, a pack's `filter` just has to use the same key and words.
+--   note   : optional. Free text for the developer (candidates for an NPC name, say). Ignored by the plugin.
 --   variants : optional. The different models a card can be shown with, e.g. the NPC's other
 --            config versions. The first one is the card's picture. Each entry holds the same
 --            fields as `art` (npc, body, anim, cam) plus an optional `name`. Leave it out for
