@@ -10,7 +10,7 @@
 -- found in the game (stand next to the NPC and use Nearby NPCs in the dev
 -- tools). Until `npc` is filled in, a draft is left out of packs, the collection and the
 -- totals, so an unfinished card never shows up as a blank card. Fill in the name, reload the
--- plugin, and the card goes live. Add `body = true` to `art` for an NPC with no chathead, and
+-- plugin, and the card goes live. NPC cards show the body model by default (add `body = false` to `art` for the head), and
 -- tune the camera in the preview as usual.
 --
 -- The `id` is what gets saved, so do not change it once the card is live. It does not have to

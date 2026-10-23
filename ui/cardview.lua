@@ -111,8 +111,8 @@ end
 --   fov        : field of view in degrees (smaller zooms in)
 --   ty         : height of the point the camera looks at
 --   tx         : left/right of centre it looks at (negative moves the NPC right on the card)
--- Anything left out uses these defaults. NPCs with no chathead use `art.body = true`, which
--- shows the whole body model, so they have their own defaults (the body is much bigger).
+-- Anything left out uses these defaults. NPC cards show the whole body model unless they set
+-- `art.body = false` (the head), so each has its own defaults (the body is much bigger).
 CardView.CAMERA_DEFAULTS = {
     head = { yaw = 0.0, pitch = 0.0, dist = 2040, fov = 55, ty = 0, tx = 0 },
     body = { yaw = 0.0, pitch = 0.0, dist = 1500, fov = 50, ty = 0, tx = 0 },

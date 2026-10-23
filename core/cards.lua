@@ -58,8 +58,9 @@ Cards.odds = {
 --            a card with one picture, which then just uses `art`.
 --   art    : optional. Only needed to override or tune the picture. Each entry holds:
 --              npc  : use this NPC instead of the one from the id
---              body : true shows the NPC's body model instead of its head, for an NPC with
---                     no chathead (they show an empty box; the NPC browser helps find them)
+--              body : NPC cards show the NPC's whole body model by default. `body = false`
+--                     shows its head (chathead) instead; an NPC with no chathead shows an
+--                     empty box (the NPC browser helps find them)
 --              cam  : camera settings, any of yaw, pitch (radians), dist, fov (degrees),
 --                     ty (height looked at) and tx (left/right). Leave out to use the
 --                     defaults in ui/cardview.lua. Find good values with the buttons in the
@@ -227,7 +228,8 @@ function Cards.getVariants(card)
 end
 
 -- Returns a card's art settings: { npc = <config name>, body, cam }. The NPC is the card's id
--- uppercased unless the card's `art` entry (or its first variant) names another one.
+-- uppercased unless the card's `art` entry (or its first variant) names another one, and `body`
+-- is true (the body model) unless the card sets `body = false` (the head).
 function Cards.getArt(card)
     local result = {}
     local first = card.variants and card.variants[1]
@@ -240,6 +242,10 @@ function Cards.getArt(card)
         result[field] = value
     end
     result.npc = result.npc or string.upper(card.id)
+    -- NPC cards show the NPC's whole body model unless the card says `body = false` (the head).
+    if result.body == nil and Cards.kindOf(card) == "npc" then
+        result.body = true
+    end
     return result
 end
 
