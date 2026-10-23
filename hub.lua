@@ -12,6 +12,7 @@ local api = nil      -- api.getState(), api.openMain(), api.openCollection(), ap
 local view = nil
 local widgets = {}
 
+-- Removes the page from the screen (the Plugins window may rebuild it several times).
 local function destroyView()
     if view ~= nil then
         pcall(function() view:Destroy() end)
@@ -20,6 +21,8 @@ local function destroyView()
     widgets = {}
 end
 
+-- Builds the page: a title, the credits line and the three buttons. `parent` is the component
+-- the client gives for the plugin's page.
 local function build(parent)
     destroyView()
     view = prettyui.SimpleView.new(parent, { width = parent.width, height = parent.height })
@@ -44,6 +47,7 @@ function Hub.refresh()
     end
 end
 
+-- Starts listening for the client to open the plugin's page. `newApi` is described at the top.
 function Hub.init(newApi)
     api = newApi
     if prettyui == nil or Event.ContentLayerReady == nil then
@@ -58,6 +62,7 @@ function Hub.init(newApi)
     end)
 end
 
+-- Stops listening and removes the page. Called when the plugin is shut down.
 function Hub.shutdown()
     -- Stopping listening must never stop the rest of the shutdown.
     pcall(function() Event.ContentLayerReady.Unsubscribe(SUBSCRIBER) end)

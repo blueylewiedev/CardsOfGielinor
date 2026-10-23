@@ -35,7 +35,7 @@ end
 
 -- Lifetime statistics.
 --   packsOpened, cardsPulled : how many packs were opened and cards pulled from them
---   creditsEarned            : credits earned from XP (not debug credits)
+--   creditsEarned            : credits earned from XP (not credits added by the dev tools)
 --   creditsSpent             : credits spent on packs
 --   finishes                 : { [finish] = cards pulled with that finish }
 --   rarities                 : { [rarity] = cards pulled of that rarity }

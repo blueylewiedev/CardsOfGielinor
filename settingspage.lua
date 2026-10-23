@@ -24,6 +24,7 @@ local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, wid
 local window = nil       -- the settings window's frame, while it is open
 local updating = false   -- true while the page itself changes a control, so that is not mistaken for the player
 
+-- Removes one of the two copies of the page ("client" or "window") from the screen.
 local function destroyPage(key)
     local page = pages[key]
     if page ~= nil then
@@ -118,6 +119,7 @@ function SettingsPage.closeWindow()
     window = nil
 end
 
+-- Opens the settings window, if it is not open already.
 function SettingsPage.openWindow()
     if window ~= nil or prettyui == nil then
         return
@@ -135,6 +137,7 @@ function SettingsPage.openWindow()
     SettingsPage.refresh()
 end
 
+-- Opens the settings window, or closes it if it is open (the cog button on Home).
 function SettingsPage.toggleWindow()
     if window ~= nil then
         SettingsPage.closeWindow()
@@ -163,6 +166,7 @@ function SettingsPage.init(newApi)
     end)
 end
 
+-- Stops listening and removes both copies of the page. Called when the plugin is shut down.
 function SettingsPage.shutdown()
     -- Stopping listening must never stop the rest of the shutdown.
     pcall(function() Event.SettingsLayerReady.Unsubscribe(SUBSCRIBER) end)

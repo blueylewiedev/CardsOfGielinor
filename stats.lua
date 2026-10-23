@@ -65,6 +65,7 @@ local window = nil
 local content = nil
 local texts = {}         -- one ui text per line
 
+-- Creates `count` empty text lines in the window, replacing any that were there.
 local function buildLines(count)
     for _, text in ipairs(texts) do
         pcall(function() text:Destroy() end)
@@ -118,6 +119,7 @@ function Stats.show(newApi)
     Stats.refresh()
 end
 
+-- Closes the window.
 function Stats.hide()
     if window ~= nil then
         pcall(function() window:Destroy() end)
@@ -127,10 +129,12 @@ function Stats.hide()
     texts = {}
 end
 
+-- True while the window is open.
 function Stats.isOpen()
     return window ~= nil
 end
 
+-- Opens the window, or closes it if it is open (the Stats button on Home).
 function Stats.toggle(newApi)
     if window ~= nil then
         Stats.hide()
