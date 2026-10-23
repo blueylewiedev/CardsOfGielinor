@@ -12,6 +12,7 @@
 --                        missing one (the id read back from the model does not)
 -- Only created when DEBUG is on in main.lua, and opened from the Home window.
 
+local Kit = require("ui/kit")
 local OutputWindow = require("dev/outputwindow")
 
 local NpcBrowser = {}
@@ -19,8 +20,10 @@ local NpcBrowser = {}
 local window = nil
 local jump = nil     -- set while the window is open: jump(id) shows that NPC id
 
-local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
+local WHITE = Vector4.new(1, 1, 1, 1)
+local WIN_W, WIN_H = 330, 380
 local BOX_W, BOX_H = 110, 150
+local HEAD_X, BODY_X = 35, 185     -- left edges of the two model boxes
 
 -- Looks up an NPC's config name and display name. Returns "?" for anything unreadable.
 -- Logs the member names of a userdata object, as far as the client lets us list them.
@@ -67,39 +70,29 @@ function NpcBrowser.show()
     end
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window = ui.GroupBox.new(gameWindow)
-    window.stylesheetID = id.StyleSheet.DEFAULT
-    window:SetHeaderLayout(0, 0, 0, 0, 0)
-    window:SetSize(250, 410)
-    window:SetPos(0, 0, 0.72, 0.15)
+    local content = nil
+    window, content = Kit.window(gameWindow, "NPC Viewer", WIN_W, WIN_H + Kit.titleBarHeight(),
+        function() NpcBrowser.hide() end, 0.72, 0.15)
 
     local npcId = 1
     local parts = {}      -- components that are rebuilt on every change
     local title = nil
     local shownConfigName = "?"
 
-    local function text(x, y, w, h, content)
-        local t = ui.Text.new(window)
-        t:SetPos(x, y)
-        t:SetSize(w, h)
-        t.font = FONT
-        t.content = content
-        t.colour = Vector4.new(1, 1, 1, 1)
-        t.isShadowed = true
-        t:AlignTo(ui.AlignMode.CENTRE, ui.AlignMode.CENTRE)
-        return t
+    local function text(x, y, w, h, words)
+        return Kit.text(content, x, y, w, h, words, WHITE)
     end
 
     -- One model on a dark backdrop. `modelType` is "NPC_HEAD" or "NPC_MODEL".
     local function modelBox(x, modelType, viewDistance)
-        local back = ui.Rectangle.new(window)
+        local back = ui.Rectangle.new(content)
         back:SetPos(x, 60)
         back:SetSize(BOX_W, BOX_H)
         back.fill = true
         back.colour = Vector4.new(0.16, 0.16, 0.20, 1.0)
         parts[#parts + 1] = back
 
-        local model = ui.Model.new(window)
+        local model = ui.Model.new(content)
         model:SetPos(x, 60)
         model:SetSize(BOX_W, BOX_H)
         local ok, err = pcall(function() model:SetModel(ui.ModelType[modelType], npcId) end)
@@ -125,8 +118,8 @@ function NpcBrowser.show()
         shownConfigName = configName
         title.content = npcId .. "  " .. configName .. "  (" .. name .. ")"
 
-        local head = modelBox(10, "NPC_HEAD", 1000)
-        local body = modelBox(130, "NPC_MODEL", 1500)
+        local head = modelBox(HEAD_X, "NPC_HEAD", 1000)
+        local body = modelBox(BODY_X, "NPC_MODEL", 1500)
         local function read(model)
             if model == nil then return "none" end
             local ok, value = pcall(function() return model.modelID1 end)
@@ -135,17 +128,12 @@ function NpcBrowser.show()
         log("npcbrowser:", npcId, configName, name, "| head modelID1", read(head), "| body modelID1", read(body))
     end
 
-    title = text(5, 5, 240, 22, "")
-    text(10, 30, BOX_W, 22, "Head")
-    text(130, 30, BOX_W, 22, "Body")
+    title = text(5, 5, WIN_W - 10, 22, "")
+    text(HEAD_X, 30, BOX_W, 22, "Head")
+    text(BODY_X, 30, BOX_W, 22, "Body")
 
     local function button(label, x, y, w, onPress)
-        local b = ui.Button.new(window)
-        b:SetPos(x, y)
-        b:SetSize(w, 30)
-        b.label = label
-        b.stylesheetID = id.StyleSheet.BUTTON_DEFAULT
-        b:Subscribe(ui.Hook.ONBUTTONPRESSED, onPress)
+        return Kit.button(content, label, x, y, w, 30, onPress)
     end
 
     local function step(delta)
@@ -158,16 +146,16 @@ function NpcBrowser.show()
         local row = (i <= 4) and 0 or 1
         local col = (i - 1) % 4
         local label = (delta > 0 and "+" or "") .. delta
-        button(label, 5 + col * 61, 218 + row * 36, 57, function() step(delta) end)
+        button(label, 5 + col * 80, 218 + row * 36, 80, function() step(delta) end)
     end
-    button("Probe", 10, 331, 230, function()
+    button("Probe", 10, 331, 310, function()
         local ok, cfg = pcall(function() return config.NPC.FromID(npcId) end)
         if ok and cfg ~= nil then
             listMembers("config.NPC " .. npcId, cfg)
         else
             log("npcbrowser probe: no config for", npcId)
         end
-        local probeModel = ui.Model.new(window)
+        local probeModel = ui.Model.new(content)
         pcall(function() probeModel:SetModel(ui.ModelType.NPC_HEAD, npcId) end)
         listMembers("ui.Model (NPC_HEAD)", probeModel)
         pcall(function() probeModel:Destroy() end)
@@ -194,11 +182,11 @@ function NpcBrowser.show()
             log("npcbrowser probe: cannot list id.Model:", tostring(err))
         end
     end)
-    button("Has head", 10, 295, 110, function()
+    button("Has head", 10, 295, 150, function()
         log("npcbrowser: mark", npcId, shownConfigName, "head = yes")
         OutputWindow.add(shownConfigName, npcId .. " " .. shownConfigName .. " head = yes")
     end)
-    button("No head", 130, 295, 110, function()
+    button("No head", 170, 295, 150, function()
         log("npcbrowser: mark", npcId, shownConfigName, "head = NO")
         OutputWindow.add(shownConfigName, npcId .. " " .. shownConfigName .. " head = NO")
     end)

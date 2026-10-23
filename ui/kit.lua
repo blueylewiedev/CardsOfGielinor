@@ -23,7 +23,7 @@ function Kit.available()
 end
 
 -- The plain (built-in) versions, also used as the fallback.
-local function plainText(parent, x, y, w, h, content, colour)
+local function plainText(parent, x, y, w, h, content, colour, alignX)
     local text = ui.Text.new(parent)
     text:SetPos(x, y)
     text:SetSize(w, h)
@@ -31,7 +31,7 @@ local function plainText(parent, x, y, w, h, content, colour)
     text.content = content
     text.colour = colour or WHITE
     text.isShadowed = true
-    text:AlignTo(ui.AlignMode.CENTRE, ui.AlignMode.CENTRE)
+    text:AlignTo(alignX or ui.AlignMode.CENTRE, ui.AlignMode.CENTRE)
     return text
 end
 
@@ -64,22 +64,23 @@ local function packColour(v)
     return (byte(r) << 24) | (byte(g) << 16) | (byte(b) << 8) | byte(a or 1)
 end
 
--- A line of text at a fixed position.
-function Kit.text(parent, x, y, w, h, content, colour)
+-- A line of text at a fixed position, centred in its box unless `alignX` is another
+-- ui.AlignMode (for example ui.AlignMode.TOPLEFT to start at the left edge).
+function Kit.text(parent, x, y, w, h, content, colour, alignX)
     if Kit.available() and prettyui.Text ~= nil then
         local ok, text = pcall(prettyui.Text.new, parent, {
             text = "", colour = packColour(colour or WHITE),
             x = x, y = y, width = w, height = h, absolute = true,
         })
         if ok and text ~= nil then
-            pcall(function() text:AlignTo(ui.AlignMode.CENTRE, ui.AlignMode.CENTRE) end)
+            pcall(function() text:AlignTo(alignX or ui.AlignMode.CENTRE, ui.AlignMode.CENTRE) end)
             -- Set the words last: giving them at creation drew the text twice.
             text.content = content
             return text
         end
         log("Kit.text: PrettyUI text failed, using plain text:", tostring(text))
     end
-    return plainText(parent, x, y, w, h, content, colour)
+    return plainText(parent, x, y, w, h, content, colour, alignX)
 end
 
 -- A button at a fixed position. `style` is optional: "positive", "neutral" or "negative"
@@ -116,6 +117,21 @@ function Kit.iconButton(parent, sprite, x, y, onPress, tooltip, fallbackLabel, f
     return plainButton(parent, fallbackLabel or sprite, x - (w - 24), y, w, 26, onPress)
 end
 
+-- A box to type in, at a fixed position. PrettyUI has no input box, so this is the client's own.
+-- `numeric` allows only digits. `maxLength` is the most characters it takes.
+function Kit.inputField(parent, x, y, w, h, maxLength, numeric)
+    local field = ui.InputField.new(parent)
+    field:SetPos(x, y)
+    field:SetSize(w, h)
+    local sheet = id.StyleSheet.INPUT_DEFAULT
+    if sheet ~= nil then
+        field.stylesheetID = sheet
+    end
+    field:Setup(ui.TextContentVisibilityMode.VISIBLE,
+        numeric and ui.InputFieldFilterMode.NUMERIC or ui.InputFieldFilterMode.NONE, maxLength or 30)
+    return field
+end
+
 -- Enables or greys out a button made by Kit.button.
 function Kit.setEnabled(button, enabled)
     if prettyButtons[button] then
@@ -150,13 +166,15 @@ end
 -- Creates the main window frame. Returns window, content: `content` is the component to put
 -- things in. `onClose` is called when the player closes the window with its close button.
 -- With PrettyUI the frame has a title bar; without, it is the plain header-less group box.
-function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor)
+-- `scrollable` (PrettyUI only) lets the content be longer than the window and scroll.
+-- PrettyUI windows can be dragged by their title bar.
+function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable)
     xAnchor, yAnchor = xAnchor or 0.2, yAnchor or 0.15
     if Kit.available() and prettyui.Window ~= nil then
         local ok, win = pcall(prettyui.Window.new, parent, {
             title = title, width = width, height = height,
             x = 0, y = 0, xAnchor = xAnchor, yAnchor = yAnchor,
-            scrollable = false, onClose = onClose,
+            scrollable = scrollable == true, onClose = onClose,
         })
         if ok and win ~= nil and win.content ~= nil then
             return win, win.content

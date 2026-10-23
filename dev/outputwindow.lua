@@ -1,25 +1,36 @@
 -- outputwindow.lua
--- A small window that shows the lines the debug tools produce (the paste-ready card settings
--- from the preview, the marks from the NPC browser), so one line can be selected and copied.
--- The developer console only lets you copy everything at once.
+-- A window that shows the lines the developer tools produce (the paste-ready card settings
+-- from the preview, the marks from the NPC browser, the lines from Nearby NPCs), so one line can
+-- be selected and copied. The developer console only lets you copy everything at once.
 --
 -- Each line is shown in its own text field, because a field's text can be selected with the
 -- mouse and copied (Ctrl+C), which plain text components do not allow.
 --
+-- The newest line is at the top. The window scrolls, so older lines are reached by scrolling
+-- down. If PrettyUI's scrolling does not work for you, set SCROLL to false: the window then
+-- shows only the newest ROWS lines.
+--
 -- Lines are remembered while the window is closed, so opening it shows what it missed.
--- Only used when DEBUG is on in main.lua.
+-- Only used by the developer tools (the dev folder).
+
+local Kit = require("ui/kit")
 
 local OutputWindow = {}
 
-local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
+local SCROLL = true            -- show every remembered line in a scrolling window
 local WIDTH = 640
-local ROWS = 8                 -- how many of the newest lines are shown
+local ROWS = 12                -- how many lines are visible at a time (and shown without scrolling)
 local ROW_H = 30
-local KEEP = 60                -- how many lines are remembered
+local TOP = 40                 -- space for the hint and the Clear button above the lines
+local KEEP = 200               -- how many lines are remembered
 local MAX_LENGTH = 400         -- longest line a field can hold
+
+local GREY = Vector4.new(0.85, 0.85, 0.85, 1.0)
+local WHITE = Vector4.new(1, 1, 1, 1)
 
 local lines = {}               -- { label = "chicken", text = "body = true, cam = { ... }" }, newest last
 local window = nil
+local content = nil            -- where the window's contents go
 local rowParts = {}            -- the components of the rows currently shown
 
 -- Adds a line. `label` is a short tag such as the card id; `text` is what gets copied.
@@ -55,31 +66,17 @@ function OutputWindow.redraw()
         return
     end
 
-    for row = 1, ROWS do
+    local shown = (SCROLL and Kit.available()) and KEEP or ROWS
+    for row = 1, shown do
         local entry = lines[#lines - row + 1]
         if entry == nil then
             break
         end
-        local y = 38 + (row - 1) * ROW_H
+        local y = TOP + (row - 1) * ROW_H
 
-        local caption = ui.Text.new(window)
-        caption:SetPos(10, y)
-        caption:SetSize(110, 26)
-        caption.font = FONT
-        caption.content = entry.label
-        caption.colour = Vector4.new(0.85, 0.85, 0.85, 1.0)
-        caption.isShadowed = true
-        caption:AlignTo(ui.AlignMode.TOPLEFT, ui.AlignMode.CENTRE)
-        rowParts[#rowParts + 1] = caption
+        rowParts[#rowParts + 1] = Kit.text(content, 10, y, 110, 26, entry.label, GREY, ui.AlignMode.TOPLEFT)
 
-        local field = ui.InputField.new(window)
-        field:SetPos(125, y)
-        field:SetSize(WIDTH - 135, 26)
-        local sheet = id.StyleSheet.INPUT_DEFAULT
-        if sheet ~= nil then
-            field.stylesheetID = sheet
-        end
-        field:Setup(ui.TextContentVisibilityMode.VISIBLE, ui.InputFieldFilterMode.NONE, MAX_LENGTH)
+        local field = Kit.inputField(content, 125, y, WIDTH - 150, 26, MAX_LENGTH, false)
         field.content = entry.text
         rowParts[#rowParts + 1] = field
     end
@@ -90,27 +87,13 @@ function OutputWindow.show()
         return
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window = ui.GroupBox.new(gameWindow)
-    window.stylesheetID = id.StyleSheet.DEFAULT
-    window:SetHeaderLayout(0, 0, 0, 0, 0)
-    window:SetSize(WIDTH, 38 + ROWS * ROW_H + 40)
-    window:SetPos(0, 0, 0.2, 0.7)
+    window, content = Kit.window(gameWindow, "Output", WIDTH, TOP + ROWS * ROW_H + 10 + Kit.titleBarHeight(),
+        function() OutputWindow.hide() end, 0.2, 0.55, SCROLL)
 
-    local title = ui.Text.new(window)
-    title:SetPos(10, 8)
-    title:SetSize(WIDTH - 130, 24)
-    title.font = FONT
-    title.content = "Output - click a line, Ctrl+A then Ctrl+C to copy it"
-    title.colour = Vector4.new(1, 1, 1, 1)
-    title.isShadowed = true
-    title:AlignTo(ui.AlignMode.TOPLEFT, ui.AlignMode.CENTRE)
-
-    local clear = ui.Button.new(window)
-    clear:SetPos(WIDTH - 110, 6)
-    clear:SetSize(100, 28)
-    clear.label = "Clear"
-    clear.stylesheetID = id.StyleSheet.BUTTON_DEFAULT
-    clear:Subscribe(ui.Hook.ONBUTTONPRESSED, function() OutputWindow.clear() end)
+    -- The hint and the Clear button are not rebuilt on every redraw, so they are not in rowParts.
+    Kit.text(content, 10, 4, WIDTH - 140, 28,
+        "Click a line, Ctrl+A then Ctrl+C to copy it", WHITE, ui.AlignMode.TOPLEFT)
+    Kit.button(content, "Clear", WIDTH - 130, 2, 110, 30, function() OutputWindow.clear() end)
 
     OutputWindow.redraw()
 end
@@ -134,6 +117,7 @@ function OutputWindow.hide()
         pcall(function() window.hidden = true end)
     end
     window = nil
+    content = nil
 end
 
 function OutputWindow.toggle()

@@ -324,17 +324,23 @@ end
 Event.Draw.Subscribe("cardcollector_shine", onShineDraw)
 
 -- A frame zone scaled by CardView.SCALE. The zone tables are in 160 x 224 card units.
-local function scaled(zone)
-    return { x = zone.x * S, y = zone.y * S, w = zone.w * S, h = zone.h * S }
+local function scaled(zone, s)
+    return { x = zone.x * s, y = zone.y * s, w = zone.w * s, h = zone.h * s }
+end
+
+-- The size of a card drawn at `scale` (the default is CardView.SCALE). Returns scale, width, height.
+local function metrics(scale)
+    scale = scale or S
+    return scale, math.floor(160 * scale), math.floor(224 * scale)
 end
 
 -- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.)
 -- Builds a card that uses a frame image. Order matters: whatever is created later is drawn on
 -- top, so the backdrop and the model go first, then the frame, then the text.
-local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour)
+local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour, s, W, H)
     local base = CardView.FRAME_ZONES
-    local zones = { title = scaled(base.title), rarity = scaled(base.rarity), desc = scaled(base.desc) }
-    local win = scaled(base.window[card.rarity] or base.window.common)
+    local zones = { title = scaled(base.title, s), rarity = scaled(base.rarity, s), desc = scaled(base.desc, s) }
+    local win = scaled(base.window[card.rarity] or base.window.common, s)
     local nameColour = locked and DIM_TEXT_COLOUR or TEXT_COLOUR
 
     solid(root, win.x, win.y, win.w, win.h, 0, 0, ART_COLOUR)   -- backdrop behind the model
@@ -351,12 +357,12 @@ local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityC
         end
     end
     if model == nil then
-        label(root, win.x, win.y, win.w - CardView.WIDTH, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
+        label(root, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
     end
 
     local frame = ui.Sprite.new(root)                            -- frame on top of the model
     frame:SetPos(0, 0)
-    frame:SetSize(CardView.WIDTH, CardView.HEIGHT)
+    frame:SetSize(W, H)
     frame.sprite = frameImage
     if locked then
         frame.alpha = 0.5
@@ -366,14 +372,14 @@ local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityC
         local a = loadImage("reverse_" .. card.rarity .. "_a")
         local b = loadImage("reverse_" .. card.rarity .. "_b")
         if a ~= nil and b ~= nil then
-            addShine(root, a, b, 0, 0, CardView.WIDTH, CardView.HEIGHT, REVERSE_ALPHA)
+            addShine(root, a, b, 0, 0, W, H, REVERSE_ALPHA)
         end
     end
 
-    label(root, zones.title.x, zones.title.y, zones.title.w - CardView.WIDTH, zones.title.h, card.name, nameColour)
-    label(root, zones.rarity.x, zones.rarity.y, zones.rarity.w - CardView.WIDTH, zones.rarity.h, rarity.name,
+    label(root, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, card.name, nameColour)
+    label(root, zones.rarity.x, zones.rarity.y, zones.rarity.w - W, zones.rarity.h, rarity.name,
         locked and DIM_TEXT_COLOUR or rarityColour)
-    label(root, zones.desc.x, zones.desc.y, zones.desc.w - CardView.WIDTH, zones.desc.h,
+    label(root, zones.desc.x, zones.desc.y, zones.desc.w - W, zones.desc.h,
         locked and "Not collected yet" or card.desc,
         locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
     return model, cam
@@ -385,9 +391,12 @@ end
 -- with a "?" instead of the art and no description.
 -- opts.frame = false skips the frame image and uses the plain layout (preview only).
 -- opts.finish = "normal" (default), "reverse" or "holo" adds the shine for that finish.
+-- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text
+-- stays the same size; the picture, frame and layout scale.
 -- opts.body = true/false forces the body or head model, whatever the card says (preview only).
 -- Returns { root = <Layer>, model = <Model or nil>, cam = <camera settings or nil>, card = <card data> }.
 function CardView.create(parent, card, opts)
+    local S, W, H = metrics(opts and opts.scale)
     local locked = opts ~= nil and opts.locked == true
 
     local rarity = Cards.rarities[card.rarity]
@@ -396,14 +405,14 @@ function CardView.create(parent, card, opts)
     local nameColour = locked and DIM_TEXT_COLOUR or TEXT_COLOUR
 
     local root = ui.Layer.new(parent)
-    root:SetSize(CardView.WIDTH, CardView.HEIGHT)
+    root:SetSize(W, H)
 
     -- With a frame image the card is built from the image alone. (A coloured rectangle behind
     -- it would show at the edges, and gives the rarity away when something sits on top of
     -- the card, like the card back in the pack opening.)
     local frameImage = CardView.frameResource(card.rarity)
     if frameImage ~= nil and not (opts and opts.frame == false) then
-        local model, cam = buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour)
+        local model, cam = buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour, S, W, H)
         return { root = root, model = model, cam = cam, card = card }
     end
 
@@ -416,7 +425,7 @@ function CardView.create(parent, card, opts)
     solid(root, 10, 34 * S, -20, 110 * S, 1.0, 0.0, ART_COLOUR)      -- art box
     local model, cam = nil, nil
     if not locked then
-        model, cam = addArt(root, card, { x = 10, y = 34 * S, w = CardView.WIDTH - 20, h = 110 * S }, opts and opts.body)
+        model, cam = addArt(root, card, { x = 10, y = 34 * S, w = W - 20, h = 110 * S }, opts and opts.body)
     end
     if model == nil then
         label(root, 10, 34 * S, -20, 110 * S, "?", locked and DIM_TEXT_COLOUR or rarityColour)  -- placeholder art

@@ -1,26 +1,33 @@
 -- preview.lua
--- Debug window for looking at cards while the rendering is built and tuned.
+-- Debug window for looking at cards while the rendering is built and tuned. The card is drawn
+-- at PREVIEW_SCALE (bigger than in the game) to make the camera easier to fine tune; the values
+-- found are the same at any size. The window can be dragged by its title bar.
 --
+-- Under the card:
 --   Prev / Next     : cycle through every card
+--   Save / Reset    : keep this card's camera across reloads / go back to the card's own values
+-- Camera (right side):
 --   Zoom +/-        : camera distance (closer is a bigger NPC)
 --   Size +/-        : camera field of view (narrower is a bigger NPC)
 --   Up / Down       : move the NPC up or down the card
+--   Left / Right    : move the NPC across the card
 --   Yaw -/+         : turn the camera left/right around the NPC
 --   Pitch -/+       : tilt the camera up/down
---   Left / Right    : move the NPC across the card
---   Save / Reset    : keep this card's camera across reloads / go back to core/cards.lua's values
---   Finish          : cycles Normal / Reverse / Holo to see the shine on the card
+-- View (right side):
 --   Model: Head/Body: switches this card between its head and body model (back to the
 --                     card's own setting when you change card)
+--   Finish          : cycles Normal / Reverse / Holo to see the shine on the card
 --   Frames: On/Off  : draws cards with the frame images, or the plain layout, to compare
 --   Show: Back      : shows the card back image (resources/images/card_back.png) over a
 --                     magenta and white backdrop, to check its transparency in the client
+-- Animation (right side): type a sequence id, or step it with the buttons; Off stops it.
 --
 -- Every press logs a line to the console and to the Output window (toggle it from the Home
 -- window) that can be pasted into the card's `art` entry in core/cards.lua, e.g.
 -- `cam = { ... }`, with `body = true, ` in front for a body model. Only created when DEBUG
 -- is on in main.lua.
 
+local Kit = require("ui/kit")
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
@@ -57,26 +64,46 @@ local function pasteText(cam)
 end
 
 
+-- The card is drawn at this scale in the preview (the game's cards use CardView.SCALE).
+local PREVIEW_SCALE = 2.0
+local PW = math.floor(160 * PREVIEW_SCALE)      -- the card's size on screen
+local PH = math.floor(224 * PREVIEW_SCALE)
+local CARD_X, CARD_Y = 10, 10
+
+-- The buttons are in a panel to the right of the card, in two columns.
+local PANEL_X = CARD_X + PW + 20
+local PANEL_W = 190
+local HALF_W = 94                               -- a button that shares its row with another
+local STEP = 36                                 -- height of a row of buttons
+local UNDER_Y = CARD_Y + PH + 12                -- the row of buttons under the card
+
+local CONTENT_W = PANEL_X + PANEL_W + 10
+local GREY = Vector4.new(0.7, 0.7, 0.7, 1.0)
+
 local window = nil
+local content = nil
 
 function Preview.show()
     if window ~= nil then
         return
     end
 
+    -- Where each part of the right-hand panel starts.
+    local cameraTop = 10
+    local viewTop = cameraTop + 24 + 6 * STEP + 8
+    local animTop = viewTop + 24 + 3 * STEP + 8
+    local contentH = math.max(UNDER_Y + 40, animTop + 24 + 34 + 3 * STEP + 6) + 10
+
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window = ui.GroupBox.new(gameWindow)
-    window.stylesheetID = id.StyleSheet.DEFAULT
-    window:SetHeaderLayout(0, 0, 0, 0, 0)
-    window:SetSize(200 + (CardView.WIDTH - 160), 870 + (CardView.HEIGHT - 224))
-    window:SetPos(0, 0, 0.5, 0.15)
+    window, content = Kit.window(gameWindow, "Card Preview", CONTENT_W, contentH + Kit.titleBarHeight(),
+        function() Preview.hide() end, 0.4, 0.05)
 
     local index = 1
     local view = nil
     local finish = "normal"        -- which finish the preview shows: normal, reverse or holo
     local bodyOverride = nil      -- nil = the card's own setting; true/false = chosen with the button
     local modelButton = nil
-    local showAnimLabel = nil      -- set once the Anim buttons are made
+    local showAnimLabel = nil      -- set once the Anim box is made
 
     -- The card back test: a split backdrop with the image on top. If the image's corners
     -- are truly transparent, magenta shows in the left corners and white in the right ones.
@@ -91,7 +118,7 @@ function Preview.show()
         backParts = {}
         showingBack = false
         if backButton ~= nil then
-            backButton.label = "Show: Back"
+            Kit.setLabel(backButton, "Show: Back")
         end
     end
 
@@ -102,7 +129,7 @@ function Preview.show()
         end
         clearBack()
         showingBack = true
-        backButton.label = "Show: Card"
+        Kit.setLabel(backButton, "Show: Card")
 
         local ok, resource = pcall(function() return Plugin.resources.images.card_back end)
         if not ok or resource == nil then
@@ -114,21 +141,21 @@ function Preview.show()
         log("preview: card_back Load ->", loadOk and tostring(result) or ("FAILED: " .. tostring(result)))
 
         local made, err = pcall(function()
-            local left = ui.Rectangle.new(window)
-            left:SetPos(20, 10)
-            left:SetSize(CardView.WIDTH // 2, CardView.HEIGHT)
+            local left = ui.Rectangle.new(content)
+            left:SetPos(CARD_X, CARD_Y)
+            left:SetSize(PW // 2, PH)
             left.fill = true
             left.colour = Vector4.new(1.0, 0.0, 1.0, 1.0)
             backParts[#backParts + 1] = left
-            local right = ui.Rectangle.new(window)
-            right:SetPos(20 + CardView.WIDTH // 2, 10)
-            right:SetSize(CardView.WIDTH // 2, CardView.HEIGHT)
+            local right = ui.Rectangle.new(content)
+            right:SetPos(CARD_X + PW // 2, CARD_Y)
+            right:SetSize(PW // 2, PH)
             right.fill = true
             right.colour = Vector4.new(1.0, 1.0, 1.0, 1.0)
             backParts[#backParts + 1] = right
-            local sprite = ui.Sprite.new(window)
-            sprite:SetPos(20, 10)
-            sprite:SetSize(CardView.WIDTH, CardView.HEIGHT)
+            local sprite = ui.Sprite.new(content)
+            sprite:SetPos(CARD_X, CARD_Y)
+            sprite:SetSize(PW, PH)
             sprite.sprite = resource
             backParts[#backParts + 1] = sprite
             log("preview: card back sprite created", sprite.width, sprite.height)
@@ -144,10 +171,10 @@ function Preview.show()
             view.root:Destroy()
         end
         local card = Cards.list[index]
-        view = CardView.create(window, card, { body = bodyOverride, finish = finish })
-        view.root:SetPos(20, 10)
+        view = CardView.create(content, card, { body = bodyOverride, finish = finish, scale = PREVIEW_SCALE })
+        view.root:SetPos(CARD_X, CARD_Y)
         if modelButton ~= nil then
-            modelButton.label = (view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head"
+            Kit.setLabel(modelButton, (view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head")
         end
         if showAnimLabel ~= nil then
             showAnimLabel()
@@ -162,15 +189,17 @@ function Preview.show()
         end
     end
 
-    local function makeButton(text, x, y, w, onPress)
-        local button = ui.Button.new(window)
-        -- The buttons were laid out under a 224-high card; shift them down for a bigger one.
-        button:SetPos(x + (CardView.WIDTH - 160) // 2, y + (CardView.HEIGHT - 224))
-        button:SetSize(w, 30)
-        button.label = text
-        button.stylesheetID = id.StyleSheet.BUTTON_DEFAULT
-        button:Subscribe(ui.Hook.ONBUTTONPRESSED, onPress)
-        return button
+    -- A button in the right-hand panel: `half` 1 or 2 is the left or right of a pair, nil is a
+    -- full-width one.
+    local function panelButton(text, half, y, onPress, style)
+        if half == nil then
+            return Kit.button(content, text, PANEL_X, y, PANEL_W, 30, onPress, style)
+        end
+        return Kit.button(content, text, PANEL_X + (half - 1) * (PANEL_W - HALF_W), y, HALF_W, 30, onPress, style)
+    end
+
+    local function section(title, y)
+        Kit.text(content, PANEL_X, y, PANEL_W, 20, title, GREY, ui.AlignMode.TOPLEFT)
     end
 
     -- Changes the camera with `change(cam)`, applies it and logs a paste-ready line.
@@ -201,42 +230,25 @@ function Preview.show()
         withCamera(function(c) c.ty = c.ty - direction * 20 end)
     end
 
-    makeButton("Prev", 10, 244, 85, function()
+    -- Under the card: Prev / Next / Save / Reset.
+    local function underButton(text, slot, onPress, style)
+        return Kit.button(content, text, CARD_X + (slot - 1) * (PW // 4), UNDER_Y, PW // 4 - 2, 30, onPress, style)
+    end
+    underButton("Prev", 1, function()
         index = index - 1
         if index < 1 then index = #Cards.list end
         bodyOverride = nil
         showCard()
     end)
-    makeButton("Next", 105, 244, 85, function()
+    underButton("Next", 2, function()
         index = index + 1
         if index > #Cards.list then index = 1 end
         bodyOverride = nil
         showCard()
     end)
-    makeButton("Zoom -", 10, 284, 85, function() zoom(-1) end)
-    makeButton("Zoom +", 105, 284, 85, function() zoom(1) end)
-    makeButton("Size -", 10, 324, 85, function() resize(-1) end)
-    makeButton("Size +", 105, 324, 85, function() resize(1) end)
-    makeButton("Up", 10, 364, 85, function() move(1) end)
-    makeButton("Down", 105, 364, 85, function() move(-1) end)
-    makeButton("Yaw -", 10, 404, 85, function() withCamera(function(c) c.yaw = c.yaw - 0.2 end) end)
-    makeButton("Yaw +", 105, 404, 85, function() withCamera(function(c) c.yaw = c.yaw + 0.2 end) end)
-    makeButton("Pitch -", 10, 444, 85, function() withCamera(function(c) c.pitch = c.pitch - 0.15 end) end)
-    makeButton("Pitch +", 105, 444, 85, function() withCamera(function(c) c.pitch = c.pitch + 0.15 end) end)
-    -- Left / Right move the NPC across the card (the camera's look-at slides the other way).
-    makeButton("Left", 10, 484, 85, function() withCamera(function(c) c.tx = c.tx + 10 end) end)
-    makeButton("Right", 105, 484, 85, function() withCamera(function(c) c.tx = c.tx - 10 end) end)
-
-    modelButton = makeButton("Model: Head", 10, 564, 180, function()
-        local isBody = view ~= nil and view.cam ~= nil and view.cam.body
-        bodyOverride = not isBody
-        showCard()
-    end)
-    modelButton.label = (view ~= nil and view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head"
-
     -- Save keeps the current camera for this card (until Reset), so it survives a reload and
-    -- applies everywhere the card is drawn. Reset goes back to what core/cards.lua says.
-    makeButton("Save", 10, 604, 85, function()
+    -- applies everywhere the card is drawn. Reset goes back to what the card's file says.
+    underButton("Save", 3, function()
         if view ~= nil and view.cam ~= nil then
             local cam = view.cam
             if Tuning.set(view.card.id, cam.body, cam, cam.anim) then
@@ -245,29 +257,77 @@ function Preview.show()
                 OutputWindow.add(view.card.id .. " (saved)", text)
             end
         end
-    end)
-    makeButton("Reset", 105, 604, 85, function()
+    end, "positive")
+    underButton("Reset", 4, function()
         if view ~= nil then
             Tuning.clear(view.card.id)
             OutputWindow.add(view.card.id .. " (reset)", "saved settings removed")
             bodyOverride = nil
             showCard()
         end
+    end, "negative")
+
+    -- Camera.
+    section("Camera", cameraTop)
+    local y = cameraTop + 24
+    panelButton("Zoom -", 1, y, function() zoom(-1) end)
+    panelButton("Zoom +", 2, y, function() zoom(1) end)
+    y = y + STEP
+    panelButton("Size -", 1, y, function() resize(-1) end)
+    panelButton("Size +", 2, y, function() resize(1) end)
+    y = y + STEP
+    panelButton("Up", 1, y, function() move(1) end)
+    panelButton("Down", 2, y, function() move(-1) end)
+    y = y + STEP
+    -- Left / Right move the NPC across the card (the camera's look-at slides the other way).
+    panelButton("Left", 1, y, function() withCamera(function(c) c.tx = c.tx + 10 end) end)
+    panelButton("Right", 2, y, function() withCamera(function(c) c.tx = c.tx - 10 end) end)
+    y = y + STEP
+    panelButton("Yaw -", 1, y, function() withCamera(function(c) c.yaw = c.yaw - 0.2 end) end)
+    panelButton("Yaw +", 2, y, function() withCamera(function(c) c.yaw = c.yaw + 0.2 end) end)
+    y = y + STEP
+    panelButton("Pitch -", 1, y, function() withCamera(function(c) c.pitch = c.pitch - 0.15 end) end)
+    panelButton("Pitch +", 2, y, function() withCamera(function(c) c.pitch = c.pitch + 0.15 end) end)
+
+    -- View.
+    section("View", viewTop)
+    y = viewTop + 24
+    modelButton = panelButton("Model: Head", nil, y, function()
+        local isBody = view ~= nil and view.cam ~= nil and view.cam.body
+        bodyOverride = not isBody
+        showCard()
     end)
 
     -- Finish cycles normal -> reverse holo -> holo, to see the shine on the card shown.
     local finishNames = { normal = "Normal", reverse = "Reverse", holo = "Holo" }
     local finishNext = { normal = "reverse", reverse = "holo", holo = "normal" }
     local finishButton = nil
-    finishButton = makeButton("Finish: Normal", 10, 644, 180, function()
+    y = y + STEP
+    finishButton = panelButton("Finish: Normal", nil, y, function()
         finish = finishNext[finish]
-        finishButton.label = "Finish: " .. finishNames[finish]
+        Kit.setLabel(finishButton, "Finish: " .. finishNames[finish])
         showCard()
+    end)
+
+    local framesButton = nil
+    y = y + STEP
+    framesButton = panelButton("Frames: On", 1, y, function()
+        CardView.USE_FRAMES = not CardView.USE_FRAMES
+        Kit.setLabel(framesButton, CardView.USE_FRAMES and "Frames: On" or "Frames: Off")
+        showCard()
+    end)
+    backButton = panelButton("Show: Back", 2, y, function()
+        if showingBack then
+            showCard()
+        else
+            showBack()
+        end
     end)
 
     -- Animation: type an animation id into the box to play it, or step it with the buttons (by
     -- 1 or 100); Off stops it. The id is added to the line that Save and the Output window give.
     -- Ids are the client's sequence ids and there are many thousands.
+    section("Animation (sequence id)", animTop)
     local animField = nil
     local settingField = false     -- true while the code, not the player, changes the box
 
@@ -300,14 +360,8 @@ function Preview.show()
         showAnimLabel()
     end
 
-    animField = ui.InputField.new(window)
-    animField:SetPos(10 + (CardView.WIDTH - 160) // 2, 684 + (CardView.HEIGHT - 224))
-    animField:SetSize(180, 30)
-    local sheet = id.StyleSheet.INPUT_DEFAULT
-    if sheet ~= nil then
-        animField.stylesheetID = sheet
-    end
-    animField:Setup(ui.TextContentVisibilityMode.VISIBLE, ui.InputFieldFilterMode.NUMERIC, 6)
+    y = animTop + 24
+    animField = Kit.inputField(content, PANEL_X, y, PANEL_W, 30, 6, true)
     animField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
         if settingField then
             return
@@ -318,27 +372,16 @@ function Preview.show()
             setAnim(typed)
         end
     end)
-    makeButton("Anim -100", 10, 724, 85, function() stepAnim(-100) end)
-    makeButton("Anim +100", 105, 724, 85, function() stepAnim(100) end)
-    makeButton("Anim -1", 10, 764, 85, function() stepAnim(-1) end)
-    makeButton("Anim +1", 105, 764, 85, function() stepAnim(1) end)
-    makeButton("Anim off", 10, 804, 180, function()
+    y = y + 34
+    panelButton("-100", 1, y, function() stepAnim(-100) end)
+    panelButton("+100", 2, y, function() stepAnim(100) end)
+    y = y + STEP
+    panelButton("-1", 1, y, function() stepAnim(-1) end)
+    panelButton("+1", 2, y, function() stepAnim(1) end)
+    y = y + STEP
+    panelButton("Anim off", nil, y, function()
         setAnim(nil)
         showAnimLabel()
-    end)
-
-    local framesButton = nil
-    framesButton = makeButton("Frames: On", 10, 524, 85, function()
-        CardView.USE_FRAMES = not CardView.USE_FRAMES
-        framesButton.label = CardView.USE_FRAMES and "Frames: On" or "Frames: Off"
-        showCard()
-    end)
-    backButton = makeButton("Show: Back", 105, 524, 85, function()
-        if showingBack then
-            showCard()
-        else
-            showBack()
-        end
     end)
 
     -- List what is already saved, so it can be read from the Output window.
@@ -361,6 +404,7 @@ function Preview.hide()
     if window ~= nil then
         pcall(function() window:Destroy() end)
         window = nil
+        content = nil
     end
 end
 

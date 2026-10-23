@@ -8,17 +8,20 @@
 -- config. The Filter box narrows the list by name. View shows that NPC's models in the NPC
 -- browser, and also writes the line to paste into core/cards.lua to the Output window.
 
+local Kit = require("ui/kit")
 local OutputWindow = require("dev/outputwindow")
 local NpcBrowser = require("dev/npcbrowser")
 
 local Nearby = {}
 
-local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
+local WHITE = Vector4.new(1, 1, 1, 1)
 local RANGE = 12            -- how many tiles around the player to look
 local MAX_ROWS = 10         -- how many different configs to list
-local WIDTH, ROW_H = 600, 34
+local WIDTH, ROW_H = 600, 36
+local LIST_TOP = 76         -- where the list of NPCs starts
 
 local window = nil
+local content = nil           -- where the window's contents go
 local filterField = nil
 local rows = {}             -- the components of the listed rows, rebuilt on every scan
 local statusText = nil
@@ -73,28 +76,6 @@ local function clearRows()
     rows = {}
 end
 
-local function addText(x, y, w, h, content)
-    local t = ui.Text.new(window)
-    t:SetPos(x, y)
-    t:SetSize(w, h)
-    t.font = FONT
-    t.content = content
-    t.colour = Vector4.new(1, 1, 1, 1)
-    t.isShadowed = true
-    t:AlignTo(ui.AlignMode.TOPLEFT, ui.AlignMode.CENTRE)
-    return t
-end
-
-local function addButton(label, x, y, w, h, onPress)
-    local b = ui.Button.new(window)
-    b:SetPos(x, y)
-    b:SetSize(w, h)
-    b.label = label
-    b.stylesheetID = id.StyleSheet.BUTTON_DEFAULT
-    b:Subscribe(ui.Hook.ONBUTTONPRESSED, onPress)
-    return b
-end
-
 -- Scans and redraws the list.
 local function showList()
     clearRows()
@@ -107,12 +88,14 @@ local function showList()
         .. (#found > MAX_ROWS and (" (showing " .. MAX_ROWS .. ")") or "")
     for i = 1, math.min(#found, MAX_ROWS) do
         local npc = found[i]
-        local y = 96 + (i - 1) * ROW_H
+        local y = LIST_TOP + (i - 1) * ROW_H
         -- Name and config on the first line of a row, id and animation set on the second.
-        rows[#rows + 1] = addText(10, y, 300, 16, npc.name .. "  " .. npc.configName)
-        rows[#rows + 1] = addText(10, y + 15, 300, 16,
-            "id " .. npc.id .. "   anim set " .. npc.bas .. "   " .. npc.distance .. " tiles")
-        rows[#rows + 1] = addButton("View", 520, y + 2, 70, 28, function()
+        rows[#rows + 1] = Kit.text(content, 10, y, WIDTH - 130, 16, npc.name .. "  " .. npc.configName, WHITE,
+            ui.AlignMode.TOPLEFT)
+        rows[#rows + 1] = Kit.text(content, 10, y + 15, WIDTH - 130, 16,
+            "id " .. npc.id .. "   anim set " .. npc.bas .. "   " .. npc.distance .. " tiles", WHITE,
+            ui.AlignMode.TOPLEFT)
+        rows[#rows + 1] = Kit.button(content, "View", WIDTH - 110, y + 1, 100, 30, function()
             local line = "npc = \"" .. npc.configName .. "\"   -- id " .. npc.id .. ", anim set " .. npc.bas
             log("nearby:", npc.name, line)
             OutputWindow.add(npc.configName, line)
@@ -126,23 +109,14 @@ function Nearby.show()
         return
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window = ui.GroupBox.new(gameWindow)
-    window.stylesheetID = id.StyleSheet.DEFAULT
-    window:SetHeaderLayout(0, 0, 0, 0, 0)
-    window:SetSize(WIDTH, 96 + MAX_ROWS * ROW_H + 10)
-    window:SetPos(0, 0, 0.35, 0.05)
+    window, content = Kit.window(gameWindow, "Nearby NPCs", WIDTH, LIST_TOP + MAX_ROWS * ROW_H + 10 + Kit.titleBarHeight(),
+        function() Nearby.hide() end, 0.35, 0.05)
 
-    addText(10, 8, 120, 26, "Name filter:")
-    filterField = ui.InputField.new(window)
-    filterField:SetPos(120, 8)
-    filterField:SetSize(180, 26)
-    local sheet = id.StyleSheet.INPUT_DEFAULT
-    if sheet ~= nil then
-        filterField.stylesheetID = sheet
-    end
-    filterField:Setup(ui.TextContentVisibilityMode.VISIBLE, ui.InputFieldFilterMode.NONE, 30)
-    addButton("Scan", 310, 6, 80, 30, showList)
-    statusText = addText(10, 50, 380, 30, "Press Scan to list the NPCs around you.")
+    Kit.text(content, 10, 4, 100, 26, "Name filter:", WHITE, ui.AlignMode.TOPLEFT)
+    filterField = Kit.inputField(content, 115, 4, 250, 26, 30, false)
+    Kit.button(content, "Scan", WIDTH - 130, 2, 120, 30, showList, "positive")
+    statusText = Kit.text(content, 10, 42, WIDTH - 20, 24, "Press Scan to list the NPCs around you.", WHITE,
+        ui.AlignMode.TOPLEFT)
 end
 
 function Nearby.hide()
@@ -151,6 +125,7 @@ function Nearby.hide()
         pcall(function() window:Destroy() end)
     end
     window = nil
+    content = nil
     filterField = nil
     statusText = nil
 end
