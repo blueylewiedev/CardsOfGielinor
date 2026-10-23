@@ -38,7 +38,7 @@ Cards.odds = {
     finish = { normal = 44, reverse = 10, holo = 6 },
 }
 
--- The card list.
+-- The card format (the cards are written in the files listed in deck/index.lua).
 --   id     : unique, never change it once players own the card (it is what gets saved).
 --            For NPC cards it is also the NPC to show: the id uppercased is looked up as
 --            id.NPC.<ID>, so "king_dragon" shows id.NPC.KING_DRAGON. Use the NPC's config
@@ -64,39 +64,8 @@ Cards.odds = {
 --                     ty (height looked at) and tx (left/right). Leave out to use the
 --                     defaults in cardview.lua. Find good values with the buttons in the
 --                     preview window, then paste the line it logs.
--- (a Man card with a tag, as an example:)
---   { id = "man", ..., tags = { skills = { "thieving" } } },
-Cards.list = {
-    -- Common
-    { id = "chicken",    name = "Chicken",     rarity = "common",    desc = "Forever crossing roads for no reason.", art = { body = true } },
-    { id = "POF_ANIMAL_COW_COW",        name = "Cow",         rarity = "common",    desc = "Content to stand in a field all day.", art = { npc = "POF_ANIMAL_COW_COW" } },
-    { id = "sheep",      name = "Sheep",       rarity = "common",    desc = "Gives wool and little else." },
-    { id = "GOBLIN_UNARMED_MELEE_1",     name = "Goblin",      rarity = "common",    desc = "Squabbles over the colour of its armour." },
-    { id = "LUMBRIDGE_GIANTRAT_BROWN",  name = "Giant rat",   rarity = "common",    desc = "Larger than a rat should be.", art = { body = true } },
-    { id = "LUMBRIDGE_MARKET_MAN1",        name = "Man",         rarity = "common",    desc = "Just a man, going about his day.", tags = { skills = { "thieving" } } },
-    { id = "dog_stray",  name = "Stray dog",   rarity = "common",    desc = "Follows anyone who might have snacks." },
-
-    -- Uncommon
-    { id = "hans",       name = "Hans",        rarity = "uncommon",  desc = "Has walked Lumbridge Castle forever." },
-    { id = "guide",      name = "Lumbridge Guide", rarity = "uncommon", desc = "Happy to help new adventurers.", art = { npc = "LUMBRIDGE_GUIDE" } },
-    { id = "cook",       name = "Cook",        rarity = "uncommon",  desc = "Always one ingredient short of a cake." },
-    { id = "bob",        name = "Bob",         rarity = "uncommon",  desc = "Sells axes and strong opinions." },
-    { id = "fred",       name = "Fred the Farmer", rarity = "uncommon", desc = "Very fond of his sheep.", art = { npc = "FRED_THE_FARMER" } },
-    { id = "aereck",     name = "Father Aereck", rarity = "uncommon", desc = "Keeps the chapel quiet and tidy.", art = { npc = "FATHER_AERECK" } },
-
-    -- Rare
-    { id = "horacio",    name = "Duke Horacio", rarity = "rare",     desc = "Rules Lumbridge from the castle." },
-    { id = "doric",      name = "Doric",       rarity = "rare",      desc = "A dwarf serious about his anvil." },
-    { id = "gertrude",   name = "Gertrude",    rarity = "rare",      desc = "Lives with a great many cats." },
-    { id = "aggie",      name = "Aggie",       rarity = "rare",      desc = "Mixes dyes and asks for coins." },
-
-    -- Epic
-    { id = "wise_old_man", name = "Wise Old Man", rarity = "epic",   desc = "Claims to know a great deal about everything." },
-    { id = "elvarg",     name = "Elvarg",      rarity = "epic",      desc = "A dragon who prefers to be left alone." },
-
-    -- Legendary
-    { id = "king_dragon", name = "King Black Dragon", rarity = "legendary", desc = "Three heads, all of them hungry." },
-}
+-- The cards themselves are in the deck folder (see below and deck/index.lua).
+Cards.list = {}
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
@@ -128,11 +97,11 @@ Cards.tagWords = {
                 "divination", "invention", "archaeology", "necromancy" },
 }
 
--- More cards, kept in their own files in the deck folder so cards.lua stays short (the layout is
--- described in deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the
--- defaults (such as the region) are added to every card in the file. A card is added to the game
--- once its `art.npc` is filled in; until then it is a draft, kept in Cards.drafts and left out
--- of packs and totals. deck/retag.lua adds tags to the cards written above.
+-- The cards are written in their own files in the deck folder (the layout is described in
+-- deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the defaults (such
+-- as the region) are added to every card in the file. A card whose `art = { npc = "" }` is empty
+-- is a draft: it is kept in Cards.drafts and left out of packs and totals until its NPC name is
+-- filled in.
 Cards.sets = require("deck/index")
 Cards.drafts = {}
 
@@ -159,27 +128,28 @@ for _, setName in ipairs(Cards.sets) do
         if set.defaults ~= nil then
             addTags(card, set.defaults)
         end
-        local npc = card.art and card.art.npc
-        if type(npc) == "string" and npc ~= "" then
-            Cards.list[#Cards.list + 1] = card
-        else
+        if card.art ~= nil and card.art.npc == "" then
             Cards.drafts[#Cards.drafts + 1] = card
+        else
+            Cards.list[#Cards.list + 1] = card
         end
     end
 end
 
+-- Lowest rarity first, keeping the order of the files within a rarity, so the collection and the
+-- card preview go from common to legendary.
 do
-    local listed = {}
-    for _, card in ipairs(Cards.list) do
-        listed[card.id] = card
+    local position = {}
+    for index, card in ipairs(Cards.list) do
+        position[card] = index
     end
-    for cardId, tags in pairs(require("deck/retag")) do
-        if listed[cardId] ~= nil then
-            addTags(listed[cardId], tags)
-        else
-            log("deck: no card with id " .. cardId .. " to add tags to (renamed?)")
+    table.sort(Cards.list, function(a, b)
+        local rankA, rankB = Cards.rarityRank[a.rarity] or 0, Cards.rarityRank[b.rarity] or 0
+        if rankA ~= rankB then
+            return rankA < rankB
         end
-    end
+        return position[a] < position[b]
+    end)
 end
 
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
