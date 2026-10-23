@@ -1,0 +1,39 @@
+-- deck/npcs/asgarnia.lua
+-- NPC cards for Falador, Port Sarim, Taverley, Burthorpe and the rest of Asgarnia. Every card in this file is tagged `regions = { "asgarnia" }`
+-- automatically (see `defaults`), so each card only lists its own town, skills and category.
+--
+-- Only NPCs that belong to this region go here. NPCs found all over the game (guards, shop
+-- keepers, animals) go in deck/npcs/general.lua instead, so a card for them counts for all of
+-- them and region packs do not draw them.
+--
+-- Every card below is a draft: its `art = { npc = "" }` is empty, because the NPC's config
+-- name has to be found in the game (stand next to the NPC and use Nearby NPCs in the dev
+-- tools). Until `npc` has a name in it, the card is left out of packs, the collection and the
+-- totals, so an unfinished card never shows up as a blank card. Fill in the name, reload the
+-- plugin, and the card goes live. Add `body = true` to `art` for an NPC with no chathead, and
+-- tune the camera in the preview as usual.
+--
+-- The `id` is what gets saved, so do not change it once the card is live. It does not have to
+-- match the NPC: the NPC comes from `art.npc`.
+--
+-- Tag words must be on the lists in Cards.tagWords (cards.lua), or the plugin refuses to load
+-- and tells you which card has the typo.
+
+local Set = {}
+
+-- Tags every card in this file gets.
+Set.defaults = { regions = { "asgarnia" } }
+
+Set.cards = {
+    { id = "sir_amik_varze", name = "Sir Amik Varze", rarity = "rare",     desc = "Leads the White Knights proudly.",      art = { npc = "" }, tags = { towns = { "falador" }, category = { "knight" } } },
+    { id = "sir_vyvin",    name = "Sir Vyvin",        rarity = "rare",     desc = "Guards the castle and a secret.",       art = { npc = "" }, tags = { towns = { "falador" }, category = { "knight" } } },
+    { id = "sir_tiffy",    name = "Sir Tiffy Cashien", rarity = "uncommon", desc = "Recruits new knights in the park.",     art = { npc = "" }, tags = { towns = { "falador" }, category = { "knight" } } },
+    { id = "wayne",        name = "Wayne",            rarity = "uncommon", desc = "Chainmail for every budget.",           art = { npc = "" }, tags = { towns = { "falador" }, skills = { "smithing" }, category = { "shopkeeper" } } },
+    { id = "flynn",        name = "Flynn",            rarity = "uncommon", desc = "Sells maces with a smile.",             art = { npc = "" }, tags = { towns = { "falador" }, category = { "shopkeeper" } } },
+    { id = "cassie",       name = "Cassie",           rarity = "uncommon", desc = "Sells shields to the knights.",         art = { npc = "" }, tags = { towns = { "falador" }, category = { "shopkeeper" } } },
+    { id = "herquin",      name = "Herquin",          rarity = "uncommon", desc = "Buys and sells gems.",                  art = { npc = "" }, tags = { towns = { "falador" }, category = { "shopkeeper" } } },
+    { id = "hairdresser",  name = "Hairdresser",      rarity = "common",   desc = "Offers a fresh new look.",              art = { npc = "" }, tags = { towns = { "falador" }, category = { "humanoid" } } },
+    { id = "white_knight", name = "White Knight",     rarity = "common",   desc = "Sworn to defend Falador.",              art = { npc = "" }, tags = { towns = { "falador" }, category = { "knight" } } },
+}
+
+return Set

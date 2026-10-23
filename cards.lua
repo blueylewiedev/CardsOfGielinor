@@ -128,15 +128,37 @@ Cards.tagWords = {
                 "divination", "invention", "archaeology", "necromancy" },
 }
 
--- Card sets: more cards, kept in their own files in the sets folder so cards.lua stays short.
--- A set file returns { cards = { ... }, retag = { [cardId] = tags } }. A card in a set is added to
--- the game once its `art.npc` is filled in; until then it is a draft, kept in Cards.drafts and
--- left out of packs and totals. `retag` adds tags to cards defined above.
-Cards.sets = { "sets/misthalin_asgarnia_kandarin" }
+-- More cards, kept in their own files in the deck folder so cards.lua stays short (the layout is
+-- described in deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the
+-- defaults (such as the region) are added to every card in the file. A card is added to the game
+-- once its `art.npc` is filled in; until then it is a draft, kept in Cards.drafts and left out
+-- of packs and totals. deck/retag.lua adds tags to the cards written above.
+Cards.sets = require("deck/index")
 Cards.drafts = {}
+
+-- Adds tags to a card without removing the ones it has: { kind = { words } } merges word by word.
+local function addTags(card, tags)
+    card.tags = card.tags or {}
+    for tagKind, words in pairs(tags) do
+        local have = card.tags[tagKind] or {}
+        local seen = {}
+        for _, word in ipairs(have) do seen[word] = true end
+        for _, word in ipairs(words) do
+            if not seen[word] then
+                have[#have + 1] = word
+                seen[word] = true
+            end
+        end
+        card.tags[tagKind] = have
+    end
+end
+
 for _, setName in ipairs(Cards.sets) do
     local set = require(setName)
     for _, card in ipairs(set.cards or {}) do
+        if set.defaults ~= nil then
+            addTags(card, set.defaults)
+        end
         local npc = card.art and card.art.npc
         if type(npc) == "string" and npc ~= "" then
             Cards.list[#Cards.list + 1] = card
@@ -144,28 +166,18 @@ for _, setName in ipairs(Cards.sets) do
             Cards.drafts[#Cards.drafts + 1] = card
         end
     end
+end
+
+do
     local listed = {}
     for _, card in ipairs(Cards.list) do
         listed[card.id] = card
     end
-    for cardId, tags in pairs(set.retag or {}) do
-        local card = listed[cardId]
-        if card ~= nil then
-            card.tags = card.tags or {}
-            for tagKind, words in pairs(tags) do
-                local have = card.tags[tagKind] or {}
-                local seen = {}
-                for _, word in ipairs(have) do seen[word] = true end
-                for _, word in ipairs(words) do
-                    if not seen[word] then
-                        have[#have + 1] = word
-                        seen[word] = true
-                    end
-                end
-                card.tags[tagKind] = have
-            end
+    for cardId, tags in pairs(require("deck/retag")) do
+        if listed[cardId] ~= nil then
+            addTags(listed[cardId], tags)
         else
-            log("sets: no card with id " .. cardId .. " to add tags to (renamed?)")
+            log("deck: no card with id " .. cardId .. " to add tags to (renamed?)")
         end
     end
 end
