@@ -1,11 +1,11 @@
 -- tuning.lua
 -- Developer-only: camera settings saved from the preview window, so tuning a card survives a
--- reload and does not have to be typed into cards.lua straight away.
+-- reload and does not have to be typed into core/cards.lua straight away.
 --
 -- Saved settings are stored in PersistentDB and applied on top of a card's own `art` entry
--- (see addArt in cardview.lua). They only apply while `Tuning.enabled` is true, which main.lua
+-- (see addArt in ui/cardview.lua). They only apply while `Tuning.enabled` is true, which main.lua
 -- sets from DEBUG, so a released plugin ignores anything saved here.
--- Once a card's values are in cards.lua, use Reset in the preview to remove its saved entry.
+-- Once a card's values are in core/cards.lua, use Reset in the preview to remove its saved entry.
 
 local Tuning = {}
 

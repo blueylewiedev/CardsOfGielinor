@@ -7,9 +7,9 @@
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
 -- toggles), and a few debug extras at login and when XP is gained.
 
-local Cards = require("cards")
-local Storage = require("storage")
-local CardView = require("cardview")
+local Cards = require("core/cards")
+local Storage = require("core/storage")
+local CardView = require("ui/cardview")
 local Preview = require("dev/preview")
 local NpcBrowser = require("dev/npcbrowser")
 local Nearby = require("dev/nearby")

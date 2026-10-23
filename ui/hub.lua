@@ -1,4 +1,4 @@
--- hub.lua
+-- ui/hub.lua
 -- The plugin's page behind its ribbon icon (it needs the "hasRibbonIcon" flag in plugin.json).
 -- It appears inside the client's Plugins window and is the way to get the main window back
 -- after closing it. It has buttons for the main window, the collection and the statistics.

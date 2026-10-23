@@ -16,7 +16,7 @@
 -- The `id` is what gets saved, so do not change it once the card is live. It does not have to
 -- match the NPC: the NPC comes from `art.npc`.
 --
--- Tag words must be on the lists in Cards.tagWords (cards.lua), or the plugin refuses to load
+-- Tag words must be on the lists in Cards.tagWords (core/cards.lua), or the plugin refuses to load
 -- and tells you which card has the typo.
 
 local Set = {}

@@ -1,7 +1,7 @@
--- earning.lua
+-- core/earning.lua
 -- Turns game activity into credits. Currently: XP gained in any skill.
 
-local Storage = require("storage")
+local Storage = require("core/storage")
 
 local Earning = {}
 

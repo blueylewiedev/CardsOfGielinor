@@ -1,4 +1,4 @@
--- cards.lua
+-- core/cards.lua
 -- Static card data: rarity tiers, variants, pull odds and the card list.
 -- Nothing in this file touches the game or saves anything, so it is safe to edit freely.
 
@@ -62,7 +62,7 @@ Cards.odds = {
 --                     no chathead (they show an empty box; the NPC browser helps find them)
 --              cam  : camera settings, any of yaw, pitch (radians), dist, fov (degrees),
 --                     ty (height looked at) and tx (left/right). Leave out to use the
---                     defaults in cardview.lua. Find good values with the buttons in the
+--                     defaults in ui/cardview.lua. Find good values with the buttons in the
 --                     preview window, then paste the line it logs.
 -- The cards themselves are in the deck folder (see below and deck/index.lua).
 Cards.list = {}

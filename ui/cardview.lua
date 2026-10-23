@@ -1,4 +1,4 @@
--- cardview.lua
+-- ui/cardview.lua
 -- Draws a card from its data using live UI components (no image files needed).
 --
 -- Layout (all sizes in interface units), 160 x 224. With a frame image (the normal case):
@@ -6,8 +6,8 @@
 --   rarity and description drawn over the frame's panels. Without one (the image is missing)
 --   a plain rectangle layout is used instead.
 
-local Cards = require("cards")
-local Settings = require("settings")
+local Cards = require("core/cards")
+local Settings = require("core/settings")
 
 local CardView = {}
 

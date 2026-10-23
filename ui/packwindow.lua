@@ -1,4 +1,4 @@
--- packwindow.lua
+-- ui/packwindow.lua
 -- The window for choosing a difficulty, buying packs and revealing the cards.
 --
 -- It has four screens, and only one is shown at a time:
@@ -8,16 +8,16 @@
 --   reveal    : the pulled cards, shown one at a time with a Next button
 --
 -- The reveal (see "The pack opening" below) is animated: a sealed pack, then each card face
--- down and flipped over one at a time. It only shows what packs.lua already rolled.
+-- down and flipped over one at a time. It only shows what core/packs.lua already rolled.
 
-local Cards = require("cards")
-local Storage = require("storage")
-local Packs = require("packs")
-local CardView = require("cardview")
-local Viewer = require("viewer")
-local Kit = require("kit")
-local Stats = require("stats")
-local Settings = require("settings")
+local Cards = require("core/cards")
+local Storage = require("core/storage")
+local Packs = require("core/packs")
+local CardView = require("ui/cardview")
+local Viewer = require("ui/viewer")
+local Kit = require("ui/kit")
+local Stats = require("ui/stats")
+local Settings = require("core/settings")
 
 local PackWindow = {}
 
@@ -59,7 +59,7 @@ local widgets = {}   -- named pieces that need updating later
 local current = nil  -- name of the screen being shown
 local reveal = { results = nil, index = 0, view = nil, parts = {}, pips = {}, stage = nil, anim = nil, clock = 0 }
 
--- Text and buttons come from kit.lua, which uses PrettyUI when it is available.
+-- Text and buttons come from ui/kit.lua, which uses PrettyUI when it is available.
 local makeText = Kit.text
 local makeButton = Kit.button
 

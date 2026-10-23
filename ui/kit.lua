@@ -1,10 +1,10 @@
--- kit.lua
+-- ui/kit.lua
 -- Small wrapper that builds the plugin's plain controls (text, buttons, the window frame)
 -- with PrettyUI when it is installed, and with the built-in ui.* components when it is not.
 --
 -- Everything else in the plugin calls these functions instead of ui.Text.new / ui.Button.new,
 -- so the look of the whole plugin can be changed in this one file. The cards themselves are
--- not built here: they are custom (see cardview.lua).
+-- not built here: they are custom (see ui/cardview.lua).
 --
 -- PrettyUI is declared as a required dependency in plugin.json, so it should always be there.
 -- The fallbacks keep the plugin usable if something goes wrong while it is being set up.
