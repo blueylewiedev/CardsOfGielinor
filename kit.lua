@@ -35,6 +35,7 @@ local function plainText(parent, x, y, w, h, content, colour)
     return text
 end
 
+-- A button built from the client's own components, at a fixed position.
 local function plainButton(parent, label, x, y, w, h, onPress)
     local button = ui.Button.new(parent)
     button:SetPos(x, y)
@@ -55,6 +56,7 @@ local prettyButtons = setmetatable({}, { __mode = "k" })
 -- PrettyUI takes colours as one packed number, 0xRRGGBBAA (each part 0-255), where the rest of
 -- the plugin uses a Vector4 with each part 0-1. This converts one to the other.
 local function packColour(v)
+    -- Turns a 0-1 colour part into a whole number from 0 to 255.
     local function byte(part)
         return math.max(0, math.min(255, math.floor(part * 255 + 0.5)))
     end

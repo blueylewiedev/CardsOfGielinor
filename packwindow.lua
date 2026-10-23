@@ -70,6 +70,8 @@ local function setText(widget, content)
     end
 end
 
+-- Shows one screen (nosession, setup, home or reveal), hides the others and resizes the window
+-- to fit it.
 local function showScreen(name)
     current = name
     for screenName, layer in pairs(screens) do
@@ -121,10 +123,12 @@ local function image(name)
     return resource
 end
 
+-- Turns a 0xRRGGBBAA colour number into a Vector4 (parts 0-1), with a different alpha.
 local function toColour(hex, alpha)
     return Vector4.new(((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255, alpha)
 end
 
+-- Left edge of the card on the reveal screen, centred in the window.
 local function revealCardX()
     return (REVEAL_MID - CardView.WIDTH) // 2
 end
@@ -141,6 +145,7 @@ local function clearParts()
     reveal.pack = nil
 end
 
+-- Removes the row of small markers (one per card in the pack) under the card.
 local function clearPips()
     for _, pip in ipairs(reveal.pips) do
         pcall(function() pip:Destroy() end)
@@ -177,6 +182,7 @@ local function drawPips(flipped)
     end
 end
 
+-- Remembers a piece of the reveal so clearParts can remove it later. Returns the piece.
 local function track(part)
     reveal.parts[#reveal.parts + 1] = part
     return part
@@ -188,6 +194,7 @@ local function clickable(component)
     pcall(function() component:Subscribe(ui.Hook.ONCLICK, function() PackWindow.advance() end) end)
 end
 
+-- First stage of a pack: the sealed pack. If the pack image is missing this stage is skipped.
 local function showSealed()
     showScreen("reveal")
     clearParts()
@@ -407,6 +414,7 @@ end
 
 Event.Draw.Subscribe("cardcollector_reveal", onDraw)
 
+-- The Open pack button: buys and rolls a pack, saves it, then starts the reveal.
 local function onOpenPack()
     local state = api.getState()
     if state == nil then
@@ -430,10 +438,12 @@ local function onOpenPack()
     end
 end
 
+-- The reveal screen's main button (Tear open, Flip card, Next or Done).
 local function onNext()
     PackWindow.advance()
 end
 
+-- Builds all four screens once, when the window is created. Only one is visible at a time.
 local function buildScreens()
     -- Each screen is a Layer that fills the window.
     for _, name in ipairs({ "nosession", "setup", "home", "reveal" }) do
@@ -495,7 +505,7 @@ local function buildScreens()
     widgets.nextButton = makeButton(screens.reveal, "Next", 10, REVEAL_TOP + 86, rw, 32, onNext)
 end
 
--- Creates the window. `newApi` supplies getState, saveNow and debug (see above).
+-- Creates the window. `newApi` supplies getState, saveNow, openSettings and extraButtons (see above).
 function PackWindow.show(newApi)
     if window ~= nil then
         return
@@ -563,6 +573,7 @@ function PackWindow.currentScreen()
     return current
 end
 
+-- Closes the window and everything that belongs to it (collection, statistics, any reveal).
 function PackWindow.hide()
     Viewer.close()
     Stats.hide()

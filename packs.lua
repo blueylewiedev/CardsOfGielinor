@@ -28,10 +28,21 @@ function Packs.tierFor(state)
     return Packs.tierById[state.difficulty]
 end
 
+-- The pack type with this id (default "standard"), or nil if there is none.
+function Packs.typeById(packTypeId)
+    return Cards.packTypes[packTypeId or "standard"]
+end
+
 -- What a pack costs this character in credits, or nil if they have not chosen a tier.
-function Packs.priceFor(state)
+-- `packTypeId` is optional (default "standard"): themed packs multiply the tier's price by
+-- their `priceFactor`, rounded up.
+function Packs.priceFor(state, packTypeId)
     local tier = Packs.tierFor(state)
-    return tier and tier.price or nil
+    local packType = Packs.typeById(packTypeId)
+    if tier == nil or packType == nil then
+        return nil
+    end
+    return math.ceil(tier.price * (packType.priceFactor or 1))
 end
 
 -- Picks a key from a { key = weight } table, in proportion to the weights. Keys are
@@ -55,30 +66,48 @@ local function pickWeighted(weights)
     return keys[#keys]
 end
 
--- Cards grouped by rarity, built once.
-local cardsByRarity = {}
-for _, card in ipairs(Cards.list) do
-    local list = cardsByRarity[card.rarity]
-    if list == nil then
-        list = {}
-        cardsByRarity[card.rarity] = list
+-- The cards a pack type can give, grouped by rarity: { rarity = { card, ... } }. Honours the
+-- pack's filter and minimum rarity. If nothing is left at or above the minimum rarity, the
+-- minimum is dropped rather than leaving the pack empty. Returns the groups and how many
+-- cards there are in all (0 means the pack cannot be opened).
+function Packs.poolFor(packType)
+    local function build(minRank)
+        local groups, count = {}, 0
+        for _, card in ipairs(Cards.list) do
+            if Cards.rarityRank[card.rarity] >= minRank and Cards.matches(card, packType.filter) then
+                local list = groups[card.rarity]
+                if list == nil then
+                    list = {}
+                    groups[card.rarity] = list
+                end
+                list[#list + 1] = card
+                count = count + 1
+            end
+        end
+        return groups, count
     end
-    list[#list + 1] = card
+    local minRank = packType.minRarity and Cards.rarityRank[packType.minRarity] or 1
+    local groups, count = build(minRank)
+    if count == 0 and minRank > 1 then
+        groups, count = build(1)
+    end
+    return groups, count
 end
 
 -- Rolls one card: its rarity, then which card of that rarity, then its finish. The rolls
--- are separate, so they stack. Returns
--- { card, finish, key } where key is the variant key used for saving.
-function Packs.rollCard()
+-- are separate, so they stack. `pool` comes from Packs.poolFor (default: the standard pack).
+-- Returns { card, finish, key } where key is the variant key used for saving.
+function Packs.rollCard(pool)
+    pool = pool or Packs.poolFor(Cards.packTypes.standard)
     -- Only rarities that actually have cards can be rolled.
     local rarityWeights = {}
     for rarity, rarityData in pairs(Cards.rarities) do
-        if cardsByRarity[rarity] ~= nil then
+        if pool[rarity] ~= nil then
             rarityWeights[rarity] = rarityData.weight
         end
     end
     local rarity = pickWeighted(rarityWeights)
-    local list = cardsByRarity[rarity]
+    local list = pool[rarity]
     local card = list[math.random(#list)]
 
     local finish = pickWeighted(Cards.odds.finish)
@@ -94,18 +123,48 @@ end
 --   owned                   : how many of this variant the player now has
 -- If the pack could not be bought, returns nil and a reason ("no difficulty" or
 -- "not enough credits").
-function Packs.open(state)
-    local price = Packs.priceFor(state)
+function Packs.open(state, packTypeId)
+    local packType = Packs.typeById(packTypeId)
+    if packType == nil then
+        return nil, "unknown pack"
+    end
+    local price = Packs.priceFor(state, packTypeId)
     if price == nil then
         return nil, "no difficulty"
+    end
+    local pool, poolSize = Packs.poolFor(packType)
+    if poolSize == 0 then
+        return nil, "no cards"
     end
     if not Storage.spendCredits(state, price) then
         return nil, "not enough credits"
     end
 
+    local size = packType.size or Packs.PACK_SIZE
+    local rolled = {}
+    for i = 1, size do
+        rolled[i] = Packs.rollCard(pool)
+    end
+
+    -- A pack that guarantees holos turns random non-holo cards into holos until it has enough.
+    local wanted = math.min(packType.guaranteedHolos or 0, size)
+    local holos = 0
+    for _, result in ipairs(rolled) do
+        if result.finish == "holo" then holos = holos + 1 end
+    end
+    while holos < wanted do
+        local index = math.random(size)
+        local result = rolled[index]
+        if result.finish ~= "holo" then
+            result.finish = "holo"
+            result.key = Cards.variantKey(result.card.id, "holo")
+            holos = holos + 1
+        end
+    end
+
     local results = {}
-    for i = 1, Packs.PACK_SIZE do
-        local result = Packs.rollCard()
+    for i = 1, size do
+        local result = rolled[i]
         result.isNewCard = not Storage.ownsCard(state, result.card.id)
         result.isNewVariant = Storage.countOwned(state, result.key) == 0
         Storage.addCard(state, result.key)

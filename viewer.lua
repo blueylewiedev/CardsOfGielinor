@@ -122,6 +122,7 @@ local BARS = {
 local BARS_TOP = 200
 local BAR_STEP = 44
 
+-- Creates the four bars (text, dark back and coloured fill) in the side panel.
 local function buildBars()
     for i, bar in ipairs(BARS) do
         local y = BARS_TOP + (i - 1) * BAR_STEP
@@ -141,6 +142,7 @@ local function buildBars()
     end
 end
 
+-- Sets each bar's text and fill width from how much of the collection the player has.
 local function updateBars(state)
     local progress = Storage.progress(state)
     for _, bar in ipairs(BARS) do
@@ -152,6 +154,7 @@ local function updateBars(state)
     end
 end
 
+-- Removes the bars from the screen.
 local function destroyBars()
     for _, bar in ipairs(BARS) do
         for _, part in ipairs({ bar.text, bar.back, bar.fill }) do
@@ -161,6 +164,7 @@ local function destroyBars()
     end
 end
 
+-- Removes the cards and text of the current page, ready to draw another.
 local function clearPage()
     for _, part in ipairs(parts) do
         part:Destroy()
@@ -186,6 +190,7 @@ local function variantLabel(entry)
     return table.concat(names, " "), colour
 end
 
+-- Draws the current page: the cards, their variant and count lines, the bars and the page text.
 local function showPage()
     local state = api.getState()
     if state == nil then
@@ -287,6 +292,7 @@ function Viewer.open(newApi)
     showPage()
 end
 
+-- Closes the window and forgets what was drawn.
 function Viewer.close()
     destroyBars()
     if window ~= nil then
@@ -299,6 +305,7 @@ function Viewer.close()
     shown = 0
 end
 
+-- True while the window is open.
 function Viewer.isOpen()
     return window ~= nil
 end
