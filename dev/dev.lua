@@ -65,6 +65,9 @@ end
 
 -- Switches the saved camera tuning on and opens the preview window.
 function Dev.start()
+    if #Cards.drafts > 0 then
+        log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the sets folder)")
+    end
     Tuning.enabled = true                  -- apply the camera settings saved from the preview
     CardView.artOverride = Tuning.get
     local ok, err = pcall(Preview.show)

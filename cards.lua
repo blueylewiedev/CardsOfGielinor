@@ -114,6 +114,62 @@ Cards.packTypes = {
     standard = { id = "standard", name = "Standard pack", priceFactor = 1 },
 }
 
+-- The words allowed for the tag kinds that come from a closed list. A card with any other word
+-- under one of these kinds stops the plugin loading, with the card named in the error, so a typo
+-- never silently drops a card out of a themed pack. Add a word here before using it. Tag kinds
+-- that are not listed (such as `category`) are not checked.
+Cards.tagWords = {
+    regions = { "misthalin", "asgarnia", "kandarin" },
+    towns   = { "lumbridge", "falador", "ardougne", "draynor", "varrock" },
+    skills  = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
+                "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
+                "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
+                "runecrafting", "hunter", "construction", "summoning", "dungeoneering",
+                "divination", "invention", "archaeology", "necromancy" },
+}
+
+-- Card sets: more cards, kept in their own files in the sets folder so cards.lua stays short.
+-- A set file returns { cards = { ... }, retag = { [cardId] = tags } }. A card in a set is added to
+-- the game once its `art.npc` is filled in; until then it is a draft, kept in Cards.drafts and
+-- left out of packs and totals. `retag` adds tags to cards defined above.
+Cards.sets = { "sets/misthalin_asgarnia_kandarin" }
+Cards.drafts = {}
+for _, setName in ipairs(Cards.sets) do
+    local set = require(setName)
+    for _, card in ipairs(set.cards or {}) do
+        local npc = card.art and card.art.npc
+        if type(npc) == "string" and npc ~= "" then
+            Cards.list[#Cards.list + 1] = card
+        else
+            Cards.drafts[#Cards.drafts + 1] = card
+        end
+    end
+    local listed = {}
+    for _, card in ipairs(Cards.list) do
+        listed[card.id] = card
+    end
+    for cardId, tags in pairs(set.retag or {}) do
+        local card = listed[cardId]
+        if card ~= nil then
+            card.tags = card.tags or {}
+            for tagKind, words in pairs(tags) do
+                local have = card.tags[tagKind] or {}
+                local seen = {}
+                for _, word in ipairs(have) do seen[word] = true end
+                for _, word in ipairs(words) do
+                    if not seen[word] then
+                        have[#have + 1] = word
+                        seen[word] = true
+                    end
+                end
+                card.tags[tagKind] = have
+            end
+        else
+            log("sets: no card with id " .. cardId .. " to add tags to (renamed?)")
+        end
+    end
+end
+
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
 -- "hans|normal" or "hans|holo".
 function Cards.variantKey(cardId, finish)
@@ -207,21 +263,37 @@ end
 
 -- Lookup table by id, built once at load. Also checks the data above for mistakes, so a
 -- typo shows up immediately as an error when the plugin loads.
+-- Stops with an error naming the card if its tags are malformed or use a word that is not on
+-- Cards.tagWords.
+local function checkTags(card)
+    if card.tags == nil then
+        return
+    end
+    for tagKind, words in pairs(card.tags) do
+        assert(type(tagKind) == "string" and type(words) == "table",
+            "Tags on card " .. card.id .. " must be lists of words, e.g. skills = { \"thieving\" }")
+        local allowed = Cards.tagWords[tagKind]
+        local allowedSet = {}
+        for _, word in ipairs(allowed or {}) do allowedSet[word] = true end
+        for _, word in ipairs(words) do
+            assert(type(word) == "string", "Tag words on card " .. card.id .. " must be text")
+            assert(allowed == nil or allowedSet[word],
+                "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" (add it to Cards.tagWords?)")
+        end
+    end
+end
+-- Drafts are checked too, so a typo is found before the card goes live.
+for _, card in ipairs(Cards.drafts) do
+    checkTags(card)
+end
+
 Cards.byId = {}
 for _, card in ipairs(Cards.list) do
     assert(not string.find(card.id, "|", 1, true), "Card id cannot contain '|': " .. card.id)
     assert(Cards.rarities[card.rarity], "Unknown rarity on card " .. card.id)
     assert(Cards.byId[card.id] == nil, "Duplicate card id " .. card.id)
     assert(card.kind == nil or card.kind == "npc" or card.kind == "item", "Unknown kind on card " .. card.id)
-    if card.tags ~= nil then
-        for tagKind, words in pairs(card.tags) do
-            assert(type(tagKind) == "string" and type(words) == "table",
-                "Tags on card " .. card.id .. " must be lists of words, e.g. skills = { \"thieving\" }")
-            for _, word in ipairs(words) do
-                assert(type(word) == "string", "Tag words on card " .. card.id .. " must be text")
-            end
-        end
-    end
+    checkTags(card)
     if card.variants ~= nil then
         assert(#card.variants > 0, "variants on card " .. card.id .. " cannot be empty")
         for _, entry in ipairs(card.variants) do
