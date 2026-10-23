@@ -26,21 +26,92 @@ Set.defaults = { regions = { "misthalin" } }
 
 Set.cards = {
     -- Live cards (these are in the game)
-    { id = "hans",       name = "Hans",        rarity = "uncommon",  desc = "Has walked Lumbridge Castle forever.", tags = { towns = { "lumbridge" }, category = { "humanoid" } } },
-    { id = "guide",      name = "Lumbridge Guide", rarity = "uncommon", desc = "Happy to help new adventurers.", art = { npc = "LUMBRIDGE_GUIDE" }, tags = { towns = { "lumbridge" }, category = { "humanoid" } } },
-    { id = "cook",       name = "Cook",        rarity = "uncommon",  desc = "Always one ingredient short of a cake.", tags = { towns = { "lumbridge" }, skills = { "cooking" }, category = { "humanoid" } } },
-    { id = "bob",        name = "Bob",         rarity = "uncommon",  desc = "Sells axes and strong opinions.", tags = { towns = { "lumbridge" }, skills = { "woodcutting" }, category = { "shopkeeper" } } },
-    { id = "fred",       name = "Fred the Farmer", rarity = "uncommon", desc = "Very fond of his sheep.", art = { npc = "FRED_THE_FARMER" }, tags = { towns = { "lumbridge" }, skills = { "farming" }, category = { "humanoid" } } },
-    { id = "aereck",     name = "Father Aereck", rarity = "uncommon", desc = "Keeps the chapel quiet and tidy.", art = { npc = "FATHER_AERECK" }, tags = { towns = { "lumbridge" }, skills = { "prayer" }, category = { "humanoid" } } },
-    { id = "horacio",    name = "Duke Horacio", rarity = "rare",     desc = "Rules Lumbridge from the castle.", tags = { towns = { "lumbridge" }, category = { "royalty" } } },
-    { id = "gertrude",   name = "Gertrude",    rarity = "rare",      desc = "Lives with a great many cats.", tags = { towns = { "varrock" }, category = { "humanoid" } } },
-    { id = "aggie",      name = "Aggie",       rarity = "rare",      desc = "Mixes dyes and asks for coins.", tags = { towns = { "draynor" }, skills = { "herblore" }, category = { "humanoid" } } },
-    { id = "wise_old_man", name = "Wise Old Man", rarity = "epic",   desc = "Claims to know a great deal about everything.", tags = { towns = { "draynor" }, category = { "humanoid" } } },
+
+    {
+        id = "hans", name = "Hans", rarity = "uncommon",
+        desc = "Has walked Lumbridge Castle forever.",
+        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "guide", name = "Lumbridge Guide", rarity = "uncommon",
+        desc = "Happy to help new adventurers.",
+        art = { npc = "LUMBRIDGE_GUIDE" },
+        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "cook", name = "Cook", rarity = "uncommon",
+        desc = "Always one ingredient short of a cake.",
+        tags = { towns = { "lumbridge" }, skills = { "cooking" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "bob", name = "Bob", rarity = "uncommon",
+        desc = "Sells axes and strong opinions.",
+        tags = { towns = { "lumbridge" }, skills = { "woodcutting" }, category = { "shopkeeper" } },
+    },
+
+    {
+        id = "fred", name = "Fred the Farmer", rarity = "uncommon",
+        desc = "Very fond of his sheep.",
+        art = { npc = "FRED_THE_FARMER" },
+        tags = { towns = { "lumbridge" }, skills = { "farming" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "aereck", name = "Father Aereck", rarity = "uncommon",
+        desc = "Keeps the chapel quiet and tidy.",
+        art = { npc = "FATHER_AERECK" },
+        tags = { towns = { "lumbridge" }, skills = { "prayer" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "horacio", name = "Duke Horacio", rarity = "rare",
+        desc = "Rules Lumbridge from the castle.",
+        tags = { towns = { "lumbridge" }, category = { "royalty" } },
+    },
+
+    {
+        id = "gertrude", name = "Gertrude", rarity = "rare",
+        desc = "Lives with a great many cats.",
+        tags = { towns = { "varrock" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "aggie", name = "Aggie", rarity = "rare",
+        desc = "Mixes dyes and asks for coins.",
+        tags = { towns = { "draynor" }, skills = { "herblore" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "wise_old_man", name = "Wise Old Man", rarity = "epic",
+        desc = "Claims to know a great deal about everything.",
+        tags = { towns = { "draynor" }, category = { "humanoid" } },
+    },
 
     -- Drafts (waiting for an NPC name)
-    { id = "hatius",       name = "Hatius Cosaintus", rarity = "uncommon", desc = "Knows every story about Lumbridge.",   art = { npc = "" }, tags = { towns = { "lumbridge" }, category = { "humanoid" } } },
-    { id = "doomsayer",    name = "Doomsayer",        rarity = "uncommon", desc = "Always certain the end is near.",       art = { npc = "" }, tags = { towns = { "lumbridge" }, category = { "humanoid" } } },
-    { id = "restless_ghost", name = "Restless ghost", rarity = "rare",     desc = "Just wants its skull back.",            art = { npc = "" }, tags = { towns = { "lumbridge" }, category = { "undead" } } },
+
+    {
+        id = "hatius", name = "Hatius Cosaintus", rarity = "uncommon",
+        desc = "Knows every story about Lumbridge.",
+        art = { npc = "" },
+        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "doomsayer", name = "Doomsayer", rarity = "uncommon",
+        desc = "Always certain the end is near.",
+        art = { npc = "" },
+        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "restless_ghost", name = "Restless ghost", rarity = "rare",
+        desc = "Just wants its skull back.",
+        art = { npc = "" },
+        tags = { towns = { "lumbridge" }, category = { "undead" } },
+    },
 }
 
 return Set
