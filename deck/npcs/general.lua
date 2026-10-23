@@ -14,7 +14,6 @@ Set.cards = {
     {
         id = "chicken", name = "Chicken", rarity = "common",
         desc = "Forever crossing roads for no reason.",
-        art = { body = true },
         tags = { category = { "animal" } },
     },
 
@@ -40,7 +39,6 @@ Set.cards = {
     {
         id = "LUMBRIDGE_GIANTRAT_BROWN", name = "Giant rat", rarity = "common",
         desc = "Larger than a rat should be.",
-        art = { body = true },
         tags = { category = { "animal" } },
     },
 

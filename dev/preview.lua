@@ -24,7 +24,7 @@
 --
 -- Every press logs a line to the console and to the Output window (toggle it from the Home
 -- window) that can be pasted into the card's `art` entry in core/cards.lua, e.g.
--- `cam = { ... }`, with `body = true, ` in front for a body model. Only created when DEBUG
+-- `cam = { ... }`, with `body = false, ` in front for a head model (the body is the default). Only created when DEBUG
 -- is on in main.lua.
 
 local Kit = require("ui/kit")
@@ -54,8 +54,8 @@ local function pasteText(cam)
     if #parts == 0 then
         text = "cam = { }  -- same as the defaults"
     end
-    if cam.body then
-        text = "body = true, " .. text
+    if not cam.body then
+        text = "body = false, " .. text   -- body is the default, so only the head needs saying
     end
     if cam.anim ~= nil then
         text = "anim = " .. string.format("%.0f", cam.anim) .. ", " .. text
