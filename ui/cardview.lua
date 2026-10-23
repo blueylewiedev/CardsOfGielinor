@@ -177,6 +177,69 @@ function CardView.playAnimation(model, animId)
     return ok
 end
 
+-- Animation sequences. A card's `anim` can be a list instead of one id, e.g.
+--     anim = { 17837, { 17838, 4 }, 17839 }
+-- Each entry is a sequence id, or { id, seconds } to play it for that long. Entries without a
+-- time play for SEQUENCE_SECONDS. The list repeats. (The client gives no way to ask when an
+-- animation has finished, so the times are set by hand. A looping idle needs no time.)
+local SEQUENCE_SECONDS = 3
+local sequences = {}             -- every running sequence: { model, list, index, left }
+
+local function animationId(entry)
+    if type(entry) == "table" then
+        return entry[1]
+    end
+    return entry
+end
+
+local function animationSeconds(entry)
+    if type(entry) == "table" and type(entry[2]) == "number" and entry[2] > 0 then
+        return entry[2]
+    end
+    return SEQUENCE_SECONDS
+end
+
+-- Plays the first animation of `list` on `model` and registers it to move on when its time is up.
+local function startSequence(model, list)
+    if #list == 0 then
+        return
+    end
+    CardView.playAnimation(model, animationId(list[1]))
+    if #list > 1 then
+        sequences[#sequences + 1] = { model = model, list = list, index = 1, left = animationSeconds(list[1]) }
+    end
+end
+
+-- Runs every frame. A model that has been destroyed errors, which removes its sequence.
+local function onSequenceDraw(e)
+    local ok, dt = pcall(function() return e.timeDeltaSecs end)
+    if not ok or type(dt) ~= "number" then
+        dt = 0.016
+    end
+    local i = 1
+    while i <= #sequences do
+        local seq = sequences[i]
+        seq.left = seq.left - dt
+        local alive = true
+        if seq.left <= 0 then
+            seq.index = seq.index % #seq.list + 1
+            local entry = seq.list[seq.index]
+            seq.left = animationSeconds(entry)
+            alive = pcall(function()
+                seq.model.animID = animationId(entry)
+                seq.model:RestartAnimation(0)
+            end)
+        end
+        if alive then
+            i = i + 1
+        else
+            table.remove(sequences, i)
+        end
+    end
+end
+
+Event.Draw.Subscribe("cardcollector_sequences", onSequenceDraw)
+
 -- Shows the card's NPC inside the art box `box` = { x, y, w, h }. Returns the model and the
 -- `cam` table (the camera settings, which applyCamera can re-apply), or nil if the NPC could
 -- not be shown. If the camera cannot be set up, a plain model is shown instead (no `cam`).
@@ -188,7 +251,9 @@ local function addArt(parent, card, box, bodyOverride)
     if saved ~= nil then
         art.body = saved.body
         art.cam = saved.cam
-        art.anim = saved.anim
+        if saved.anim ~= nil then
+            art.anim = saved.anim
+        end
     end
     -- `bodyOverride` (true/false, from the preview) beats the card's own setting.
     local body = art.body
@@ -211,7 +276,11 @@ local function addArt(parent, card, box, bodyOverride)
         child:SetModel(modelType, npcID)
 
         local state = { group = group, body = body == true, anim = art.anim }
-        if art.anim ~= nil then
+        if type(art.anim) == "table" then
+            -- A sequence: the preview shows (and saves) its first animation; the card plays all.
+            state.anim = animationId(art.anim[1])
+            startSequence(child, art.anim)
+        elseif art.anim ~= nil then
             CardView.playAnimation(child, art.anim)
         end
         local defaults = CardView.CAMERA_DEFAULTS[body and "body" or "head"]

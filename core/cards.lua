@@ -61,6 +61,9 @@ Cards.odds = {
 --              body : NPC cards show the NPC's whole body model by default. `body = false`
 --                     shows its head (chathead) instead; an NPC with no chathead shows an
 --                     empty box (the NPC browser helps find them)
+--              anim : animation (sequence id) to play. A list plays several in turn and
+--                     repeats, e.g. { 17837, { 17838, 4 }, 17839 }: each entry is an id, or
+--                     { id, seconds } to play it that long (the default is 3 seconds)
 --              cam  : camera settings, any of yaw, pitch (radians), dist, fov (degrees),
 --                     ty (height looked at) and tx (left/right). Leave out to use the
 --                     defaults in ui/cardview.lua. Find good values with the buttons in the
