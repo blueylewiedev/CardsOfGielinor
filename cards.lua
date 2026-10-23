@@ -16,6 +16,13 @@ Cards.rarities = {
     legendary = { name = "Legendary", weight = 1,  colour = 0xFFC107FF, glow = 1.0 },
 }
 
+-- The rarities from lowest to highest. Used by packs that guarantee a minimum rarity.
+Cards.rarityOrder = { "common", "uncommon", "rare", "epic", "legendary" }
+Cards.rarityRank = {}
+for rank, key in ipairs(Cards.rarityOrder) do
+    Cards.rarityRank[key] = rank
+end
+
 -- Variants. Every card the player owns is one card + one finish.
 --   finish    : the shine on top. holo is over the art, reverse is over the frame.
 Cards.finishes = {
@@ -40,6 +47,15 @@ Cards.odds = {
 --   rarity : a key of Cards.rarities
 --   desc   : short flavour text. Keep it to about 40 characters: the frame's text panel
 --            shows three lines and cuts off anything longer.
+--   kind   : optional, what the card shows: "npc" (the default). Item cards will use "item".
+--   tags   : optional. Groups the card for themed packs. Each key is a kind of tag and holds
+--            a list of lower case words, for example
+--              tags = { skills = { "thieving" }, regions = { "misthalin" }, category = { "humanoid" } }
+--            Any key can be used, a pack's `filter` just has to use the same key and words.
+--   variants : optional. The different models a card can be shown with, e.g. the NPC's other
+--            config versions. The first one is the card's picture. Each entry holds the same
+--            fields as `art` (npc, body, anim, cam) plus an optional `name`. Leave it out for
+--            a card with one picture, which then just uses `art`.
 --   art    : optional. Only needed to override or tune the picture. Each entry holds:
 --              npc  : use this NPC instead of the one from the id
 --              body : true shows the NPC's body model instead of its head, for an NPC with
@@ -48,6 +64,8 @@ Cards.odds = {
 --                     ty (height looked at) and tx (left/right). Leave out to use the
 --                     defaults in cardview.lua. Find good values with the buttons in the
 --                     preview window, then paste the line it logs.
+-- (a Man card with a tag, as an example:)
+--   { id = "man", ..., tags = { skills = { "thieving" } } },
 Cards.list = {
     -- Common
     { id = "chicken",    name = "Chicken",     rarity = "common",    desc = "Forever crossing roads for no reason.", art = { body = true } },
@@ -55,7 +73,7 @@ Cards.list = {
     { id = "sheep",      name = "Sheep",       rarity = "common",    desc = "Gives wool and little else." },
     { id = "GOBLIN_UNARMED_MELEE_1",     name = "Goblin",      rarity = "common",    desc = "Squabbles over the colour of its armour." },
     { id = "LUMBRIDGE_GIANTRAT_BROWN",  name = "Giant rat",   rarity = "common",    desc = "Larger than a rat should be.", art = { body = true } },
-    { id = "LUMBRIDGE_MARKET_MAN1",        name = "Man",         rarity = "common",    desc = "Just a man, going about his day." },
+    { id = "LUMBRIDGE_MARKET_MAN1",        name = "Man",         rarity = "common",    desc = "Just a man, going about his day.", tags = { skills = { "thieving" } } },
     { id = "dog_stray",  name = "Stray dog",   rarity = "common",    desc = "Follows anyone who might have snacks." },
 
     -- Uncommon
@@ -80,6 +98,22 @@ Cards.list = {
     { id = "king_dragon", name = "King Black Dragon", rarity = "legendary", desc = "Three heads, all of them hungry." },
 }
 
+-- Pack types. The pack the player buys today is "standard". A pack type holds:
+--   id, name      : id is for code, name is what the player sees
+--   priceFactor   : multiplies the price of the player's difficulty tier (default 1)
+--   size          : cards in the pack (default Packs.PACK_SIZE)
+--   filter        : optional. Only cards matching it can be pulled. Each key is a tag kind
+--                   (or "kind"), each value a word or a list of words (any one matches). All
+--                   keys must match. Example: { skills = "thieving" } or
+--                   { category = { "weapon", "tool" } }
+--   minRarity     : optional. Only cards of this rarity or better can be pulled.
+--   guaranteedHolos : optional. At least this many holo cards in the pack.
+-- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later
+-- only needs the window; nothing in this table touches the game.
+Cards.packTypes = {
+    standard = { id = "standard", name = "Standard pack", priceFactor = 1 },
+}
+
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
 -- "hans|normal" or "hans|holo".
 function Cards.variantKey(cardId, finish)
@@ -93,10 +127,77 @@ function Cards.parseKey(key)
     return string.match(key, "^([^|]+)|([^|]+)$")
 end
 
+-- What the card shows: "npc" unless the card says otherwise.
+function Cards.kindOf(card)
+    return card.kind or "npc"
+end
+
+-- True if the card has this word under this kind of tag, e.g. Cards.hasTag(card, "skills", "thieving").
+function Cards.hasTag(card, tagKind, word)
+    local list = card.tags and card.tags[tagKind]
+    if list == nil then
+        return false
+    end
+    for _, value in ipairs(list) do
+        if value == word then
+            return true
+        end
+    end
+    return false
+end
+
+-- True if the card matches a pack filter (see Cards.packTypes). No filter matches every card.
+function Cards.matches(card, filter)
+    if filter == nil then
+        return true
+    end
+    for key, wanted in pairs(filter) do
+        local words = type(wanted) == "table" and wanted or { wanted }
+        local hit = false
+        for _, word in ipairs(words) do
+            if key == "kind" then
+                hit = hit or Cards.kindOf(card) == word
+            else
+                hit = hit or Cards.hasTag(card, key, word)
+            end
+        end
+        if not hit then
+            return false
+        end
+    end
+    return true
+end
+
+-- The pictures a card can be shown with, as a list of { name, npc, body, anim, cam }. The first
+-- is the card's own picture. A card with no `variants` has just that one.
+function Cards.getVariants(card)
+    local list = {}
+    if card.variants ~= nil then
+        for _, entry in ipairs(card.variants) do
+            local copy = { name = entry.name or card.name }
+            for field, value in pairs(entry) do
+                copy[field] = value
+            end
+            list[#list + 1] = copy
+        end
+    else
+        local art = Cards.getArt(card)
+        art.name = card.name
+        list[1] = art
+    end
+    return list
+end
+
 -- Returns a card's art settings: { npc = <config name>, body, cam }. The NPC is the card's id
--- uppercased unless the card's `art` entry names another one.
+-- uppercased unless the card's `art` entry (or its first variant) names another one.
 function Cards.getArt(card)
     local result = {}
+    local first = card.variants and card.variants[1]
+    for field, value in pairs(first or {}) do
+        if field ~= "name" then
+            result[field] = value
+        end
+    end
     for field, value in pairs(card.art or {}) do
         result[field] = value
     end
@@ -111,7 +212,27 @@ for _, card in ipairs(Cards.list) do
     assert(not string.find(card.id, "|", 1, true), "Card id cannot contain '|': " .. card.id)
     assert(Cards.rarities[card.rarity], "Unknown rarity on card " .. card.id)
     assert(Cards.byId[card.id] == nil, "Duplicate card id " .. card.id)
+    assert(card.kind == nil or card.kind == "npc" or card.kind == "item", "Unknown kind on card " .. card.id)
+    if card.tags ~= nil then
+        for tagKind, words in pairs(card.tags) do
+            assert(type(tagKind) == "string" and type(words) == "table",
+                "Tags on card " .. card.id .. " must be lists of words, e.g. skills = { \"thieving\" }")
+            for _, word in ipairs(words) do
+                assert(type(word) == "string", "Tag words on card " .. card.id .. " must be text")
+            end
+        end
+    end
+    if card.variants ~= nil then
+        assert(#card.variants > 0, "variants on card " .. card.id .. " cannot be empty")
+        for _, entry in ipairs(card.variants) do
+            assert(type(entry) == "table" and entry.npc ~= nil, "Every variant of " .. card.id .. " needs an npc")
+        end
+    end
     Cards.byId[card.id] = card
+end
+for key, packType in pairs(Cards.packTypes) do
+    assert(packType.id == key, "Pack type id must match its key: " .. key)
+    assert(packType.minRarity == nil or Cards.rarities[packType.minRarity], "Unknown minRarity on pack " .. key)
 end
 for finish in pairs(Cards.odds.finish) do
     assert(Cards.finishes[finish], "Odds mention unknown finish " .. finish)
