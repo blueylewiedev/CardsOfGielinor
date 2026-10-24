@@ -132,9 +132,9 @@ commas:
 
 | Kind | Meaning | Example |
 |------|---------|---------|
-| `towns` | where the NPC is found | `lumbridge` |
+| `locations` | where the NPC is found | `lumbridge`, `varrock sewers`, `feldip hills` |
 | `skills` | skills it is linked to | `cooking`, `prayer` |
-| `category` | what kind of character | `humanoid`, `animal`, `shopkeeper` |
+| `category` | what kind of character | `humanoid`, `beast`, `demon`, `tradeable` |
 
 The region comes from the deck file, so it is not asked for.
 
