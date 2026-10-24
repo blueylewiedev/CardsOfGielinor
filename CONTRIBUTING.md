@@ -33,8 +33,8 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
    world, then put the plugin's folder (the one containing `main.lua` and `plugin.json`) in the
    BETA folder's `dev_plugins/` directory. The simplest way is to clone the repository straight
    into `dev_plugins/` (or link the folder there).
-3. **Install PrettyUI.** Card Collector needs the PrettyUI plugin (mod.io id 6398181), which the
-   client installs for you as a dependency.
+3. **Make sure PrettyUI is installed and enabled.** Card Collector needs the PrettyUI plugin
+   (mod.io id 6398181) for its windows.
 4. **Load the plugin.** Open the developer console and run `prf` (refresh the plugin list) and
    then `prl` (reload the plugin). Run `prl` again every time you change a file.
    Syntax errors are printed to the console with the file and line number.
@@ -122,8 +122,7 @@ against it. Choose it carefully.
 Rarity is the card's chance of turning up in a pack: common, uncommon, rare, epic and legendary.
 Your choice is a **suggestion**. The maintainer decides the final rarity so the deck stays
 balanced, and will either change it or leave a comment on your pull request explaining what is
-wanted. As a rough guide, animals and everyday townspeople are common or uncommon, quest and
-shop characters are uncommon or rare, and bosses and famous characters are rare or above.
+wanted. Looking at where similar NPCs sit in the existing files is the best guide.
 
 ### Tags
 
