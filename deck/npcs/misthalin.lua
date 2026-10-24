@@ -97,27 +97,25 @@ Set.cards = {
         tags = { location = { "draynor" }, category = { "humanoid" } },
     },
 
-    -- Drafts (waiting for an NPC name)
-
-    {
-        id = "hatius", name = "Hatius Cosaintus", rarity = "uncommon",
-        desc = "Knows every story about Lumbridge.",
-        art = { npc = "" },
-        tags = { location = { "lumbridge" }, category = { "humanoid" } },
-    },
-
     {
         id = "doomsayer", name = "Doomsayer", rarity = "uncommon",
-        desc = "Always certain the end is near.",
-        art = { npc = "" },
+        desc = "We are all DOOMED!",
+        art = { npc = "CWS_DOOMSAYER", anim = 12292, cam = { yaw = 0.40, dist = 862, fov = 40, ty = 740 } },
         tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
 
     {
-        id = "restless_ghost", name = "Restless ghost", rarity = "rare",
-        desc = "Just wants its skull back.",
-        art = { npc = "" },
-        tags = { location = { "lumbridge" }, category = { "undead" } },
+        id = "wizard_ilona", name = "Wizard Ilona", rarity = "uncommon",
+        desc = "Almost sacrificed, now a dinosaur collector.",
+        art = { npc = "ARIANE1_ILONA_APPEARANCE", anim = 18911, cam = { dist = 749, fov = 35, ty = 560 } },
+        tags = { location = { "lumbridge", "dino_farm" }, skills = { "farming" }, category = { "humanoid" } },
+    },
+
+    {
+        id = "swamp_frog", name = "Swamp frog", rarity = "uncommon",
+        desc = "Can YOU lick your own eye? This little guy can!",
+        art = { npc = "SMALL_FROG", anim = 37023, cam = { yaw = -0.40, pitch = 0.30, dist = 988, fov = 20, ty = 40 } },
+        tags = { location = { "lumbridge", "lumbridge_swamp" }, category = { "animal", "monster" } },
     },
 }
 

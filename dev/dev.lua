@@ -60,7 +60,7 @@ function Dev.buttons(api, refresh)
             end
         end },
         { label = "Preview", action = Preview.toggle },
-        { label = "Card Builder", action = Builder.toggle },
+        { label = "Builder", action = Builder.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
         { label = "Output", action = OutputWindow.toggle },
@@ -74,10 +74,6 @@ function Dev.start()
     end
     Tuning.enabled = true                  -- apply the camera settings saved from the preview
     CardView.artOverride = Tuning.get
-    local ok, err = pcall(Preview.show)
-    if not ok then
-        log("preview failed:", err)
-    end
 end
 
 function Dev.shutdown()
