@@ -336,11 +336,12 @@ local CARD_W, CARD_H = math.floor(160 * PREVIEW_SCALE), math.floor(224 * PREVIEW
 -- Left column (card details), middle (preview), right (art), then the bottom strip.
 local LEFT_X, LEFT_W = 10, 470
 local MID_X, MID_W = 500, 260
-local RIGHT_X, RIGHT_W = 780, 300
-local HALF_W = 148
-local BOTTOM_Y = 560
-local WIN_W = RIGHT_X + RIGHT_W + 10
-local WIN_H = BOTTOM_Y + 215
+local RIGHT_X, RIGHT_W = 780, 316
+local HALF_W = 148                 -- the NPC / Item buttons
+local PAIR_W, PAIR_GAP = 154, 8   -- the pairs of buttons on the right (PrettyUI draws "ZOOM +" about 150 wide)
+local BOTTOM_Y = 566
+local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches the right edge
+local WIN_H = BOTTOM_Y + 236
 
 local window, content = nil, nil
 local widgets = {}          -- the parts that change after the window is built
@@ -412,6 +413,16 @@ local function refreshChecks()
             checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 28 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
                 text, ready and WHITE or GREY, ui.AlignMode.TOPLEFT)
         end
+    end
+    -- What to do with the block.
+    local steps = {
+        "Paste it into " .. tostring(Cards.sets[draft.deck] or "a deck file") .. ".lua, inside the Set.cards list.",
+        "Reload the plugin once to check that it loads.",
+        "Then commit and open a pull request with a screenshot of the card.",
+    }
+    for i, text in ipairs(steps) do
+        checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 176 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
+            text, GREY, ui.AlignMode.TOPLEFT)
     end
 end
 
@@ -518,24 +529,61 @@ local function stepAnim(change)
     setField(widgets.animField, string.format("%.0f", nextId))
 end
 
-local function styleRarityButtons()
-    for key, button in pairs(widgets.rarityButtons) do
-        Kit.setStyle(button, key == draft.rarity and "positive" or "neutral")
+-- Drop-down lists. The client's own list component is not documented well enough to rely on,
+-- so a drop-down is a button that shows the choice and, when pressed, opens a column of buttons
+-- under it. Only one is open at a time, and it closes when a choice is made.
+local openDropdown = nil     -- { owner = the button that opened it, parts = its buttons }
+
+local function closeDropdown()
+    if openDropdown ~= nil then
+        clearParts(openDropdown.parts)
+        openDropdown = nil
     end
 end
 
-local function deckLabel()
-    return "Deck: " .. tostring(Cards.sets[draft.deck] or "?")
+-- A drop-down at x, y, w wide. `choices()` returns the list of { label } to pick from,
+-- `current()` the index now chosen, and `onPick(index)` is called when one is picked.
+local function dropdown(x, y, w, choices, current, onPick)
+    local button = nil
+    local function title()
+        local list = choices()
+        return (list[current()] and list[current()].label or "?") .. "  v"
+    end
+    button = Kit.buttonAt(content, title(), x, y, w, 30, function()
+        if openDropdown ~= nil and openDropdown.owner == button then
+            closeDropdown()
+            return
+        end
+        closeDropdown()
+        local parts = {}
+        openDropdown = { owner = button, parts = parts }
+        for i, choice in ipairs(choices()) do
+            parts[#parts + 1] = Kit.buttonAt(content, choice.label, x, y + 32 * i, w, 30, function()
+                closeDropdown()
+                onPick(i)
+                Kit.setLabel(button, title())
+            end, i == current() and "positive" or "neutral")
+        end
+    end)
+    return button
 end
 
 function Builder.show()
     if window ~= nil then
         return
     end
-    widgets = { rarityButtons = {} }
+    widgets = {}
+    openDropdown = nil
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Card Builder", WIN_W, WIN_H + Kit.titleBarHeight(),
         function() Builder.hide() end, 0.15, 0.04, false, true)
+
+    -- A slightly lighter band behind sections 4 and 5, to set them apart from the rest.
+    local band = ui.Rectangle.new(content)
+    band:SetPos(0, BOTTOM_Y - 8)
+    band:SetSize(WIN_W, WIN_H - (BOTTOM_Y - 8))
+    band.fill = true
+    band.colour = Vector4.new(1, 1, 1, 0.07)
 
     -- 1. Card details ---------------------------------------------------------------------
     section("1. Card details", LEFT_X, 4, LEFT_W)
@@ -584,21 +632,12 @@ function Builder.show()
         soon()
     end)
 
+    -- Left column, below the description: rarity, tags, deck file. (The drop-downs are made
+    -- last so their lists open over everything else.)
     caption("Suggested rarity (we may change it in review)", LEFT_X, 296, LEFT_W)
-    for i, key in ipairs(Cards.rarityOrder) do
-        local column = (i - 1) % 3
-        local row = (i - 1) // 3
-        widgets.rarityButtons[key] = Kit.buttonAt(content, Cards.rarities[key].name,
-            LEFT_X + column * 156, 314 + row * STEP, 150, 30, function()
-                draft.rarity = key
-                styleRarityButtons()
-                showCard()
-            end)
-    end
-    styleRarityButtons()
 
-    caption("Tags: words separated by commas", LEFT_X, 392, LEFT_W)
-    local tagY = 410
+    caption("Tags: words separated by commas", LEFT_X, 356, LEFT_W)
+    local tagY = 374
     for _, tagKind in ipairs({ "skills", "towns", "category" }) do
         Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
@@ -608,11 +647,7 @@ function Builder.show()
         tagY = tagY + 34
     end
 
-    widgets.deckButton = Kit.buttonAt(content, deckLabel(), LEFT_X, 520, LEFT_W - 10, 30, function()
-        draft.deck = draft.deck % #Cards.sets + 1
-        Kit.setLabel(widgets.deckButton, deckLabel())
-        refreshChecks()
-    end)
+    caption("Which deck file does it go in?", LEFT_X, 482, LEFT_W)
 
     -- 2. Live preview -----------------------------------------------------------------------
     section("2. Live preview", MID_X, 4, MID_W)
@@ -634,8 +669,8 @@ function Builder.show()
     end)
 
     local function pair(label1, label2, y, change1, change2)
-        Kit.buttonAt(content, label1, RIGHT_X, y, HALF_W, 30, function() withCamera(change1) end)
-        Kit.buttonAt(content, label2, RIGHT_X + HALF_W + GAP, y, HALF_W, 30, function() withCamera(change2) end)
+        Kit.buttonAt(content, label1, RIGHT_X, y, PAIR_W, 30, function() withCamera(change1) end)
+        Kit.buttonAt(content, label2, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() withCamera(change2) end)
     end
     local y = 28 + STEP + 4
     pair("Zoom -", "Zoom +", y,
@@ -672,19 +707,18 @@ function Builder.show()
         end
     end)
     y = y + 34
-    Kit.buttonAt(content, "-100", RIGHT_X, y, HALF_W, 30, function() stepAnim(-100) end)
-    Kit.buttonAt(content, "+100", RIGHT_X + HALF_W + GAP, y, HALF_W, 30, function() stepAnim(100) end)
-    y = y + STEP
-    Kit.buttonAt(content, "-1", RIGHT_X, y, HALF_W, 30, function() stepAnim(-1) end)
-    Kit.buttonAt(content, "+1", RIGHT_X + HALF_W + GAP, y, HALF_W, 30, function() stepAnim(1) end)
-    y = y + STEP
+    for _, amount in ipairs({ 1, 10, 100 }) do
+        Kit.buttonAt(content, "-" .. amount, RIGHT_X, y, PAIR_W, 30, function() stepAnim(-amount) end)
+        Kit.buttonAt(content, "+" .. amount, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() stepAnim(amount) end)
+        y = y + STEP
+    end
     Kit.buttonAt(content, "Anim off", RIGHT_X, y, RIGHT_W - 4, 30, function()
         setAnim(nil)
         setField(widgets.animField, "")
     end)
 
     -- 5. The block's buttons sit at the right of the bottom strip.
-    Kit.buttonAt(content, "Show in Output window", RIGHT_X, BOTTOM_Y + 178, RIGHT_W - 4, 30, function()
+    Kit.buttonAt(content, "Show in Output window", LEFT_X, BOTTOM_Y + 176, 300, 30, function()
         local _, ready = Builder.checks()
         if not ready then
             OutputWindow.add("builder", "-- fix the checks in the Card Builder first")
@@ -700,10 +734,33 @@ function Builder.show()
     end, "positive")
 
     showCard()
+
+    -- The drop-downs come last, so their lists open on top of the other parts.
+    dropdown(LEFT_X, 314, 300, function()
+        local list = {}
+        for _, key in ipairs(Cards.rarityOrder) do
+            list[#list + 1] = { label = Cards.rarities[key].name }
+        end
+        return list
+    end, function() return Cards.rarityRank[draft.rarity] or 1 end, function(i)
+        draft.rarity = Cards.rarityOrder[i]
+        showCard()
+    end)
+    dropdown(LEFT_X, 500, LEFT_W - 10, function()
+        local list = {}
+        for _, setName in ipairs(Cards.sets) do
+            list[#list + 1] = { label = setName }
+        end
+        return list
+    end, function() return draft.deck end, function(i)
+        draft.deck = i
+        refreshChecks()
+    end)
 end
 
 function Builder.hide()
     pending = nil
+    closeDropdown()
     Nearby.setPicker(nil)
     NpcSearch.setPicker(nil)
     clearParts(checkParts)
