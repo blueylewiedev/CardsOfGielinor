@@ -25,6 +25,7 @@ local content = nil           -- where the window's contents go
 local filterField = nil
 local rows = {}             -- the components of the listed rows, rebuilt on every scan
 local statusText = nil
+local picker = nil             -- set by the Card Builder: called with the NPC chosen with "Use"
 
 -- Finds the NPCs near the player. Returns a list of { id, configName, name, bas, distance },
 -- one for each different config (the nearest NPC of each), nearest first, narrowed by `filter`
@@ -76,6 +77,12 @@ local function clearRows()
     rows = {}
 end
 
+-- Lets another tool (the Card Builder) receive the NPC the player picks: while a function is set,
+-- every row has a "Use" button that calls it with { id, configName, name }. Pass nil to remove it.
+function Nearby.setPicker(fn)
+    picker = fn
+end
+
 -- Scans and redraws the list.
 local function showList()
     clearRows()
@@ -95,6 +102,13 @@ local function showList()
         rows[#rows + 1] = Kit.text(content, 10, y + 15, WIDTH - 130, 16,
             "id " .. npc.id .. "   anim set " .. npc.bas .. "   " .. npc.distance .. " tiles", WHITE,
             ui.AlignMode.TOPLEFT)
+        if picker ~= nil then
+            rows[#rows + 1] = Kit.buttonAt(content, "Use", WIDTH - 220, y + 1, 100, 30, function()
+                if picker ~= nil then
+                    picker(npc)
+                end
+            end, "positive")
+        end
         rows[#rows + 1] = Kit.buttonAt(content, "View", WIDTH - 110, y + 1, 100, 30, function()
             local line = "npc = \"" .. npc.configName .. "\"   -- id " .. npc.id .. ", anim set " .. npc.bas
             log("nearby:", npc.name, line)

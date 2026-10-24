@@ -22,7 +22,7 @@ local ROWS = 14                -- how many lines are shown at a time
 local ROW_H = 30
 local TOP = 44                 -- space for the buttons above the lines
 local KEEP = 300               -- how many lines are remembered
-local MAX_LENGTH = 400         -- longest line a field can hold
+local MAX_LENGTH = 1000        -- longest line a field can hold (a card block on one line is long)
 
 local GREY = Vector4.new(0.85, 0.85, 0.85, 1.0)
 local WHITE = Vector4.new(1, 1, 1, 1)

@@ -11,8 +11,11 @@ local Cards = require("core/cards")
 local Storage = require("core/storage")
 local CardView = require("ui/cardview")
 local Preview = require("dev/preview")
+local Builder = require("dev/builder")
 local NpcBrowser = require("dev/npcbrowser")
 local Nearby = require("dev/nearby")
+local NpcSearch = require("dev/npcsearch")
+local AnimSearch = require("dev/animsearch")
 local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
 
@@ -57,6 +60,7 @@ function Dev.buttons(api, refresh)
             end
         end },
         { label = "Preview", action = Preview.toggle },
+        { label = "Card Builder", action = Builder.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
         { label = "Output", action = OutputWindow.toggle },
@@ -66,7 +70,7 @@ end
 -- Switches the saved camera tuning on and opens the preview window.
 function Dev.start()
     if #Cards.drafts > 0 then
-        log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the sets folder)")
+        log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end
     Tuning.enabled = true                  -- apply the camera settings saved from the preview
     CardView.artOverride = Tuning.get
@@ -78,8 +82,11 @@ end
 
 function Dev.shutdown()
     Preview.hide()
+    Builder.hide()
     NpcBrowser.hide()
     Nearby.hide()
+    NpcSearch.hide()
+    AnimSearch.hide()
     OutputWindow.hide()
 end
 
