@@ -6,3 +6,5 @@ Set.defaults = { regions = { "morytania" } }
 Set.cards = {
 
 }
+
+return Set

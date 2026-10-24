@@ -23,6 +23,12 @@ return {
     "deck/npcs/misthalin",
     "deck/npcs/asgarnia",
     "deck/npcs/kandarin",
+    "deck/npcs/karamja",
+    "deck/npcs/kharidian_desert",
+    "deck/npcs/morytania",
+    "deck/npcs/tirannwn",
+    "deck/npcs/fremennik_province",
+    "deck/npcs/wilderness",
     "deck/npcs/general",
 
     -- Items (none yet)
