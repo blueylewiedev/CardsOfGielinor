@@ -1,8 +1,8 @@
 -- ui/viewer.lua
 -- The collection viewer: a paged grid of the cards the player owns.
 --
--- Every variant the player owns (a card + finish) gets its own slot, so a
--- holo Hans is shown separately from a standard Hans. A toggle adds a dimmed placeholder
+-- Every variant the player owns (a card + finish) gets its own slot. Only the normal finish
+-- exists for now, so that is one slot per card. A toggle adds a dimmed placeholder
 -- for every variant of every card that is not owned yet, which turns the grid into a
 -- checklist.
 --
