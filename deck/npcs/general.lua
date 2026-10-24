@@ -14,6 +14,7 @@ Set.cards = {
     {
         id = "chicken", name = "Chicken", rarity = "common",
         desc = "Forever crossing roads for no reason.",
+        art = { anim = 27953, cam = { yaw = -0.60, dist = 859, fov = 25, ty = 140, tx = 40 } },
         tags = { category = { "animal" } },
     },
 
@@ -51,18 +52,21 @@ Set.cards = {
     {
         id = "dog_stray", name = "Stray dog", rarity = "common",
         desc = "Follows anyone who might have snacks.",
+        art = { anim = 22417, cam = { yaw = 0.60, dist = 748, fov = 35, ty = 180, tx = -20 } },
         tags = { category = { "animal" } },
     },
 
     {
         id = "elvarg", name = "Elvarg", rarity = "epic",
         desc = "A dragon who prefers to be left alone.",
+        art = { anim = 14256, cam = { yaw = 0.40, pitch = -0.15, dist = 3998, fov = 20, ty = 500, tx = 40 } },
         tags = { category = { "dragon" } },
     },
 
     {
         id = "king_dragon", name = "King Black Dragon", rarity = "legendary",
         desc = "Three heads, all of them hungry.",
+        art = { anim = 17777, cam = { yaw = 0.20, pitch = 0.15, dist = 2626, fov = 65, ty = 1260, tx = 120 } },
         tags = { category = { "dragon" } },
     },
 
