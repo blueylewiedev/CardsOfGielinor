@@ -16,7 +16,6 @@
 -- View (right side):
 --   Model: Head/Body: switches this card between its head and body model (back to the
 --                     card's own setting when you change card)
---   Finish          : cycles Normal / Reverse / Holo to see the shine on the card
 --   Frames: On/Off  : draws cards with the frame images, or the plain layout, to compare
 --   Show: Back      : shows the card back image (resources/images/card_back.png) over a
 --                     magenta and white backdrop, to check its transparency in the client
@@ -103,7 +102,6 @@ function Preview.show()
 
     local index = 1
     local view = nil
-    local finish = "normal"        -- which finish the preview shows: normal, reverse or holo
     local bodyOverride = nil      -- nil = the card's own setting; true/false = chosen with the button
     local modelButton = nil
     local showAnimLabel = nil      -- set once the Anim box is made
@@ -174,7 +172,7 @@ function Preview.show()
             view.root:Destroy()
         end
         local card = Cards.list[index]
-        view = CardView.create(content, card, { body = bodyOverride, finish = finish, scale = PREVIEW_SCALE })
+        view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE })
         view.root:SetPos(CARD_X, CARD_Y)
         if modelButton ~= nil then
             Kit.setLabel(modelButton, (view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head")
@@ -301,17 +299,6 @@ function Preview.show()
     modelButton = panelButton("Model: Head", nil, y, function()
         local isBody = view ~= nil and view.cam ~= nil and view.cam.body
         bodyOverride = not isBody
-        showCard()
-    end)
-
-    -- Finish cycles normal -> reverse holo -> holo, to see the shine on the card shown.
-    local finishNames = { normal = "Normal", reverse = "Reverse", holo = "Holo" }
-    local finishNext = { normal = "reverse", reverse = "holo", holo = "normal" }
-    local finishButton = nil
-    y = y + STEP
-    finishButton = panelButton("Finish: Normal", nil, y, function()
-        finish = finishNext[finish]
-        Kit.setLabel(finishButton, "Finish: " .. finishNames[finish])
         showCard()
     end)
 

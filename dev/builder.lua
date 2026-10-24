@@ -7,7 +7,7 @@
 -- The window has five parts:
 --   1. Card details  : the NPC (by config name), the card's name and id, description, suggested
 --                      rarity, tags and the deck file it belongs in
---   2. Live preview  : the card as it will look, in each finish
+--   2. Live preview  : the card as it will look
 --   3. Tune the art  : body or head model, camera, animation
 --   4. Checks        : what is wrong or worth a look (NPC not found, id taken, odd tag words)
 --   5. Card block    : the card on one line, in a text box where it can be selected and copied
@@ -42,7 +42,6 @@ local function freshDraft()
         rarity = "common",
         skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
         deck = 1,              -- which deck file (index into Cards.sets)
-        finish = "normal",     -- which finish the preview shows
         body = true,           -- body model (true) or head model (false)
         cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
         anim = nil,            -- animation (sequence) id, or nil
@@ -479,7 +478,7 @@ local function showCard()
     if npcId == nil then
         card.art.npc = ""      -- shows the empty art box without asking the client for a bad name
     end
-    view = CardView.create(content, card, { finish = draft.finish, scale = PREVIEW_SCALE })
+    view = CardView.create(content, card, { scale = PREVIEW_SCALE })
     view.root:SetPos(MID_X + (MID_W - CARD_W) // 2, 30)
     if widgets.modelButton ~= nil then
         Kit.setLabel(widgets.modelButton, draft.body and "Model: Body" or "Model: Head")
@@ -623,9 +622,6 @@ local function resetAll()
     if widgets.outputStatus ~= nil then
         widgets.outputStatus.content = ""
     end
-    if widgets.finishButton ~= nil then
-        Kit.setLabel(widgets.finishButton, "Finish: Normal")
-    end
     for _, refresh in ipairs({ widgets.rarityRefresh, widgets.deckRefresh }) do
         refresh()
     end
@@ -716,14 +712,6 @@ function Builder.show()
 
     -- 2. Live preview -----------------------------------------------------------------------
     section("2. Live preview", MID_X, 4, MID_W)
-    local finishNames = { normal = "Normal", reverse = "Reverse holo", holo = "Holo" }
-    local finishNext = { normal = "reverse", reverse = "holo", holo = "normal" }
-    widgets.finishButton = Kit.buttonAt(content, "Finish: " .. finishNames[draft.finish], MID_X, 30 + CARD_H + 10,
-        MID_W - 10, 30, function()
-            draft.finish = finishNext[draft.finish]
-            Kit.setLabel(widgets.finishButton, "Finish: " .. finishNames[draft.finish])
-            showCard()
-        end)
 
     -- 3. Tune the art -------------------------------------------------------------------------
     section("3. Tune the art", RIGHT_X, 4, RIGHT_W)

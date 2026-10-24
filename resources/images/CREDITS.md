@@ -5,4 +5,4 @@ It is not covered by the licence in the repository's `LICENSE` file.
 
 | File(s) | Artist | Added |
 |---------|--------|-------|
-| `frame_*.png`, `reverse_*`, `holo_*`, `glow_*`, `card_back.png`, `pack.png` | Blueylewiedev (Ai-Generated, temporary) | 19/10/2026 |
+| `frame_*.png`, `glow_*`, `card_back.png`, `pack.png` | Blueylewiedev (Ai-Generated, temporary) | 19/10/2026 |

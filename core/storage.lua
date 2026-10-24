@@ -88,6 +88,12 @@ function Storage.load(characterName)
                 elseif Cards.parseKey(key) == nil then
                     variantKey = key .. "|normal"
                 end
+                -- Reverse holo and holo cards were taken out of the game, so copies saved
+                -- with those finishes count as normal copies.
+                local retiredId, retiredFinish = Cards.parseKey(variantKey)
+                if retiredFinish == "reverse" or retiredFinish == "holo" then
+                    variantKey = retiredId .. "|normal"
+                end
                 -- Anything that still is not a known finish is dropped.
                 local _, finish = Cards.parseKey(variantKey)
                 if finish ~= nil and Cards.finishes[finish] ~= nil then
@@ -165,15 +171,15 @@ function Storage.recordPack(state, results)
 end
 
 -- How much of the collection the player has, as { owned, total } for each of:
---   normal, reverse, holo : cards owned in that finish, out of all cards
---   all                   : every variant, out of all cards x all finishes
+--   normal : cards owned in the normal finish, out of all cards
+--   all    : every variant, out of all cards x all finishes
 function Storage.progress(state)
     local cardCount = #Cards.list
     local finishCount = 0
     for _ in pairs(Cards.finishes) do
         finishCount = finishCount + 1
     end
-    local counts = { normal = 0, reverse = 0, holo = 0 }
+    local counts = { normal = 0 }
     local all = 0
     for key in pairs(state.owned) do
         local cardId, finish = Cards.parseKey(key)
@@ -184,8 +190,6 @@ function Storage.progress(state)
     end
     return {
         normal = { owned = counts.normal, total = cardCount },
-        reverse = { owned = counts.reverse, total = cardCount },
-        holo = { owned = counts.holo, total = cardCount },
         all = { owned = all, total = cardCount * finishCount },
     }
 end
