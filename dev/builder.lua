@@ -334,9 +334,9 @@ local PREVIEW_SCALE = 1.5
 local CARD_W, CARD_H = math.floor(160 * PREVIEW_SCALE), math.floor(224 * PREVIEW_SCALE)
 
 -- Left column (card details), middle (preview), right (art), then the bottom strip.
-local LEFT_X, LEFT_W = 10, 380
-local MID_X, MID_W = 410, 260
-local RIGHT_X, RIGHT_W = 690, 300
+local LEFT_X, LEFT_W = 10, 470
+local MID_X, MID_W = 500, 260
+local RIGHT_X, RIGHT_W = 780, 300
 local HALF_W = 148
 local BOTTOM_Y = 560
 local WIN_W = RIGHT_X + RIGHT_W + 10
@@ -555,24 +555,24 @@ function Builder.show()
         setField(widgets.npcField, npc.configName)
         setNpc(npc.configName)
     end
-    Kit.buttonAt(content, "Pick from Nearby", LEFT_X, 134, HALF_W + 34, 30, function()
+    Kit.buttonAt(content, "Nearby NPCs", LEFT_X, 134, 225, 30, function()
         Nearby.setPicker(usePicked)
         Nearby.show()
     end)
-    Kit.buttonAt(content, "Search all NPCs", LEFT_X + HALF_W + 38, 134, HALF_W + 34 - 4, 30, function()
+    Kit.buttonAt(content, "Search NPCs", LEFT_X + 235, 134, 225, 30, function()
         NpcSearch.setPicker(usePicked)
         NpcSearch.show()
     end)
 
-    caption("Card name", LEFT_X, 176, 200)
-    caption("Card id (follows the name)", LEFT_X + 210, 176, 170)
-    widgets.nameField = field(LEFT_X, 194, 200, 40, draft.name, function(text)
+    caption("Card name", LEFT_X, 176, 225)
+    caption("Card id (follows the name)", LEFT_X + 235, 176, 225)
+    widgets.nameField = field(LEFT_X, 194, 225, 40, draft.name, function(text)
         draft.name = text
         draft.nameTouched = text ~= ""
         followName()
         soon()
     end)
-    widgets.idField = field(LEFT_X + 210, 194, 160, 40, draft.cardId, function(text)
+    widgets.idField = field(LEFT_X + 235, 194, 225, 40, draft.cardId, function(text)
         draft.cardId = text
         draft.idTouched = text ~= ""
         soon()
@@ -589,7 +589,7 @@ function Builder.show()
         local column = (i - 1) % 3
         local row = (i - 1) // 3
         widgets.rarityButtons[key] = Kit.buttonAt(content, Cards.rarities[key].name,
-            LEFT_X + column * 124, 314 + row * STEP, 120, 30, function()
+            LEFT_X + column * 156, 314 + row * STEP, 150, 30, function()
                 draft.rarity = key
                 styleRarityButtons()
                 showCard()
