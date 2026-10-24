@@ -132,7 +132,7 @@ commas:
 
 | Kind | Meaning | Example |
 |------|---------|---------|
-| `towns` | where the NPC is found | `lumbridge` |
+| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `varrock_sewers` |
 | `skills` | skills it is linked to | `cooking`, `prayer` |
 | `category` | what kind of character | `humanoid`, `animal`, `shopkeeper` |
 
@@ -141,7 +141,7 @@ The region comes from the deck file, so it is not asked for.
 - Tag words are **lower case letters, digits and underscores**, starting with a letter. The
   Card Builder will not accept anything else.
 - Use an existing word if one fits. The checks tell you when a word is new.
-- **A new word is allowed.** For `towns` and `skills`, new words must also be added to the list in
+- **A new word is allowed.** For `location` and `skills`, new words must also be added to the list in
   `Cards.tagWords` in `core/cards.lua` (the Card Builder shows a note saying exactly which). For
   `category`, there is no list yet; a new word just needs to be a sensible one that others can
   reuse.

@@ -40,7 +40,7 @@ local function freshDraft()
         idTouched = false,
         desc = "",
         rarity = "common",
-        skills = "", towns = "", category = "",     -- tags, as typed (words separated by commas)
+        skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
         deck = 1,              -- which deck file (index into Cards.sets)
         finish = "normal",     -- which finish the preview shows
         body = true,           -- body model (true) or head model (false)
@@ -148,7 +148,7 @@ end
 -- The checks and the card block (both are worked out from `draft`)
 -- ---------------------------------------------------------------------------------------------
 
-local TAG_KINDS = { "towns", "skills", "category" }   -- the order they are written in
+local TAG_KINDS = { "location", "skills", "category" }   -- the order they are written in
 
 -- The words typed for a tag kind, split apart.
 local function tagWords(tagKind)
@@ -613,7 +613,7 @@ local function resetAll()
     for key, value in pairs(fresh) do
         draft[key] = value
     end
-    for _, key in ipairs({ "npcField", "nameField", "idField", "descField", "skillsField", "townsField",
+    for _, key in ipairs({ "npcField", "nameField", "idField", "descField", "skillsField", "locationField",
         "categoryField", "animField" }) do
         setField(widgets[key], "")
     end
@@ -703,7 +703,7 @@ function Builder.show()
 
     caption("Tags: words separated by commas", LEFT_X, 356, LEFT_W)
     local tagY = 374
-    for _, tagKind in ipairs({ "skills", "towns", "category" }) do
+    for _, tagKind in ipairs({ "skills", "location", "category" }) do
         Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
             draft[tagKind] = text
