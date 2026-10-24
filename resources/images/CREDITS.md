@@ -1,6 +1,6 @@
 # Artwork credits
 
-All artwork belongs to its creator and is used in Card Collector with their permission.
+All artwork is used in Card Collector with the permission of whoever made it. Some of it is AI-generated.
 It is not covered by the licence in the repository's `LICENSE` file.
 
 | File(s) | Artist | Added |

@@ -9,8 +9,8 @@ The code (including the card files in `deck/`) is licensed under the
 use it for noncommercial purposes, but you may not distribute it or modify it, except as described in
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-The artwork in `resources/images/` belongs to its creators and is used with their permission. It is
-not covered by that licence. See [resources/images/CREDITS.md](resources/images/CREDITS.md).
+The artwork in `resources/images/` is not covered by that licence. It is used with the permission of
+whoever made it, and some of it is AI-generated. See [resources/images/CREDITS.md](resources/images/CREDITS.md).
 
 RuneScape and its characters, names and models belong to Jagex.
 

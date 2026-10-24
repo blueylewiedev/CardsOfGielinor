@@ -22,6 +22,7 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
 4. [Submitting your cards](#submitting-your-cards)
 5. [Artwork](#artwork)
 6. [Code changes](#code-changes)
+7. [Licence and ownership](#licence-and-ownership)
 
 ---
 
@@ -235,7 +236,8 @@ a non-exclusive, worldwide, royalty-free licence to include it in Card Collector
 adjust it so that it fits, and to distribute it as part of the plugin, and for no other purpose.
 It will not be sold. You are free to use your artwork anywhere else.
 
-- You can ask for your artwork to be removed from the plugin.
+- You can ask for your artwork to be removed from future versions of the plugin. Versions that
+  have already been released are not affected.
 - You confirm that you made it, that it is not copied from the game, from other artists or from
   anywhere else.
 - You will be credited in `resources/images/CREDITS.md`.
