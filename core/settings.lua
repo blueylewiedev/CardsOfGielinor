@@ -2,7 +2,7 @@
 -- Plugin-wide options the player can switch on and off (the settings page is in
 -- ui/settingspage.lua). They are saved once for the whole plugin, not per character.
 --
--- Other files ask with Settings.get("shine"). The difficulty is not here: it is chosen per
+-- Other files ask with Settings.get("glow"). The difficulty is not here: it is chosen per
 -- character and lives in that character's collection (see core/storage.lua).
 
 local Settings = {}
@@ -12,7 +12,6 @@ local KEY = "card_settings"
 -- Every option, with what it does and whether it starts on. `order` is the order they are
 -- listed on the settings page.
 Settings.options = {
-    { id = "shine", label = "Holo and reverse holo shine", default = true },
     { id = "glow", label = "Glow behind rare cards when flipped", default = true },
 }
 

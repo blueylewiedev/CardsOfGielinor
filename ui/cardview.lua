@@ -7,7 +7,6 @@
 --   a plain rectangle layout is used instead.
 
 local Cards = require("core/cards")
-local Settings = require("core/settings")
 
 local CardView = {}
 
@@ -245,84 +244,6 @@ local function addArt(parent, card, box, bodyOverride)
 end
 
 
--- Holo and reverse holo shine.
--- A holo card has a shimmering rainbow sheen over its art; a reverse holo has it over the frame
--- instead. Both are made of two translucent images that are cross-faded back and forth, which
--- makes the bands and sparkles seem to drift. The images are in resources/images:
---   holo_a / holo_b                     stretched over the art window
---   reverse_<rarity>_a / _b             the size of the card, shaped like that rarity's frame
--- If an image is missing the card is drawn without the shine.
-CardView.SHINE = true
-local SHINE_SPEED = 1.4          -- cross-fade speed (radians per second)
-local HOLO_ALPHA = 0.85          -- brightness of the shine over the art
-local REVERSE_ALPHA = 0.8        -- brightness of the shine over the frame
-local MAX_SHINES = 60            -- how many shining cards are animated at once
-
-local imageCache = {}            -- image name -> resource, or false if it is missing
-
--- Loads an image from resources/images, once. Returns nil (and logs) if it is not there.
-local function loadImage(name)
-    local cached = imageCache[name]
-    if cached ~= nil then
-        return cached or nil
-    end
-    local ok, resource = pcall(function() return Plugin.resources.images[name] end)
-    if not ok or resource == nil then
-        log("card shine: no image resources/images/" .. name .. ".png")
-        imageCache[name] = false
-        return nil
-    end
-    pcall(function() resource:Load() end)
-    imageCache[name] = resource
-    return resource
-end
-
-local shines = {}                -- every shine being animated: { a, b, base, offset }
-local shineClock = 0
-
--- Adds a shine of two sprites (cross-faded) at x, y with size w x h, in `parent`.
-local function addShine(parent, imageA, imageB, x, y, w, h, base)
-    local sprites = {}
-    for _, image in ipairs({ imageA, imageB }) do
-        local sprite = ui.Sprite.new(parent)
-        sprite:SetPos(x, y)
-        sprite:SetSize(w, h)
-        sprite.sprite = image
-        sprite.alpha = 0.0
-        sprites[#sprites + 1] = sprite
-    end
-    -- Each card starts at a different point, so a page of holos does not pulse in step.
-    shines[#shines + 1] = { a = sprites[1], b = sprites[2], base = base, offset = math.random() * 6.28 }
-    if #shines > MAX_SHINES then
-        table.remove(shines, 1)
-    end
-end
-
--- Runs every frame. A card that has been destroyed makes its sprites error, which removes it.
-local function onShineDraw(e)
-    local ok, dt = pcall(function() return e.timeDeltaSecs end)
-    if not ok or type(dt) ~= "number" then
-        dt = 0.016
-    end
-    shineClock = shineClock + dt
-    local i = 1
-    while i <= #shines do
-        local shine = shines[i]
-        local theta = shineClock * SHINE_SPEED + shine.offset
-        local alive = pcall(function()
-            shine.a.alpha = shine.base * math.sin(theta) ^ 2
-            shine.b.alpha = shine.base * math.cos(theta) ^ 2
-        end)
-        if alive then
-            i = i + 1
-        else
-            table.remove(shines, i)
-        end
-    end
-end
-
-Event.Draw.Subscribe("cardcollector_shine", onShineDraw)
-
 -- A frame zone scaled by CardView.SCALE. The zone tables are in 160 x 224 card units.
 local function scaled(zone, s)
     return { x = zone.x * s, y = zone.y * s, w = zone.w * s, h = zone.h * s }
@@ -348,14 +269,6 @@ local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityC
     if not locked then
         model, cam = addArt(root, card, win, opts and opts.body)
     end
-    -- Holo: the shine goes over the art, under the frame.
-    local finish = (opts and opts.finish) or "normal"
-    if CardView.SHINE and Settings.get("shine") and not locked and finish == "holo" then
-        local a, b = loadImage("holo_a"), loadImage("holo_b")
-        if a ~= nil and b ~= nil then
-            addShine(root, a, b, win.x, win.y, win.w, win.h, HOLO_ALPHA)
-        end
-    end
     if model == nil then
         label(root, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
     end
@@ -366,14 +279,6 @@ local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityC
     frame.sprite = frameImage
     if locked then
         frame.alpha = 0.5
-    end
-    -- Reverse holo: the shine goes over the frame, under the text.
-    if CardView.SHINE and Settings.get("shine") and not locked and finish == "reverse" then
-        local a = loadImage("reverse_" .. card.rarity .. "_a")
-        local b = loadImage("reverse_" .. card.rarity .. "_b")
-        if a ~= nil and b ~= nil then
-            addShine(root, a, b, 0, 0, W, H, REVERSE_ALPHA)
-        end
     end
 
     label(root, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, card.name, nameColour)
@@ -390,7 +295,6 @@ end
 -- opts.locked = true draws a placeholder for a card the player does not own yet: dimmed,
 -- with a "?" instead of the art and no description.
 -- opts.frame = false skips the frame image and uses the plain layout (preview only).
--- opts.finish = "normal" (default), "reverse" or "holo" adds the shine for that finish.
 -- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text
 -- stays the same size; the picture, frame and layout scale.
 -- opts.body = true/false forces the body or head model, whatever the card says (preview only).
