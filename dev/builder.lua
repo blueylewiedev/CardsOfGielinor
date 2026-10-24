@@ -26,25 +26,31 @@ local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
 local Nearby = require("dev/nearby")
 local NpcSearch = require("dev/npcsearch")
+local AnimSearch = require("dev/animsearch")
 
 local Builder = {}
 
+-- A new, empty card. (Reset goes back to this.)
+local function freshDraft()
+    return {
+        npc = "",              -- the NPC's config name, e.g. FATHER_AERECK; this sets the model
+        name = "",             -- the name printed on the card
+        nameTouched = false,   -- true once the name has been typed (so it stops following the NPC)
+        cardId = "",           -- the card's id; follows the name until it is typed
+        idTouched = false,
+        desc = "",
+        rarity = "common",
+        skills = "", towns = "", category = "",     -- tags, as typed (words separated by commas)
+        deck = 1,              -- which deck file (index into Cards.sets)
+        finish = "normal",     -- which finish the preview shows
+        body = true,           -- body model (true) or head model (false)
+        cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
+        anim = nil,            -- animation (sequence) id, or nil
+    }
+end
+
 -- The card the window is working on. It outlives the window.
-local draft = {
-    npc = "",              -- the NPC's config name, e.g. FATHER_AERECK; this sets the model
-    name = "",             -- the name printed on the card
-    nameTouched = false,   -- true once the name has been typed (so it stops following the NPC)
-    cardId = "",           -- the card's id; follows the name until it is typed
-    idTouched = false,
-    desc = "",
-    rarity = "common",
-    skills = "", towns = "", category = "",     -- tags, as typed (words separated by commas)
-    deck = 1,              -- which deck file (index into Cards.sets)
-    finish = "normal",     -- which finish the preview shows
-    body = true,           -- body model (true) or head model (false)
-    cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
-    anim = nil,            -- animation (sequence) id, or nil
-}
+local draft = freshDraft()
 
 -- ---------------------------------------------------------------------------------------------
 -- Text rules
@@ -592,7 +598,38 @@ local function dropdown(x, y, w, choices, current, onPick)
             end, i == current() and "positive" or "neutral")
         end
     end)
-    return button
+    -- The second value puts the current choice on the button again (after a reset).
+    return button, function() Kit.setLabel(button, title()) end
+end
+
+-- Puts the whole window back to a new, empty card.
+local function resetAll()
+    closeDropdown()
+    pending = nil
+    local fresh = freshDraft()
+    for key in pairs(draft) do
+        draft[key] = nil
+    end
+    for key, value in pairs(fresh) do
+        draft[key] = value
+    end
+    for _, key in ipairs({ "npcField", "nameField", "idField", "descField", "skillsField", "townsField",
+        "categoryField", "animField" }) do
+        setField(widgets[key], "")
+    end
+    if widgets.npcStatus ~= nil then
+        widgets.npcStatus.content = ""
+    end
+    if widgets.outputStatus ~= nil then
+        widgets.outputStatus.content = ""
+    end
+    if widgets.finishButton ~= nil then
+        Kit.setLabel(widgets.finishButton, "Finish: Normal")
+    end
+    for _, refresh in ipairs({ widgets.rarityRefresh, widgets.deckRefresh }) do
+        refresh()
+    end
+    showCard()
 end
 
 function Builder.show()
@@ -614,6 +651,7 @@ function Builder.show()
 
     -- 1. Card details ---------------------------------------------------------------------
     section("1. Card details", LEFT_X, 4, LEFT_W)
+    Kit.buttonAt(content, "Reset", LEFT_X + LEFT_W - 110, 0, 100, 30, resetAll, "negative")
 
     caption("What kind of card?", LEFT_X, 26, LEFT_W)
     Kit.buttonAt(content, "NPC", LEFT_X, 44, HALF_W, 30, function() end, "positive")
@@ -744,9 +782,17 @@ function Builder.show()
         Kit.buttonAt(content, "+" .. amount, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() stepAnim(amount) end)
         y = y + STEP
     end
-    Kit.buttonAt(content, "Anim off", RIGHT_X, y, RIGHT_W - 4, 30, function()
+    Kit.buttonAt(content, "Anim off", RIGHT_X, y, PAIR_W, 30, function()
         setAnim(nil)
         setField(widgets.animField, "")
+    end)
+    -- Search animations by name; "Use" on a result plays it on the card.
+    Kit.buttonAt(content, "Search anims", RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function()
+        AnimSearch.setPicker(function(seq)
+            setAnim(seq.id)
+            setField(widgets.animField, string.format("%.0f", seq.id))
+        end)
+        AnimSearch.show()
     end)
 
     -- 5. The block's buttons sit at the right of the bottom strip.
@@ -771,7 +817,7 @@ function Builder.show()
     showCard()
 
     -- The drop-downs come last, so their lists open on top of the other parts.
-    dropdown(LEFT_X, 314, 300, function()
+    widgets.rarityRefresh = select(2, dropdown(LEFT_X, 314, 300, function()
         local list = {}
         for _, key in ipairs(Cards.rarityOrder) do
             list[#list + 1] = { label = Cards.rarities[key].name }
@@ -780,8 +826,8 @@ function Builder.show()
     end, function() return Cards.rarityRank[draft.rarity] or 1 end, function(i)
         draft.rarity = Cards.rarityOrder[i]
         showCard()
-    end)
-    dropdown(LEFT_X, 500, LEFT_W - 10, function()
+    end))
+    widgets.deckRefresh = select(2, dropdown(LEFT_X, 500, LEFT_W - 10, function()
         local list = {}
         for _, setName in ipairs(Cards.sets) do
             list[#list + 1] = { label = setName }
@@ -790,7 +836,7 @@ function Builder.show()
     end, function() return draft.deck end, function(i)
         draft.deck = i
         refreshChecks()
-    end)
+    end))
 end
 
 function Builder.hide()
@@ -798,6 +844,7 @@ function Builder.hide()
     closeDropdown()
     Nearby.setPicker(nil)
     NpcSearch.setPicker(nil)
+    AnimSearch.setPicker(nil)
     clearParts(checkParts)
     if view ~= nil then
         pcall(function() view.root:Destroy() end)

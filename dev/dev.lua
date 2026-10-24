@@ -15,6 +15,7 @@ local Builder = require("dev/builder")
 local NpcBrowser = require("dev/npcbrowser")
 local Nearby = require("dev/nearby")
 local NpcSearch = require("dev/npcsearch")
+local AnimSearch = require("dev/animsearch")
 local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
 
@@ -85,6 +86,7 @@ function Dev.shutdown()
     NpcBrowser.hide()
     Nearby.hide()
     NpcSearch.hide()
+    AnimSearch.hide()
     OutputWindow.hide()
 end
 
