@@ -83,7 +83,7 @@ Cards.packTypes = {
 -- The words allowed for the tag kinds that come from a closed list. A card with any other word
 -- under one of these kinds stops the plugin loading, with the card named in the error, so a typo
 -- never silently drops a card out of a themed pack. Add a word here before using it. Tag kinds
--- that are not listed (such as `category`) are not checked.
+-- that are not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
                 "tirannwn", "fremennik_province", "wilderness" },
@@ -93,6 +93,17 @@ Cards.tagWords = {
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
                 "runecrafting", "hunter", "construction", "summoning", "dungeoneering",
                 "divination", "invention", "archaeology", "necromancy" },
+    -- What a card is (its kind of creature), what it does (its job), and whether it can be fought.
+    category = {
+        -- what it is
+        "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin", "troll", "spirit",
+        "elemental", "insect", "construct",
+        -- what it does
+        "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer", "wizard", "priest",
+        "quest_giver", "banker", "farmer", "pirate", "thief",
+        -- whether it can be fought
+        "monster", "boss",
+    },
 }
 
 -- The cards are written in their own files in the deck folder (the layout is described in
