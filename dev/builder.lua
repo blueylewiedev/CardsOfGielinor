@@ -10,9 +10,11 @@
 --   2. Live preview  : the card as it will look, in each finish
 --   3. Tune the art  : body or head model, camera, animation
 --   4. Checks        : what is wrong or worth a look (NPC not found, id taken, odd tag words)
---   5. Card block    : the text to paste into the deck file. "Show in Output window" puts it
---                      in the Output window, one line per row, where it can be selected and
---                      copied (the plugin API has no clipboard).
+--   5. Card block    : the card on one line, in a text box where it can be selected and copied
+--                      (Ctrl+A, Ctrl+C) to paste into the deck file. The plugin API has no
+--                      clipboard and the boxes cannot hold line breaks, hence one line. "Show in
+--                      Output window" sends it, and any note about new tag words, to the
+--                      Output window too.
 --
 -- Nothing is written to any file. The card only exists in this window until it is pasted into
 -- a deck file by hand. What was typed is remembered while the plugin is running, so closing and
@@ -189,18 +191,18 @@ local function artLine()
             parts[#parts + 1] = "cam = { " .. table.concat(camParts, ", ") .. " }"
         end
     end
-    return "art = { " .. table.concat(parts, ", ") .. " },"
+    return "art = { " .. table.concat(parts, ", ") .. " }"
 end
 
--- The card block, as a list of lines, in the layout the deck files use. Tag words that are not
--- on Cards.tagWords yet are listed in comment lines at the end, since they must be added there.
-function Builder.blockLines()
-    local lines = {
-        "{",
-        "    id = " .. quote(draft.cardId) .. ", name = " .. quote(draft.name)
-            .. ", rarity = " .. quote(draft.rarity) .. ",",
-        "    desc = " .. quote(draft.desc) .. ",",
-        "    " .. artLine(),
+-- The card block on ONE line (the text boxes in the client cannot hold line breaks, and Lua does
+-- not mind): { id = "...", name = "...", rarity = "...", desc = "...", art = { ... }, tags = { ... } },
+function Builder.blockLine()
+    local parts = {
+        "id = " .. quote(draft.cardId),
+        "name = " .. quote(draft.name),
+        "rarity = " .. quote(draft.rarity),
+        "desc = " .. quote(draft.desc),
+        artLine(),
     }
     local tagParts = {}
     for _, tagKind in ipairs(TAG_KINDS) do
@@ -214,9 +216,15 @@ function Builder.blockLines()
         end
     end
     if #tagParts > 0 then
-        lines[#lines + 1] = "    tags = { " .. table.concat(tagParts, ", ") .. " },"
+        parts[#parts + 1] = "tags = { " .. table.concat(tagParts, ", ") .. " }"
     end
-    lines[#lines + 1] = "},"
+    return "{ " .. table.concat(parts, ", ") .. " },"
+end
+
+-- The block (one line) followed by a note line for each tag word that is not on Cards.tagWords
+-- yet, since those words must be added there too.
+function Builder.blockLines()
+    local lines = { Builder.blockLine() }
 
     -- New words for tag kinds that have a fixed list.
     for _, tagKind in ipairs(TAG_KINDS) do
@@ -341,9 +349,8 @@ local RIGHT_X, RIGHT_W = 780, 316
 local HALF_W = 148                 -- the NPC / Item buttons
 local PAIR_W, PAIR_GAP = 154, 8   -- the pairs of buttons on the right (PrettyUI draws "ZOOM +" about 150 wide)
 local BOTTOM_Y = 566
-local BLOCK_LINES = 7           -- how many lines of the card block are shown (and can be selected)
 local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches the right edge
-local WIN_H = BOTTOM_Y + 266
+local WIN_H = BOTTOM_Y + 220
 
 local window, content = nil, nil
 local widgets = {}          -- the parts that change after the window is built
@@ -409,26 +416,27 @@ local function refreshChecks()
     checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 6, 400, 20,
         ready and "5. Your card block (ready)" or "5. Your card block (fix the checks first)", GOLD,
         ui.AlignMode.TOPLEFT)
-    -- Each line of the block is in its own box, because the text in a box can be selected and
-    -- copied (plain text cannot). Changes typed into them are ignored: they are put back the
-    -- next time the card changes. The first 7 lines are shown (the block and one note about
-    -- tag words); "Show in Output window" gives every line.
+    -- The block is in a text box, because the text in a box can be selected and copied (plain
+    -- text cannot). It is one line, as the boxes cannot hold line breaks. Anything typed into
+    -- the box is ignored: it is put back the next time the card changes.
     local lines = Builder.blockLines()
-    for i, text in ipairs(lines) do
-        if i <= BLOCK_LINES then
-            local box = Kit.inputField(content, MID_X, BOTTOM_Y + 28 + (i - 1) * 24, WIN_W - MID_X - 10, 22, 400, false)
-            box.content = text
-            checkParts[#checkParts + 1] = box
-        end
+    local box = Kit.inputField(content, MID_X, BOTTOM_Y + 28, WIN_W - MID_X - 10, 28, 1000, false)
+    box.content = lines[1]
+    checkParts[#checkParts + 1] = box
+    -- Notes about tag words that must be added to Cards.tagWords (up to two are shown).
+    for i = 2, math.min(#lines, 3) do
+        checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 62 + (i - 2) * 18, WIN_W - MID_X - 10, 18,
+            lines[i], AMBER, ui.AlignMode.TOPLEFT)
     end
     -- What to do with the block.
     local steps = {
+        "Click the box above, press Ctrl+A, then Ctrl+C to copy it.",
         "Paste it into " .. tostring(Cards.sets[draft.deck] or "a deck file") .. ".lua, inside the Set.cards list.",
         "Reload the plugin once to check that it loads.",
         "Then commit and open a pull request with a screenshot of the card.",
     }
     for i, text in ipairs(steps) do
-        checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 28 + BLOCK_LINES * 24 + 6 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
+        checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 104 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
             text, BLUE, ui.AlignMode.TOPLEFT)
     end
 end
