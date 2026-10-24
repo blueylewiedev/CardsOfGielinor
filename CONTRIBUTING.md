@@ -141,7 +141,7 @@ The region comes from the deck file, so it is not asked for.
 - Tag words are **lower case letters, digits and underscores**, starting with a letter. The
   Card Builder will not accept anything else.
 - Use an existing word if one fits. The checks tell you when a word is new.
-- **A new word is allowed.** For `towns` and `skills`, new words must also be added to the list in
+- **A new word is allowed.** For `location` and `skills`, new words must also be added to the list in
   `Cards.tagWords` in `core/cards.lua` (the Card Builder shows a note saying exactly which). For
   `category`, there is no list yet; a new word just needs to be a sensible one that others can
   reuse.

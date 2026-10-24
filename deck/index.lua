@@ -9,7 +9,7 @@
 --       id = "wayne", name = "Wayne", rarity = "uncommon",
 --       desc = "Chainmail for every budget.",
 --       art = { npc = "" },
---       tags = { towns = { "falador" }, skills = { "smithing" }, category = { "shopkeeper" } },
+--       tags = { location = { "falador" }, skills = { "smithing" }, category = { "shopkeeper" } },
 --   },
 --
 -- Layout:

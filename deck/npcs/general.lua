@@ -1,7 +1,7 @@
 -- deck/npcs/general.lua
 -- NPCs that are not tied to one region: guards, shop keepers and animals that turn up all over
 -- the game. A card here counts for every NPC with that title ("Guard" covers all the guards;
--- "Market Guard" would be its own card), and it has no region or town tags, so region packs
+-- "Market Guard" would be its own card), and it has no region or location tags, so region packs
 -- never draw it. See deck/npcs/misthalin.lua for how a file like this works.
 --
 -- Elvarg and the King Black Dragon are here until there are files for their regions.
