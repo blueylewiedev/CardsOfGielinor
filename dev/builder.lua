@@ -326,6 +326,7 @@ local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 local GREEN = Vector4.new(0.5, 0.82, 0.55, 1)
 local AMBER = Vector4.new(0.94, 0.70, 0.35, 1)
 local RED = Vector4.new(0.91, 0.49, 0.43, 1)
+local BLUE = Vector4.new(0.55, 0.78, 0.95, 1)     -- the instructions, so they stand apart from the code
 local LEVEL_COLOUR = { ok = GREEN, note = AMBER, fix = RED }
 local LEVEL_PREFIX = { ok = "OK   ", note = "Note ", fix = "Fix  " }
 
@@ -340,8 +341,9 @@ local RIGHT_X, RIGHT_W = 780, 316
 local HALF_W = 148                 -- the NPC / Item buttons
 local PAIR_W, PAIR_GAP = 154, 8   -- the pairs of buttons on the right (PrettyUI draws "ZOOM +" about 150 wide)
 local BOTTOM_Y = 566
+local BLOCK_LINES = 7           -- how many lines of the card block are shown (and can be selected)
 local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches the right edge
-local WIN_H = BOTTOM_Y + 236
+local WIN_H = BOTTOM_Y + 266
 
 local window, content = nil, nil
 local widgets = {}          -- the parts that change after the window is built
@@ -407,11 +409,16 @@ local function refreshChecks()
     checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 6, 400, 20,
         ready and "5. Your card block (ready)" or "5. Your card block (fix the checks first)", GOLD,
         ui.AlignMode.TOPLEFT)
+    -- Each line of the block is in its own box, because the text in a box can be selected and
+    -- copied (plain text cannot). Changes typed into them are ignored: they are put back the
+    -- next time the card changes. The first 7 lines are shown (the block and one note about
+    -- tag words); "Show in Output window" gives every line.
     local lines = Builder.blockLines()
     for i, text in ipairs(lines) do
-        if i <= 8 then
-            checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 28 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
-                text, ready and WHITE or GREY, ui.AlignMode.TOPLEFT)
+        if i <= BLOCK_LINES then
+            local box = Kit.inputField(content, MID_X, BOTTOM_Y + 28 + (i - 1) * 24, WIN_W - MID_X - 10, 22, 400, false)
+            box.content = text
+            checkParts[#checkParts + 1] = box
         end
     end
     -- What to do with the block.
@@ -421,8 +428,8 @@ local function refreshChecks()
         "Then commit and open a pull request with a screenshot of the card.",
     }
     for i, text in ipairs(steps) do
-        checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 176 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
-            text, GREY, ui.AlignMode.TOPLEFT)
+        checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 28 + BLOCK_LINES * 24 + 6 + (i - 1) * 18, WIN_W - MID_X - 10, 18,
+            text, BLUE, ui.AlignMode.TOPLEFT)
     end
 end
 
@@ -718,10 +725,11 @@ function Builder.show()
     end)
 
     -- 5. The block's buttons sit at the right of the bottom strip.
+    widgets.outputStatus = Kit.text(content, LEFT_X + 310, BOTTOM_Y + 176, 150, 30, "", GREY, ui.AlignMode.TOPLEFT)
     Kit.buttonAt(content, "Show in Output window", LEFT_X, BOTTOM_Y + 176, 300, 30, function()
         local _, ready = Builder.checks()
         if not ready then
-            OutputWindow.add("builder", "-- fix the checks in the Card Builder first")
+            widgets.outputStatus.content = "Fix the checks first"
             return
         end
         -- The Output window shows the newest line first, so the block is added backwards to
@@ -731,6 +739,8 @@ function Builder.show()
             OutputWindow.add(draft.cardId, lines[i])
         end
         log("builder: card block for", draft.cardId, "sent to the Output window")
+        widgets.outputStatus.content = "Sent to Output"
+        OutputWindow.show()
     end, "positive")
 
     showCard()
