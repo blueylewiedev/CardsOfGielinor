@@ -1,6 +1,6 @@
 -- deck/npcs/asgarnia.lua
 -- NPC cards for Falador, Port Sarim, Taverley, Burthorpe and the rest of Asgarnia. Every card in this file is tagged `regions = { "asgarnia" }`
--- automatically (see `defaults`), so each card only lists its own town, skills and category.
+-- automatically (see `defaults`), so each card only lists its own location, skills and category.
 --
 -- Only NPCs that belong to this region go here. NPCs found all over the game (guards, shop
 -- keepers, animals) go in deck/npcs/general.lua instead, so a card for them counts for all of
@@ -39,63 +39,63 @@ Set.cards = {
         id = "sir_amik_varze", name = "Sir Amik Varze", rarity = "rare",
         desc = "Leads the White Knights proudly.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "knight" } },
+        tags = { location = { "falador" }, category = { "knight" } },
     },
 
     {
         id = "sir_vyvin", name = "Sir Vyvin", rarity = "rare",
         desc = "Guards the castle and a secret.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "knight" } },
+        tags = { location = { "falador" }, category = { "knight" } },
     },
 
     {
         id = "sir_tiffy", name = "Sir Tiffy Cashien", rarity = "uncommon",
         desc = "Recruits new knights in the park.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "knight" } },
+        tags = { location = { "falador" }, category = { "knight" } },
     },
 
     {
         id = "wayne", name = "Wayne", rarity = "uncommon",
         desc = "Chainmail for every budget.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, skills = { "smithing" }, category = { "shopkeeper" } },
+        tags = { location = { "falador" }, skills = { "smithing" }, category = { "shopkeeper" } },
     },
 
     {
         id = "flynn", name = "Flynn", rarity = "uncommon",
         desc = "Sells maces with a smile.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "shopkeeper" } },
+        tags = { location = { "falador" }, category = { "shopkeeper" } },
     },
 
     {
         id = "cassie", name = "Cassie", rarity = "uncommon",
         desc = "Sells shields to the knights.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "shopkeeper" } },
+        tags = { location = { "falador" }, category = { "shopkeeper" } },
     },
 
     {
         id = "herquin", name = "Herquin", rarity = "uncommon",
         desc = "Buys and sells gems.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "shopkeeper" } },
+        tags = { location = { "falador" }, category = { "shopkeeper" } },
     },
 
     {
         id = "hairdresser", name = "Hairdresser", rarity = "common",
         desc = "Offers a fresh new look.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "humanoid" } },
+        tags = { location = { "falador" }, category = { "humanoid" } },
     },
 
     {
         id = "white_knight", name = "White Knight", rarity = "common",
         desc = "Sworn to defend Falador.",
         art = { npc = "" },
-        tags = { towns = { "falador" }, category = { "knight" } },
+        tags = { location = { "falador" }, category = { "knight" } },
     },
 }
 

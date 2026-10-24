@@ -1,6 +1,6 @@
 -- deck/npcs/misthalin.lua
 -- NPC cards for Lumbridge, Draynor, Varrock and the rest of the kingdom of Misthalin. Every card in this file is tagged `regions = { "misthalin" }`
--- automatically (see `defaults`), so each card only lists its own town, skills and category.
+-- automatically (see `defaults`), so each card only lists its own location, skills and category.
 --
 -- Only NPCs that belong to this region go here. NPCs found all over the game (guards, shop
 -- keepers, animals) go in deck/npcs/general.lua instead, so a card for them counts for all of
@@ -31,70 +31,70 @@ Set.cards = {
         id = "hans", name = "Hans", rarity = "uncommon",
         desc = "Has walked Lumbridge Castle forever.",
         art = { anim = 916, cam = { yaw = 0.20, dist = 1309, fov = 20, ty = 620 } },
-        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
 
     {
         id = "lumbridge_guide", name = "Lumbridge Guide", rarity = "uncommon",
         desc = "Happy to help new adventurers.",
         art = { npc = "LUMBRIDGE_GUIDE", anim = 12296, cam = { dist = 2281, fov = 20, ty = 600, tx = 60 } },
-        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
 
     {
         id = "cook", name = "Cook", rarity = "uncommon",
         desc = "Always one ingredient short of a cake.",
         art = { anim = 9870, cam = { yaw = 0.20, fov = 20, ty = 620 } },
-        tags = { towns = { "lumbridge" }, skills = { "cooking" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, skills = { "cooking" }, category = { "humanoid" } },
     },
 
     {
         id = "bob", name = "Bob", rarity = "uncommon",
         desc = "Sells axes and strong opinions.",
         art = { anim = 23790, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
-        tags = { towns = { "lumbridge" }, skills = { "woodcutting" }, category = { "shopkeeper" } },
+        tags = { location = { "lumbridge" }, skills = { "woodcutting" }, category = { "shopkeeper" } },
     },
 
     {
         id = "fred", name = "Fred the Farmer", rarity = "uncommon",
         desc = "Very fond of his sheep.",
         art = { npc = "FRED_THE_FARMER", anim = 15, cam = { yaw = 0.20, pitch = 0.30, fov = 20, ty = 600 } },
-        tags = { towns = { "lumbridge" }, skills = { "farming" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, skills = { "farming" }, category = { "humanoid" } },
     },
 
     {
         id = "aereck", name = "Father Aereck", rarity = "uncommon",
         desc = "Keeps the chapel quiet and tidy.",
         art = { npc = "FATHER_AERECK", anim = 13773, cam = { yaw = -0.40, fov = 20, ty = 580, tx = 10 } },
-        tags = { towns = { "lumbridge" }, skills = { "prayer" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, skills = { "prayer" }, category = { "humanoid" } },
     },
 
     {
         id = "duke_horacio", name = "Duke Horacio", rarity = "rare",
         desc = "Rules Lumbridge from the castle.",
         art = { npc = "DUKE_OF_LUMBRIDGE", anim = 9870, cam = { yaw = 0.20, fov = 20, ty = 600 } },
-        tags = { towns = { "lumbridge" }, category = { "royalty" } },
+        tags = { location = { "lumbridge" }, category = { "royalty" } },
     },
 
     {
         id = "gertrude", name = "Gertrude", rarity = "rare",
         desc = "Lives with a great many cats.",
         art = { anim = 3, cam = { yaw = -0.40, fov = 20, ty = 600, tx = 10 } },
-        tags = { towns = { "varrock" }, category = { "humanoid" } },
+        tags = { location = { "varrock" }, category = { "humanoid" } },
     },
 
     {
         id = "aggie", name = "Aggie", rarity = "rare",
         desc = "Mixes dyes and asks for coins.",
         art = { anim = 5363, cam = { yaw = 0.60, pitch = -0.30, fov = 20, ty = 600, tx = 20 } },
-        tags = { towns = { "draynor" }, skills = { "herblore" }, category = { "humanoid" } },
+        tags = { location = { "draynor" }, skills = { "herblore" }, category = { "humanoid" } },
     },
 
     {
         id = "WOM_CUTSCENE_4", name = "Wise Old Man", rarity = "epic",
         desc = "Claims to know a great deal about everything.",
         art = { anim = 813, cam = { yaw = 0.40, fov = 20, ty = 580, tx = 20 } },
-        tags = { towns = { "draynor" }, category = { "humanoid" } },
+        tags = { location = { "draynor" }, category = { "humanoid" } },
     },
 
     -- Drafts (waiting for an NPC name)
@@ -103,21 +103,21 @@ Set.cards = {
         id = "hatius", name = "Hatius Cosaintus", rarity = "uncommon",
         desc = "Knows every story about Lumbridge.",
         art = { npc = "" },
-        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
 
     {
         id = "doomsayer", name = "Doomsayer", rarity = "uncommon",
         desc = "Always certain the end is near.",
         art = { npc = "" },
-        tags = { towns = { "lumbridge" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
 
     {
         id = "restless_ghost", name = "Restless ghost", rarity = "rare",
         desc = "Just wants its skull back.",
         art = { npc = "" },
-        tags = { towns = { "lumbridge" }, category = { "undead" } },
+        tags = { location = { "lumbridge" }, category = { "undead" } },
     },
 }
 
