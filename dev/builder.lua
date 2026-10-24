@@ -355,6 +355,10 @@ local WIN_H = BOTTOM_Y + 220
 local window, content = nil, nil
 local widgets = {}          -- the parts that change after the window is built
 local settingField = false  -- true while the code (not the player) changes a text box
+-- What the code last put in each text box. The client can report a change to a box after the
+-- code has finished setting it, so a change that matches this is the code's own, not typing.
+-- It counts once: the first report that matches is dropped, and any other clears it.
+local lastSet = setmetatable({}, { __mode = "k" })
 local checkParts = {}       -- the texts of the checks and the block, rebuilt on every change
 local pending = nil         -- seconds until the card is redrawn (it waits for typing to stop)
 local REDRAW_DELAY = 0.6
@@ -373,10 +377,17 @@ local function field(x, y, w, maxLength, value, onChange)
     settingField = true
     box.content = value or ""
     settingField = false
+    lastSet[box] = value or ""
     box:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
-        if not settingField then
-            onChange(box.content)
+        if settingField then
+            return
         end
+        if box.content == lastSet[box] then
+            lastSet[box] = nil       -- the code's own change, reported late
+            return
+        end
+        lastSet[box] = nil
+        onChange(box.content)
     end)
     return box
 end
@@ -389,6 +400,7 @@ local function setField(box, text)
     settingField = true
     box.content = text
     settingField = false
+    lastSet[box] = text
 end
 
 local function clearParts(list)
@@ -716,6 +728,11 @@ function Builder.show()
         if settingField then
             return
         end
+        if widgets.animField.content == lastSet[widgets.animField] then
+            lastSet[widgets.animField] = nil
+            return
+        end
+        lastSet[widgets.animField] = nil
         local typed = tonumber(widgets.animField.content)
         if typed ~= nil or widgets.animField.content == "" then
             setAnim(typed)
