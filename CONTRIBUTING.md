@@ -131,19 +131,23 @@ commas:
 
 | Kind | Meaning | Example |
 |------|---------|---------|
-| `locations` | where the NPC is found | `lumbridge`, `varrock sewers`, `feldip hills` |
+| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `varrock_sewers`, `feldip_hills` |
 | `skills` | skills it is linked to | `cooking`, `prayer` |
-| `category` | what kind of character | `humanoid`, `beast`, `demon`, `tradeable` |
+| `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
 
 The region comes from the deck file, so it is not asked for.
 
 - Tag words are **lower case letters, digits and underscores**, starting with a letter. The
   Card Builder will not accept anything else.
 - Use an existing word if one fits. The checks tell you when a word is new.
-- **A new word is allowed.** For `location` and `skills`, new words must also be added to the list in
-  `Cards.tagWords` in `core/cards.lua` (the Card Builder shows a note saying exactly which). For
-  `category`, there is no list yet; a new word just needs to be a sensible one that others can
-  reuse.
+- **A new word is allowed.** For `location`, `skills` and `category`, a new word must also be
+  added to the list in `Cards.tagWords` in `core/cards.lua` (the Card Builder shows a note saying
+  exactly which line to add). The plugin refuses to load a card with a word that is not on its
+  list, so a typo cannot slip through. Keep new words short, in the singular, and sensible enough
+  for others to reuse (`monster`, not `monsters` or `scary_thing`).
+- `category` words say what the NPC is (`humanoid`, `animal`, `dragon`), what it does
+  (`shopkeeper`, `guard`, `knight`), or whether it can be fought (`monster`, `boss`). A card can
+  have several, for example `{ "humanoid", "monster" }`.
 
 ### Art
 
