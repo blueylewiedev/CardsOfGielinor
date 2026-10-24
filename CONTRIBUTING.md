@@ -22,6 +22,7 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
 4. [Submitting your cards](#submitting-your-cards)
 5. [Artwork](#artwork)
 6. [Code changes](#code-changes)
+7. [Licence and ownership](#licence-and-ownership)
 
 ---
 
@@ -201,8 +202,7 @@ Rules for artwork:
 - Use PNG with transparency (RGBA), at exactly the sizes above.
 - Keep the files small; the plugin has size limits for its resources.
 - Check it in the game, on every rarity and finish, using the Card Builder's preview.
-- By submitting artwork you confirm it is yours and that it may be included in and distributed
-  with the plugin.
+- By submitting artwork you agree to the terms in [Licence and ownership](#licence-and-ownership) below.
 
 ---
 
@@ -214,5 +214,35 @@ have found a bug or have an idea:
 1. Open an **issue** describing it (what you saw, or what you would like).
 2. Wait for a reply before writing code. A pull request that changes code outside `deck/` and
    `resources/` without a discussion first may be closed.
+
+---
+
+## Licence and ownership
+
+**The code.** The plugin's code, including the card files in `deck/`, is under the
+[PolyForm Strict License 1.0.0](LICENSE). It is source-available: it may be read and used for
+noncommercial purposes, but not distributed or modified, except as set out below.
+
+**Permission to contribute.** You may copy this repository and change your copy on your own
+computer, only to prepare a contribution to this project and to send it as a pull request. This
+is the only change to the code the licence allows.
+
+**Cards.** By sending a card (its id, name, description, tags and art settings) you confirm that
+the text is your own writing, and you give the project owner a non-exclusive, perpetual,
+worldwide, royalty-free right to use, change and distribute it as part of Card Collector.
+
+**Artwork.** You keep ownership of any artwork you create. By sending it you give the project owner
+a non-exclusive, worldwide, royalty-free licence to include it in Card Collector, to resize or
+adjust it so that it fits, and to distribute it as part of the plugin, and for no other purpose.
+It will not be sold. You are free to use your artwork anywhere else.
+
+- You can ask for your artwork to be removed from future versions of the plugin. Versions that
+  have already been released are not affected.
+- You confirm that you made it, that it is not copied from the game, from other artists or from
+  anywhere else.
+- You will be credited in `resources/images/CREDITS.md`.
+
+**What is not covered.** RuneScape and its characters, names and models belong to Jagex. Card
+Collector uses them through the official plugin API.
 
 Thank you for helping to make the deck bigger and better!
