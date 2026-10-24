@@ -10,7 +10,7 @@ use it for noncommercial purposes, but you may not distribute it or modify it, e
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 The artwork in `resources/images/` is not covered by that licence. It is used with the permission of
-whoever made it, and some of it is AI-generated. See [resources/images/CREDITS.md](resources/images/CREDITS.md).
+the creator. See [resources/images/CREDITS.md](resources/images/CREDITS.md).
 
 RuneScape and its characters, names and models belong to Jagex.
 
