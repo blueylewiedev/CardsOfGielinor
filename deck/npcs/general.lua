@@ -42,6 +42,13 @@ Set.cards = {
     },
 
     {
+        id = "woman", name = "Woman", rarity = "common",
+        desc = "One of Gielinor's many citizens",
+        art = { npc = "LUMBRIDGE_MARKET_WOMAN3", anim = 37589, cam = { dist = 988, fov = 40, ty = 500, tx = 30 } },
+        tags = { skills = { "thieving" }, category = { "humanoid" } },
+    },
+    
+    {
         id = "LUMBRIDGE_MARKET_MAN1", name = "Man", rarity = "common",
         desc = "Just a man, going about his day.",
         tags = { skills = { "thieving" }, category = { "humanoid" } },
@@ -54,28 +61,42 @@ Set.cards = {
         tags = { category = { "animal" } },
     },
 
-    -- Drafts (waiting for an NPC name)
-
     {
-        id = "guard", name = "Guard", rarity = "common",
-        desc = "Keeps the peace, wherever they stand.",
-        art = { npc = "" },
-        tags = { skills = { "thieving" }, category = { "guard" } },
+        id = "shopkeeper", name = "Shopkeeper", rarity = "epic",
+        desc = "Sells stuff",
+        art = { npc = "GENERALSHOPKEEPER1", anim = 23783, cam = { yaw = 0.40, dist = 750, fov = 35, ty = 620, tx = 10 } },
+        tags = { category = { "humanoid", "shopkeeper" } },
     },
 
     {
-        id = "shop_keeper", name = "Shop keeper", rarity = "common",
-        desc = "Sells a little bit of everything.",
-        art = { npc = "" },
-        tags = { category = { "humanoid" } },
+        id = "giant_spider", name = "Giant spider", rarity = "common",
+        desc = "Aaaaargh! It's Huge!",
+        art = { npc = "LUMBRIDGE_GIANTSPIDER", anim = 5326, cam = { pitch = 0.30, dist = 748, fov = 40, ty = 40 } },
+        tags = { skills = { "slayer"}, category = { "monster", "insect" } },
     },
 
     {
-        id = "giant_frog", name = "Giant frog", rarity = "common",
-        desc = "Croaks all day in the swamp.",
-        art = { npc = "" },
-        tags = { category = { "animal" } },
+        id = "cave_bug", name = "Cave bug", rarity = "uncommon",
+        desc = "A nasty crawling critter",
+        art = { npc = "SWAMP_CAVE_BUG", anim = 6077, cam = { yaw = 0.40, pitch = 0.15, dist = 650, fov = 40, ty = 120 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan", "burthorpe", "chaos_tunnels" }, skills = { "slayer" }, category = { "insect", "monster" } },
     },
+
+    {
+        id = "cave_crawler", name = "Cave crawler", rarity = "rare",
+        desc = "A spiky crawling critter.",
+        art = { npc = "SLAYER_CAVE_CRAWLER_4", anim = 24517, cam = { yaw = -0.40, pitch = 0.30, dist = 1306, fov = 40, ty = 100, tx = 110 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan", "frem_slayer_dung" }, skills = { "slayer" }, category = { "animal", "monster" } },
+    },
+
+    {
+        id = "rock_slug", name = "Rock slug", rarity = "rare",
+        desc = "The slime of evil.",
+        art = { npc = "SLAYER_ROCKSLUG", anim = 23852, cam = { yaw = -0.20, pitch = -0.15, dist = 748, fov = 30, ty = 120, tx = 40 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan", "frem_slayer_dung" }, skills = { "slayer" }, category = { "animal", "monster" } },
+    },
+
+    
 }
 
 return Set

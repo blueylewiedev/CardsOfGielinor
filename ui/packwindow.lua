@@ -518,7 +518,7 @@ function PackWindow.show(newApi)
     -- `window` is the frame (resized per screen); `content` is what the screens go inside.
     window, content = Kit.window(gameWindow, "Card Collector", WIDTH, HEIGHTS.nosession, function()
         PackWindow.hide()
-    end)
+    end, 0, 0.2)
     buildScreens()
     PackWindow.refresh()
 end
