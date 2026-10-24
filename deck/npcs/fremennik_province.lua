@@ -6,3 +6,5 @@ Set.defaults = { regions = { "fremennik_province" } }
 Set.cards = {
 
 }
+
+return Set

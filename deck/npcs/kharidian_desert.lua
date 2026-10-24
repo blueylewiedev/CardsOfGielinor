@@ -6,3 +6,5 @@ Set.defaults = { regions = { "kharidian_desert" } }
 Set.cards = {
 
 }
+
+return Set

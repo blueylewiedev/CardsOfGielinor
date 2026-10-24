@@ -85,7 +85,8 @@ Cards.packTypes = {
 -- never silently drops a card out of a themed pack. Add a word here before using it. Tag kinds
 -- that are not listed (such as `category`) are not checked.
 Cards.tagWords = {
-    regions  = { "misthalin", "asgarnia", "kandarin" },
+    regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
+                "tirannwn", "fremennik_province", "wilderness" },
     location = { "lumbridge", "falador", "ardougne", "draynor", "varrock" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",

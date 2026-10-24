@@ -6,3 +6,5 @@ Set.defaults = { regions = { "tirannwn" } }
 Set.cards = {
 
 }
+
+return Set
