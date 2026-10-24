@@ -70,7 +70,6 @@ checks it as you go. You do not need to know how the code works.
    - **Model** switches between the NPC's whole body (the default) and its head.
    - The **camera buttons** zoom, move and turn the camera. Aim to fill the picture window with
      the NPC, with the face visible. A look through the existing cards gives a good idea.
-   - **Finish** shows the card as a normal, reverse holo and holo card. Check all three.
    - **Animation** is optional. Type a sequence id, step through ids with the +/- buttons, or
      press **Search anims** to look for an animation by name and **Use** to try it. Pick an idle
      or other animation that loops smoothly.
@@ -167,8 +166,7 @@ NPC.
 2. Keep each pull request focused: a handful of related cards is easy to review, a hundred is not.
 3. Before you push, check that:
    - [ ] the plugin loads without errors after `prl`,
-   - [ ] each card appears correctly in the Card Builder preview in **normal, reverse holo and
-         holo**,
+   - [ ] each card appears correctly in the Card Builder preview,
    - [ ] the checks in the Card Builder show no **Fix** lines,
    - [ ] you used the Card Builder's block as it is (and added any new tag words to
          `Cards.tagWords`),
@@ -189,8 +187,6 @@ first to agree what you are making before spending time on it.
 | File | Size | Notes |
 |------|------|-------|
 | `frame_<rarity>.png` | 320 x 448 | One for each of common, uncommon, rare, epic, legendary. The window for the NPC must be **transparent**. Its position is set in `CardView.FRAME_ZONES` in `ui/cardview.lua`, so a frame with a window in a different place needs a code change as well |
-| `reverse_<rarity>_a.png`, `_b.png` | 320 x 448 | Shine for reverse holo cards, shaped like the frame |
-| `holo_a.png`, `holo_b.png` | 256 x 192 | Shine over the art window of holo cards |
 | `card_back.png` | 320 x 448 | The back of a card, with transparent rounded corners |
 | `pack.png` | 320 x 512 | The sealed pack |
 | `glow_<rarity>.png` | 456 x 616 | The glow behind a card in the pack opening |
@@ -201,7 +197,7 @@ Rules for artwork:
   from Jagex, or from anywhere else, and do not use RuneScape logos, fonts or screenshots.
 - Use PNG with transparency (RGBA), at exactly the sizes above.
 - Keep the files small; the plugin has size limits for its resources.
-- Check it in the game, on every rarity and finish, using the Card Builder's preview.
+- Check it in the game, on every rarity, using the Card Builder's preview.
 - By submitting artwork you agree to the terms in [Licence and ownership](#licence-and-ownership) below.
 
 ---

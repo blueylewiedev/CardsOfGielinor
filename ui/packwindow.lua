@@ -86,7 +86,7 @@ end
 -- A pack is bought and rolled straight away (and saved), then shown in stages:
 --   sealed    : the pack image. "Tear open" (or clicking the pack) opens it.
 --   facedown  : the next card, showing the card back. "Flip card" (or clicking it) turns it.
---   faceup    : the card, with its finish, whether it is new, and a glow for rarer cards.
+--   faceup    : the card, whether it is new, and a glow for rarer cards.
 --                "Next" goes to the following card, "Done" after the last one.
 -- Tearing the pack and flipping a card are short animations driven by the Draw event.
 -- If the pack image is missing the sealed stage is skipped; if the card back is missing a
@@ -241,7 +241,7 @@ local function showFaceDown()
         reveal.glow = { sprite = glow, strength = rarity.glow, age = 0 }
     end
 
-    reveal.view = CardView.create(content, result.card, { finish = result.finish })
+    reveal.view = CardView.create(content, result.card)
     reveal.view.root:SetPos(x, CARD_Y)
     track(reveal.view.root)
     -- Hidden until it is flipped, so nothing of it (a frame edge, the glow) can show round the
@@ -296,7 +296,6 @@ local function showFaceUp()
         clickable(reveal.view.root)
     end
     local result = reveal.results[reveal.index]
-    setText(widgets.variantText, Cards.finishes[result.finish].name)
     if result.isNewCard then
         setText(widgets.newText, "NEW CARD!")
         widgets.newText.colour = GOLD

@@ -146,22 +146,6 @@ function Packs.open(state, packTypeId)
         rolled[i] = Packs.rollCard(pool)
     end
 
-    -- A pack that guarantees holos turns random non-holo cards into holos until it has enough.
-    local wanted = math.min(packType.guaranteedHolos or 0, size)
-    local holos = 0
-    for _, result in ipairs(rolled) do
-        if result.finish == "holo" then holos = holos + 1 end
-    end
-    while holos < wanted do
-        local index = math.random(size)
-        local result = rolled[index]
-        if result.finish ~= "holo" then
-            result.finish = "holo"
-            result.key = Cards.variantKey(result.card.id, "holo")
-            holos = holos + 1
-        end
-    end
-
     local results = {}
     for i = 1, size do
         local result = rolled[i]

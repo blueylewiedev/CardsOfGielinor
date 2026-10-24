@@ -20,9 +20,7 @@ local WIDTH = 300
 local LINE_H = 22
 local TOP = 8
 
--- Display order and colours for the finish and rarity lines.
-local FINISH_ORDER = { "normal", "reverse", "holo" }
-local FINISH_COLOUR = { normal = GREY, reverse = PURPLE, holo = CYAN }
+-- Display order for the rarity lines.
 local RARITY_ORDER = { "common", "uncommon", "rare", "epic", "legendary" }
 
 -- "3 (10.0%, 1 in 10)", or just "0" when nothing has been pulled yet.
@@ -41,17 +39,9 @@ function Stats.lines(state)
         { "Cards pulled: " .. s.cardsPulled, WHITE },
         { "Credits earned: " .. s.creditsEarned, WHITE },
         { "Credits spent: " .. s.creditsSpent, WHITE },
-        { "" },
-        { "Pull rates", GOLD },
     }
-    for _, finish in ipairs(FINISH_ORDER) do
-        if Cards.finishes[finish] ~= nil then
-            lines[#lines + 1] = { Cards.finishes[finish].name .. ": " .. rate(s.finishes[finish] or 0, s.cardsPulled),
-                FINISH_COLOUR[finish] }
-        end
-    end
     lines[#lines + 1] = { "" }
-    lines[#lines + 1] = { "By rarity", GOLD }
+    lines[#lines + 1] = { "Pull rates by rarity", GOLD }
     for _, rarity in ipairs(RARITY_ORDER) do
         if Cards.rarities[rarity] ~= nil then
             lines[#lines + 1] = { Cards.rarities[rarity].name .. ": " .. rate(s.rarities[rarity] or 0, s.cardsPulled), GREY }

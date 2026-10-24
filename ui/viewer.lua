@@ -42,7 +42,7 @@ local HEIGHT = TOP + ROWS * TILE_H + 10
 local PER_PAGE = COLS * ROWS
 
 -- Display order for a card's variants: standard first, then by finish.
-local FINISH_ORDER = { normal = 1, reverse = 2, holo = 3 }
+local FINISH_ORDER = { normal = 1 }
 
 local api = nil          -- api.getState() : the logged-in character's collection, or nil
 local window = nil
@@ -109,14 +109,12 @@ local function makeButton(label, x, y, w, h, onPress)
     return Kit.button(content, label, x, y, w, h, onPress)
 end
 
--- Progress bars in the side panel: how much of each finish (and of everything) is collected.
+-- Progress bars in the side panel: how much of the base set (and of everything) is collected.
 -- Each is a text line with a bar under it: a dark rectangle with a coloured one on top that
 -- is as wide as the fraction collected.
 local BAR_W, BAR_H = SIDE_W - 24, 12
 local BARS = {
     { key = "normal",  label = "Base set",     colour = BAR_BASE },
-    { key = "reverse", label = "Reverse holo", colour = PURPLE },
-    { key = "holo",    label = "Holo",         colour = CYAN },
     { key = "all",     label = "Total",        colour = GOLD },
 }
 local BARS_TOP = 200
@@ -185,9 +183,7 @@ local function variantLabel(entry)
     if #names == 0 then
         return "Standard", GREY
     end
-    local colour = CYAN
-    if entry.finish == "reverse" then colour = PURPLE end
-    return table.concat(names, " "), colour
+    return table.concat(names, " "), CYAN
 end
 
 -- Draws the current page: the cards, their variant and count lines, the bars and the page text.

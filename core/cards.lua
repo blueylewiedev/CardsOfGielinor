@@ -23,19 +23,16 @@ for rank, key in ipairs(Cards.rarityOrder) do
     Cards.rarityRank[key] = rank
 end
 
--- Variants. Every card the player owns is one card + one finish.
---   finish    : the shine on top. holo is over the art, reverse is over the frame.
+-- Variants. Every card the player owns is one card + one finish. For now there is only the
+-- normal finish; reverse holo and holo were taken out to keep things simple, but the saving
+-- format ("<card id>|<finish>") still has room for them, so they can be added back later.
 Cards.finishes = {
-    normal  = { name = "Normal" },
-    reverse = { name = "Reverse Holo" },
-    holo    = { name = "Holo" },
+    normal = { name = "Normal" },
 }
 
 -- Pull odds. This is a relative weight, rolled separately from rarity, so they stack.
---   finish   : normal 44 / reverse 10 / holo 6   (out of 60)
---              -> normal 73.3%, reverse holo 16.7% (1 in 6), holo 10% (1 in 10)
 Cards.odds = {
-    finish = { normal = 44, reverse = 10, holo = 6 },
+    finish = { normal = 1 },
 }
 
 -- The card format (the cards are written in the files listed in deck/index.lua).
@@ -77,7 +74,6 @@ Cards.list = {}
 --                   keys must match. Example: { skills = "thieving" } or
 --                   { category = { "weapon", "tool" } }
 --   minRarity     : optional. Only cards of this rarity or better can be pulled.
---   guaranteedHolos : optional. At least this many holo cards in the pack.
 -- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later
 -- only needs the window; nothing in this table touches the game.
 Cards.packTypes = {
@@ -154,7 +150,7 @@ do
 end
 
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
--- "hans|normal" or "hans|holo".
+-- "hans|normal".
 function Cards.variantKey(cardId, finish)
     assert(Cards.finishes[finish], "Unknown finish " .. tostring(finish))
     return cardId .. "|" .. finish
