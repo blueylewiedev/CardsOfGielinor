@@ -48,42 +48,104 @@ The `dev/` folder holds the developer tools. They load automatically when the fo
 ## Adding a card
 
 The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
-checks it as you go. You do not need to know how the code works.
+checks it as you go. You do not need to know how the code works to be able to contribute :).
+
+<img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press **Nearby NPCs**, then **Scan**, then **Use** on the
      NPC you want. This picks the exact NPC (many NPCs have several versions with different
-     models, and the one standing in front of you is the one to use), or
-   - press **Search NPCs**, type part of the name and press **Use**, or
-   - type the NPC's *config name* (for example `FATHER_AERECK`) into the box. In the developer
+     models, and the one standing in front of you is the one to use),
+
+   <img width="1070" height="576" alt="image" src="https://github.com/user-attachments/assets/a2ca367c-35ec-4251-888e-b8b1f27efdf5" />
+
+   - or press **Search NPCs**, type part of the name and press **Use**,
+
+   <img width="711" height="579" alt="image" src="https://github.com/user-attachments/assets/7040bd1b-614e-4b6e-890a-2c63ed4f11aa" />
+
+   - or type the NPC's *config name* (for example `FATHER_AERECK`) into the box. In the developer
      console, `pan NPC` lists the config names.
+
+   <img width="1344" height="988" alt="image" src="https://github.com/user-attachments/assets/1084552a-c8a3-4e45-84ba-3185022cf06c" />
 
    The box says **Found** when the client knows the NPC. The name and the id are filled in for
    you, and the card appears in the preview.
-2. **Check the name and id.** The name is what is printed on the card. The id follows the name
+3. **Check the name and id.** The name is what is printed on the card. The id follows the name
    (see [Ids](#ids)). Change either if you need to.
-3. **Write a description** (up to 60 letters, shorter is better).
-4. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
-5. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
+
+   If the generated Card Id automatically defaults to the name of the npc followed by "_2" check to make sure a card for that NPC doesn't
+   already exist.
+
+   <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
+
+5. **Write a description** (up to 60 letters, shorter is better).
+
+   <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
+
+6. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
+   We may not agree with the rarity you choose for your submitted cards, in this case we will open a discussion with you to reach an agreement.
+
+   <img width="417" height="247" alt="image" src="https://github.com/user-attachments/assets/435df749-9a57-47fc-9128-8287b677fb12" />
+
+8. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
    that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
    (click it again to remove it). The Filter box narrows the words. You can also type them. Press **Pick tags** to choose from the words
    that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
    (click it again to remove it). The Filter box narrows the words. You can also type them.
-6. **Choose the deck file** the card belongs in (see [Which deck file](#which-deck-file)).
-7. **Tune the art.**
+
+   <img width="711" height="318" alt="image" src="https://github.com/user-attachments/assets/ce56db55-d3a5-42af-8ed8-fe5cba3b90ec" />
+   <img width="709" height="519" alt="image" src="https://github.com/user-attachments/assets/9f111aba-2b31-42f1-83f9-44d59d4473e6" />
+   <img width="708" height="641" alt="image" src="https://github.com/user-attachments/assets/7cc345e4-ecc7-4061-9845-52139bbddbb1" />
+
+For this example, we will select no tags for location, as the Woman NPC can be found in many places across Gielinor.
+We will select the Thieving tag for Skills as Women are a common early Thieving NPC.
+For the Category tags we will select Humanoid and Monster (Monster signifies that this NPC is attackable)
+
+You may add new tags should you wish, just type the tag manually into the text field, separated by commas.
+*If you do create new tags, make sure you also add them to the relevant list in the Cards file.
+If you don't know or are unsure on how to do that, make a note of the tags that need adding in your PR.
+
+<img width="1331" height="371" alt="image" src="https://github.com/user-attachments/assets/b0a76167-5038-4253-9d78-263e4d17c2b3" />
+
+10. **Choose the deck file** the card belongs in (see [Which deck file](#which-deck-file)).
+
+<img width="571" height="231" alt="image" src="https://github.com/user-attachments/assets/b1ae1091-bcf3-446e-a540-616815358fa2" />
+
+11. **Tune the art.**
    - **Model** switches between the NPC's whole body (the default) and its head.
    - The **camera buttons** zoom, move and turn the camera. Aim to fill the picture window with
      the NPC, with the face visible. A look through the existing cards gives a good idea.
+
+<img width="736" height="379" alt="image" src="https://github.com/user-attachments/assets/260b93a7-7885-4100-abea-7537df0bb1f9" />
+
+     
    - **Animation** is optional. Type a sequence id, step through ids with the +/- buttons, or
      press **Search anims** to look for an animation by name and **Use** to try it. Pick an idle
      or other animation that loops smoothly.
-8. **Read the checks** at the bottom left. Anything marked **Fix** has to be sorted out before
+   - On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
+     While the specific animation you need might not be named exactly the same, it will likely be similar.
+
+     <img width="595" height="175" alt="image" src="https://github.com/user-attachments/assets/937f213f-4f48-4ead-b68a-99b9160181c0" />
+     <img width="707" height="368" alt="image" src="https://github.com/user-attachments/assets/214aa0db-a9ef-4bb5-a3bf-9804666e272b" />
+     <img width="731" height="608" alt="Selecting_Animation" src="https://github.com/user-attachments/assets/b6342b75-d511-4237-b034-2c62b1a9b0ea" />
+
+     
+11. **Read the checks** at the bottom left. Anything marked **Fix** has to be sorted out before
    the block is ready. **Note** lines are worth a look but will not stop you.
-9. **Copy the card block.** Click the box under *Your card block*, press **Ctrl+A** then
+
+<img width="318" height="159" alt="image" src="https://github.com/user-attachments/assets/a75d2842-b0d2-4da7-8595-7e1b555121a7" />
+
+13. **Copy the card block.** Click the box under *Your card block*, press **Ctrl+A** then
    **Ctrl+C**.
-10. **Paste it** into the deck file you chose (see below), inside the `Set.cards` list. One card
-    goes on one line, which is fine; the maintainer may tidy the layout when merging.
-11. **Reload the plugin** (`prl`) and check that the card loads and looks right. The plugin
+
+   <img width="735" height="74" alt="image" src="https://github.com/user-attachments/assets/d25a5483-fb0b-43e7-bb43-12c2c543e6e3" />
+
+15. **Paste it** into the deck file you chose (see below), inside the `Set.cards` list. One card
+    goes on one line, which is fine; I can reformat the files myself and there will soon be a script that runs when merging that reformats the code automatically.
+
+   <img width="1177" height="1043" alt="adding_line" src="https://github.com/user-attachments/assets/ae83e7b9-f7cd-4db3-8610-678eca9223b7" />
+    
+17. **Reload the plugin** (`prl`) and check that the card loads and looks right. The plugin
     checks every card when it loads, and stops with a message naming the card if something is
     wrong.
 
