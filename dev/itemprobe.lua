@@ -455,7 +455,7 @@ function ItemProbe.showCard(objId)
     if cardWindow == nil then
         local layer = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
         local width = math.floor(160 * CARD_SCALE) + 160
-        local height = math.floor(224 * CARD_SCALE) + 30
+        local height = math.max(math.floor(224 * CARD_SCALE) + 30, 13 * 32 + 20)   -- room for the buttons
         cardWindow, cardContent = Kit.window(layer, "Item card", width, height + Kit.titleBarHeight(),
             function() ItemProbe.hideCard() end, 0.55, 0.12)
         local x, y = math.floor(160 * CARD_SCALE) + 24, 10
@@ -473,6 +473,9 @@ function ItemProbe.showCard(objId)
         button("Right", function(c) c.tx = c.tx - 5 end)
         button("Turn -", function(c) c.yaw = c.yaw - 0.2 end)
         button("Turn +", function(c) c.yaw = c.yaw + 0.2 end)
+        -- Item models lie flat (as if on the ground), so they need tilting up to face the camera.
+        button("Tilt -", function(c) c.pitch = c.pitch - 0.15 end)
+        button("Tilt +", function(c) c.pitch = c.pitch + 0.15 end)
         button("Reset", function(c)
             local defaults = CardView.defaultsFor(c)
             for field, value in pairs(defaults) do c[field] = value end
