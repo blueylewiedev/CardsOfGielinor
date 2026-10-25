@@ -1,11 +1,15 @@
 -- itemprobe.lua
--- Developer-only, throwaway: finds out how the client can show an item (an "Obj" in the API) on
--- a card. Type an item's config name (for example LOGS or STEEL_BAR) and press Probe. It
---   1. lists the members of ui.ModelType, ui.Model, ui.Sprite and config.Obj,
---   2. shows the item's inventory icon with a Sprite (SetAssociatedObject),
---   3. tries every ModelType that might be an item model, and shows each one it could load.
--- Everything it learns goes to the log and to the Output window, where lines can be copied.
--- Once the answer is known, this file can be deleted.
+-- Developer-only: a window for finding items (called "Obj" in the API) and seeing how they would
+-- look on a card. It can
+--   * Search: find an item by part of its config name or its in-game name, anywhere in the game
+--     (like the NPC search). Ignores capitals, spaces and underscores.
+--   * Show: type a config name (LOGS) or an id (1511) and show that item's icon and 3D model, with
+--     its data. Zoom - / Zoom + change the model's distance.
+--   * Read GE: list the player's Grand Exchange offers (the game only exposes offers that have
+--     been placed, not the item in the search or buy window) with each offer's item id,
+--     config name and in-game name. Each row has a Show button.
+-- Every id/name line it finds also goes to the Output window, where it can be copied.
+-- Item ids: id.Obj. Icon: ui.Sprite with associatedObjectID. Model: ui.ModelType.OBJECT.
 
 local Kit = require("ui/kit")
 local OutputWindow = require("dev/outputwindow")
@@ -14,196 +18,372 @@ local ItemProbe = {}
 
 local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
+local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 
-local WIN_W, WIN_H = 640, 420
-local BOX = 110
+local WIDTH = 700
+local ROW_H, MAX_ROWS = 30, 8
+local ROWS_TOP = 74
+local PREVIEW_TOP = ROWS_TOP + MAX_ROWS * ROW_H + 14
+local BOX = 150
+local HEIGHT = PREVIEW_TOP + BOX + 50
+local PER_FRAME = 400                 -- in-game names looked at each frame
+
+local STAGES = { [0] = "EMPTY", "ADDING", "ADDED", "VERIFYING", "ABORTING", "FINISHED" }
+local TYPES = { [0] = "BUY", "SELL" }
 
 local window, content = nil, nil
-local nameField = nil
-local parts = {}            -- components made by the last probe, destroyed by the next one
+local field, statusText, infoText = nil, nil, nil
+local rowParts = {}
+local previewParts = {}
+local index = nil                      -- every item: { id, configName, key }, read once
+local search = nil                     -- a search still checking in-game names
+local shownId = nil
+local distance = 300                   -- the model's viewDistance
 
--- Names that an item model type might have. Tried one by one, because the enum may not be listable.
-local GUESSES = {
-    "OBJECT", "OBJ", "OBJ_MODEL", "OBJ_HEAD", "OBJECT", "OBJECT_MODEL", "ITEM", "ITEM_MODEL", "INV", "INV_OBJ",
-    "LOC", "LOC_MODEL", "OBJ_MALE", "OBJ_FEMALE", "OBJ_WORN", "WORN", "PLAYER_MODEL", "PLAYER_HEAD",
-    "NPC_MODEL", "NPC_HEAD",
-}
+-- Lower case with everything but letters and digits removed.
+function ItemProbe.simplify(text)
+    return (string.gsub(string.lower(tostring(text or "")), "[^%w]", ""))
+end
 
 local function say(label, text)
     log("itemprobe:", label, text)
     OutputWindow.add("itemprobe", label .. " " .. text)
 end
 
--- The member names of a userdata or table, as far as the client lets us list them.
-local function members(object)
-    local names = {}
-    local function collect(source)
-        pcall(function()
-            for key, value in pairs(source) do
-                names[#names + 1] = tostring(key) .. (type(value) ~= "function" and ("=" .. tostring(value)) or "()")
-            end
-        end)
+local function setStatus(text)
+    if statusText ~= nil then
+        statusText.content = text
     end
-    collect(object)
-    if #names == 0 then
-        local meta = getmetatable(object)
-        if type(meta) == "table" then
-            collect(meta)
-            if type(meta.__index) == "table" then
-                collect(meta.__index)
+end
+
+local function destroyAll(list)
+    for i = #list, 1, -1 do
+        pcall(function() list[i]:Destroy() end)
+        list[i] = nil
+    end
+end
+
+-- The Obj config for an id, or nil.
+local function configOf(objId)
+    local ok, cfg = pcall(function() return config.Obj.FromID(objId) end)
+    if ok then
+        return cfg
+    end
+    return nil
+end
+
+-- A property of a config, or nil if it cannot be read.
+local function prop(cfg, name)
+    if cfg == nil then
+        return nil
+    end
+    local ok, value = pcall(function() return cfg[name] end)
+    if ok then
+        return value
+    end
+    return nil
+end
+
+local function displayName(objId)
+    local name = prop(configOf(objId), "name")
+    return type(name) == "string" and name or "?"
+end
+
+-- Reads id.Obj once. Returns the list, or nil if the client would not list it.
+local function loadIndex()
+    if index ~= nil then
+        return index
+    end
+    local list = {}
+    local ok = pcall(function()
+        for key, value in pairs(id.Obj) do
+            local objId, name = key, value
+            if type(key) == "string" and type(value) == "number" then
+                objId, name = value, key
+            end
+            if type(objId) == "number" and type(name) == "string" then
+                list[#list + 1] = { id = objId, configName = name, key = ItemProbe.simplify(name) }
+            end
+        end
+    end)
+    if not ok or #list == 0 then
+        return nil
+    end
+    table.sort(list, function(a, b) return a.id < b.id end)
+    index = list
+    return index
+end
+
+-- The items whose config name contains `text` (at most `limit`), as { id, configName, name }.
+function ItemProbe.find(text, limit)
+    local list = loadIndex()
+    if list == nil then
+        return nil
+    end
+    local wanted = ItemProbe.simplify(text)
+    local found = {}
+    if wanted == "" then
+        return found
+    end
+    for _, entry in ipairs(list) do
+        if string.find(entry.key, wanted, 1, true) ~= nil then
+            found[#found + 1] = { id = entry.id, configName = entry.configName, name = displayName(entry.id) }
+            if #found >= limit then
+                break
             end
         end
     end
-    table.sort(names)
-    return names
+    return found
 end
 
-local function listOf(label, object)
-    if object == nil then
-        say(label, "is nil")
+-- Resolves what was typed: an id (digits), or a config name. Returns id, configName or nil.
+function ItemProbe.resolve(text)
+    text = tostring(text or "")
+    local number = tonumber(text)
+    if number ~= nil then
+        local cfg = configOf(number)
+        if cfg ~= nil and prop(cfg, "id") ~= nil then
+            return number, prop(cfg, "configName")
+        end
+        return nil
+    end
+    local wanted = ItemProbe.simplify(text)
+    if wanted == "" then
+        return nil
+    end
+    local list = loadIndex()
+    if list == nil then
+        return nil
+    end
+    for _, entry in ipairs(list) do
+        if entry.key == wanted then
+            return entry.id, entry.configName
+        end
+    end
+    return nil
+end
+
+-- ---------------------------------------------------------------------------------------------
+-- The preview: icon, model and data for one item.
+
+local function showItem(objId)
+    destroyAll(previewParts)
+    shownId = objId
+    local cfg = configOf(objId)
+    local configName = prop(cfg, "configName") or "?"
+    local name = prop(cfg, "name") or "?"
+    if content == nil then
         return
     end
-    local names = members(object)
-    say(label, #names .. " members: " .. table.concat(names, ", "))
-end
 
-local function clear()
-    for _, part in ipairs(parts) do
-        pcall(function() part:Destroy() end)
-    end
-    parts = {}
-end
-
--- Finds the Obj for a config name. Returns its numeric id, or nil.
-local function findObj(name)
-    local ok, cfg = pcall(function() return config.Obj[name] end)
-    if ok and cfg ~= nil then
-        local idOk, value = pcall(function() return cfg.id end)
-        if idOk and type(value) == "number" then
-            say("config.Obj." .. name, "id " .. value .. ", display name " .. tostring(cfg.name))
-            return value, cfg
-        end
-    end
-    local ok2, value = pcall(function() return id.Obj[name] end)
-    if ok2 and type(value) == "number" then
-        say("id.Obj." .. name, "id " .. value)
-        return value, nil
-    end
-    say("lookup", "no Obj named " .. name .. " (config.Obj: " .. tostring(cfg) .. ")")
-    return nil, nil
-end
-
-local function probeIcon(objId)
     local ok, err = pcall(function()
         local sprite = ui.Sprite.new(content)
-        parts[#parts + 1] = sprite
-        sprite:SetPos(10, 90)
+        previewParts[#previewParts + 1] = sprite
+        sprite:SetPos(10, PREVIEW_TOP + 40)
         sprite:SetSize(64, 64)
-        -- The first probe showed the members are associatedObjectID, associatedObjectQuantity and
-        -- associatedObjectQuantityMode (I had used the wrong name). Try the properties first.
-        local function attempt(label, fn)
-            local done, problem = pcall(fn)
-            say("icon " .. label, done and "ok" or ("failed: " .. tostring(problem)))
-            return done
-        end
-        attempt("property associatedObjectID", function() sprite.associatedObjectID = objId end)
-        attempt("property associatedObjectQuantity", function() sprite.associatedObjectQuantity = 1 end)
-        say("icon reads back", "id=" .. tostring(sprite.associatedObjectID) .. " quantity="
-            .. tostring(sprite.associatedObjectQuantity) .. " mode=" .. tostring(sprite.associatedObjectQuantityMode)
-            .. " spriteID=" .. tostring(sprite.spriteID))
-        -- The method rejected (id, 1), so try other shapes: the config, the id alone, three arguments.
-        attempt("SetAssociatedObject(id)", function() sprite:SetAssociatedObject(objId) end)
-        attempt("SetAssociatedObject(config)", function() sprite:SetAssociatedObject(config.Obj.FromID(objId)) end)
-        attempt("SetAssociatedObject(config, 1)", function() sprite:SetAssociatedObject(config.Obj.FromID(objId), 1) end)
-        attempt("SetAssociatedObject(id, 1, 0)", function() sprite:SetAssociatedObject(objId, 1, 0) end)
-        say("icon reads back after", "id=" .. tostring(sprite.associatedObjectID) .. " quantity="
-            .. tostring(sprite.associatedObjectQuantity))
+        sprite.associatedObjectID = objId
+        sprite.associatedObjectQuantity = 1
     end)
     if not ok then
-        say("icon", "failed: " .. tostring(err))
+        say("icon failed", tostring(err))
     end
-    parts[#parts + 1] = Kit.text(content, 10, 156, 120, 20, "Icon (Sprite)", GREY, ui.AlignMode.TOPLEFT)
-end
+    previewParts[#previewParts + 1] = Kit.text(content, 10, PREVIEW_TOP + 108, 80, 20, "Icon", GREY, ui.AlignMode.TOPLEFT)
 
--- Lists the model types by asking the enum for each number (it cannot be listed with pairs).
-local function listModelTypes()
-    local found = {}
-    for number = 0, 60 do
-        local ok, value = pcall(function() return ui.ModelType.FromID(number) end)
-        if ok and value ~= nil then
-            found[#found + 1] = number .. "=" .. tostring(value)
-        end
-    end
-    say("ui.ModelType.FromID 0-60", #found .. " found: " .. table.concat(found, ", "))
-end
-
-local function tryModel(typeName, modelType, objId, slot)
-    local x = 150 + (slot - 1) * (BOX + 10)
-    local ok, err = pcall(function()
+    local modelOk, modelErr = pcall(function()
         local model = ui.Model.new(content)
-        parts[#parts + 1] = model
-        model:SetPos(x, 90)
+        previewParts[#previewParts + 1] = model
+        model:SetPos(100, PREVIEW_TOP)
         model:SetSize(BOX, BOX)
         model.modelWidth = BOX
         model.modelHeight = BOX
-        model.viewDistance = 300
-        model:SetModel(modelType, objId)
+        model.viewDistance = distance
+        model:SetModel(ui.ModelType.OBJECT, objId)
     end)
-    say("SetModel " .. typeName, ok and "ok (a model box is shown)" or ("failed: " .. tostring(err)))
-    parts[#parts + 1] = Kit.text(content, x, 90 + BOX + 2, BOX, 20, typeName, ok and WHITE or GREY, ui.AlignMode.TOPLEFT)
+    if not modelOk then
+        say("model failed", tostring(modelErr))
+    end
+    previewParts[#previewParts + 1] = Kit.text(content, 100, PREVIEW_TOP + BOX + 2, BOX, 20,
+        "Model, distance " .. distance, GREY, ui.AlignMode.TOPLEFT)
+
+    local lines = {
+        name,
+        "id " .. objId .. "   " .. configName,
+        "members: " .. tostring(prop(cfg, "isMembers")) .. "   tradeable: " .. tostring(prop(cfg, "isTradeable")),
+        "category: " .. tostring(prop(cfg, "category")) .. "   cost: " .. tostring(prop(cfg, "cost")),
+        "stack: " .. tostring(prop(cfg, "stackType")) .. "   GE item: " .. tostring(prop(cfg, "isStockmarket"))
+            .. "   GE limit: " .. tostring(prop(cfg, "stockmarketBuyLimit")),
+    }
+    previewParts[#previewParts + 1] = Kit.text(content, 270, PREVIEW_TOP, WIDTH - 290, 26, lines[1], GOLD, ui.AlignMode.TOPLEFT)
+    for i = 2, #lines do
+        previewParts[#previewParts + 1] = Kit.text(content, 270, PREVIEW_TOP + (i - 1) * 28, WIDTH - 290, 26,
+            lines[i], WHITE, ui.AlignMode.TOPLEFT)
+    end
+    say("show", objId .. " " .. configName .. " = " .. name)
 end
 
-local function probe()
-    clear()
-    local name = nameField ~= nil and nameField.content or ""
-    if type(name) ~= "string" or name == "" then
-        name = "LOGS"
+local function zoom(factor)
+    distance = math.max(20, math.floor(distance * factor + 0.5))
+    if shownId ~= nil then
+        showItem(shownId)
     end
-    name = string.upper((string.gsub(name, "%s+", "_")))
-    say("probe", "item " .. name)
+end
 
-    listOf("ui.ModelType", ui.ModelType)
-    listModelTypes()
-    listOf("ui.Model (class)", ui.Model)
-    listOf("ui.Sprite (class)", ui.Sprite)
-    local objId, cfg = findObj(name)
-    if cfg ~= nil then
-        listOf("config.Obj instance", cfg)
+-- ---------------------------------------------------------------------------------------------
+-- The rows (search results or Grand Exchange offers). Each is { text, id }.
+
+local function showRows(entries)
+    destroyAll(rowParts)
+    for i, entry in ipairs(entries) do
+        if i > MAX_ROWS then
+            break
+        end
+        local y = ROWS_TOP + (i - 1) * ROW_H
+        rowParts[#rowParts + 1] = Kit.text(content, 10, y, WIDTH - 110, ROW_H - 4, entry.text, WHITE, ui.AlignMode.TOPLEFT)
+        if entry.id ~= nil then
+            rowParts[#rowParts + 1] = Kit.smallButton(content, "Show", WIDTH - 90, y, 70, ROW_H - 4, function()
+                showItem(entry.id)
+            end)
+        end
     end
-    local total = 0
-    pcall(function() for _ in pairs(id.Obj) do total = total + 1 end end)
-    say("id.Obj", total .. " entries")
-    if objId == nil then
+end
+
+local function rowFor(item)
+    return { id = item.id, text = item.id .. "   " .. item.configName .. "   -   " .. item.name }
+end
+
+local function reportFound(entries)
+    for _, entry in ipairs(entries) do
+        OutputWindow.add("itemprobe", entry.text)
+    end
+end
+
+-- ---------------------------------------------------------------------------------------------
+-- Search.
+
+-- Checks the next batch of in-game names. Runs every frame while a search is going.
+function ItemProbe.step()
+    if search == nil then
         return
     end
-
-    probeIcon(objId)
-
-    -- Every ModelType, listed or guessed, once. Only the ones that look like items are drawn
-    -- first; the rest are tried afterwards so a wrong guess cannot hide a right one.
-    local seen, ordered = {}, {}
-    local function add(typeName)
-        if seen[typeName] then return end
-        local ok, value = pcall(function() return ui.ModelType[typeName] end)
-        if ok and value ~= nil then
-            seen[typeName] = true
-            ordered[#ordered + 1] = { name = typeName, value = value }
+    local list = index
+    local stop = math.min(#list, search.next + PER_FRAME - 1)
+    for position = search.next, stop do
+        local entry = list[position]
+        if not search.seen[entry.id] then
+            local name = displayName(entry.id)
+            if string.find(ItemProbe.simplify(name), search.wanted, 1, true) ~= nil then
+                search.found[#search.found + 1] = { id = entry.id, configName = entry.configName, name = name }
+                search.seen[entry.id] = true
+                if #search.found >= MAX_ROWS then
+                    break
+                end
+            end
         end
     end
-    pcall(function() for key in pairs(ui.ModelType) do add(tostring(key)) end end)
-    for _, guess in ipairs(GUESSES) do add(guess) end
-    local slot = 0
-    for _, entry in ipairs(ordered) do
-        local upper = string.upper(entry.name)
-        if (string.find(upper, "OBJ", 1, true) or string.find(upper, "ITEM", 1, true)
-            or string.find(upper, "INV", 1, true) or string.find(upper, "LOC", 1, true)) and slot < 4 then
-            slot = slot + 1
-            tryModel(entry.name, entry.value, objId, slot)
+    search.next = stop + 1
+    local entries = {}
+    for _, item in ipairs(search.found) do
+        entries[#entries + 1] = rowFor(item)
+    end
+    if #search.found >= MAX_ROWS or search.next > #list then
+        showRows(entries)
+        reportFound(entries)
+        setStatus(#entries .. " found" .. (#entries >= MAX_ROWS and " (first " .. MAX_ROWS .. ", type more to narrow it)" or ""))
+        search = nil
+    else
+        setStatus("Checking in-game names... " .. math.floor(100 * search.next / #list) .. "%")
+    end
+end
+Event.Draw.Subscribe("cardcollector_itemprobe", function() ItemProbe.step() end)
+
+function ItemProbe.search(text)
+    destroyAll(rowParts)
+    search = nil
+    local wanted = ItemProbe.simplify(text)
+    if wanted == "" then
+        setStatus("Type part of an item's name first.")
+        return
+    end
+    local found = ItemProbe.find(text, MAX_ROWS)
+    if found == nil then
+        setStatus("The client would not list item names (id.Obj).")
+        return
+    end
+    local entries = {}
+    local seen = {}
+    for _, item in ipairs(found) do
+        entries[#entries + 1] = rowFor(item)
+        seen[item.id] = true
+    end
+    showRows(entries)
+    if #found >= MAX_ROWS then
+        reportFound(entries)
+        setStatus(#found .. " found (first " .. MAX_ROWS .. ", type more to narrow it)")
+        return
+    end
+    -- Few config names matched, so look at the in-game names too, a batch each frame.
+    search = { wanted = wanted, next = 1, found = found, seen = seen }
+    setStatus(#found .. " found so far. Checking in-game names...")
+end
+
+-- ---------------------------------------------------------------------------------------------
+-- Grand Exchange.
+
+function ItemProbe.readGrandExchange()
+    destroyAll(rowParts)
+    search = nil
+    if GrandExchange == nil then
+        setStatus("This client has no GrandExchange table.")
+        return
+    end
+    local okMax, maxOffers = pcall(function() return GrandExchange.MaxOffers() end)
+    if not okMax or type(maxOffers) ~= "number" then
+        maxOffers = 8
+    end
+    local entries = {}
+    local used = 0
+    for slot = 1, maxOffers do
+        local ok, offer = pcall(function() return GrandExchange.GetOffer(slot) end)
+        if ok and offer ~= nil then
+            local stage = prop(offer, "stage")
+            local kind = prop(offer, "type")
+            local item = prop(offer, "item")
+            local itemId = prop(item, "id")
+            local text
+            if type(itemId) == "number" and itemId >= 0 and stage ~= 0 then
+                used = used + 1
+                text = "Slot " .. slot .. " " .. tostring(TYPES[kind] or kind) .. " " .. tostring(STAGES[stage] or stage)
+                    .. "   " .. itemId .. " " .. tostring(prop(item, "configName")) .. " - " .. tostring(prop(item, "name"))
+                    .. "   x" .. tostring(prop(offer, "itemCount")) .. " (" .. tostring(prop(offer, "soldCount")) .. " done)"
+                    .. " @ " .. tostring(prop(offer, "price")) .. "gp"
+                entries[#entries + 1] = { id = itemId, text = text }
+            else
+                entries[#entries + 1] = { text = "Slot " .. slot .. " empty" }
+            end
+        else
+            entries[#entries + 1] = { text = "Slot " .. slot .. " - no offer data (" .. tostring(offer) .. ")" }
         end
     end
-    if slot == 0 then
-        say("ModelType", "no member name mentions OBJ, ITEM, INV or LOC (so no item model type)")
+    showRows(entries)
+    reportFound(entries)
+    setStatus(used .. " offer(s) in " .. maxOffers .. " slots. Place an offer to read an item that is not listed.")
+end
+
+-- ---------------------------------------------------------------------------------------------
+-- The window.
+
+local function showTyped()
+    local text = field ~= nil and field.content or ""
+    if type(text) ~= "string" or text == "" then
+        text = "LOGS"
     end
+    local objId, configName = ItemProbe.resolve(text)
+    if objId == nil then
+        setStatus("No item with that id or exact config name. Use Search to find it.")
+        return
+    end
+    setStatus("Showing " .. tostring(configName))
+    showItem(objId)
 end
 
 function ItemProbe.show()
@@ -211,28 +391,34 @@ function ItemProbe.show()
         return
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window, content = Kit.window(gameWindow, "Item probe", WIN_W, WIN_H + Kit.titleBarHeight(),
+    window, content = Kit.window(gameWindow, "Item probe", WIDTH, HEIGHT + Kit.titleBarHeight(),
         function() ItemProbe.hide() end, 0.5, 0.2)
-    Kit.text(content, 10, 6, 200, 26, "Item config name:", WHITE, ui.AlignMode.TOPLEFT)
-    nameField = Kit.inputField(content, 190, 6, 240, 26, 40, false)
-    pcall(function() nameField.content = "LOGS" end)
-    Kit.buttonAt(content, "Probe", 440, 4, 120, 30, function()
-        local ok, err = pcall(probe)
+    Kit.text(content, 10, 4, 60, 26, "Item:", WHITE, ui.AlignMode.TOPLEFT)
+    field = Kit.inputField(content, 70, 4, 290, 26, 40, false)
+    pcall(function() field.content = "LOGS" end)
+    Kit.buttonAt(content, "Search", 372, 2, 100, 30, function() ItemProbe.search(field.content) end, "positive")
+    Kit.buttonAt(content, "Show", 478, 2, 90, 30, showTyped)
+    Kit.buttonAt(content, "Read GE", 574, 2, 116, 30, function()
+        local ok, err = pcall(ItemProbe.readGrandExchange)
         if not ok then
-            say("probe", "crashed: " .. tostring(err))
+            setStatus("Grand Exchange read failed: " .. tostring(err))
+            say("GE failed", tostring(err))
         end
     end)
-    Kit.text(content, 10, 44, WIN_W - 20, 40,
-        "Shows the item's icon and any item model the client will load. Results also go to the Output window.",
-        GREY, ui.AlignMode.TOPLEFT)
+    statusText = Kit.text(content, 10, 40, WIDTH - 20, 26,
+        "Search by name, Show by config name or id, or Read GE for your offers.", GREY, ui.AlignMode.TOPLEFT)
+    Kit.smallButton(content, "Zoom -", WIDTH - 180, HEIGHT - 36, 80, 28, function() zoom(1.25) end)
+    Kit.smallButton(content, "Zoom +", WIDTH - 90, HEIGHT - 36, 80, 28, function() zoom(0.8) end)
 end
 
 function ItemProbe.hide()
-    clear()
+    search = nil
+    destroyAll(rowParts)
+    destroyAll(previewParts)
     if window ~= nil then
         pcall(function() window:Destroy() end)
     end
-    window, content, nameField = nil, nil, nil
+    window, content, field, statusText, infoText, shownId = nil, nil, nil, nil, nil, nil
 end
 
 function ItemProbe.toggle()
