@@ -54,27 +54,11 @@ Set.cards = {
         tags = { category = { "animal" } },
     },
 
-    -- Drafts (waiting for an NPC name)
-
     {
-        id = "guard", name = "Guard", rarity = "common",
-        desc = "Keeps the peace, wherever they stand.",
-        art = { npc = "" },
-        tags = { skills = { "thieving" }, category = { "guard" } },
-    },
-
-    {
-        id = "shop_keeper", name = "Shop keeper", rarity = "common",
-        desc = "Sells a little bit of everything.",
-        art = { npc = "" },
-        tags = { category = { "humanoid" } },
-    },
-
-    {
-        id = "giant_frog", name = "Giant frog", rarity = "common",
-        desc = "Croaks all day in the swamp.",
-        art = { npc = "" },
-        tags = { category = { "animal" } },
+        id = "king_roald", name = "King Roald", rarity = "epic",
+        desc = "The King of Varrock",
+        art = { npc = "KING_ROALD", anim = 5363, cam = { dist = 650, fov = 40, ty = 620 } },
+        tags = { location = { "varrock" }, category = { "humanoid", "royalty" } },
     },
 }
 
