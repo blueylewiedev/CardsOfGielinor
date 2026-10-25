@@ -108,7 +108,7 @@ Set.cards = {
         id = "wizard_ilona", name = "Wizard Ilona", rarity = "uncommon",
         desc = "Almost sacrificed, now a dinosaur collector.",
         art = { npc = "ARIANE1_ILONA_APPEARANCE", anim = 18911, cam = { dist = 749, fov = 35, ty = 560 } },
-        tags = { location = { "lumbridge", "dino_farm" }, skills = { "farming" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge", "ranch_out_of_time" }, skills = { "farming" }, category = { "humanoid" } },
     },
 
     {
