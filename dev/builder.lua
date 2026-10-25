@@ -366,7 +366,7 @@ local BLUE = Vector4.new(0.55, 0.78, 0.95, 1)     -- the instructions, so they s
 local LEVEL_COLOUR = { ok = GREEN, note = AMBER, fix = RED }
 local LEVEL_PREFIX = { ok = "OK   ", note = "Note ", fix = "Fix  " }
 
-local STEP, GAP = 36, 4
+local STEP, GAP = 32, 4
 local PREVIEW_SCALE = 1.5
 local CARD_W, CARD_H = math.floor(160 * PREVIEW_SCALE), math.floor(224 * PREVIEW_SCALE)
 
@@ -375,8 +375,9 @@ local LEFT_X, LEFT_W = 10, 470
 local MID_X, MID_W = 500, 260
 local RIGHT_X, RIGHT_W = 780, 316
 local HALF_W = 148                 -- the NPC / Item buttons
-local PAIR_W, PAIR_GAP = 154, 8   -- the pairs of buttons on the right (PrettyUI draws "ZOOM +" about 150 wide)
-local BOTTOM_Y = 566
+local CTRL_X = 120                -- where the buttons of a camera row start (after its label)
+local CTRL_W = 56                 -- width of a small "-" / "+" button
+local BOTTOM_Y = 510
 local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches the right edge
 local WIN_H = BOTTOM_Y + 220
 
@@ -707,14 +708,14 @@ function Builder.show()
 
     -- 1. Card details ---------------------------------------------------------------------
     section("1. Card details", LEFT_X, 4, LEFT_W)
-    Kit.buttonAt(content, "Reset", LEFT_X + LEFT_W - 110, 0, 100, 30, function()
+    Kit.iconButton(content, "TRASH", LEFT_X + LEFT_W - 40, 2, function()
         if hasWork() then
             Kit.confirm(gameLayer, "Clear this card?", "Everything entered for this card will be cleared.", "Clear",
                 resetAll)
         else
             resetAll()
         end
-    end, "negative", "Clear the card and start a new one")
+    end, "Clear the card and start a new one", "Reset", 80)
 
     caption("What kind of card?", LEFT_X, 26, LEFT_W)
     Kit.buttonAt(content, "NPC", LEFT_X, 44, HALF_W, 30, function() end, "positive")
@@ -724,48 +725,48 @@ function Builder.show()
     caption("NPC config name (this sets the model)", LEFT_X, 82, LEFT_W)
     widgets.npcField = field(LEFT_X, 100, 250, 60, draft.npc, setNpc)
     local npcId = Builder.lookupNpc(draft.npc)
-    widgets.npcStatus = Kit.text(content, LEFT_X + 260, 100, 110, 28,
+    widgets.npcStatus = Kit.text(content, LEFT_X + 350, 100, 110, 28,
         npcId ~= nil and "Found" or (draft.npc == "" and "" or "Not found"), GREY, ui.AlignMode.TOPLEFT)
     -- Both lists hand the NPC that was picked back to this window.
     local function usePicked(npc)
         setField(widgets.npcField, npc.configName)
         setNpc(npc.configName)
     end
-    Kit.buttonAt(content, "Nearby NPCs", LEFT_X, 134, 225, 30, function()
-        Nearby.setPicker(usePicked)
-        Nearby.show()
-    end, nil, "List the NPCs standing near you and use one of them")
-    Kit.buttonAt(content, "Search NPCs", LEFT_X + 235, 134, 225, 30, function()
+    Kit.iconButton(content, "SEARCH", LEFT_X + 262, 102, function()
         NpcSearch.setPicker(usePicked)
         NpcSearch.show()
-    end, nil, "Find any NPC in the game by name")
+    end, "Find any NPC in the game by name", "Search NPCs", 110)
+    Kit.iconButton(content, "EYE", LEFT_X + 306, 102, function()
+        Nearby.setPicker(usePicked)
+        Nearby.show()
+    end, "List the NPCs standing near you and use one of them", "Nearby NPCs", 110)
 
-    caption("Card name", LEFT_X, 176, 225)
-    caption("Card id (follows the name)", LEFT_X + 235, 176, 225)
-    widgets.nameField = field(LEFT_X, 194, 225, 40, draft.name, function(text)
+    caption("Card name", LEFT_X, 136, 225)
+    caption("Card id (follows the name)", LEFT_X + 235, 136, 225)
+    widgets.nameField = field(LEFT_X, 154, 225, 40, draft.name, function(text)
         draft.name = text
         draft.nameTouched = text ~= ""
         followName()
         soon()
     end)
-    widgets.idField = field(LEFT_X + 235, 194, 225, 40, draft.cardId, function(text)
+    widgets.idField = field(LEFT_X + 235, 154, 225, 40, draft.cardId, function(text)
         draft.cardId = text
         draft.idTouched = text ~= ""
         soon()
     end)
 
-    caption("Description (up to " .. MAX_DESC .. " letters)", LEFT_X, 240, LEFT_W)
-    widgets.descField = field(LEFT_X, 258, LEFT_W - 10, 120, draft.desc, function(text)
+    caption("Description (up to " .. MAX_DESC .. " letters)", LEFT_X, 200, LEFT_W)
+    widgets.descField = field(LEFT_X, 218, LEFT_W - 10, 120, draft.desc, function(text)
         draft.desc = text
         soon()
     end)
 
     -- Left column, below the description: rarity, tags, deck file. (The drop-downs are made
     -- last so their lists open over everything else.)
-    caption("Suggested rarity (we may change it in review)", LEFT_X, 296, LEFT_W)
+    caption("Suggested rarity (we may change it in review)", LEFT_X, 256, LEFT_W)
 
-    caption("Tags: words separated by commas", LEFT_X, 356, LEFT_W - 160)
-    Kit.smallButton(content, "Pick tags", LEFT_X + LEFT_W - 150, 350, 140, 24, function()
+    caption("Tags: words separated by commas", LEFT_X, 316, LEFT_W - 160)
+    Kit.smallButton(content, "Pick tags", LEFT_X + LEFT_W - 150, 310, 140, 24, function()
         TagPicker.setTarget({
             words = function(kind) return tagWords(kind) end,
             toggle = function(kind, word, on)
@@ -777,7 +778,7 @@ function Builder.show()
         TagPicker.show()
         TagPicker.refresh()
     end, "Choose tags from the words that are allowed")
-    local tagY = 374
+    local tagY = 334
     for _, tagKind in ipairs({ "skills", "location", "category" }) do
         Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
@@ -788,7 +789,7 @@ function Builder.show()
         tagY = tagY + 34
     end
 
-    caption("Which deck file does it go in?", LEFT_X, 482, LEFT_W)
+    caption("Which deck file does it go in?", LEFT_X, 442, LEFT_W)
 
     -- 2. Live preview -----------------------------------------------------------------------
     section("2. Live preview", MID_X, 4, MID_W)
@@ -801,34 +802,55 @@ function Builder.show()
         showCard()
     end)
 
-    local function pair(label1, label2, y, change1, change2)
-        Kit.smallButton(content, label1, RIGHT_X, y, PAIR_W, 30, function() withCamera(change1) end)
-        Kit.smallButton(content, label2, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() withCamera(change2) end)
-    end
-    local y = 28 + STEP + 4
-    pair("Zoom -", "Zoom +", y,
-        function(c) c.dist = c.dist * 1.15 end, function(c) c.dist = math.max(10, c.dist * 0.87) end)
-    y = y + STEP
-    pair("Size -", "Size +", y,
-        function(c) c.fov = math.min(120, c.fov + 5) end, function(c) c.fov = math.max(5, c.fov - 5) end)
-    y = y + STEP
-    pair("Down", "Up", y, function(c) c.ty = c.ty + 20 end, function(c) c.ty = c.ty - 20 end)
-    y = y + STEP
-    pair("Left", "Right", y, function(c) c.tx = c.tx + 10 end, function(c) c.tx = c.tx - 10 end)
-    y = y + STEP
-    pair("Yaw -", "Yaw +", y, function(c) c.yaw = c.yaw - 0.2 end, function(c) c.yaw = c.yaw + 0.2 end)
-    y = y + STEP
-    pair("Pitch -", "Pitch +", y, function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
-    y = y + STEP
-    Kit.buttonAt(content, "Reset camera", RIGHT_X, y, RIGHT_W - 4, 30, function()
+    -- Reset camera sits at the right of the section title, like Reset does for section 1.
+    Kit.iconButton(content, "UNDO", RIGHT_X + RIGHT_W - 40, 2, function()
         draft.cam = nil
         showCard()
-    end, nil, "Put the camera back to its starting position")
+    end, "Put the camera back to its starting position", "Reset camera", 130)
+
+    -- Each camera control is a label with two buttons: "-" and "+", or arrows where a direction
+    -- makes sense.
+    local function control(label, y, first, second, change1, change2)
+        Kit.text(content, RIGHT_X, y, CTRL_X - 10, 28, label, GREY, ui.AlignMode.TOPLEFT)
+        local function button(spec, x, change)
+            if spec.icon ~= nil then
+                Kit.iconButton(content, spec.icon, x, y + 2, function() withCamera(change) end, spec.tip,
+                    spec.fallback, 60)
+            else
+                Kit.smallButton(content, spec.text, x, y, CTRL_W, 28, function() withCamera(change) end, spec.tip)
+            end
+        end
+        button(first, RIGHT_X + CTRL_X, change1)
+        button(second, RIGHT_X + CTRL_X + CTRL_W + 12, change2)
+    end
+    local MINUS = { text = "-" }
+    local PLUS = { text = "+" }
+    local y = 28 + STEP + 6
+    control("Zoom", y, MINUS, PLUS,
+        function(c) c.dist = c.dist * 1.15 end, function(c) c.dist = math.max(10, c.dist * 0.87) end)
+    y = y + STEP
+    control("Size", y, MINUS, PLUS,
+        function(c) c.fov = math.min(120, c.fov + 5) end, function(c) c.fov = math.max(5, c.fov - 5) end)
+    y = y + STEP
+    control("Height", y, { icon = "ARROW_DOWN", tip = "Move the card art down", fallback = "Down" },
+        { icon = "ARROW_UP", tip = "Move the card art up", fallback = "Up" },
+        function(c) c.ty = c.ty + 20 end, function(c) c.ty = c.ty - 20 end)
+    y = y + STEP
+    control("Sideways", y, { icon = "ARROW_LEFT", tip = "Move the card art left", fallback = "Left" },
+        { icon = "ARROW_RIGHT", tip = "Move the card art right", fallback = "Right" },
+        function(c) c.tx = c.tx + 10 end, function(c) c.tx = c.tx - 10 end)
+    y = y + STEP
+    control("Turn", y, { icon = "ARROW_LEFT", tip = "Turn the model one way", fallback = "Yaw -" },
+        { icon = "ARROW_RIGHT", tip = "Turn the model the other way", fallback = "Yaw +" },
+        function(c) c.yaw = c.yaw - 0.2 end, function(c) c.yaw = c.yaw + 0.2 end)
+    y = y + STEP
+    control("Tilt", y, MINUS, PLUS,
+        function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
 
     y = y + STEP + 12
     caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
     y = y + 20
-    widgets.animField = Kit.inputField(content, RIGHT_X, y, RIGHT_W - 10, 28, 6, true)
+    widgets.animField = Kit.inputField(content, RIGHT_X, y, RIGHT_W - 100, 28, 6, true)
     setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
     widgets.animField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
         if settingField then
@@ -844,24 +866,24 @@ function Builder.show()
             setAnim(typed)
         end
     end)
-    y = y + 34
-    for _, amount in ipairs({ 1, 10, 100 }) do
-        Kit.smallButton(content, "-" .. amount, RIGHT_X, y, PAIR_W, 30, function() stepAnim(-amount) end)
-        Kit.smallButton(content, "+" .. amount, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() stepAnim(amount) end)
-        y = y + STEP
-    end
-    Kit.buttonAt(content, "Anim off", RIGHT_X, y, PAIR_W, 30, function()
-        setAnim(nil)
-        setField(widgets.animField, "")
-    end, nil, "Show the card without an animation")
-    -- Search animations by name; "Use" on a result plays it on the card.
-    Kit.buttonAt(content, "Search anims", RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function()
+    -- Search animations by name ("Use" on a result plays it on the card), or switch the animation off.
+    Kit.iconButton(content, "SEARCH", RIGHT_X + RIGHT_W - 84, y + 2, function()
         AnimSearch.setPicker(function(seq)
             setAnim(seq.id)
             setField(widgets.animField, string.format("%.0f", seq.id))
         end)
         AnimSearch.show()
-    end, nil, "Find an animation by name and try it on the card")
+    end, "Find an animation by name and try it on the card", "Search anims", 110)
+    Kit.iconButton(content, "CROSS", RIGHT_X + RIGHT_W - 44, y + 2, function()
+        setAnim(nil)
+        setField(widgets.animField, "")
+    end, "Show the card without an animation", "Anim off", 80)
+    y = y + 36
+    local steps = { -100, -10, -1, 1, 10, 100 }
+    for i, amount in ipairs(steps) do
+        Kit.smallButton(content, (amount > 0 and "+" or "") .. amount, RIGHT_X + (i - 1) * 52, y, 48, 28,
+            function() stepAnim(amount) end)
+    end
 
     -- 5. The block's buttons sit at the right of the bottom strip.
     widgets.outputStatus = Kit.text(content, LEFT_X + 310, BOTTOM_Y + 176, 150, 30, "", GREY, ui.AlignMode.TOPLEFT)
@@ -885,7 +907,7 @@ function Builder.show()
     showCard()
 
     -- The drop-downs come last, so their lists open on top of the other parts.
-    widgets.rarityRefresh = choiceDropdown(LEFT_X, 314, 300, function()
+    widgets.rarityRefresh = choiceDropdown(LEFT_X, 274, 300, function()
         local list = {}
         -- PrettyUI's drop-down lists its choices in alphabetical order, so the number at the start
         -- keeps them in order of rarity.
@@ -897,7 +919,7 @@ function Builder.show()
         draft.rarity = Cards.rarityOrder[i]
         showCard()
     end)
-    widgets.deckRefresh = choiceDropdown(LEFT_X, 500, LEFT_W - 10, function()
+    widgets.deckRefresh = choiceDropdown(LEFT_X, 460, LEFT_W - 10, function()
         local list = {}
         for _, setName in ipairs(Cards.sets) do
             list[#list + 1] = { label = Builder.deckLabel(setName) }
