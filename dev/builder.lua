@@ -626,6 +626,14 @@ local function dropdown(x, y, w, choices, current, onPick)
     return button, function() Kit.setLabel(button, title()) end
 end
 
+-- The name of a deck file as shown in the drop-down: just the region ("deck/npcs/kharidian_desert"
+-- becomes "Kharidian Desert"), so it can be found by typing the region's name.
+function Builder.deckLabel(setName)
+    local name = string.match(setName, "([^/]+)$") or setName
+    name = string.gsub(name, "_", " ")
+    return (string.gsub(name, "(%a)(%w*)", function(first, rest) return string.upper(first) .. rest end))
+end
+
 -- A drop-down at x, y, w wide, made with PrettyUI's drop-down when it can be (or the button
 -- version above if not). `choices()`, `current()` and `onPick(index)` are as for dropdown().
 -- Returns a function that shows the current choice again (after a reset).
@@ -879,8 +887,10 @@ function Builder.show()
     -- The drop-downs come last, so their lists open on top of the other parts.
     widgets.rarityRefresh = choiceDropdown(LEFT_X, 314, 300, function()
         local list = {}
-        for _, key in ipairs(Cards.rarityOrder) do
-            list[#list + 1] = { label = Cards.rarities[key].name }
+        -- PrettyUI's drop-down lists its choices in alphabetical order, so the number at the start
+        -- keeps them in order of rarity.
+        for rank, key in ipairs(Cards.rarityOrder) do
+            list[#list + 1] = { label = rank .. ". " .. Cards.rarities[key].name }
         end
         return list
     end, function() return Cards.rarityRank[draft.rarity] or 1 end, function(i)
@@ -890,7 +900,7 @@ function Builder.show()
     widgets.deckRefresh = choiceDropdown(LEFT_X, 500, LEFT_W - 10, function()
         local list = {}
         for _, setName in ipairs(Cards.sets) do
-            list[#list + 1] = { label = setName }
+            list[#list + 1] = { label = Builder.deckLabel(setName) }
         end
         return list
     end, function() return draft.deck end, function(i)
