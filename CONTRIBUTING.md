@@ -53,13 +53,13 @@ checks it as you go. You do not need to know how the code works to be able to co
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
 1. **Choose the NPC.**
-   - Stand near the NPC in the game and press **Nearby NPCs**, then **Scan**, then **Use** on the
+   - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
      NPC you want. This picks the exact NPC (many NPCs have several versions with different
      models, and the one standing in front of you is the one to use),
 
    <img width="1070" height="576" alt="image" src="https://github.com/user-attachments/assets/a2ca367c-35ec-4251-888e-b8b1f27efdf5" />
 
-   - or press **Search NPCs**, type part of the name and press **Use**,
+   - or press the **Search NPCs** button (the magnifying glass beside the NPC box), type part of the name and press **Use**,
 
    <img width="711" height="579" alt="image" src="https://github.com/user-attachments/assets/7040bd1b-614e-4b6e-890a-2c63ed4f11aa" />
 
@@ -113,14 +113,15 @@ If you don't know or are unsure on how to do that, make a note of the tags that 
 
 11. **Tune the art.**
    - **Model** switches between the NPC's whole body (the default) and its head.
-   - The **camera buttons** zoom, move and turn the camera. Aim to fill the picture window with
+   - The **camera controls** (each has a label and a pair of buttons) zoom, move and turn the camera, and the
+     arrow icon at the top right of the section puts the camera back to where it started. Aim to fill the picture window with
      the NPC, with the face visible. A look through the existing cards gives a good idea.
 
 <img width="736" height="379" alt="image" src="https://github.com/user-attachments/assets/260b93a7-7885-4100-abea-7537df0bb1f9" />
 
      
-   - **Animation** is optional. Type a sequence id, step through ids with the +/- buttons, or
-     press **Search anims** to look for an animation by name and **Use** to try it. Pick an idle
+   - **Animation** is optional. Type a sequence id, step through ids with the -100 to +100 buttons, or
+     press the magnifying glass beside the box (**Search anims**) to look for an animation by name and **Use** to try it. Pick an idle
      or other animation that loops smoothly.
    - On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
      While the specific animation you need might not be named exactly the same, it will likely be similar.
@@ -149,7 +150,7 @@ If you don't know or are unsure on how to do that, make a note of the tags that 
     checks every card when it loads, and stops with a message naming the card if something is
     wrong.
 
-**Reset** at the top of the Card Builder clears the window ready for the next card. What you type
+The **Reset** button (the bin icon at the top right of the card details) clears the window ready for the next card. What you type
 is kept while the plugin is running, so closing the window does not lose it.
 
 ### Which deck file
