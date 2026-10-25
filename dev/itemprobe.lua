@@ -5,7 +5,7 @@
 --     (like the NPC search). Ignores capitals, spaces and underscores.
 --   * Show: type a config name (LOGS) or an id (1511) and show that item's icon and 3D model, with
 --     its data. Zoom - / Zoom + change the model's distance.
---   * Read GE: list the player's Grand Exchange offers (the game only exposes offers that have
+--   * Read GE (the swap-arrows button): list the player's Grand Exchange offers (the game only exposes offers that have
 --     been placed, not the item in the search or buy window) with each offer's item id,
 --     config name and in-game name. Each row has a Show button.
 --   * Results are paged (arrows at the bottom of the list), so a search is not limited to a few rows.
@@ -21,9 +21,10 @@ local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
 local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 
-local WIDTH = 980
-local LEFT_W = 600                   -- the list of results
-local RIGHT_X, RIGHT_W = 630, 340     -- the preview
+local LEFT_W = 700                   -- the list of results
+local RIGHT_X, RIGHT_W = 730, 340     -- the preview
+local WIDTH = RIGHT_X + RIGHT_W + 30
+local MAX_CHARS = 70                  -- a longer row is cut short here (the Output window has all of it)
 local ROW_H, PAGE_SIZE = 28, 14
 local ROWS_TOP = 78
 local PAGER_Y = ROWS_TOP + PAGE_SIZE * ROW_H + 8
@@ -45,7 +46,7 @@ local previewParts = {}
 local index = nil                      -- every item: { id, configName, key }, read once
 local search = nil                     -- a search still checking in-game names: { wanted, next, seen, count }
 local shownId = nil
-local distance = 300                   -- the model's viewDistance
+local distance = 700                   -- the model's viewDistance
 
 -- Lower case with everything but letters and digits removed.
 function ItemProbe.simplify(text)
@@ -171,61 +172,6 @@ function ItemProbe.resolve(text)
 end
 
 -- ---------------------------------------------------------------------------------------------
--- Sprites for the buttons. SEARCH, EYE and the arrows are PrettyUI's own. It has no Grand Exchange
--- picture, so the game's sprite list (id.Sprite) is searched for one; the names it finds are
--- written to the Output window once so a better one can be chosen.
-
-local geSpriteId, geSearched = nil, false
-
-local function findGeSprite()
-    if geSearched then
-        return geSpriteId
-    end
-    geSearched = true
-    local names = {}
-    pcall(function()
-        for key, value in pairs(id.Sprite) do
-            local spriteId, name = key, value
-            if type(key) == "string" and type(value) == "number" then
-                spriteId, name = value, key
-            end
-            if type(spriteId) == "number" and type(name) == "string" then
-                local upper = string.upper(name)
-                if string.find(upper, "GRAND_EXCHANGE", 1, true) or string.find(upper, "GRANDEXCHANGE", 1, true)
-                    or string.find(upper, "GEBUTTON", 1, true) or string.find(upper, "GE_ICON", 1, true) then
-                    names[#names + 1] = { id = spriteId, name = name }
-                end
-            end
-        end
-    end)
-    table.sort(names, function(a, b) return a.id < b.id end)
-    local listed = {}
-    for i = 1, math.min(#names, 30) do
-        listed[#listed + 1] = names[i].id .. " " .. names[i].name
-    end
-    say("sprites that mention the Grand Exchange", #names .. " found: " .. table.concat(listed, ", "))
-    if #names > 0 then
-        geSpriteId = names[1].id
-    end
-    return geSpriteId
-end
-
--- A small button with the Grand Exchange sprite on it, or the letters GE if there is none.
-local function geButton(x, y, onPress)
-    local spriteId = findGeSprite()
-    if spriteId ~= nil and Kit.available() and prettyui.SimpleButton ~= nil then
-        local ok, button = pcall(prettyui.SimpleButton.new, content, spriteId, function() onPress() end, {
-            x = x, y = y, width = 36, height = 28, absolute = true, tooltip = "Read my Grand Exchange offers",
-        })
-        if ok and button ~= nil then
-            return button
-        end
-        say("GE sprite button failed", tostring(button))
-    end
-    return Kit.smallButton(content, "GE", x, y, 40, 28, onPress, "Read my Grand Exchange offers")
-end
-
--- ---------------------------------------------------------------------------------------------
 -- The preview: icon, model and data for one item.
 
 local function showItem(objId)
@@ -307,9 +253,13 @@ local function renderPage()
             break
         end
         local y = ROWS_TOP + n * ROW_H
-        rowParts[#rowParts + 1] = Kit.text(content, 10, y, LEFT_W - 50, ROW_H - 4, entry.text, WHITE, ui.AlignMode.TOPLEFT)
+        local line = entry.text
+        if #line > MAX_CHARS then
+            line = string.sub(line, 1, MAX_CHARS - 3) .. "..."
+        end
+        rowParts[#rowParts + 1] = Kit.text(content, 46, y, LEFT_W - 56, ROW_H - 4, line, WHITE, ui.AlignMode.TOPLEFT)
         if entry.id ~= nil then
-            rowParts[#rowParts + 1] = Kit.iconButton(content, "EYE", LEFT_W - 28, y, function()
+            rowParts[#rowParts + 1] = Kit.iconButton(content, "EYE", 10, y, function()
                 showItem(entry.id)
             end, "Show this item", "Show", 70)
         end
@@ -470,13 +420,14 @@ function ItemProbe.show()
     Kit.iconButton(content, "SEARCH", 610, 6, function() ItemProbe.search(field.content) end,
         "Search items by name", "Search", 80)
     Kit.iconButton(content, "EYE", 660, 6, showTyped, "Show the item typed (config name or id)", "Show", 70)
-    geButton(710, 4, function()
+    -- PrettyUI has no Grand Exchange picture; the swap arrows (trading) stand in for it.
+    Kit.iconButton(content, "SWAP", 710, 6, function()
         local ok, err = pcall(ItemProbe.readGrandExchange)
         if not ok then
             setStatus("Grand Exchange read failed: " .. tostring(err))
             say("GE failed", tostring(err))
         end
-    end)
+    end, "Read my Grand Exchange offers", "GE", 50)
     statusText = Kit.text(content, 10, 42, WIDTH - 20, 26,
         "Search by name, show by config name or id, or read your Grand Exchange offers.", GREY, ui.AlignMode.TOPLEFT)
 
@@ -485,8 +436,8 @@ function ItemProbe.show()
     Kit.iconButton(content, "ARROW_RIGHT", 50, PAGER_Y, function() changePage(1) end, "Next page", ">", 40)
     pageText = Kit.text(content, 96, PAGER_Y, 400, 26, "", GREY, ui.AlignMode.TOPLEFT)
 
-    Kit.smallButton(content, "Zoom -", RIGHT_X + RIGHT_W - 170, HEIGHT - 36, 80, 28, function() zoom(1.25) end)
-    Kit.smallButton(content, "Zoom +", RIGHT_X + RIGHT_W - 84, HEIGHT - 36, 80, 28, function() zoom(0.8) end)
+    Kit.smallButton(content, "Zoom -", RIGHT_X + RIGHT_W - 180, HEIGHT - 36, 80, 28, function() zoom(1.25) end)
+    Kit.smallButton(content, "Zoom +", RIGHT_X + RIGHT_W - 94, HEIGHT - 36, 80, 28, function() zoom(0.8) end)
     renderPage()
 end
 
