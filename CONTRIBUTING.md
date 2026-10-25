@@ -89,8 +89,9 @@ is kept while the plugin is running, so closing the window does not lose it.
 ### Which deck file
 
 The cards are in `deck/npcs/`, one file for each region (`misthalin.lua`, `asgarnia.lua`,
-`kandarin.lua`), plus `general.lua` for NPCs that are not tied to one place (guards, shop keepers,
-animals). Put a card in the file for the region where the NPC is found. Every card in a region's
+`kandarin.lua`, `karamja.lua`, `kharidian_desert.lua`, `morytania.lua`, `tirannwn.lua`,
+`fremennik_province.lua` and `wilderness.lua`), plus `general.lua` for NPCs that are not tied to
+one place (guards, shop keepers, animals). Put a card in the file for the region where the NPC is found. Every card in a region's
 file gets that region's tag automatically.
 
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
@@ -127,27 +128,63 @@ wanted. Looking at where similar NPCs sit in the existing files is the best guid
 ### Tags
 
 Tags group cards so that themed packs can draw from them. Each tag kind holds words separated by
-commas:
+commas. A tag is never required, but a card with a good `category` and `location` is much more
+useful to the packs.
 
 | Kind | Meaning | Example |
 |------|---------|---------|
-| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `varrock_sewers`, `feldip_hills` |
-| `skills` | skills it is linked to | `cooking`, `prayer` |
+| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
+| `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
 | `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
 
 The region comes from the deck file, so it is not asked for.
 
-- Tag words are **lower case letters, digits and underscores**, starting with a letter. The
-  Card Builder will not accept anything else.
-- Use an existing word if one fits. The checks tell you when a word is new.
-- **A new word is allowed.** For `location`, `skills` and `category`, a new word must also be
-  added to the list in `Cards.tagWords` in `core/cards.lua` (the Card Builder shows a note saying
-  exactly which line to add). The plugin refuses to load a card with a word that is not on its
-  list, so a typo cannot slip through. Keep new words short, in the singular, and sensible enough
-  for others to reuse (`monster`, not `monsters` or `scary_thing`).
-- `category` words say what the NPC is (`humanoid`, `animal`, `dragon`), what it does
-  (`shopkeeper`, `guard`, `knight`), or whether it can be fought (`monster`, `boss`). A card can
-  have several, for example `{ "humanoid", "monster" }`.
+**Rules for words**
+
+- Tag words are **lower case letters, digits and underscores**, starting with a letter. Use an
+  underscore for a space (`lumbridge_swamp`). The Card Builder will not accept anything else.
+- Use the full name of a place as the wiki writes it, in the singular, with no abbreviations or
+  plurals (`monster`, not `monsters`; `lumbridge_swamp`, not `lum_swamp`).
+- **Every word must be on the lists below.** The plugin refuses to load a card with a word that
+  is not on its list, so a typo cannot slip through. Choose a word from the list when one fits.
+
+**Adding a new word.** A new word is allowed. Add it to the right list in `Cards.tagWords` in
+`core/cards.lua`, in the same pull request as the card that uses it. The Card Builder shows a note
+saying exactly which line to add. Keep the list tidy: put it where it belongs (the `category`
+list has three groups), and do not add a word that means the same as one already there. Please
+also add it to the lists in this guide.
+
+**Choosing a location**
+
+- Tag where the NPC *you picked* is found: a card is one version of an NPC, with its own model,
+  so tag the places where players would expect to meet that version.
+- If it is found in a town, use the town. If it is in a dungeon or a general area, use that.
+- If it is found in several places, tag the **one to three best-known places**. Tagging every
+  place makes the card turn up in too many themed packs. For example, a giant spider might be
+  tagged `lumbridge_swamp` and one or two other well-known caves, not every dungeon where one
+  appears.
+- If it is found all over the game, leave `location` empty and put the card in `general.lua`.
+  Chickens, rats and goblins are examples.
+- A creature found in several regions belongs in `general.lua`; it can still have a `location` or
+  two there.
+
+**Choosing a category.** Use one or more words. Say what it is (`humanoid`, `animal`, `dragon`),
+what it does (`shopkeeper`, `guard`, `knight`) and, for anything you can attack, add `monster`
+(or `boss` for a boss). A card can have several, for example `{ "humanoid", "monster" }`. If
+nothing says what it is, `monster` alone is fine; a new word is worth adding once several cards
+need it.
+
+**Choosing skills.** Only add a skill when the link is clear: a skill trainer or shop for that
+skill (`cooking`), or a creature you train a skill on (`slayer`). Leave it out if you would have
+to guess.
+
+**The words you can use now**
+
+- `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `dino_farm`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `frem_slayer_dung`
+- `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
+- `category`: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+
+For reference, the regions (set by the deck file, not typed on a card) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`.
 
 ### Art
 
@@ -173,7 +210,7 @@ NPC.
    - [ ] each card appears correctly in the Card Builder preview,
    - [ ] the checks in the Card Builder show no **Fix** lines,
    - [ ] you used the Card Builder's block as it is (and added any new tag words to
-         `Cards.tagWords`),
+         `Cards.tagWords` and to the lists in this guide),
    - [ ] you only changed files in `deck/` (and `core/cards.lua` for new tag words).
 4. Open the pull request and **include a screenshot of each card**. A screenshot of the Card
    Builder window with the finished card is ideal.
