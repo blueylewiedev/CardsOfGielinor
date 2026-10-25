@@ -94,18 +94,26 @@ Cards.tagWords = {
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
                 "runecrafting", "hunter", "construction", "summoning", "dungeoneering",
                 "divination", "invention", "archaeology", "necromancy" },
-    -- What a card is (its kind of creature), what it does (its job), and whether it can be fought.
+    category = {},        -- filled in below from Cards.tagGroups.category
+}
+
+-- Tag words that are shown in groups when they are picked in the Card Builder. The groups are
+-- only for display; the allowed words are the ones in all the groups together. A new category
+-- word goes in the group that fits it best.
+Cards.tagGroups = {
     category = {
-        -- what it is
-        "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin", "troll", "spirit",
-        "elemental", "insect", "construct",
-        -- what it does
-        "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer", "wizard", "priest",
-        "quest_giver", "banker", "farmer", "pirate", "thief",
-        -- whether it can be fought
-        "monster", "boss",
+        { title = "What it is", words = { "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin",
+            "troll", "spirit", "elemental", "insect", "construct" } },
+        { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
+            "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief" } },
+        { title = "Whether it can be fought", words = { "monster", "boss" } },
     },
 }
+for _, group in ipairs(Cards.tagGroups.category) do
+    for _, word in ipairs(group.words) do
+        Cards.tagWords.category[#Cards.tagWords.category + 1] = word
+    end
+end
 
 -- The cards are written in their own files in the deck folder (the layout is described in
 -- deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the defaults (such

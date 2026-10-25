@@ -64,7 +64,11 @@ checks it as you go. You do not need to know how the code works.
    (see [Ids](#ids)). Change either if you need to.
 3. **Write a description** (up to 60 letters, shorter is better).
 4. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
-5. **Add tags**, if they apply (see [Tags](#tags)).
+5. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
+   that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
+   (click it again to remove it). The Filter box narrows the words. You can also type them. Press **Pick tags** to choose from the words
+   that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
+   (click it again to remove it). The Filter box narrows the words. You can also type them.
 6. **Choose the deck file** the card belongs in (see [Which deck file](#which-deck-file)).
 7. **Tune the art.**
    - **Model** switches between the NPC's whole body (the default) and its head.
@@ -149,10 +153,11 @@ The region comes from the deck file, so it is not asked for.
   is not on its list, so a typo cannot slip through. Choose a word from the list when one fits.
 
 **Adding a new word.** A new word is allowed. Add it to the right list in `Cards.tagWords` in
-`core/cards.lua`, in the same pull request as the card that uses it. The Card Builder shows a note
-saying exactly which line to add. Keep the list tidy: put it where it belongs (the `category`
-list has three groups), and do not add a word that means the same as one already there. Please
-also add it to the lists in this guide.
+`core/cards.lua` (for `category`, to the group that fits it in `Cards.tagGroups.category`), in the
+same pull request as the card that uses it. The Card Builder shows a note saying exactly where.
+Keep the list tidy: do not add a word that means the same as one already there. Please also add
+it to the lists in this guide. The **Pick tags** window shows the new word as soon as the plugin
+is reloaded (`prl`).
 
 **Choosing a location**
 
@@ -210,7 +215,7 @@ NPC.
    - [ ] each card appears correctly in the Card Builder preview,
    - [ ] the checks in the Card Builder show no **Fix** lines,
    - [ ] you used the Card Builder's block as it is (and added any new tag words to
-         `Cards.tagWords` and to the lists in this guide),
+         `Cards.tagWords` (or `Cards.tagGroups`) and to the lists in this guide),
    - [ ] you only changed files in `deck/` (and `core/cards.lua` for new tag words).
 4. Open the pull request and **include a screenshot of each card**. A screenshot of the Card
    Builder window with the finished card is ideal.
