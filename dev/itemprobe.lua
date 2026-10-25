@@ -24,7 +24,7 @@ local parts = {}            -- components made by the last probe, destroyed by t
 
 -- Names that an item model type might have. Tried one by one, because the enum may not be listable.
 local GUESSES = {
-    "OBJ", "OBJ_MODEL", "OBJ_HEAD", "OBJECT", "OBJECT_MODEL", "ITEM", "ITEM_MODEL", "INV", "INV_OBJ",
+    "OBJECT", "OBJ", "OBJ_MODEL", "OBJ_HEAD", "OBJECT", "OBJECT_MODEL", "ITEM", "ITEM_MODEL", "INV", "INV_OBJ",
     "LOC", "LOC_MODEL", "OBJ_MALE", "OBJ_FEMALE", "OBJ_WORN", "WORN", "PLAYER_MODEL", "PLAYER_HEAD",
     "NPC_MODEL", "NPC_HEAD",
 }
@@ -99,21 +99,42 @@ local function probeIcon(objId)
         parts[#parts + 1] = sprite
         sprite:SetPos(10, 90)
         sprite:SetSize(64, 64)
-        listOf("ui.Sprite instance", sprite)
-        -- The test kit says the method fails in the client and the property works, so try both.
-        local viaMethod, methodErr = pcall(function() sprite:SetAssociatedObject(objId, 1) end)
-        say("Sprite:SetAssociatedObject", viaMethod and "ok" or ("failed: " .. tostring(methodErr)))
-        local viaProperty, propErr = pcall(function()
-            sprite.associatedObject = objId
-            sprite.associatedObjectQuantity = 1
-        end)
-        say("Sprite.associatedObject / associatedObjectQuantity", viaProperty and "ok" or ("failed: " .. tostring(propErr)))
-        say("Sprite size after", tostring(sprite.width) .. " x " .. tostring(sprite.height))
+        -- The first probe showed the members are associatedObjectID, associatedObjectQuantity and
+        -- associatedObjectQuantityMode (I had used the wrong name). Try the properties first.
+        local function attempt(label, fn)
+            local done, problem = pcall(fn)
+            say("icon " .. label, done and "ok" or ("failed: " .. tostring(problem)))
+            return done
+        end
+        attempt("property associatedObjectID", function() sprite.associatedObjectID = objId end)
+        attempt("property associatedObjectQuantity", function() sprite.associatedObjectQuantity = 1 end)
+        say("icon reads back", "id=" .. tostring(sprite.associatedObjectID) .. " quantity="
+            .. tostring(sprite.associatedObjectQuantity) .. " mode=" .. tostring(sprite.associatedObjectQuantityMode)
+            .. " spriteID=" .. tostring(sprite.spriteID))
+        -- The method rejected (id, 1), so try other shapes: the config, the id alone, three arguments.
+        attempt("SetAssociatedObject(id)", function() sprite:SetAssociatedObject(objId) end)
+        attempt("SetAssociatedObject(config)", function() sprite:SetAssociatedObject(config.Obj.FromID(objId)) end)
+        attempt("SetAssociatedObject(config, 1)", function() sprite:SetAssociatedObject(config.Obj.FromID(objId), 1) end)
+        attempt("SetAssociatedObject(id, 1, 0)", function() sprite:SetAssociatedObject(objId, 1, 0) end)
+        say("icon reads back after", "id=" .. tostring(sprite.associatedObjectID) .. " quantity="
+            .. tostring(sprite.associatedObjectQuantity))
     end)
     if not ok then
         say("icon", "failed: " .. tostring(err))
     end
     parts[#parts + 1] = Kit.text(content, 10, 156, 120, 20, "Icon (Sprite)", GREY, ui.AlignMode.TOPLEFT)
+end
+
+-- Lists the model types by asking the enum for each number (it cannot be listed with pairs).
+local function listModelTypes()
+    local found = {}
+    for number = 0, 60 do
+        local ok, value = pcall(function() return ui.ModelType.FromID(number) end)
+        if ok and value ~= nil then
+            found[#found + 1] = number .. "=" .. tostring(value)
+        end
+    end
+    say("ui.ModelType.FromID 0-60", #found .. " found: " .. table.concat(found, ", "))
 end
 
 local function tryModel(typeName, modelType, objId, slot)
@@ -142,6 +163,7 @@ local function probe()
     say("probe", "item " .. name)
 
     listOf("ui.ModelType", ui.ModelType)
+    listModelTypes()
     listOf("ui.Model (class)", ui.Model)
     listOf("ui.Sprite (class)", ui.Sprite)
     local objId, cfg = findObj(name)
