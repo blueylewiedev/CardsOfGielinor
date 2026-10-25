@@ -86,14 +86,14 @@ Set.cards = {
         id = "cave_crawler", name = "Cave crawler", rarity = "rare",
         desc = "A spiky crawling critter.",
         art = { npc = "SLAYER_CAVE_CRAWLER_4", anim = 24517, cam = { yaw = -0.40, pitch = 0.30, dist = 1306, fov = 40, ty = 100, tx = 110 } },
-        tags = { location = { "lumbridge", "dorgesh_kaan", "frem_slayer_dung" }, skills = { "slayer" }, category = { "animal", "monster" } },
+        tags = { location = { "lumbridge", "dorgesh_kaan", "fremennik_slayer_dungeon" }, skills = { "slayer" }, category = { "animal", "monster" } },
     },
 
     {
         id = "rock_slug", name = "Rock slug", rarity = "rare",
         desc = "The slime of evil.",
         art = { npc = "SLAYER_ROCKSLUG", anim = 23852, cam = { yaw = -0.20, pitch = -0.15, dist = 748, fov = 30, ty = 120, tx = 40 } },
-        tags = { location = { "lumbridge", "dorgesh_kaan", "frem_slayer_dung" }, skills = { "slayer" }, category = { "animal", "monster" } },
+        tags = { location = { "lumbridge", "dorgesh_kaan", "fremennik_slayer_dungeon" }, skills = { "slayer" }, category = { "animal", "monster" } },
     },
 
     
