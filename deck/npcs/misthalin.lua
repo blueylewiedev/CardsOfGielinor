@@ -108,14 +108,49 @@ Set.cards = {
         id = "wizard_ilona", name = "Wizard Ilona", rarity = "uncommon",
         desc = "Almost sacrificed, now a dinosaur collector.",
         art = { npc = "ARIANE1_ILONA_APPEARANCE", anim = 18911, cam = { dist = 749, fov = 35, ty = 560 } },
-        tags = { location = { "lumbridge", "dino_farm" }, skills = { "farming" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge", "ranch_out_of_time" }, skills = { "farming" }, category = { "humanoid" } },
     },
 
     {
         id = "swamp_frog", name = "Swamp frog", rarity = "uncommon",
         desc = "Can YOU lick your own eye? This little guy can!",
         art = { npc = "SMALL_FROG", anim = 37023, cam = { yaw = -0.40, pitch = 0.30, dist = 988, fov = 20, ty = 40 } },
-        tags = { location = { "lumbridge", "lumbridge_swamp" }, category = { "animal", "monster" } },
+        tags = { location = { "lumbridge", "lumbridge_swamp" }, skills = { "slayer"}, category = { "animal", "monster" } },
+    },
+
+    {
+        id = "big_frog", name = "Big frog", rarity = "common",
+        desc = "It's big, but not Giant!",
+        art = { npc = "MEDIUM_FROG", anim = 1796, cam = { yaw = 0.60, pitch = 0.45, dist = 859, fov = 40, ty = 100, tx = 50 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer"}, category = { "monster", "animal" } },
+    },
+
+    {
+        id = "giant_frog", name = "Giant frog", rarity = "uncommon",
+        desc = "Eats flies",
+        art = { npc = "GIANT_FROG", anim = 1796, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 120 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer"}, category = { "monster", "animal" } },
+    },
+
+    {
+        id = "cave_slime", name = "Cave slime", rarity = "common",
+        desc = "Animated... Slime?",
+        art = { npc = "SWAMP_CAVE_SLIME", anim = 1788, cam = { yaw = 0.60, pitch = 0.30, dist = 859, fov = 35, ty = 80 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer" }, category = { "monster" } },
+    },
+
+    {
+        id = "hole_in_the", name = "Wall Beast", rarity = "rare",
+        desc = "This is my wall, get yer own!",
+        art = { npc = "SWAMP_WALLBEAST", anim = 1803, cam = { yaw = -0.40, dist = 1502, fov = 35, ty = 260, tx = -90 } },
+        tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer" }, category = { "monster" } },
+    },
+
+    {
+        id = "cave_goblin", name = "Cave goblin", rarity = "epic",
+        desc = "One of the many citizens of Dorgesh-Kaan.",
+        art = { npc = "CAVE_GOBLIN4", anim = 6047, cam = { dist = 988, fov = 30, ty = 400 } },
+        tags = { location = { "dorgesh_kaan" }, skills = { "thieving" }, category = { "goblin" } },
     },
 }
 

@@ -17,7 +17,7 @@ local Nearby = {}
 local WHITE = Vector4.new(1, 1, 1, 1)
 local RANGE = 12            -- how many tiles around the player to look
 local MAX_ROWS = 10         -- how many different configs to list
-local WIDTH, ROW_H = 600, 36
+local WIDTH, ROW_H = 900, 36      -- wide enough for the longest config and animation set names
 local LIST_TOP = 76         -- where the list of NPCs starts
 
 local window = nil
@@ -97,9 +97,9 @@ local function showList()
         local npc = found[i]
         local y = LIST_TOP + (i - 1) * ROW_H
         -- Name and config on the first line of a row, id and animation set on the second.
-        rows[#rows + 1] = Kit.text(content, 10, y, WIDTH - 130, 16, npc.name .. "  " .. npc.configName, WHITE,
+        rows[#rows + 1] = Kit.text(content, 10, y, WIDTH - 250, 16, npc.name .. "  " .. npc.configName, WHITE,
             ui.AlignMode.TOPLEFT)
-        rows[#rows + 1] = Kit.text(content, 10, y + 15, WIDTH - 130, 16,
+        rows[#rows + 1] = Kit.text(content, 10, y + 15, WIDTH - 250, 16,
             "id " .. npc.id .. "   anim set " .. npc.bas .. "   " .. npc.distance .. " tiles", WHITE,
             ui.AlignMode.TOPLEFT)
         if picker ~= nil then
@@ -124,7 +124,7 @@ function Nearby.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Nearby NPCs", WIDTH, LIST_TOP + MAX_ROWS * ROW_H + 10 + Kit.titleBarHeight(),
-        function() Nearby.hide() end, 0.35, 0.05)
+        function() Nearby.hide() end, 0.2, 0.05)
 
     Kit.text(content, 10, 4, 100, 26, "Name filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 115, 4, 250, 26, 30, false)

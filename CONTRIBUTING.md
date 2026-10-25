@@ -47,50 +47,117 @@ The `dev/` folder holds the developer tools. They load automatically when the fo
 
 ## Adding a card
 
-The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
-checks it as you go. You do not need to know how the code works.
+The **Card Builder** (the _Card Builder_ button on the Home window) makes a new card for you and
+checks it as you go. You do not need to know how the code works to be able to contribute :).
+
+<img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
 1. **Choose the NPC.**
-   - Stand near the NPC in the game and press **Nearby NPCs**, then **Scan**, then **Use** on the
+   - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
      NPC you want. This picks the exact NPC (many NPCs have several versions with different
-     models, and the one standing in front of you is the one to use), or
-   - press **Search NPCs**, type part of the name and press **Use**, or
-   - type the NPC's *config name* (for example `FATHER_AERECK`) into the box. In the developer
+     models, and the one standing in front of you is the one to use),
+
+   <img width="1070" height="576" alt="image" src="https://github.com/user-attachments/assets/a2ca367c-35ec-4251-888e-b8b1f27efdf5" />
+   - or press the **Search NPCs** button (the magnifying glass beside the NPC box), type part of the name and press **Use**,
+
+   <img width="711" height="579" alt="image" src="https://github.com/user-attachments/assets/7040bd1b-614e-4b6e-890a-2c63ed4f11aa" />
+   - or type the NPC's _config name_ (for example `FATHER_AERECK`) into the box. In the developer
      console, `pan NPC` lists the config names.
+
+   <img width="1344" height="988" alt="image" src="https://github.com/user-attachments/assets/1084552a-c8a3-4e45-84ba-3185022cf06c" />
 
    The box says **Found** when the client knows the NPC. The name and the id are filled in for
    you, and the card appears in the preview.
+
 2. **Check the name and id.** The name is what is printed on the card. The id follows the name
    (see [Ids](#ids)). Change either if you need to.
+
+   If the generated Card Id automatically defaults to the name of the npc followed by "\_2" check to make sure a card for that NPC doesn't
+   already exist.
+
+   <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
+
 3. **Write a description** (up to 60 letters, shorter is better).
+
+   <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
+
 4. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
-5. **Add tags**, if they apply (see [Tags](#tags)).
-6. **Choose the deck file** the card belongs in (see [Which deck file](#which-deck-file)).
-7. **Tune the art.**
-   - **Model** switches between the NPC's whole body (the default) and its head.
-   - The **camera buttons** zoom, move and turn the camera. Aim to fill the picture window with
-     the NPC, with the face visible. A look through the existing cards gives a good idea.
-   - **Animation** is optional. Type a sequence id, step through ids with the +/- buttons, or
-     press **Search anims** to look for an animation by name and **Use** to try it. Pick an idle
-     or other animation that loops smoothly.
-8. **Read the checks** at the bottom left. Anything marked **Fix** has to be sorted out before
-   the block is ready. **Note** lines are worth a look but will not stop you.
-9. **Copy the card block.** Click the box under *Your card block*, press **Ctrl+A** then
-   **Ctrl+C**.
-10. **Paste it** into the deck file you chose (see below), inside the `Set.cards` list. One card
-    goes on one line, which is fine; the maintainer may tidy the layout when merging.
-11. **Reload the plugin** (`prl`) and check that the card loads and looks right. The plugin
+   We may not agree with the rarity you choose for your submitted cards, in this case we will open a discussion with you to reach an agreement.
+
+   <img width="417" height="247" alt="image" src="https://github.com/user-attachments/assets/435df749-9a57-47fc-9128-8287b677fb12" />
+
+5. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
+   that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
+   (click it again to remove it). The Filter box narrows the words. You can also type them. Press **Pick tags** to choose from the words
+   that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
+   (click it again to remove it). The Filter box narrows the words. You can also type them.
+
+   <img width="711" height="318" alt="image" src="https://github.com/user-attachments/assets/ce56db55-d3a5-42af-8ed8-fe5cba3b90ec" />
+   <img width="709" height="519" alt="image" src="https://github.com/user-attachments/assets/9f111aba-2b31-42f1-83f9-44d59d4473e6" />
+   <img width="708" height="641" alt="image" src="https://github.com/user-attachments/assets/7cc345e4-ecc7-4061-9845-52139bbddbb1" />
+
+For this example, we will select no tags for location, as the Woman NPC can be found in many places across Gielinor.
+We will select the Thieving tag for Skills as Women are a common early Thieving NPC.
+For the Category tags we will select Humanoid and Monster (Monster signifies that this NPC is attackable)
+
+You may add new tags should you wish, just type the tag manually into the text field, separated by commas.
+\*If you do create new tags, make sure you also add them to the relevant list in the Cards file.
+If you don't know or are unsure on how to do that, make a note of the tags that need adding in your PR.
+
+<img width="1331" height="371" alt="image" src="https://github.com/user-attachments/assets/b0a76167-5038-4253-9d78-263e4d17c2b3" />
+
+10. **Choose the deck file** the card belongs in (see [Which deck file](#which-deck-file)).
+
+<img width="571" height="231" alt="image" src="https://github.com/user-attachments/assets/b1ae1091-bcf3-446e-a540-616815358fa2" />
+
+11. **Tune the art.**
+
+- **Model** switches between the NPC's whole body (the default) and its head.
+- The **camera controls** (each has a label and a pair of buttons) zoom, move and turn the camera, and the
+  arrow icon at the top right of the section puts the camera back to where it started. Aim to fill the picture window with
+  the NPC, with the face visible. A look through the existing cards gives a good idea.
+
+<img width="736" height="379" alt="image" src="https://github.com/user-attachments/assets/260b93a7-7885-4100-abea-7537df0bb1f9" />
+
+- **Animation** is optional. Type a sequence id, step through ids with the -100 to +100 buttons, or
+  press the magnifying glass beside the box (**Search anims**) to look for an animation by name and **Use** to try it. Pick an idle
+  or other animation that loops smoothly.
+- On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
+  While the specific animation you need might not be named exactly the same, it will likely be similar.
+
+  <img width="595" height="175" alt="image" src="https://github.com/user-attachments/assets/937f213f-4f48-4ead-b68a-99b9160181c0" />
+  <img width="707" height="368" alt="image" src="https://github.com/user-attachments/assets/214aa0db-a9ef-4bb5-a3bf-9804666e272b" />
+  <img width="731" height="608" alt="Selecting_Animation" src="https://github.com/user-attachments/assets/b6342b75-d511-4237-b034-2c62b1a9b0ea" />
+
+11. **Read the checks** at the bottom left. Anything marked **Fix** has to be sorted out before
+    the block is ready. **Note** lines are worth a look but will not stop you.
+
+<img width="318" height="159" alt="image" src="https://github.com/user-attachments/assets/a75d2842-b0d2-4da7-8595-7e1b555121a7" />
+
+13. **Copy the card block.** Click the box under _Your card block_, press **Ctrl+A** then
+    **Ctrl+C**.
+
+   <img width="735" height="74" alt="image" src="https://github.com/user-attachments/assets/d25a5483-fb0b-43e7-bb43-12c2c543e6e3" />
+
+15. **Paste it** into the deck file you chose (see below), inside the `Set.cards` list. One card
+    goes on one line, which is fine; I can reformat the files myself and there will soon be a script that runs when merging that reformats the code automatically.
+
+   <img width="1177" height="1043" alt="adding_line" src="https://github.com/user-attachments/assets/ae83e7b9-f7cd-4db3-8610-678eca9223b7" />
+    
+17. **Reload the plugin** (`prl`) and check that the card loads and looks right. The plugin
     checks every card when it loads, and stops with a message naming the card if something is
     wrong.
 
-**Reset** at the top of the Card Builder clears the window ready for the next card. What you type
+The **Reset** button (the bin icon at the top right of the card details) clears the window ready for the next card. What you type
 is kept while the plugin is running, so closing the window does not lose it.
 
 ### Which deck file
 
 The cards are in `deck/npcs/`, one file for each region (`misthalin.lua`, `asgarnia.lua`,
-`kandarin.lua`), plus `general.lua` for NPCs that are not tied to one place (guards, shop keepers,
-animals). Put a card in the file for the region where the NPC is found. Every card in a region's
+`kandarin.lua`, `karamja.lua`, `kharidian_desert.lua`, `morytania.lua`, `tirannwn.lua`,
+`fremennik_province.lua`, `wilderness.lua`, `anachronia.lua` and `havenhythe.lua`), plus
+`general.lua` for NPCs that are not tied to one place (guards, shop keepers, animals). Put a card
+in the file for the region where the NPC is found. Every card in a region's
 file gets that region's tag automatically.
 
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
@@ -127,27 +194,64 @@ wanted. Looking at where similar NPCs sit in the existing files is the best guid
 ### Tags
 
 Tags group cards so that themed packs can draw from them. Each tag kind holds words separated by
-commas:
+commas. A tag is never required, but a card with a good `category` and `location` is much more
+useful to the packs.
 
-| Kind | Meaning | Example |
-|------|---------|---------|
-| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `varrock_sewers`, `feldip_hills` |
-| `skills` | skills it is linked to | `cooking`, `prayer` |
-| `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
+| Kind       | Meaning                                                                                 | Example                                        |
+| ---------- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
+| `skills`   | skills it is linked to                                                                  | `cooking`, `prayer`, `slayer`                  |
+| `category` | what kind of character it is, what it does, or whether it can be fought                 | `humanoid`, `shopkeeper`, `monster`            |
 
 The region comes from the deck file, so it is not asked for.
 
-- Tag words are **lower case letters, digits and underscores**, starting with a letter. The
-  Card Builder will not accept anything else.
-- Use an existing word if one fits. The checks tell you when a word is new.
-- **A new word is allowed.** For `location`, `skills` and `category`, a new word must also be
-  added to the list in `Cards.tagWords` in `core/cards.lua` (the Card Builder shows a note saying
-  exactly which line to add). The plugin refuses to load a card with a word that is not on its
-  list, so a typo cannot slip through. Keep new words short, in the singular, and sensible enough
-  for others to reuse (`monster`, not `monsters` or `scary_thing`).
-- `category` words say what the NPC is (`humanoid`, `animal`, `dragon`), what it does
-  (`shopkeeper`, `guard`, `knight`), or whether it can be fought (`monster`, `boss`). A card can
-  have several, for example `{ "humanoid", "monster" }`.
+**Rules for words**
+
+- Tag words are **lower case letters, digits and underscores**, starting with a letter. Use an
+  underscore for a space (`lumbridge_swamp`). The Card Builder will not accept anything else.
+- Use the full name of a place as the wiki writes it, in the singular, with no abbreviations or
+  plurals (`monster`, not `monsters`; `lumbridge_swamp`, not `lum_swamp`).
+- **Every word must be on the lists below.** The plugin refuses to load a card with a word that
+  is not on its list, so a typo cannot slip through. Choose a word from the list when one fits.
+
+**Adding a new word.** A new word is allowed. Add it to the right list in `Cards.tagWords` in
+`core/cards.lua` (for `category`, to the group that fits it in `Cards.tagGroups.category`), in the
+same pull request as the card that uses it. The Card Builder shows a note saying exactly where.
+Keep the list tidy: do not add a word that means the same as one already there. Please also add
+it to the lists in this guide. The **Pick tags** window shows the new word as soon as the plugin
+is reloaded (`prl`).
+
+**Choosing a location**
+
+- Tag where the NPC _you picked_ is found: a card is one version of an NPC, with its own model,
+  so tag the places where players would expect to meet that version.
+- If it is found in a town, use the town. If it is in a dungeon or a general area, use that.
+- If it is found in several places, tag the **one to three best-known places**. Tagging every
+  place makes the card turn up in too many themed packs. For example, a giant spider might be
+  tagged `lumbridge_swamp` and one or two other well-known caves, not every dungeon where one
+  appears.
+- If it is found all over the game, leave `location` empty and put the card in `general.lua`.
+  Chickens, rats and goblins are examples.
+- A creature found in several regions belongs in `general.lua`; it can still have a `location` or
+  two there.
+
+**Choosing a category.** Use one or more words. Say what it is (`humanoid`, `animal`, `dragon`),
+what it does (`shopkeeper`, `guard`, `knight`) and, for anything you can attack, add `monster`
+(or `boss` for a boss). A card can have several, for example `{ "humanoid", "monster" }`. If
+nothing says what it is, `monster` alone is fine; a new word is worth adding once several cards
+need it.
+
+**Choosing skills.** Only add a skill when the link is clear: a skill trainer or shop for that
+skill (`cooking`), or a creature you train a skill on (`slayer`). Leave it out if you would have
+to guess.
+
+**The words you can use now**
+
+- `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
+- `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
+- `category`: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+
+For reference, the regions (set by the deck file, not typed on a card) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 
 ### Art
 
@@ -173,7 +277,7 @@ NPC.
    - [ ] each card appears correctly in the Card Builder preview,
    - [ ] the checks in the Card Builder show no **Fix** lines,
    - [ ] you used the Card Builder's block as it is (and added any new tag words to
-         `Cards.tagWords`),
+         `Cards.tagWords` (or `Cards.tagGroups`) and to the lists in this guide),
    - [ ] you only changed files in `deck/` (and `core/cards.lua` for new tag words).
 4. Open the pull request and **include a screenshot of each card**. A screenshot of the Card
    Builder window with the finished card is ideal.
@@ -188,12 +292,12 @@ Alternative artwork for the **card frames, the card back and the pack** is welco
 `resources/images/`. A new look is submitted as replacement files, so please open an issue
 first to agree what you are making before spending time on it.
 
-| File | Size | Notes |
-|------|------|-------|
+| File                 | Size      | Notes                                                                                                                                                                                                                                                  |
+| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `frame_<rarity>.png` | 320 x 448 | One for each of common, uncommon, rare, epic, legendary. The window for the NPC must be **transparent**. Its position is set in `CardView.FRAME_ZONES` in `ui/cardview.lua`, so a frame with a window in a different place needs a code change as well |
-| `card_back.png` | 320 x 448 | The back of a card, with transparent rounded corners |
-| `pack.png` | 320 x 512 | The sealed pack |
-| `glow_<rarity>.png` | 456 x 616 | The glow behind a card in the pack opening |
+| `card_back.png`      | 320 x 448 | The back of a card, with transparent rounded corners                                                                                                                                                                                                   |
+| `pack.png`           | 320 x 512 | The sealed pack                                                                                                                                                                                                                                        |
+| `glow_<rarity>.png`  | 456 x 616 | The glow behind a card in the pack opening                                                                                                                                                                                                             |
 
 Rules for artwork:
 
@@ -203,6 +307,15 @@ Rules for artwork:
 - Keep the files small; the plugin has size limits for its resources.
 - Check it in the game, on every rarity, using the Card Builder's preview.
 - By submitting artwork you agree to the terms in [Licence and ownership](#licence-and-ownership) below.
+
+### Themed pack art
+
+Each region has a themed pack (listed in `deck/packs.lua`) that is designed in the **Pack Maker**,
+one of the developer tools. The wrapper is built from the game's own login screen, banner and logo
+sprites at runtime, with a shading overlay and a region title from `resources/images/`. The shading
+(`pack_shading*.png`) and title (`title_*.png`) images are generated by `dev/make_pack_art.py`, so
+please don't submit them by hand. A new themed pack should be agreed in an issue first; it needs a
+region word that cards already use, and a pack with no cards in its region is not offered to players.
 
 ---
 

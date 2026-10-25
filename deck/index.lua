@@ -29,6 +29,8 @@ return {
     "deck/npcs/tirannwn",
     "deck/npcs/fremennik_province",
     "deck/npcs/wilderness",
+    "deck/npcs/anachronia",
+    "deck/npcs/havenhythe",
     "deck/npcs/general",
 
     -- Items (none yet)

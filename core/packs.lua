@@ -33,6 +33,22 @@ function Packs.typeById(packTypeId)
     return Cards.packTypes[packTypeId or "standard"]
 end
 
+-- The pack types on offer, in the order to show them: the standard pack first, then the themed
+-- packs (deck/packs.lua) by name.
+function Packs.offered()
+    local list = {}
+    for _, packType in pairs(Cards.packTypes) do
+        list[#list + 1] = packType
+    end
+    table.sort(list, function(a, b)
+        if (a.id == "standard") ~= (b.id == "standard") then
+            return a.id == "standard"
+        end
+        return a.name < b.name
+    end)
+    return list
+end
+
 -- What a pack costs this character in credits, or nil if they have not chosen a tier.
 -- `packTypeId` is optional (default "standard"): themed packs multiply the tier's price by
 -- their `priceFactor`, rounded up.
@@ -92,6 +108,19 @@ function Packs.poolFor(packType)
         groups, count = build(1)
     end
     return groups, count
+end
+
+-- How many cards a pack type can give (0 means it cannot be opened). The cards don't change
+-- while the plugin runs, so each pack type is counted once.
+local poolSizes = {}
+function Packs.poolSize(packTypeId)
+    local size = poolSizes[packTypeId]
+    if size == nil then
+        local packType = Packs.typeById(packTypeId)
+        size = packType and select(2, Packs.poolFor(packType)) or 0
+        poolSizes[packTypeId] = size
+    end
+    return size
 end
 
 -- Rolls one card: its rarity, then which card of that rarity, then its finish. The rolls

@@ -74,6 +74,9 @@ Cards.list = {}
 --                   keys must match. Example: { skills = "thieving" } or
 --                   { category = { "weapon", "tool" } }
 --   minRarity     : optional. Only cards of this rarity or better can be pulled.
+--   art           : optional. How the pack looks (see ui/packart.lua; made in the Pack Maker).
+-- Themed packs (made in the Pack Maker) are listed in deck/packs.lua and added below. They cost
+-- a little more than the standard pack (THEMED_PRICE_FACTOR) unless they set their own priceFactor.
 -- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later
 -- only needs the window; nothing in this table touches the game.
 Cards.packTypes = {
@@ -86,25 +89,35 @@ Cards.packTypes = {
 -- that are not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
-                "tirannwn", "fremennik_province", "wilderness" },
-    location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "dino_farm", "lumbridge_swamp" },
+
+                "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe" },
+    location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "ranch_out_of_time", "lumbridge_swamp", "dorgesh_kaan", "burthorpe", "chaos_tunnels",
+                "fremennik_slayer_dungeon" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
                 "runecrafting", "hunter", "construction", "summoning", "dungeoneering",
                 "divination", "invention", "archaeology", "necromancy" },
-    -- What a card is (its kind of creature), what it does (its job), and whether it can be fought.
+    category = {},        -- filled in below from Cards.tagGroups.category
+}
+
+-- Tag words that are shown in groups when they are picked in the Card Builder. The groups are
+-- only for display; the allowed words are the ones in all the groups together. A new category
+-- word goes in the group that fits it best.
+Cards.tagGroups = {
     category = {
-        -- what it is
-        "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin", "troll", "spirit",
-        "elemental", "insect", "construct",
-        -- what it does
-        "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer", "wizard", "priest",
-        "quest_giver", "banker", "farmer", "pirate", "thief",
-        -- whether it can be fought
-        "monster", "boss",
+        { title = "What it is", words = { "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin",
+            "troll", "spirit", "elemental", "insect", "construct" } },
+        { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
+            "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief" } },
+        { title = "Whether it can be fought", words = { "monster", "boss" } },
     },
 }
+for _, group in ipairs(Cards.tagGroups.category) do
+    for _, word in ipairs(group.words) do
+        Cards.tagWords.category[#Cards.tagWords.category + 1] = word
+    end
+end
 
 -- The cards are written in their own files in the deck folder (the layout is described in
 -- deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the defaults (such
@@ -261,6 +274,21 @@ end
 -- typo shows up immediately as an error when the plugin loads.
 -- Stops with an error naming the card if its tags are malformed or use a word that is not on
 -- Cards.tagWords.
+-- True if `word` may be used for this tag kind: it is on the kind's list in Cards.tagWords, or
+-- the kind has no list.
+local function isKnownWord(tagKind, word)
+    local allowed = Cards.tagWords[tagKind]
+    if allowed == nil then
+        return true
+    end
+    for _, w in ipairs(allowed) do
+        if w == word then
+            return true
+        end
+    end
+    return false
+end
+
 local function checkTags(card)
     if card.tags == nil then
         return
@@ -268,12 +296,9 @@ local function checkTags(card)
     for tagKind, words in pairs(card.tags) do
         assert(type(tagKind) == "string" and type(words) == "table",
             "Tags on card " .. card.id .. " must be lists of words, e.g. skills = { \"thieving\" }")
-        local allowed = Cards.tagWords[tagKind]
-        local allowedSet = {}
-        for _, word in ipairs(allowed or {}) do allowedSet[word] = true end
         for _, word in ipairs(words) do
             assert(type(word) == "string", "Tag words on card " .. card.id .. " must be text")
-            assert(allowed == nil or allowedSet[word],
+            assert(isKnownWord(tagKind, word),
                 "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" (add it to Cards.tagWords?)")
         end
     end
@@ -298,9 +323,22 @@ for _, card in ipairs(Cards.list) do
     end
     Cards.byId[card.id] = card
 end
+Cards.THEMED_PRICE_FACTOR = 1.25
+for _, packType in ipairs(require("deck/packs")) do
+    assert(type(packType.id) == "string" and packType.id ~= "", "A pack in deck/packs.lua has no id")
+    packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
+    assert(Cards.packTypes[packType.id] == nil, "Duplicate pack type id " .. packType.id)
+    Cards.packTypes[packType.id] = packType
+end
 for key, packType in pairs(Cards.packTypes) do
     assert(packType.id == key, "Pack type id must match its key: " .. key)
     assert(packType.minRarity == nil or Cards.rarities[packType.minRarity], "Unknown minRarity on pack " .. key)
+    -- Filter words from a closed list must be on it, so a typo can't make an empty pack.
+    for kind, wanted in pairs(packType.filter or {}) do
+        for _, word in ipairs(type(wanted) == "table" and wanted or { wanted }) do
+            assert(isKnownWord(kind, word), "Pack " .. key .. " filters on unknown " .. kind .. " word " .. tostring(word))
+        end
+    end
 end
 for finish in pairs(Cards.odds.finish) do
     assert(Cards.finishes[finish], "Odds mention unknown finish " .. finish)

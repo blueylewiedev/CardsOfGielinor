@@ -4,7 +4,8 @@
 -- It has four screens, and only one is shown at a time:
 --   nosession : nobody is logged in yet
 --   setup     : first run, pick a difficulty tier
---   home      : credits, pack price and the Open pack button
+--   home      : credits, the pack to buy (the standard pack and the themed packs in
+--               deck/packs.lua), its price and the Open pack button
 --   reveal    : the pulled cards, shown one at a time with a Next button
 --
 -- The reveal (see "The pack opening" below) is animated: a sealed pack, then each card face
@@ -18,6 +19,7 @@ local Viewer = require("ui/viewer")
 local Kit = require("ui/kit")
 local Stats = require("ui/stats")
 local Settings = require("core/settings")
+local PackArt = require("ui/packart")
 
 local PackWindow = {}
 
@@ -28,7 +30,7 @@ local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 local WIDTH = 236
 -- The setup screen is wider: its longest button label ("Master - 20 credits") needs about 250.
-local EXTRA_TOP = 220      -- where the extra buttons on the Home screen start
+local EXTRA_TOP = 254      -- where the extra buttons on the Home screen start
 local SETUP_WIDTH = 296
 local SETUP_BUTTON_W = 260
 local TITLE_BAR = 40   -- extra window height taken by PrettyUI's title bar
@@ -44,7 +46,7 @@ local REVEAL_SHIFT = Kit.available() and -10 or 0
 local REVEAL_MID = REVEAL_WIDTH + 2 * REVEAL_SHIFT   -- the width to centre things in
 local REVEAL_TOP = CARD_Y + CardView.HEIGHT + GLOW_PAD + 4   -- where the text under the card starts
 -- Window height for each screen.
-local HEIGHTS = { nosession = 90, setup = 262, home = 222 + 38, reveal = REVEAL_TOP + 124 }
+local HEIGHTS = { nosession = 90, setup = 262, home = 256 + 38, reveal = REVEAL_TOP + 124 }
 
 -- Set by PackWindow.show():
 --   api.getState() : the logged-in character's collection, or nil
@@ -58,6 +60,22 @@ local screens = {}   -- screen name -> Layer
 local widgets = {}   -- named pieces that need updating later
 local current = nil  -- name of the screen being shown
 local reveal = { results = nil, index = 0, view = nil, parts = {}, pips = {}, stage = nil, anim = nil, clock = 0 }
+local chosenPack = "standard"   -- the pack type the Open pack button buys (kept while the plugin runs)
+
+-- The pack type to buy: the one chosen, or the standard pack if that one has gone.
+local function currentPack()
+    if Packs.typeById(chosenPack) == nil then
+        chosenPack = "standard"
+    end
+    return chosenPack
+end
+
+-- A pack type's design (see ui/packart.lua), if it has one the game can draw.
+local function drawableArt(packTypeId)
+    local packType = Packs.typeById(packTypeId)
+    local art = packType and packType.art
+    return PackArt.canDraw(art) and art or nil
+end
 
 -- Text and buttons come from ui/kit.lua, which uses PrettyUI when it is available.
 local makeText = Kit.text
@@ -104,24 +122,8 @@ local PIP_W, PIP_H, PIP_GAP = 26, 8, 6
 
 local PIP_UNSEEN = Vector4.new(0.35, 0.35, 0.38, 1.0)
 
-local imageCache = {}
-
 -- Loads an image from resources/images, once. Returns nil (and logs) if it is not there.
-local function image(name)
-    local cached = imageCache[name]
-    if cached ~= nil then
-        return cached or nil
-    end
-    local ok, resource = pcall(function() return Plugin.resources.images[name] end)
-    if not ok or resource == nil then
-        log("reveal: no image resources/images/" .. name .. ".png")
-        imageCache[name] = false
-        return nil
-    end
-    pcall(function() resource:Load() end)
-    imageCache[name] = resource
-    return resource
-end
+local image = PackArt.image
 
 -- Turns a 0xRRGGBBAA colour number into a Vector4 (parts 0-1), with a different alpha.
 local function toColour(hex, alpha)
@@ -139,6 +141,10 @@ local function clearParts()
         pcall(function() part:Destroy() end)
     end
     reveal.parts = {}
+    if reveal.packArt ~= nil then
+        PackArt.destroy(reveal.packArt)
+        reveal.packArt = nil
+    end
     reveal.view = nil
     reveal.back = nil
     reveal.glow = nil
@@ -194,14 +200,31 @@ local function clickable(component)
     pcall(function() component:Subscribe(ui.Hook.ONCLICK, function() PackWindow.advance() end) end)
 end
 
--- First stage of a pack: the sealed pack. If the pack image is missing this stage is skipped.
+-- First stage of a pack: the sealed pack. A pack type with a design (made in the Pack Maker)
+-- shows its front; any other shows the pack image. If neither can be shown this stage is skipped.
 local function showSealed()
     showScreen("reveal")
     clearParts()
     reveal.stage = "sealed"
     reveal.index = 0
+    local art = drawableArt(reveal.packTypeId)
     local pack = image("pack")
-    if pack ~= nil then
+    if art ~= nil then
+        -- The same size and place as the pack image. The design is many small parts, so a
+        -- see-through rectangle over it takes the click.
+        local packArt = PackArt.new(content, "front", CardView.HEIGHT)
+        local x = (REVEAL_MID - packArt.w) // 2
+        packArt.root:SetPos(x, CARD_Y)
+        PackArt.draw(packArt, art)
+        reveal.packArt = packArt
+        reveal.pack = { root = packArt.root, x = x, y = CARD_Y, w = packArt.w, h = packArt.h }
+        local catcher = track(ui.Rectangle.new(content))
+        catcher:SetPos(x, CARD_Y)
+        catcher:SetSize(packArt.w, packArt.h)
+        catcher.fill = true
+        catcher.colour = Vector4.new(0, 0, 0, 0)
+        clickable(catcher)
+    elseif pack ~= nil then
         local h = CardView.HEIGHT
         local w = math.floor(h * PACK_ASPECT)
         local sprite = track(ui.Sprite.new(content))
@@ -339,7 +362,15 @@ function PackWindow.advance()
     if reveal.stage == "sealed" then
         local pack = reveal.pack
         startAnim(TEAR_SECONDS, function(p)
-            -- The pack swells a little and fades out.
+            -- A designed pack is many parts, so it lifts up and out of the window instead
+            -- (and fades as well, if the client lets a layer fade).
+            if pack ~= nil and pack.root ~= nil then
+                local rise = math.floor((pack.y + pack.h) * p * p)
+                pack.root:SetPos(pack.x, pack.y - rise)
+                pcall(function() pack.root.alpha = 1 - p end)
+                return
+            end
+            -- The pack image swells a little and fades out.
             if pack ~= nil then
                 local grow = 1 + 0.15 * p
                 local w, h = math.floor(pack.w * grow), math.floor(pack.h * grow)
@@ -419,7 +450,8 @@ local function onOpenPack()
     if state == nil then
         return
     end
-    local results, reason = Packs.open(state)
+    local packTypeId = currentPack()
+    local results, reason = Packs.open(state, packTypeId)
     if results == nil then
         log("pack not opened:", reason)
         PackWindow.refresh()
@@ -428,8 +460,9 @@ local function onOpenPack()
     api.saveNow()
     clearReveal()
     reveal.results = results
+    reveal.packTypeId = packTypeId
     reveal.clock = 0
-    if image("pack") ~= nil then
+    if drawableArt(packTypeId) ~= nil or image("pack") ~= nil then
         showSealed()
     else
         reveal.index = 1
@@ -474,19 +507,28 @@ local function buildScreens()
 
     -- home
     widgets.creditsText = makeText(screens.home, 10, 8, 200, 20, "", WHITE)
-    widgets.priceText = makeText(screens.home, 10, 30, 200, 20, "", GREY)
-    widgets.collectionText = makeText(screens.home, 10, 52, 200, 20, "", GREY)
-    widgets.openButton = makeButton(screens.home, "Open pack", 10, 82, 200, 34, onOpenPack, "positive")
-    widgets.hintText = makeText(screens.home, 10, 120, 200, 20, "", GOLD)
-    makeButton(screens.home, "Collection", 10, 144, 200, 30, function()
+    widgets.priceText = makeText(screens.home, 10, 64, 200, 20, "", GREY)
+    widgets.collectionText = makeText(screens.home, 10, 86, 200, 20, "", GREY)
+    widgets.openButton = makeButton(screens.home, "Open pack", 10, 116, 200, 34, onOpenPack, "positive")
+    widgets.hintText = makeText(screens.home, 10, 154, 200, 20, "", GOLD)
+    makeButton(screens.home, "Collection", 10, 178, 200, 30, function()
         if Viewer.isOpen() then
             Viewer.close()
         else
             Viewer.open(api)
         end
     end)
-    makeButton(screens.home, "Stats", 10, 182, 200, 30, function()
+    makeButton(screens.home, "Stats", 10, 216, 200, 30, function()
         Stats.toggle(api)
+    end)
+    -- The pack to buy. Made after the rest so its list opens on top of them.
+    local entries = {}
+    for _, packType in ipairs(Packs.offered()) do
+        entries[#entries + 1] = { label = packType.name, value = packType.id }
+    end
+    widgets.packDropdown = Kit.dropdown(screens.home, 10, 32, 216, 26, entries, currentPack(), function(packTypeId)
+        chosenPack = packTypeId
+        PackWindow.refresh()
     end)
     -- A cog in the top right corner opens the settings window.
     Kit.iconButton(screens.home, "SETTINGS", 186, 4, function() api.openSettings() end, "Settings", "Settings", 80)
@@ -518,7 +560,7 @@ function PackWindow.show(newApi)
     -- `window` is the frame (resized per screen); `content` is what the screens go inside.
     window, content = Kit.window(gameWindow, "Card Collector", WIDTH, HEIGHTS.nosession, function()
         PackWindow.hide()
-    end)
+    end, 0, 0.2)
     buildScreens()
     PackWindow.refresh()
 end
@@ -555,13 +597,21 @@ function PackWindow.refresh()
         return
     end
 
+    local price = Packs.priceFor(state, currentPack())
+    local poolSize = Packs.poolSize(currentPack())
     setText(widgets.creditsText, "Credits: " .. state.credits)
-    setText(widgets.priceText, "Pack: " .. tier.price .. " credits (" .. tier.name .. ")")
+    setText(widgets.priceText, "Price: " .. price .. " credits (" .. tier.name .. ")")
     setText(widgets.collectionText, "Collection: " .. Storage.countUniqueOwned(state) .. " of " .. #Cards.list
         .. " cards")
-    local affordable = state.credits >= tier.price
-    Kit.setEnabled(widgets.openButton, affordable)
-    setText(widgets.hintText, affordable and "" or ("Need " .. (tier.price - state.credits) .. " more credits"))
+    local affordable = state.credits >= price
+    Kit.setEnabled(widgets.openButton, affordable and poolSize > 0)
+    local hint = ""
+    if poolSize == 0 then
+        hint = "No cards in this pack yet"
+    elseif not affordable then
+        hint = "Need " .. (price - state.credits) .. " more credits"
+    end
+    setText(widgets.hintText, hint)
     if current ~= "home" then
         showScreen("home")
     end
@@ -577,6 +627,9 @@ function PackWindow.hide()
     Viewer.close()
     Stats.hide()
     clearReveal()
+    if widgets.packDropdown ~= nil then
+        widgets.packDropdown.destroy()
+    end
     if window ~= nil then
         pcall(function() window:Destroy() end)
         window = nil
