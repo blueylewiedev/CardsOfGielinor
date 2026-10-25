@@ -3,7 +3,8 @@
 -- pcall(require, "dev/dev"). The released plugin does not contain the dev folder, so there the
 -- load fails quietly and none of this exists.
 --
--- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window, the saved camera
+-- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window,
+-- the Pack Maker (dev/packmaker.lua), the saved camera
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
 -- toggles), and a few debug extras at login and when XP is gained.
 
@@ -20,6 +21,7 @@ local TagPicker = require("dev/tagpicker")
 local OutputWindow = require("dev/outputwindow")
 local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
+local PackMaker = require("dev/packmaker")
 
 local Dev = {}
 
@@ -63,6 +65,7 @@ function Dev.buttons(api, refresh)
         end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
+        { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
@@ -82,6 +85,7 @@ end
 function Dev.shutdown()
     Preview.hide()
     Builder.hide()
+    PackMaker.hide()
     NpcBrowser.hide()
     Nearby.hide()
     NpcSearch.hide()

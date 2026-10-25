@@ -353,6 +353,152 @@ function Kit.inputField(parent, x, y, w, h, maxLength, numeric)
     return field
 end
 
+-- Colours of the drop-down lists, as 0xRRGGBBAA (the ones rsprite-finder uses, which match
+-- the game's own fields).
+local DROPDOWN_COLOURS = {
+    text = 0xE9E5DDFF, hover = 0x393530F2, selected = 0x4A4640FF, disabled = 0x8B8882FF, caret = 0xFFFFFFFF,
+}
+
+-- The two kinds of drop-down behind Kit.dropdown. Each takes the entries numbered 1, 2, ... as
+-- { label, id, order } and gives back fill(entries, index), pick(index) and destroy().
+
+-- PrettyUI's ComboBox. It picks its kind when it is made, from the entries it is given then
+-- (ordered entries make the ordered kind), so it needs the first entries straight away.
+local function prettyDropdown(parent, x, y, w, h, numbered, index, choose)
+    local ok, combo = pcall(prettyui.ComboBox.new, parent, {
+        x = x, y = y, width = w, height = h, maxVisibleEntries = 12,
+        entries = numbered, selectedID = index,
+        onChange = function(_, entryId) choose(entryId) end,
+    })
+    if not ok or combo == nil then
+        log("Kit.dropdown: PrettyUI combo box failed, using the plain one:", tostring(combo))
+        return nil
+    end
+    return {
+        fill = function(list, i) combo:SetEntries(list, i) end,
+        pick = function(i) combo:Select(i, false) end,
+        destroy = function() pcall(function() combo:Destroy() end) end,
+    }
+end
+
+-- The client's own ComboField (sorted by label, no typing).
+local function plainDropdown(parent, x, y, w, h, choose)
+    local combo = ui.ComboField.new(parent)
+    local quiet = false             -- true while the code changes it, so that isn't a choice
+    pcall(function() combo.stylesheetID = id.StyleSheet.COMBO_DEFAULT end)
+    combo:SetPos(x, y)
+    combo:SetSize(w, h)
+    pcall(function()
+        combo.entryHeight = 20
+        combo.dropdownMaxVisibleEntries = 12
+        combo.contentMargin = ui.Margin.new(8, 0, 8, 0)
+        combo.headerMargin = ui.Margin.new(8, 0, 8, 0)
+        combo.entryText.font = id.Font.MUSEO_SANS_11PT_REGULAR
+        combo.entryText.rgba = DROPDOWN_COLOURS.text
+        combo.entryText.isShadowed = true
+        combo.mouseoverForegroundRGBA = DROPDOWN_COLOURS.text
+        combo.mouseoverBackgroundRGBA = DROPDOWN_COLOURS.hover
+        combo.selectedForegroundRGBA = DROPDOWN_COLOURS.text
+        combo.selectedBackgroundRGBA = DROPDOWN_COLOURS.selected
+        combo.disabledForegroundRGBA = DROPDOWN_COLOURS.disabled
+        combo.selectionHighlightRGBA = DROPDOWN_COLOURS.selected
+        combo.caretRGBA = DROPDOWN_COLOURS.caret
+        combo.errorCaretRGBA = DROPDOWN_COLOURS.caret
+    end)
+    combo:Subscribe(ui.Hook.ONSELECTIONCHANGED, function(_, entryId)
+        if not quiet then
+            local ok, i = pcall(function() return combo.hasSelection and combo.selectedID or entryId end)
+            choose(ok and i or entryId)
+        end
+    end)
+    return {
+        fill = function(list, i)
+            local byLabel = {}
+            for _, entry in ipairs(list) do
+                byLabel[entry.label] = entry.id
+            end
+            quiet = true
+            local ok, err = pcall(function() combo:SetEntries(byLabel, i) end)
+            quiet = false
+            assert(ok, err)
+        end,
+        pick = function(i)
+            quiet = true
+            pcall(function() combo:Select(i, false) end)
+            quiet = false
+        end,
+        destroy = function() pcall(function() combo:Destroy() end) end,
+    }
+end
+
+-- A drop-down list. `entries` is a list of { label = "...", value = anything }; the labels must
+-- all be different. `selected` is the value shown at first (or nil). `onChoose(value)` is called
+-- when the player picks an entry. Returns { set(entries, selected), select(value), destroy() }:
+-- set replaces the list, select shows a choice; neither calls onChoose.
+-- With PrettyUI it is PrettyUI's ComboBox. By default it is given the entries in order, which
+-- makes it PrettyUI's ordered kind: it keeps the order given, but it has a text box, so the
+-- player can type in it to filter the list. `sorted` = true gives the plain kind instead: the
+-- client's own list, which can't be typed in but shows the entries sorted by label.
+-- Without PrettyUI it is the client's ComboField (sorted, no typing).
+function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
+    local dropdown = { values = {} }    -- entry i has the id i and the value values[i]
+    local function number(list)
+        local numbered = {}
+        dropdown.values = {}
+        for i, entry in ipairs(list) do
+            numbered[i] = { label = entry.label, id = i, order = (not sorted) and i or nil }
+            dropdown.values[i] = entry.value
+        end
+        return numbered
+    end
+    local function indexOf(value)
+        for i, v in ipairs(dropdown.values) do
+            if v == value then
+                return i
+            end
+        end
+        return nil
+    end
+    local function choose(entryId)
+        local value = dropdown.values[entryId]
+        if value ~= nil then
+            onChoose(value)
+        end
+    end
+
+    entries = entries or {}
+    local backend = nil
+    if Kit.available() and prettyui.ComboBox ~= nil then
+        -- An empty ordered list starts with a placeholder (which does nothing when picked), so
+        -- PrettyUI still makes the ordered kind.
+        local first = (#entries > 0 or sorted) and entries or { { label = "...", value = nil } }
+        local numbered = number(first)
+        backend = prettyDropdown(parent, x, y, w, h, numbered, indexOf(selected), choose)
+    end
+
+    function dropdown.set(list, value)
+        local ok, err = pcall(backend.fill, number(list), indexOf(value))
+        if not ok then
+            log("Kit.dropdown: could not fill the list:", tostring(err))
+        end
+    end
+    function dropdown.select(value)
+        local i = indexOf(value)
+        if i ~= nil then
+            pcall(backend.pick, i)
+        end
+    end
+    function dropdown.destroy()
+        backend.destroy()
+    end
+
+    if backend == nil then
+        backend = plainDropdown(parent, x, y, w, h, choose)
+        dropdown.set(entries, selected)
+    end
+    return dropdown
+end
+
 -- Enables or greys out a button made by Kit.button.
 function Kit.setEnabled(button, enabled)
     if prettyButtons[button] then
