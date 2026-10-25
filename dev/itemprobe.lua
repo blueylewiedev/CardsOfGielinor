@@ -8,6 +8,7 @@
 --   * Read GE: list the player's Grand Exchange offers (the game only exposes offers that have
 --     been placed, not the item in the search or buy window) with each offer's item id,
 --     config name and in-game name. Each row has a Show button.
+--   * Results are paged (arrows at the bottom of the list), so a search is not limited to a few rows.
 -- Every id/name line it finds also goes to the Output window, where it can be copied.
 -- Item ids: id.Obj. Icon: ui.Sprite with associatedObjectID. Model: ui.ModelType.OBJECT.
 
@@ -20,23 +21,29 @@ local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
 local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 
-local WIDTH = 700
-local ROW_H, MAX_ROWS = 30, 8
-local ROWS_TOP = 74
-local PREVIEW_TOP = ROWS_TOP + MAX_ROWS * ROW_H + 14
-local BOX = 150
-local HEIGHT = PREVIEW_TOP + BOX + 50
+local WIDTH = 980
+local LEFT_W = 600                   -- the list of results
+local RIGHT_X, RIGHT_W = 630, 340     -- the preview
+local ROW_H, PAGE_SIZE = 28, 14
+local ROWS_TOP = 78
+local PAGER_Y = ROWS_TOP + PAGE_SIZE * ROW_H + 8
+local MODEL_Y, MODEL_W, MODEL_H = 204, RIGHT_W, 230
+local HEIGHT = PAGER_Y + 44
+local MAX_RESULTS = 3000              -- a search stops collecting here
 local PER_FRAME = 400                 -- in-game names looked at each frame
 
 local STAGES = { [0] = "EMPTY", "ADDING", "ADDED", "VERIFYING", "ABORTING", "FINISHED" }
 local TYPES = { [0] = "BUY", "SELL" }
 
 local window, content = nil, nil
-local field, statusText, infoText = nil, nil, nil
+local field, statusText = nil, nil
 local rowParts = {}
+local results = {}                 -- what the list shows: { text, id (optional) }
+local page = 1
+local pageText = nil
 local previewParts = {}
 local index = nil                      -- every item: { id, configName, key }, read once
-local search = nil                     -- a search still checking in-game names
+local search = nil                     -- a search still checking in-game names: { wanted, next, seen, count }
 local shownId = nil
 local distance = 300                   -- the model's viewDistance
 
@@ -128,7 +135,7 @@ function ItemProbe.find(text, limit)
     for _, entry in ipairs(list) do
         if string.find(entry.key, wanted, 1, true) ~= nil then
             found[#found + 1] = { id = entry.id, configName = entry.configName, name = displayName(entry.id) }
-            if #found >= limit then
+            if limit ~= nil and #found >= limit then
                 break
             end
         end
@@ -164,6 +171,61 @@ function ItemProbe.resolve(text)
 end
 
 -- ---------------------------------------------------------------------------------------------
+-- Sprites for the buttons. SEARCH, EYE and the arrows are PrettyUI's own. It has no Grand Exchange
+-- picture, so the game's sprite list (id.Sprite) is searched for one; the names it finds are
+-- written to the Output window once so a better one can be chosen.
+
+local geSpriteId, geSearched = nil, false
+
+local function findGeSprite()
+    if geSearched then
+        return geSpriteId
+    end
+    geSearched = true
+    local names = {}
+    pcall(function()
+        for key, value in pairs(id.Sprite) do
+            local spriteId, name = key, value
+            if type(key) == "string" and type(value) == "number" then
+                spriteId, name = value, key
+            end
+            if type(spriteId) == "number" and type(name) == "string" then
+                local upper = string.upper(name)
+                if string.find(upper, "GRAND_EXCHANGE", 1, true) or string.find(upper, "GRANDEXCHANGE", 1, true)
+                    or string.find(upper, "GEBUTTON", 1, true) or string.find(upper, "GE_ICON", 1, true) then
+                    names[#names + 1] = { id = spriteId, name = name }
+                end
+            end
+        end
+    end)
+    table.sort(names, function(a, b) return a.id < b.id end)
+    local listed = {}
+    for i = 1, math.min(#names, 30) do
+        listed[#listed + 1] = names[i].id .. " " .. names[i].name
+    end
+    say("sprites that mention the Grand Exchange", #names .. " found: " .. table.concat(listed, ", "))
+    if #names > 0 then
+        geSpriteId = names[1].id
+    end
+    return geSpriteId
+end
+
+-- A small button with the Grand Exchange sprite on it, or the letters GE if there is none.
+local function geButton(x, y, onPress)
+    local spriteId = findGeSprite()
+    if spriteId ~= nil and Kit.available() and prettyui.SimpleButton ~= nil then
+        local ok, button = pcall(prettyui.SimpleButton.new, content, spriteId, function() onPress() end, {
+            x = x, y = y, width = 36, height = 28, absolute = true, tooltip = "Read my Grand Exchange offers",
+        })
+        if ok and button ~= nil then
+            return button
+        end
+        say("GE sprite button failed", tostring(button))
+    end
+    return Kit.smallButton(content, "GE", x, y, 40, 28, onPress, "Read my Grand Exchange offers")
+end
+
+-- ---------------------------------------------------------------------------------------------
 -- The preview: icon, model and data for one item.
 
 local function showItem(objId)
@@ -175,11 +237,17 @@ local function showItem(objId)
     if content == nil then
         return
     end
+    local function text(x, y, w, line, colour)
+        previewParts[#previewParts + 1] = Kit.text(content, x, y, w, 24, line, colour or WHITE, ui.AlignMode.TOPLEFT)
+    end
+
+    text(RIGHT_X, ROWS_TOP, RIGHT_W, name, GOLD)
+    text(RIGHT_X, ROWS_TOP + 26, RIGHT_W, "id " .. objId .. "   " .. configName, WHITE)
 
     local ok, err = pcall(function()
         local sprite = ui.Sprite.new(content)
         previewParts[#previewParts + 1] = sprite
-        sprite:SetPos(10, PREVIEW_TOP + 40)
+        sprite:SetPos(RIGHT_X, ROWS_TOP + 54)
         sprite:SetSize(64, 64)
         sprite.associatedObjectID = objId
         sprite.associatedObjectQuantity = 1
@@ -187,37 +255,28 @@ local function showItem(objId)
     if not ok then
         say("icon failed", tostring(err))
     end
-    previewParts[#previewParts + 1] = Kit.text(content, 10, PREVIEW_TOP + 108, 80, 20, "Icon", GREY, ui.AlignMode.TOPLEFT)
+    text(RIGHT_X + 76, ROWS_TOP + 54, RIGHT_W - 76,
+        "members: " .. tostring(prop(cfg, "isMembers")) .. "   tradeable: " .. tostring(prop(cfg, "isTradeable")), GREY)
+    text(RIGHT_X + 76, ROWS_TOP + 78, RIGHT_W - 76,
+        "category: " .. tostring(prop(cfg, "category")) .. "   cost: " .. tostring(prop(cfg, "cost")), GREY)
+    text(RIGHT_X + 76, ROWS_TOP + 102, RIGHT_W - 76,
+        "stack: " .. tostring(prop(cfg, "stackType")) .. "   GE: " .. tostring(prop(cfg, "isStockmarket"))
+            .. "   limit: " .. tostring(prop(cfg, "stockmarketBuyLimit")), GREY)
 
     local modelOk, modelErr = pcall(function()
         local model = ui.Model.new(content)
         previewParts[#previewParts + 1] = model
-        model:SetPos(100, PREVIEW_TOP)
-        model:SetSize(BOX, BOX)
-        model.modelWidth = BOX
-        model.modelHeight = BOX
+        model:SetPos(RIGHT_X, MODEL_Y)
+        model:SetSize(MODEL_W, MODEL_H)
+        model.modelWidth = MODEL_W
+        model.modelHeight = MODEL_H
         model.viewDistance = distance
         model:SetModel(ui.ModelType.OBJECT, objId)
     end)
     if not modelOk then
         say("model failed", tostring(modelErr))
     end
-    previewParts[#previewParts + 1] = Kit.text(content, 100, PREVIEW_TOP + BOX + 2, BOX, 20,
-        "Model, distance " .. distance, GREY, ui.AlignMode.TOPLEFT)
-
-    local lines = {
-        name,
-        "id " .. objId .. "   " .. configName,
-        "members: " .. tostring(prop(cfg, "isMembers")) .. "   tradeable: " .. tostring(prop(cfg, "isTradeable")),
-        "category: " .. tostring(prop(cfg, "category")) .. "   cost: " .. tostring(prop(cfg, "cost")),
-        "stack: " .. tostring(prop(cfg, "stackType")) .. "   GE item: " .. tostring(prop(cfg, "isStockmarket"))
-            .. "   GE limit: " .. tostring(prop(cfg, "stockmarketBuyLimit")),
-    }
-    previewParts[#previewParts + 1] = Kit.text(content, 270, PREVIEW_TOP, WIDTH - 290, 26, lines[1], GOLD, ui.AlignMode.TOPLEFT)
-    for i = 2, #lines do
-        previewParts[#previewParts + 1] = Kit.text(content, 270, PREVIEW_TOP + (i - 1) * 28, WIDTH - 290, 26,
-            lines[i], WHITE, ui.AlignMode.TOPLEFT)
-    end
+    text(RIGHT_X, MODEL_Y + MODEL_H + 2, 160, "Model, distance " .. distance, GREY)
     say("show", objId .. " " .. configName .. " = " .. name)
 end
 
@@ -229,110 +288,124 @@ local function zoom(factor)
 end
 
 -- ---------------------------------------------------------------------------------------------
--- The rows (search results or Grand Exchange offers). Each is { text, id }.
+-- The list of results, a page at a time.
 
-local function showRows(entries)
+local function pageCount()
+    return math.max(1, math.ceil(#results / PAGE_SIZE))
+end
+
+local function renderPage()
     destroyAll(rowParts)
-    for i, entry in ipairs(entries) do
-        if i > MAX_ROWS then
+    if content == nil then
+        return
+    end
+    page = math.max(1, math.min(page, pageCount()))
+    local first = (page - 1) * PAGE_SIZE + 1
+    for n = 0, PAGE_SIZE - 1 do
+        local entry = results[first + n]
+        if entry == nil then
             break
         end
-        local y = ROWS_TOP + (i - 1) * ROW_H
-        rowParts[#rowParts + 1] = Kit.text(content, 10, y, WIDTH - 110, ROW_H - 4, entry.text, WHITE, ui.AlignMode.TOPLEFT)
+        local y = ROWS_TOP + n * ROW_H
+        rowParts[#rowParts + 1] = Kit.text(content, 10, y, LEFT_W - 50, ROW_H - 4, entry.text, WHITE, ui.AlignMode.TOPLEFT)
         if entry.id ~= nil then
-            rowParts[#rowParts + 1] = Kit.smallButton(content, "Show", WIDTH - 90, y, 70, ROW_H - 4, function()
+            rowParts[#rowParts + 1] = Kit.iconButton(content, "EYE", LEFT_W - 28, y, function()
                 showItem(entry.id)
-            end)
+            end, "Show this item", "Show", 70)
         end
     end
+    if pageText ~= nil then
+        pageText.content = "Page " .. page .. " of " .. pageCount() .. "   (" .. #results .. " results)"
+    end
+end
+
+local function setResults(list)
+    results = list
+    page = 1
+    renderPage()
+end
+
+local function changePage(delta)
+    page = page + delta
+    renderPage()
 end
 
 local function rowFor(item)
     return { id = item.id, text = item.id .. "   " .. item.configName .. "   -   " .. item.name }
 end
 
-local function reportFound(entries)
-    for _, entry in ipairs(entries) do
+local function reportResults()
+    for _, entry in ipairs(results) do
         OutputWindow.add("itemprobe", entry.text)
     end
 end
 
 -- ---------------------------------------------------------------------------------------------
--- Search.
+-- Search. Config-name matches are listed at once; in-game names are checked afterwards, a batch
+-- each frame, and any new matches are added to the end of the list.
 
--- Checks the next batch of in-game names. Runs every frame while a search is going.
 function ItemProbe.step()
     if search == nil then
         return
     end
     local list = index
     local stop = math.min(#list, search.next + PER_FRAME - 1)
+    local added = false
     for position = search.next, stop do
         local entry = list[position]
-        if not search.seen[entry.id] then
+        if not search.seen[entry.id] and #results < MAX_RESULTS then
             local name = displayName(entry.id)
             if string.find(ItemProbe.simplify(name), search.wanted, 1, true) ~= nil then
-                search.found[#search.found + 1] = { id = entry.id, configName = entry.configName, name = name }
+                results[#results + 1] = rowFor({ id = entry.id, configName = entry.configName, name = name })
                 search.seen[entry.id] = true
-                if #search.found >= MAX_ROWS then
-                    break
-                end
+                added = true
             end
         end
     end
     search.next = stop + 1
-    local entries = {}
-    for _, item in ipairs(search.found) do
-        entries[#entries + 1] = rowFor(item)
+    if added then
+        renderPage()
     end
-    if #search.found >= MAX_ROWS or search.next > #list then
-        showRows(entries)
-        reportFound(entries)
-        setStatus(#entries .. " found" .. (#entries >= MAX_ROWS and " (first " .. MAX_ROWS .. ", type more to narrow it)" or ""))
+    if search.next > #list or #results >= MAX_RESULTS then
+        setStatus(#results .. " found" .. (#results >= MAX_RESULTS and " (stopped at " .. MAX_RESULTS .. ", type more)" or ""))
+        reportResults()
         search = nil
     else
-        setStatus("Checking in-game names... " .. math.floor(100 * search.next / #list) .. "%")
+        setStatus(#results .. " found so far. Checking in-game names... " .. math.floor(100 * search.next / #list) .. "%")
     end
 end
 Event.Draw.Subscribe("cardcollector_itemprobe", function() ItemProbe.step() end)
 
 function ItemProbe.search(text)
-    destroyAll(rowParts)
     search = nil
+    setResults({})
     local wanted = ItemProbe.simplify(text)
     if wanted == "" then
         setStatus("Type part of an item's name first.")
         return
     end
-    local found = ItemProbe.find(text, MAX_ROWS)
+    local found = ItemProbe.find(text, MAX_RESULTS)
     if found == nil then
         setStatus("The client would not list item names (id.Obj).")
         return
     end
-    local entries = {}
-    local seen = {}
+    local list, seen = {}, {}
     for _, item in ipairs(found) do
-        entries[#entries + 1] = rowFor(item)
+        list[#list + 1] = rowFor(item)
         seen[item.id] = true
     end
-    showRows(entries)
-    if #found >= MAX_ROWS then
-        reportFound(entries)
-        setStatus(#found .. " found (first " .. MAX_ROWS .. ", type more to narrow it)")
-        return
-    end
-    -- Few config names matched, so look at the in-game names too, a batch each frame.
-    search = { wanted = wanted, next = 1, found = found, seen = seen }
-    setStatus(#found .. " found so far. Checking in-game names...")
+    setResults(list)
+    search = { wanted = wanted, next = 1, seen = seen }
+    setStatus(#list .. " found so far. Checking in-game names...")
 end
 
 -- ---------------------------------------------------------------------------------------------
 -- Grand Exchange.
 
 function ItemProbe.readGrandExchange()
-    destroyAll(rowParts)
     search = nil
     if GrandExchange == nil then
+        setResults({})
         setStatus("This client has no GrandExchange table.")
         return
     end
@@ -340,7 +413,7 @@ function ItemProbe.readGrandExchange()
     if not okMax or type(maxOffers) ~= "number" then
         maxOffers = 8
     end
-    local entries = {}
+    local list = {}
     local used = 0
     for slot = 1, maxOffers do
         local ok, offer = pcall(function() return GrandExchange.GetOffer(slot) end)
@@ -349,23 +422,21 @@ function ItemProbe.readGrandExchange()
             local kind = prop(offer, "type")
             local item = prop(offer, "item")
             local itemId = prop(item, "id")
-            local text
             if type(itemId) == "number" and itemId >= 0 and stage ~= 0 then
                 used = used + 1
-                text = "Slot " .. slot .. " " .. tostring(TYPES[kind] or kind) .. " " .. tostring(STAGES[stage] or stage)
-                    .. "   " .. itemId .. " " .. tostring(prop(item, "configName")) .. " - " .. tostring(prop(item, "name"))
-                    .. "   x" .. tostring(prop(offer, "itemCount")) .. " (" .. tostring(prop(offer, "soldCount")) .. " done)"
-                    .. " @ " .. tostring(prop(offer, "price")) .. "gp"
-                entries[#entries + 1] = { id = itemId, text = text }
+                list[#list + 1] = { id = itemId, text = "Slot " .. slot .. " " .. tostring(TYPES[kind] or kind) .. " "
+                    .. tostring(STAGES[stage] or stage) .. "   " .. itemId .. " " .. tostring(prop(item, "configName"))
+                    .. " - " .. tostring(prop(item, "name")) .. "   x" .. tostring(prop(offer, "itemCount"))
+                    .. " (" .. tostring(prop(offer, "soldCount")) .. " done) @ " .. tostring(prop(offer, "price")) .. "gp" }
             else
-                entries[#entries + 1] = { text = "Slot " .. slot .. " empty" }
+                list[#list + 1] = { text = "Slot " .. slot .. " empty" }
             end
         else
-            entries[#entries + 1] = { text = "Slot " .. slot .. " - no offer data (" .. tostring(offer) .. ")" }
+            list[#list + 1] = { text = "Slot " .. slot .. " - no offer data (" .. tostring(offer) .. ")" }
         end
     end
-    showRows(entries)
-    reportFound(entries)
+    setResults(list)
+    reportResults()
     setStatus(used .. " offer(s) in " .. maxOffers .. " slots. Place an offer to read an item that is not listed.")
 end
 
@@ -392,23 +463,31 @@ function ItemProbe.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Item probe", WIDTH, HEIGHT + Kit.titleBarHeight(),
-        function() ItemProbe.hide() end, 0.5, 0.2)
-    Kit.text(content, 10, 4, 60, 26, "Item:", WHITE, ui.AlignMode.TOPLEFT)
-    field = Kit.inputField(content, 70, 4, 290, 26, 40, false)
+        function() ItemProbe.hide() end, 0.15, 0.1)
+    Kit.text(content, 10, 6, 60, 26, "Item:", WHITE, ui.AlignMode.TOPLEFT)
+    field = Kit.inputField(content, 70, 6, 520, 26, 40, false)
     pcall(function() field.content = "LOGS" end)
-    Kit.buttonAt(content, "Search", 372, 2, 100, 30, function() ItemProbe.search(field.content) end, "positive")
-    Kit.buttonAt(content, "Show", 478, 2, 90, 30, showTyped)
-    Kit.buttonAt(content, "Read GE", 574, 2, 116, 30, function()
+    Kit.iconButton(content, "SEARCH", 610, 6, function() ItemProbe.search(field.content) end,
+        "Search items by name", "Search", 80)
+    Kit.iconButton(content, "EYE", 660, 6, showTyped, "Show the item typed (config name or id)", "Show", 70)
+    geButton(710, 4, function()
         local ok, err = pcall(ItemProbe.readGrandExchange)
         if not ok then
             setStatus("Grand Exchange read failed: " .. tostring(err))
             say("GE failed", tostring(err))
         end
     end)
-    statusText = Kit.text(content, 10, 40, WIDTH - 20, 26,
-        "Search by name, Show by config name or id, or Read GE for your offers.", GREY, ui.AlignMode.TOPLEFT)
-    Kit.smallButton(content, "Zoom -", WIDTH - 180, HEIGHT - 36, 80, 28, function() zoom(1.25) end)
-    Kit.smallButton(content, "Zoom +", WIDTH - 90, HEIGHT - 36, 80, 28, function() zoom(0.8) end)
+    statusText = Kit.text(content, 10, 42, WIDTH - 20, 26,
+        "Search by name, show by config name or id, or read your Grand Exchange offers.", GREY, ui.AlignMode.TOPLEFT)
+
+    -- Pager under the list.
+    Kit.iconButton(content, "ARROW_LEFT", 10, PAGER_Y, function() changePage(-1) end, "Previous page", "<", 40)
+    Kit.iconButton(content, "ARROW_RIGHT", 50, PAGER_Y, function() changePage(1) end, "Next page", ">", 40)
+    pageText = Kit.text(content, 96, PAGER_Y, 400, 26, "", GREY, ui.AlignMode.TOPLEFT)
+
+    Kit.smallButton(content, "Zoom -", RIGHT_X + RIGHT_W - 170, HEIGHT - 36, 80, 28, function() zoom(1.25) end)
+    Kit.smallButton(content, "Zoom +", RIGHT_X + RIGHT_W - 84, HEIGHT - 36, 80, 28, function() zoom(0.8) end)
+    renderPage()
 end
 
 function ItemProbe.hide()
@@ -418,7 +497,8 @@ function ItemProbe.hide()
     if window ~= nil then
         pcall(function() window:Destroy() end)
     end
-    window, content, field, statusText, infoText, shownId = nil, nil, nil, nil, nil, nil
+    window, content, field, statusText, pageText, shownId = nil, nil, nil, nil, nil, nil
+    results, page = {}, 1
 end
 
 function ItemProbe.toggle()
