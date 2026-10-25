@@ -27,6 +27,7 @@ local OutputWindow = require("dev/outputwindow")
 local Nearby = require("dev/nearby")
 local NpcSearch = require("dev/npcsearch")
 local AnimSearch = require("dev/animsearch")
+local TagPicker = require("dev/tagpicker")
 
 local Builder = {}
 
@@ -86,6 +87,21 @@ function Builder.parseWords(text)
         end
     end
     return words
+end
+
+-- The text of a tag box with `word` added (on = true) or taken off (on = false), words separated
+-- by commas. Used by the tag picker.
+function Builder.withWord(text, word, on)
+    local words = {}
+    for _, existing in ipairs(Builder.parseWords(text)) do
+        if existing ~= word then
+            words[#words + 1] = existing
+        end
+    end
+    if on then
+        words[#words + 1] = word
+    end
+    return table.concat(words, ", ")
 end
 
 -- True if a card (live or draft) already has this id.
@@ -226,6 +242,14 @@ function Builder.blockLine()
     return "{ " .. table.concat(parts, ", ") .. " },"
 end
 
+-- Where in core/cards.lua a new word goes (the category words are in groups).
+local function wordHome(tagKind)
+    if Cards.tagGroups ~= nil and Cards.tagGroups[tagKind] ~= nil then
+        return "a group in Cards.tagGroups." .. tagKind
+    end
+    return "Cards.tagWords." .. tagKind
+end
+
 -- The block (one line) followed by a note line for each tag word that is not on Cards.tagWords
 -- yet, since those words must be added there too.
 function Builder.blockLines()
@@ -239,8 +263,7 @@ function Builder.blockLines()
             for _, word in ipairs(allowed) do known[word] = true end
             for _, word in ipairs(tagWords(tagKind)) do
                 if not known[word] and Builder.validTagWord(word) then
-                    lines[#lines + 1] = "-- Also add " .. quote(word) .. " to Cards.tagWords." .. tagKind
-                        .. " in core/cards.lua"
+                    lines[#lines + 1] = "-- Also add " .. quote(word) .. " to " .. wordHome(tagKind) .. " in core/cards.lua"
                 end
             end
         end
@@ -302,7 +325,7 @@ function Builder.checks()
             if not Builder.validTagWord(word) then
                 tagProblem = tagProblem or ("The tag " .. word .. " must be lower case letters, digits or underscores")
             elseif allowed ~= nil and not known[word] then
-                tagNotes[#tagNotes + 1] = "New " .. tagKind .. " tag " .. word .. " (add it to Cards.tagWords)"
+                tagNotes[#tagNotes + 1] = "New " .. tagKind .. " tag " .. word .. " (add it to " .. wordHome(tagKind) .. ")"
             elseif allowed == nil and not used[word] then
                 tagNotes[#tagNotes + 1] = "New " .. tagKind .. " tag " .. word
             end
@@ -358,6 +381,7 @@ local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches 
 local WIN_H = BOTTOM_Y + 220
 
 local window, content = nil, nil
+local gameLayer = nil      -- the layer the window is in (the reset pop-up goes in it too)
 local widgets = {}          -- the parts that change after the window is built
 local settingField = false  -- true while the code (not the player) changes a text box
 -- What the code last put in each text box. The client can report a change to a box after the
@@ -561,9 +585,10 @@ local function stepAnim(change)
     setField(widgets.animField, string.format("%.0f", nextId))
 end
 
--- Drop-down lists. The client's own list component is not documented well enough to rely on,
--- so a drop-down is a button that shows the choice and, when pressed, opens a column of buttons
--- under it. Only one is open at a time, and it closes when a choice is made.
+-- Drop-down lists. Normally these are PrettyUI's own drop-down (see choiceDropdown below). This
+-- version is the fallback for when that is not available: a button that shows the choice and,
+-- when pressed, opens a column of buttons under it. Only one is open at a time, and it closes
+-- when a choice is made.
 local openDropdown = nil     -- { owner = the button that opened it, parts = its buttons }
 
 local function closeDropdown()
@@ -601,6 +626,31 @@ local function dropdown(x, y, w, choices, current, onPick)
     return button, function() Kit.setLabel(button, title()) end
 end
 
+-- A drop-down at x, y, w wide, made with PrettyUI's drop-down when it can be (or the button
+-- version above if not). `choices()`, `current()` and `onPick(index)` are as for dropdown().
+-- Returns a function that shows the current choice again (after a reset).
+local function choiceDropdown(x, y, w, choices, current, onPick)
+    local labels = {}
+    for i, choice in ipairs(choices()) do
+        labels[i] = choice.label
+    end
+    local native = Kit.dropdown(content, x, y, w, labels, current(), onPick)
+    if native ~= nil then
+        return function() native.select(current()) end
+    end
+    return select(2, dropdown(x, y, w, choices, current, onPick))
+end
+
+-- True if anything has been entered for the card (so Reset should ask first).
+local function hasWork()
+    for _, key in ipairs({ "npc", "name", "desc", "skills", "location", "category" }) do
+        if draft[key] ~= nil and draft[key] ~= "" then
+            return true
+        end
+    end
+    return draft.anim ~= nil or draft.cam ~= nil
+end
+
 -- Puts the whole window back to a new, empty card.
 local function resetAll()
     closeDropdown()
@@ -625,6 +675,7 @@ local function resetAll()
     for _, refresh in ipairs({ widgets.rarityRefresh, widgets.deckRefresh }) do
         refresh()
     end
+    TagPicker.refresh()
     showCard()
 end
 
@@ -635,6 +686,7 @@ function Builder.show()
     widgets = {}
     openDropdown = nil
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
+    gameLayer = gameWindow
     window, content = Kit.window(gameWindow, "Card Builder", WIN_W, WIN_H + Kit.titleBarHeight(),
         function() Builder.hide() end, 0.15, 0.04, false, true)
 
@@ -647,7 +699,14 @@ function Builder.show()
 
     -- 1. Card details ---------------------------------------------------------------------
     section("1. Card details", LEFT_X, 4, LEFT_W)
-    Kit.buttonAt(content, "Reset", LEFT_X + LEFT_W - 110, 0, 100, 30, resetAll, "negative")
+    Kit.buttonAt(content, "Reset", LEFT_X + LEFT_W - 110, 0, 100, 30, function()
+        if hasWork() then
+            Kit.confirm(gameLayer, "Clear this card?", "Everything entered for this card will be cleared.", "Clear",
+                resetAll)
+        else
+            resetAll()
+        end
+    end, "negative", "Clear the card and start a new one")
 
     caption("What kind of card?", LEFT_X, 26, LEFT_W)
     Kit.buttonAt(content, "NPC", LEFT_X, 44, HALF_W, 30, function() end, "positive")
@@ -667,11 +726,11 @@ function Builder.show()
     Kit.buttonAt(content, "Nearby NPCs", LEFT_X, 134, 225, 30, function()
         Nearby.setPicker(usePicked)
         Nearby.show()
-    end)
+    end, nil, "List the NPCs standing near you and use one of them")
     Kit.buttonAt(content, "Search NPCs", LEFT_X + 235, 134, 225, 30, function()
         NpcSearch.setPicker(usePicked)
         NpcSearch.show()
-    end)
+    end, nil, "Find any NPC in the game by name")
 
     caption("Card name", LEFT_X, 176, 225)
     caption("Card id (follows the name)", LEFT_X + 235, 176, 225)
@@ -697,12 +756,25 @@ function Builder.show()
     -- last so their lists open over everything else.)
     caption("Suggested rarity (we may change it in review)", LEFT_X, 296, LEFT_W)
 
-    caption("Tags: words separated by commas", LEFT_X, 356, LEFT_W)
+    caption("Tags: words separated by commas", LEFT_X, 356, LEFT_W - 160)
+    Kit.smallButton(content, "Pick tags", LEFT_X + LEFT_W - 150, 350, 140, 24, function()
+        TagPicker.setTarget({
+            words = function(kind) return tagWords(kind) end,
+            toggle = function(kind, word, on)
+                draft[kind] = Builder.withWord(draft[kind], word, on)
+                setField(widgets[kind .. "Field"], draft[kind])
+                soon()
+            end,
+        })
+        TagPicker.show()
+        TagPicker.refresh()
+    end, "Choose tags from the words that are allowed")
     local tagY = 374
     for _, tagKind in ipairs({ "skills", "location", "category" }) do
         Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
             draft[tagKind] = text
+            TagPicker.refresh()
             soon()
         end)
         tagY = tagY + 34
@@ -722,8 +794,8 @@ function Builder.show()
     end)
 
     local function pair(label1, label2, y, change1, change2)
-        Kit.buttonAt(content, label1, RIGHT_X, y, PAIR_W, 30, function() withCamera(change1) end)
-        Kit.buttonAt(content, label2, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() withCamera(change2) end)
+        Kit.smallButton(content, label1, RIGHT_X, y, PAIR_W, 30, function() withCamera(change1) end)
+        Kit.smallButton(content, label2, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() withCamera(change2) end)
     end
     local y = 28 + STEP + 4
     pair("Zoom -", "Zoom +", y,
@@ -743,7 +815,7 @@ function Builder.show()
     Kit.buttonAt(content, "Reset camera", RIGHT_X, y, RIGHT_W - 4, 30, function()
         draft.cam = nil
         showCard()
-    end)
+    end, nil, "Put the camera back to its starting position")
 
     y = y + STEP + 12
     caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
@@ -766,14 +838,14 @@ function Builder.show()
     end)
     y = y + 34
     for _, amount in ipairs({ 1, 10, 100 }) do
-        Kit.buttonAt(content, "-" .. amount, RIGHT_X, y, PAIR_W, 30, function() stepAnim(-amount) end)
-        Kit.buttonAt(content, "+" .. amount, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() stepAnim(amount) end)
+        Kit.smallButton(content, "-" .. amount, RIGHT_X, y, PAIR_W, 30, function() stepAnim(-amount) end)
+        Kit.smallButton(content, "+" .. amount, RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function() stepAnim(amount) end)
         y = y + STEP
     end
     Kit.buttonAt(content, "Anim off", RIGHT_X, y, PAIR_W, 30, function()
         setAnim(nil)
         setField(widgets.animField, "")
-    end)
+    end, nil, "Show the card without an animation")
     -- Search animations by name; "Use" on a result plays it on the card.
     Kit.buttonAt(content, "Search anims", RIGHT_X + PAIR_W + PAIR_GAP, y, PAIR_W, 30, function()
         AnimSearch.setPicker(function(seq)
@@ -781,7 +853,7 @@ function Builder.show()
             setField(widgets.animField, string.format("%.0f", seq.id))
         end)
         AnimSearch.show()
-    end)
+    end, nil, "Find an animation by name and try it on the card")
 
     -- 5. The block's buttons sit at the right of the bottom strip.
     widgets.outputStatus = Kit.text(content, LEFT_X + 310, BOTTOM_Y + 176, 150, 30, "", GREY, ui.AlignMode.TOPLEFT)
@@ -805,7 +877,7 @@ function Builder.show()
     showCard()
 
     -- The drop-downs come last, so their lists open on top of the other parts.
-    widgets.rarityRefresh = select(2, dropdown(LEFT_X, 314, 300, function()
+    widgets.rarityRefresh = choiceDropdown(LEFT_X, 314, 300, function()
         local list = {}
         for _, key in ipairs(Cards.rarityOrder) do
             list[#list + 1] = { label = Cards.rarities[key].name }
@@ -814,8 +886,8 @@ function Builder.show()
     end, function() return Cards.rarityRank[draft.rarity] or 1 end, function(i)
         draft.rarity = Cards.rarityOrder[i]
         showCard()
-    end))
-    widgets.deckRefresh = select(2, dropdown(LEFT_X, 500, LEFT_W - 10, function()
+    end)
+    widgets.deckRefresh = choiceDropdown(LEFT_X, 500, LEFT_W - 10, function()
         local list = {}
         for _, setName in ipairs(Cards.sets) do
             list[#list + 1] = { label = setName }
@@ -824,12 +896,14 @@ function Builder.show()
     end, function() return draft.deck end, function(i)
         draft.deck = i
         refreshChecks()
-    end))
+    end)
 end
 
 function Builder.hide()
     pending = nil
     closeDropdown()
+    TagPicker.setTarget(nil)
+    TagPicker.hide()
     Nearby.setPicker(nil)
     NpcSearch.setPicker(nil)
     AnimSearch.setPicker(nil)

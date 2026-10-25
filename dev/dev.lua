@@ -16,6 +16,7 @@ local NpcBrowser = require("dev/npcbrowser")
 local Nearby = require("dev/nearby")
 local NpcSearch = require("dev/npcsearch")
 local AnimSearch = require("dev/animsearch")
+local TagPicker = require("dev/tagpicker")
 local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
 
@@ -83,6 +84,7 @@ function Dev.shutdown()
     Nearby.hide()
     NpcSearch.hide()
     AnimSearch.hide()
+    TagPicker.hide()
     OutputWindow.hide()
 end
 
