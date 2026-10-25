@@ -88,7 +88,7 @@ Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
                 "tirannwn", "fremennik_province", "wilderness" },
     location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "dino_farm", "lumbridge_swamp", "dorgesh_kaan", "burthorpe", "chaos_tunnels",
-                "frem_slayer_dung" },
+                "fremennik_slayer_dungeon" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
