@@ -639,11 +639,11 @@ end
 -- version above if not). `choices()`, `current()` and `onPick(index)` are as for dropdown().
 -- Returns a function that shows the current choice again (after a reset).
 local function choiceDropdown(x, y, w, choices, current, onPick)
-    local labels = {}
+    local entries = {}
     for i, choice in ipairs(choices()) do
-        labels[i] = choice.label
+        entries[i] = { label = choice.label, value = i }   -- the value is the choice's number
     end
-    local native = Kit.dropdown(content, x, y, w, labels, current(), onPick)
+    local native = Kit.dropdown(content, x, y, w, 26, entries, current(), onPick)
     if native ~= nil then
         return function() native.select(current()) end
     end
