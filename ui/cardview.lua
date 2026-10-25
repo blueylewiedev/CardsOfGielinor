@@ -113,12 +113,13 @@ end
 -- Anything left out uses these defaults. NPC cards show the whole body model unless they set
 -- `art.body = false` (the head), so each has its own defaults (the body is much bigger). Item
 -- cards show the item's model, which is far smaller than an NPC, so they have their own too.
--- The item defaults are a first guess: items differ a lot in size, so most item cards will
--- set `art.cam`.
+-- Item models lie flat, as if on the ground, so the item camera looks down on them (pitch 1.5,
+-- nearly straight down). The distance is a first guess: items differ a lot in size, so most item
+-- cards will set `art.cam`.
 CardView.CAMERA_DEFAULTS = {
     head = { yaw = 0.0, pitch = 0.0, dist = 2040, fov = 55, ty = 0, tx = 0 },
     body = { yaw = 0.0, pitch = 0.0, dist = 1500, fov = 50, ty = 0, tx = 0 },
-    item = { yaw = 0.0, pitch = 0.0, dist = 300, fov = 50, ty = 0, tx = 0 },
+    item = { yaw = 0.0, pitch = 1.5, dist = 300, fov = 50, ty = 0, tx = 0 },
 }
 
 -- The camera defaults for a camera state or art table: { kind = "item" } for an item card,
@@ -143,19 +144,36 @@ end
 -- Moves the camera to match cam.yaw / pitch / dist / fov / ty / tx. A camera the group hands
 -- back is only a copy, so instead of editing it a fresh camera is added, switched to, and the
 -- old one deleted.
+local ITEM_MAX_PITCH = 1.55      -- just short of straight down (1.5708); past it the picture flips over
+
 local function applyCamera(cam)
     local camera = newCamera()
     camera:SetFOV(cam.fov, 0)
     -- The camera orbits the look-at point. tx slides that point sideways (along the camera's
     -- right-hand direction) and the camera moves with it, so the NPC shifts across the card
     -- without changing angle or size.
-    local targetX = cam.tx * math.cos(cam.yaw)
-    local targetZ = cam.tx * math.sin(cam.yaw)
-    local x = targetX + cam.dist * math.sin(cam.yaw) * math.cos(cam.pitch)
-    local y = cam.ty + cam.dist * math.sin(cam.pitch)
-    local z = targetZ - cam.dist * math.cos(cam.yaw) * math.cos(cam.pitch)
+    local sinYaw, cosYaw = math.sin(cam.yaw), math.cos(cam.yaw)
+    local targetX, targetY, targetZ
+    if cam.kind == "item" then
+        -- An item is looked at from nearly straight above, where "up" in the world is no longer
+        -- up on the card (it would move the item towards the camera). So tx and ty move the look-at
+        -- point along the camera's own right and up directions, which stay up and sideways on the
+        -- card at any pitch. The pitch is stopped before it passes straight down, which flips the picture.
+        cam.pitch = math.max(-ITEM_MAX_PITCH, math.min(ITEM_MAX_PITCH, cam.pitch))
+        local sinPitch, cosPitch = math.sin(cam.pitch), math.cos(cam.pitch)
+        targetX = cam.tx * cosYaw - cam.ty * sinYaw * sinPitch
+        targetY = cam.ty * cosPitch
+        targetZ = cam.tx * sinYaw + cam.ty * cosYaw * sinPitch
+    else
+        targetX = cam.tx * cosYaw
+        targetY = cam.ty
+        targetZ = cam.tx * sinYaw
+    end
+    local x = targetX + cam.dist * sinYaw * math.cos(cam.pitch)
+    local y = targetY + cam.dist * math.sin(cam.pitch)
+    local z = targetZ - cam.dist * cosYaw * math.cos(cam.pitch)
     camera:SetPosition(Vector3.new(x, y, z), 0)
-    camera:SetLookAt(Vector3.new(targetX, cam.ty, targetZ), 0)
+    camera:SetLookAt(Vector3.new(targetX, targetY, targetZ), 0)
     camera:SetClipPlanes(1, cam.dist * 20)
     camera.clearColour = Vector4.new(0, 0, 0, 0)      -- see-through, so the card backdrop shows
     camera.useLookAt = true
