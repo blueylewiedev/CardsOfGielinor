@@ -8,11 +8,16 @@
 --   * Read GE (the swap-arrows button): list the player's Grand Exchange offers (the game only exposes offers that have
 --     been placed, not the item in the search or buy window) with each offer's item id,
 --     config name and in-game name. Each row has a Show button.
+--   * "Show as a card" (the grid button under the model): draws the item as an item card, the way
+--     the plugin does, in its own window with buttons to move the camera. Each change logs a
+--     `cam = { ... }` line to the Output window that can be pasted into a card's `art`.
 --   * Results are paged (arrows at the bottom of the list), so a search is not limited to a few rows.
 -- Every id/name line it finds also goes to the Output window, where it can be copied.
 -- Item ids: id.Obj. Icon: ui.Sprite with associatedObjectID. Model: ui.ModelType.OBJECT.
 
 local Kit = require("ui/kit")
+local Cards = require("core/cards")
+local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
 
 local ItemProbe = {}
@@ -391,6 +396,102 @@ function ItemProbe.readGrandExchange()
 end
 
 -- ---------------------------------------------------------------------------------------------
+-- The item as a card, with camera buttons. The card is made up for the purpose (it is not in the
+-- deck) and uses the same drawing code as every other card.
+
+local CARD_SCALE = 1.5
+local cardWindow, cardContent, cardView = nil, nil, nil
+local cardItem = nil           -- { id, configName, name } of the item shown on the card
+
+local function camText(cam)
+    local defaults = CardView.defaultsFor(cam)
+    local parts = {}
+    for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
+        local value, default = cam[field], defaults[field]
+        if math.abs(value - default) >= 0.005 then
+            parts[#parts + 1] = (field == "yaw" or field == "pitch") and string.format("%s = %.2f", field, value)
+                or string.format("%s = %.0f", field, value)
+        end
+    end
+    if #parts == 0 then
+        return "cam = { }  -- same as the defaults"
+    end
+    return "cam = { " .. table.concat(parts, ", ") .. " }"
+end
+
+local function drawCard()
+    if cardContent == nil or cardItem == nil then
+        return
+    end
+    if cardView ~= nil then
+        pcall(function() cardView.root:Destroy() end)
+        cardView = nil
+    end
+    local card = { id = "probe_item", name = cardItem.name, rarity = "common", desc = cardItem.configName, kind = "item",
+        art = { item = cardItem.configName } }
+    local ok, result = pcall(CardView.create, cardContent, card, { scale = CARD_SCALE })
+    if not ok then
+        say("card failed", tostring(result))
+        return
+    end
+    cardView = result
+    cardView.root:SetPos(10, 10)
+    say("card", cardItem.configName .. " camera: " .. (cardView.cam ~= nil and camText(cardView.cam) or "none (icon or plain model)"))
+end
+
+local function moveCamera(change)
+    if cardView == nil or cardView.cam == nil then
+        return
+    end
+    change(cardView.cam)
+    CardView.applyCamera(cardView.cam)
+    local text = camText(cardView.cam)
+    say("camera", cardItem.configName .. " " .. text)
+end
+
+function ItemProbe.showCard(objId)
+    local cfg = configOf(objId)
+    cardItem = { id = objId, configName = prop(cfg, "configName") or "?", name = prop(cfg, "name") or "?" }
+    if cardWindow == nil then
+        local layer = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
+        local width = math.floor(160 * CARD_SCALE) + 160
+        local height = math.floor(224 * CARD_SCALE) + 30
+        cardWindow, cardContent = Kit.window(layer, "Item card", width, height + Kit.titleBarHeight(),
+            function() ItemProbe.hideCard() end, 0.55, 0.12)
+        local x, y = math.floor(160 * CARD_SCALE) + 24, 10
+        local function button(label, change)
+            Kit.smallButton(cardContent, label, x, y, 120, 28, function() moveCamera(change) end)
+            y = y + 32
+        end
+        button("Zoom -", function(c) c.dist = c.dist * 1.15 end)
+        button("Zoom +", function(c) c.dist = math.max(5, c.dist * 0.87) end)
+        button("Size -", function(c) c.fov = math.min(120, c.fov + 5) end)
+        button("Size +", function(c) c.fov = math.max(5, c.fov - 5) end)
+        button("Down", function(c) c.ty = c.ty + 10 end)
+        button("Up", function(c) c.ty = c.ty - 10 end)
+        button("Left", function(c) c.tx = c.tx + 5 end)
+        button("Right", function(c) c.tx = c.tx - 5 end)
+        button("Turn -", function(c) c.yaw = c.yaw - 0.2 end)
+        button("Turn +", function(c) c.yaw = c.yaw + 0.2 end)
+        button("Reset", function(c)
+            local defaults = CardView.defaultsFor(c)
+            for field, value in pairs(defaults) do c[field] = value end
+        end)
+    end
+    drawCard()
+end
+
+function ItemProbe.hideCard()
+    if cardView ~= nil then
+        pcall(function() cardView.root:Destroy() end)
+    end
+    if cardWindow ~= nil then
+        pcall(function() cardWindow:Destroy() end)
+    end
+    cardWindow, cardContent, cardView, cardItem = nil, nil, nil, nil
+end
+
+-- ---------------------------------------------------------------------------------------------
 -- The window.
 
 local function showTyped()
@@ -436,12 +537,20 @@ function ItemProbe.show()
     Kit.iconButton(content, "ARROW_RIGHT", 50, PAGER_Y, function() changePage(1) end, "Next page", ">", 40)
     pageText = Kit.text(content, 96, PAGER_Y, 400, 26, "", GREY, ui.AlignMode.TOPLEFT)
 
+    Kit.iconButton(content, "GRID_LAYOUT", RIGHT_X, HEIGHT - 36, function()
+        if shownId == nil then
+            setStatus("Show an item first.")
+        else
+            ItemProbe.showCard(shownId)
+        end
+    end, "Show this item as a card (with camera buttons)", "As card", 100)
     Kit.smallButton(content, "Zoom -", RIGHT_X + RIGHT_W - 180, HEIGHT - 36, 80, 28, function() zoom(1.25) end)
     Kit.smallButton(content, "Zoom +", RIGHT_X + RIGHT_W - 94, HEIGHT - 36, 80, 28, function() zoom(0.8) end)
     renderPage()
 end
 
 function ItemProbe.hide()
+    ItemProbe.hideCard()
     search = nil
     destroyAll(rowParts)
     destroyAll(previewParts)

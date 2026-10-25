@@ -37,24 +37,32 @@ Cards.odds = {
 
 -- The card format (the cards are written in the files listed in deck/index.lua).
 --   id     : unique, never change it once players own the card (it is what gets saved).
+--            NPC and item cards share one set of ids, so an item cannot reuse an NPC's id
+--            (give it another id and name the item in `art.item`).
 --            For NPC cards it is also the NPC to show: the id uppercased is looked up as
 --            id.NPC.<ID>, so "king_dragon" shows id.NPC.KING_DRAGON. Use the NPC's config
---            name, in lower case.
+--            name, in lower case. Item cards work the same way with id.Obj: the id
+--            "abyssal_whip" shows id.Obj.ABYSSAL_WHIP.
 --   name   : name shown on the card
 --   rarity : a key of Cards.rarities
 --   desc   : short flavour text. Keep it to about 40 characters: the frame's text panel
 --            shows three lines and cuts off anything longer.
---   kind   : optional, what the card shows: "npc" (the default). Item cards will use "item".
+--   kind   : optional, what the card shows: "npc" (the default) or "item" (an object in the
+--            game's data, called an Obj by the API).
 --   tags   : optional. Groups the card for themed packs. Each key is a kind of tag and holds
 --            a list of lower case words, for example
 --              tags = { skills = { "thieving" }, regions = { "misthalin" }, category = { "humanoid" } }
 --            Any key can be used, a pack's `filter` just has to use the same key and words.
 --   variants : optional. The different models a card can be shown with, e.g. the NPC's other
 --            config versions. The first one is the card's picture. Each entry holds the same
---            fields as `art` (npc, body, anim, cam) plus an optional `name`. Leave it out for
+--            fields as `art` (npc or item, body, anim, cam) plus an optional `name`. Leave it out for
 --            a card with one picture, which then just uses `art`.
 --   art    : optional. Only needed to override or tune the picture. Each entry holds:
---              npc  : use this NPC instead of the one from the id
+--              npc  : use this NPC instead of the one from the id (NPC cards)
+--              item : use this item (an id.Obj config name, upper case) instead of the one from
+--                     the id (item cards). Item cards show the item's 3D model; they have no
+--                     body/head choice and no animation. Use `cam` to frame the model, as the
+--                     items differ a lot in size.
 --              body : NPC cards show the NPC's whole body model by default. `body = false`
 --                     shows its head (chathead) instead; an NPC with no chathead shows an
 --                     empty box (the NPC browser helps find them)
@@ -122,8 +130,8 @@ end
 -- The cards are written in their own files in the deck folder (the layout is described in
 -- deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the defaults (such
 -- as the region) are added to every card in the file. A card whose `art = { npc = "" }` is empty
--- is a draft: it is kept in Cards.drafts and left out of packs and totals until its NPC name is
--- filled in.
+-- (or, for an item card, `art = { item = "" }`) is a draft: it is kept in Cards.drafts and left
+-- out of packs and totals until its NPC or item name is filled in.
 Cards.sets = require("deck/index")
 Cards.drafts = {}
 
@@ -144,13 +152,25 @@ local function addTags(card, tags)
     end
 end
 
+-- True if the card's art names nothing yet (an NPC card with `npc = ""` or an item card with
+-- `item = ""`), so it is still a draft.
+function Cards.isDraft(card)
+    if card.art == nil then
+        return false
+    end
+    if card.kind == "item" then
+        return card.art.item == ""
+    end
+    return card.art.npc == ""
+end
+
 for _, setName in ipairs(Cards.sets) do
     local set = require(setName)
     for _, card in ipairs(set.cards or {}) do
         if set.defaults ~= nil then
             addTags(card, set.defaults)
         end
-        if card.art ~= nil and card.art.npc == "" then
+        if Cards.isDraft(card) then
             Cards.drafts[#Cards.drafts + 1] = card
         else
             Cards.list[#Cards.list + 1] = card
@@ -248,9 +268,10 @@ function Cards.getVariants(card)
     return list
 end
 
--- Returns a card's art settings: { npc = <config name>, body, cam }. The NPC is the card's id
--- uppercased unless the card's `art` entry (or its first variant) names another one, and `body`
--- is true (the body model) unless the card sets `body = false` (the head).
+-- Returns a card's art settings: { npc = <config name>, body, cam } for an NPC card, or
+-- { item = <config name>, cam } for an item card. The NPC (or item) is the card's id uppercased
+-- unless the card's `art` entry (or its first variant) names another one, and for an NPC card
+-- `body` is true (the body model) unless the card sets `body = false` (the head).
 function Cards.getArt(card)
     local result = {}
     local first = card.variants and card.variants[1]
@@ -262,9 +283,13 @@ function Cards.getArt(card)
     for field, value in pairs(card.art or {}) do
         result[field] = value
     end
+    if Cards.kindOf(card) == "item" then
+        result.item = result.item or string.upper(card.id)
+        return result
+    end
     result.npc = result.npc or string.upper(card.id)
     -- NPC cards show the NPC's whole body model unless the card says `body = false` (the head).
-    if result.body == nil and Cards.kindOf(card) == "npc" then
+    if result.body == nil then
         result.body = true
     end
     return result
@@ -312,13 +337,15 @@ Cards.byId = {}
 for _, card in ipairs(Cards.list) do
     assert(not string.find(card.id, "|", 1, true), "Card id cannot contain '|': " .. card.id)
     assert(Cards.rarities[card.rarity], "Unknown rarity on card " .. card.id)
-    assert(Cards.byId[card.id] == nil, "Duplicate card id " .. card.id)
+    assert(Cards.byId[card.id] == nil, "Card id \"" .. card.id .. "\" is used by two cards. NPC and item cards share "
+        .. "one set of ids, so give one of them another id (an item can name its object in art.item)")
     assert(card.kind == nil or card.kind == "npc" or card.kind == "item", "Unknown kind on card " .. card.id)
     checkTags(card)
     if card.variants ~= nil then
         assert(#card.variants > 0, "variants on card " .. card.id .. " cannot be empty")
         for _, entry in ipairs(card.variants) do
-            assert(type(entry) == "table" and entry.npc ~= nil, "Every variant of " .. card.id .. " needs an npc")
+            local needed = card.kind == "item" and "item" or "npc"
+            assert(type(entry) == "table" and entry[needed] ~= nil, "Every variant of " .. card.id .. " needs an " .. needed)
         end
     end
     Cards.byId[card.id] = card
@@ -350,8 +377,14 @@ function Cards.isValidNpcId(value)
     return type(value) == "number" and value >= 0
 end
 
--- Logs similar NPC names for a name that was not found, if the client lets us list them.
-local function suggestNames(npcName)
+-- True if an id.Obj value is a real item. Like id.NPC, the client gives -1 for an unknown name.
+function Cards.isValidObjId(value)
+    return type(value) == "number" and value >= 0
+end
+
+-- Logs similar config names for a name that was not found, if the client lets us list them.
+-- `registry` is id.NPC or id.Obj and `label` says which, for the log.
+local function suggestNames(registry, label, npcName)
     local token = ""
     for part in string.gmatch(npcName, "[^_]+") do
         if #part > #token then
@@ -360,7 +393,7 @@ local function suggestNames(npcName)
     end
     local ok, err = pcall(function()
         local found, total = 0, 0
-        for key, value in pairs(id.NPC) do
+        for key, value in pairs(registry) do
             total = total + 1
             if total <= 3 then
                 -- Show what the entries look like: the earlier search found nothing in
@@ -382,28 +415,40 @@ local function suggestNames(npcName)
             end
         end
         if total == 0 then
-            log("art:   id.NPC cannot be listed (it has no entries to loop over)")
+            log("art:   " .. label .. " cannot be listed (it has no entries to loop over)")
         elseif found == 0 then
-            log("art:   none of", total, "NPC names contain", token)
+            log("art:   none of", total, label, "names contain", token)
         end
     end)
     if not ok then
-        log("art:   cannot list NPC names here:", err)
+        log("art:   cannot list " .. label .. " names here:", err)
     end
 end
 
--- Logs whether each card's NPC can be resolved by the game.
+-- Logs whether each card's NPC (or item) can be resolved by the game.
 -- Run this once on a developer world, then fix any NOT FOUND by renaming the card's id to
--- the NPC's config name, or by setting `npc` in its art entry.
+-- the config name, or by setting `npc` (or `item`) in its art entry.
 function Cards.checkArtNames()
     for _, card in ipairs(Cards.list) do
         local art = Cards.getArt(card)
-        local ok, value = pcall(function() return id.NPC[art.npc] end)
-        if ok and Cards.isValidNpcId(value) then
-            log("art: ok", card.id, art.npc, "->", tostring(value))
+        local isItem = Cards.kindOf(card) == "item"
+        local name = isItem and art.item or art.npc
+        local ok, value = pcall(function()
+            if isItem then
+                return id.Obj[name]
+            end
+            return id.NPC[name]
+        end)
+        local valid = isItem and Cards.isValidObjId(value) or (not isItem and Cards.isValidNpcId(value))
+        if ok and valid then
+            log("art: ok", card.id, name, "->", tostring(value))
         else
-            log("art: NOT FOUND", card.id, art.npc, "->", tostring(value))
-            suggestNames(art.npc)
+            log("art: NOT FOUND", card.id, name, "->", tostring(value))
+            if isItem then
+                suggestNames(id.Obj, "item", name)
+            else
+                suggestNames(id.NPC, "NPC", name)
+            end
         end
     end
 end

@@ -37,7 +37,8 @@ local Preview = {}
 -- The text to put in a card's `art = { ... }` entry for a camera. Only the values that differ
 -- from the defaults are written, so the line stays short enough to type by hand.
 local function pasteText(cam)
-    local defaults = CardView.CAMERA_DEFAULTS[cam.body and "body" or "head"]
+    local defaults = CardView.defaultsFor(cam)
+    local isItem = cam.kind == "item"
     local parts = {}
     for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
         local value, default = cam[field], defaults[field]
@@ -53,10 +54,10 @@ local function pasteText(cam)
     if #parts == 0 then
         text = "cam = { }  -- same as the defaults"
     end
-    if not cam.body then
+    if not cam.body and not isItem then
         text = "body = false, " .. text   -- body is the default, so only the head needs saying
     end
-    if cam.anim ~= nil then
+    if cam.anim ~= nil and not isItem then
         text = "anim = " .. string.format("%.0f", cam.anim) .. ", " .. text
     end
     return text
@@ -175,7 +176,14 @@ function Preview.show()
         view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE })
         view.root:SetPos(CARD_X, CARD_Y)
         if modelButton ~= nil then
-            Kit.setLabel(modelButton, (view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head")
+            -- An item has one model (no body or head), so the button is greyed out for it.
+            if Cards.kindOf(card) == "item" then
+                Kit.setLabel(modelButton, "Model: Item")
+                Kit.setEnabled(modelButton, false)
+            else
+                Kit.setEnabled(modelButton, true)
+                Kit.setLabel(modelButton, (view.cam ~= nil and view.cam.body) and "Model: Body" or "Model: Head")
+            end
         end
         if showAnimLabel ~= nil then
             showAnimLabel()
@@ -338,8 +346,8 @@ function Preview.show()
 
     -- Plays animation `animId` (nil stops it) on the shown model and logs the paste-ready line.
     local function setAnim(animId)
-        if view == nil or view.cam == nil or view.model == nil then
-            return
+        if view == nil or view.cam == nil or view.model == nil or Cards.kindOf(view.card) == "item" then
+            return          -- (items have no animation)
         end
         view.cam.anim = animId
         CardView.playAnimation(view.model, animId)
@@ -381,12 +389,14 @@ function Preview.show()
     -- List what is already saved, so it can be read from the Output window.
     for _, cardId in ipairs(Tuning.ids()) do
         local entry = Tuning.entry(cardId)
-        local cam = { body = entry.body, anim = entry.anim }
+        local saved = Cards.byId[cardId]
+        local cam = { body = entry.body, anim = entry.anim,
+            kind = (saved ~= nil and Cards.kindOf(saved) == "item") and "item" or nil }
         for field, value in pairs(entry.cam) do
             cam[field] = value
         end
         for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
-            cam[field] = cam[field] or CardView.CAMERA_DEFAULTS[entry.body and "body" or "head"][field]
+            cam[field] = cam[field] or CardView.defaultsFor(cam)[field]
         end
         OutputWindow.add(cardId .. " (saved)", pasteText(cam))
     end
