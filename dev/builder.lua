@@ -832,6 +832,10 @@ function Builder.show()
     control("Size", y, MINUS, PLUS,
         function(c) c.fov = math.min(120, c.fov + 5) end, function(c) c.fov = math.max(5, c.fov - 5) end)
     y = y + STEP
+    control("Tilt", y, MINUS, PLUS,
+        function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
+    -- The "-" / "+" controls are together above; the arrow controls are together below.
+    y = y + STEP
     control("Height", y, { icon = "ARROW_DOWN", tip = "Move the card art down", fallback = "Down" },
         { icon = "ARROW_UP", tip = "Move the card art up", fallback = "Up" },
         function(c) c.ty = c.ty + 20 end, function(c) c.ty = c.ty - 20 end)
@@ -843,9 +847,6 @@ function Builder.show()
     control("Turn", y, { icon = "ARROW_LEFT", tip = "Turn the model one way", fallback = "Yaw -" },
         { icon = "ARROW_RIGHT", tip = "Turn the model the other way", fallback = "Yaw +" },
         function(c) c.yaw = c.yaw - 0.2 end, function(c) c.yaw = c.yaw + 0.2 end)
-    y = y + STEP
-    control("Tilt", y, MINUS, PLUS,
-        function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
 
     y = y + STEP + 12
     caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
@@ -879,9 +880,11 @@ function Builder.show()
         setField(widgets.animField, "")
     end, "Show the card without an animation", "Anim off", 80)
     y = y + 36
+    -- Two rows of three (the "+100" label does not fit in a button six across).
     local steps = { -100, -10, -1, 1, 10, 100 }
     for i, amount in ipairs(steps) do
-        Kit.smallButton(content, (amount > 0 and "+" or "") .. amount, RIGHT_X + (i - 1) * 52, y, 48, 28,
+        local column, row = (i - 1) % 3, (i - 1) // 3
+        Kit.smallButton(content, (amount > 0 and "+" or "") .. amount, RIGHT_X + column * 108, y + row * STEP, 100, 28,
             function() stepAnim(amount) end)
     end
 
