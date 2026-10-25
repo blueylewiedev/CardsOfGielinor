@@ -18,6 +18,7 @@ local NpcSearch = require("dev/npcsearch")
 local AnimSearch = require("dev/animsearch")
 local TagPicker = require("dev/tagpicker")
 local OutputWindow = require("dev/outputwindow")
+local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 
 local Dev = {}
@@ -64,6 +65,7 @@ function Dev.buttons(api, refresh)
         { label = "Builder", action = Builder.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
+        { label = "Item probe", action = ItemProbe.toggle },
         { label = "Output", action = OutputWindow.toggle },
     }
 end
@@ -85,6 +87,7 @@ function Dev.shutdown()
     NpcSearch.hide()
     AnimSearch.hide()
     TagPicker.hide()
+    ItemProbe.hide()
     OutputWindow.hide()
 end
 
