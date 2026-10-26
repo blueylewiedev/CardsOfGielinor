@@ -7,8 +7,10 @@
 --
 -- The window does not know about the card. The Card Builder gives it a target with
 -- TagPicker.setTarget { words = function(kind) -> the words now on the card (a list),
--- toggle = function(kind, word, on) -> add or remove one }, and calls TagPicker.refresh() when the
--- tag boxes are changed by typing so the buttons agree.
+-- toggle = function(kind, word, on) -> add or remove one, cardKind = function() -> "npc" or "item"
+-- (optional, "npc" if left out) }, and calls TagPicker.refresh() when the tag boxes are changed by
+-- typing so the buttons agree, and TagPicker.rebuild() when the kind of card changes (an item's
+-- category words are not an NPC's, and items have no location).
 --
 -- A page holds at most MAX_ROWS rows of words; when there are more (a long list, or the filter
 -- is empty), a line at the bottom says so, and typing in the Filter box finds the rest.
@@ -41,13 +43,22 @@ function TagPicker.setTarget(newTarget)
     target = newTarget
 end
 
--- The words for a kind, as a list of groups { title = text or nil, words = list }.
-function TagPicker.groups(kind)
-    local grouped = Cards.tagGroups and Cards.tagGroups[kind]
+-- The words for a kind, as a list of groups { title = text or nil, words = list }. `cardKind` is
+-- the kind of card being tagged ("npc", the default, or "item").
+function TagPicker.groups(kind, cardKind)
+    local grouped = Cards.tagGroupsFor(cardKind, kind)
     if grouped ~= nil then
         return grouped
     end
-    return { { words = Cards.tagWords[kind] or {} } }
+    return { { words = Cards.wordsFor(cardKind, kind) or {} } }
+end
+
+-- The kind of card the target is tagging.
+local function targetKind()
+    if target ~= nil and target.cardKind ~= nil then
+        return target.cardKind()
+    end
+    return "npc"
 end
 
 -- Lower case, nothing but letters and digits, so "quest giver" finds quest_giver.
@@ -63,11 +74,11 @@ end
 
 -- The layout of one page: a list of entries { heading = text } or { word = w, col = c, row = r }
 -- and how many words did not fit. Pure, so it can be tested without the client.
-function TagPicker.layout(kind, filterText)
+function TagPicker.layout(kind, filterText, cardKind)
     local entries = {}
     local row, col = 0, 0
     local hidden = 0
-    for _, group in ipairs(TagPicker.groups(kind)) do
+    for _, group in ipairs(TagPicker.groups(kind, cardKind)) do
         local shown = {}
         for _, word in ipairs(group.words) do
             if TagPicker.matchesFilter(word, filterText) then
@@ -119,7 +130,13 @@ local function buildPage(index, parent, originX, originY)
     if type(filterText) ~= "string" then
         filterText = ""
     end
-    local entries, hidden = TagPicker.layout(kind, filterText)
+    local cardKind = targetKind()
+    if cardKind == "item" and kind == "location" then
+        parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
+            "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
+        return parts
+    end
+    local entries, hidden = TagPicker.layout(kind, filterText, cardKind)
     local selected = chosen(kind)
     for _, entry in ipairs(entries) do
         if entry.heading ~= nil then
@@ -155,6 +172,11 @@ local function rebuildAll()
     for index = 1, #KINDS do
         tabs.rebuild(index)
     end
+end
+
+-- Rebuilds every page, for when the kind of card has changed.
+function TagPicker.rebuild()
+    rebuildAll()
 end
 
 -- Makes the buttons show the words that are on the card now, without rebuilding them.

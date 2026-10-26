@@ -15,8 +15,8 @@
 -- Layout:
 --   deck/npcs/    NPC cards, one file for each region (misthalin.lua, asgarnia.lua, ...), plus
 --                 general.lua for NPCs found all over the game (guards, shop keepers, animals)
---   deck/items/   item cards, one file for each kind of item (herbs.lua, logs.lua, weapons.lua...)
---                 -- none yet
+--   deck/items/   item cards. general.lua for now; later one file for each kind of item
+--                 (herbs.lua, logs.lua, weapons.lua...)
 
 return {
     -- NPCs
@@ -33,5 +33,6 @@ return {
     "deck/npcs/havenhythe",
     "deck/npcs/general",
 
-    -- Items (none yet)
+    -- Items
+    "deck/items/general",
 }

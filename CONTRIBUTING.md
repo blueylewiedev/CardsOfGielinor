@@ -49,6 +49,9 @@ The `dev/` folder holds the developer tools. They load automatically when the fo
 
 The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
 checks it as you go. You do not need to know how the code works to be able to contribute :).
+It makes NPC cards. For an item card, press **Item** at the top of the window: the NPC search is
+replaced by an item search (and a list of your Grand Exchange offers), and the animation and
+location boxes go away, because items have neither. Item cards go in `deck/items/`.
 
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
@@ -165,6 +168,9 @@ file gets that region's tag automatically.
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
 
+Item cards go in `deck/items/`. There is one file, `general.lua`, for now; it will be split into
+files for each kind of item (herbs, logs, weapons...) once there are enough cards.
+
 ---
 
 ## Card rules
@@ -203,9 +209,12 @@ useful to the packs.
 |------|---------|---------|
 | `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
 | `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
-| `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
+| `category` | what kind of character it is, what it does, or whether it can be fought (for an item: what it is used for, or what it is worn or wielded as) | `humanoid`, `shopkeeper`, `monster` (items: `raw_material`, `food`, `weapon`) |
 
-The region comes from the deck file, so it is not asked for.
+The region comes from the deck file, so it is not asked for. Item cards are tagged with `skills` and
+`category` only: an item has no location or region, and its category words are not the NPC ones (an
+item cannot be a `dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the
+words for the kind of card you are making.
 
 **Rules for words**
 
@@ -243,6 +252,13 @@ what it does (`shopkeeper`, `guard`, `knight`) and, for anything you can attack,
 nothing says what it is, `monster` alone is fine; a new word is worth adding once several cards
 need it.
 
+**Choosing a category for an item.** Say what it is used for (`raw_material` for something that is
+gathered and then made into something else, such as logs or a herb; `processed_material` for
+something made from that, such as planks or bars; `food`, `drink`, `potion`,
+`tool`, `ammunition`, `rune`, `seed`, `quest_item`, `currency`, `decoration`), and for something
+that is worn or wielded, what it is (`weapon`, `armour`, `jewellery`, `clothing`). An item can have
+several, for example `{ "raw_material" }` for logs, or `{ "weapon" }` for a sword.
+
 **Choosing skills.** Only add a skill when the link is clear: a skill trainer or shop for that
 skill (`cooking`), or a creature you train a skill on (`slayer`). Leave it out if you would have
 to guess.
@@ -251,7 +267,8 @@ to guess.
 
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
-- `category`: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `ammunition`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `weapon`, `armour`, `jewellery`, `clothing`
 
 For reference, the regions (set by the deck file, not typed on a card) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 
