@@ -219,11 +219,12 @@ useful to the packs.
 | `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
 | `category` | what kind of character it is, what it does, or whether it can be fought (for an item: what it is used for, or what it is worn or wielded as) | `humanoid`, `shopkeeper`, `monster` (items: `raw_material`, `food`, `weapon`) |
 
-The region comes from the deck file, so it is not asked for. Item cards are tagged with `skills` and
-`category` only: an item has no location or region, and its category words are not the NPC ones (an
-item cannot be a `dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the
-words for the kind of card you are making. Some words only appear after another is picked (see
-"Choosing a category for an item").
+For an NPC the region comes from the deck file, so it is not asked for. Item cards are tagged with
+`regions`, `skills` and `category`: an item has no `location`, and its region is chosen by hand (see
+"Choosing regions for an item"). The category words are not the NPC ones (an item cannot be a
+`dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the words for the
+kind of card you are making. Some words only appear after another is picked (see "Choosing a
+category for an item").
 
 **Rules for words**
 
@@ -275,6 +276,28 @@ word above it, so a rune scimitar is `{ "weapon", "scimitar" }`. Throwing knives
 are `fashion` and are not given `weapon`, `armour` or a slot, so a pack of helmets or weapons never
 contains them. An item can have several words, for example `{ "raw_material" }` for logs.
 
+**Choosing regions for an item.** A region tag says that an item belongs to a region's story or
+loot. It does not say that the item can be found there. Anything that can be had almost anywhere is
+left without a region, and is still given out by the Gielinor pack, which has every card. Work down
+this list and use the first rule that fits:
+
+1. **One clear source.** A boss drop, a dungeon, a quest reward, a shop found in one region, or a
+   named set (Barrows, Noxious weaponry, God Wars drops). Tag that region. Barrows items are
+   `morytania`; items dropped in God Wars Dungeon are `asgarnia`.
+2. **A few sources.** If it comes from two regions, tag both. Never tag more than **two**.
+3. **Everywhere, or three or more regions.** Leave `regions` empty. A bronze longsword is sold in
+   three regions and can be made almost anywhere, so it has no region. This keeps the regional packs
+   for items that belong to their region.
+4. **Can only be crafted.** Look at the item's one distinctive ingredient and tag the region(s) it
+   comes from, going back **one step only**. Do not follow the ingredients back to the raw
+   materials. If that ingredient comes from more than two regions, leave `regions` empty. A necronium
+   greataxe is made from necronium bars, so it takes the region(s) where necronium ore is found.
+
+Where an item is made does not matter: crafting is not a source on its own. Common materials such
+as copper, tin or iron do not give a bronze or iron item a region, because those items are not
+craft-only. If you cannot tell the answer within a few seconds, leave `regions` empty; it is easy
+to add a region later, and an empty one never puts a card in the wrong pack.
+
 **Choosing skills.** Only add a skill when the link is clear: a skill trainer or shop for that
 skill (`cooking`), or a creature you train a skill on (`slayer`). Leave it out if you would have
 to guess.
@@ -286,7 +309,7 @@ to guess.
 - `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
 - `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`
 
-For reference, the regions (set by the deck file, not typed on a card) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
+For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 
 ### Art
 
