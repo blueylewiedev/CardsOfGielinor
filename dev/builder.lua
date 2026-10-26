@@ -406,8 +406,19 @@ function Builder.checks()
             end
         end
     end
+    -- A word that needs a parent word (a scimitar needs a weapon) must have it on the card too.
+    local parentProblem = nil
+    for _, tagKind in ipairs(tagKinds()) do
+        local missing = Cards.missingRequired(draft.kind, tagKind, tagWords(tagKind))[1]
+        if missing ~= nil then
+            parentProblem = missing.word .. " needs " .. missing.needs .. " (add " .. missing.needs .. " to " .. tagKind .. ")"
+            break
+        end
+    end
     if tagProblem ~= nil then
         add("fix", tagProblem)
+    elseif parentProblem ~= nil then
+        add("fix", parentProblem)
     elseif #tagNotes > 0 then
         add("note", tagNotes[1] .. (#tagNotes > 1 and (" and " .. (#tagNotes - 1) .. " more") or ""))
     else

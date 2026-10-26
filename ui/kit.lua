@@ -178,6 +178,31 @@ function Kit.toggleButton(parent, label, left, y, w, h, active, onToggle, toolti
     return { part = button, setActive = setActive }
 end
 
+-- Calls onWheel(delta) when the mouse wheel is turned over a component (delta above 0 is down).
+-- PrettyUI buttons placed by hand do not pass the wheel on to the scrolling page they are in, so
+-- a page that scrolls hands the wheel on with this. Does nothing if the component cannot take
+-- the hook.
+function Kit.onWheel(component, onWheel)
+    local function handler(first, second)
+        local delta = type(second) == "number" and second or (type(first) == "number" and first or 0)
+        onWheel(delta)
+        return false
+    end
+    -- PrettyUI does not say which field holds the client component under a button, so try the
+    -- button itself and then the likely names.
+    for _, field in ipairs({ "", "root", "component", "frame", "button", "part", "view", "box", "container" }) do
+        local ok, target = pcall(function()
+            if field == "" then
+                return component
+            end
+            return component[field]
+        end)
+        if ok and target ~= nil and pcall(function() target:Subscribe(ui.Hook.ONSCROLLWHEEL, handler) end) then
+            break
+        end
+    end
+end
+
 -- Tabbed pages (PrettyUI's tabs) at x, y, w wide and h tall. `names` is the list of tab titles.
 -- `build(index, parent, originX, originY)` makes the contents of one page inside `parent`, with
 -- its top-left corner at originX, originY, and returns the list of the components it made (so
@@ -185,13 +210,28 @@ end
 -- rebuild = function(index), destroy = function() } and calls build for every page at once.
 -- If PrettyUI's tabs are not available, a row of buttons does the same job and only the page
 -- showing is built.
-function Kit.tabs(parent, x, y, w, h, names, build)
+-- With `pageHeight`, the pages scroll (with the mouse wheel too) when their contents are taller
+-- than the tabs. `pageHeight` is the contents' height until `build` says otherwise: it can return
+-- the height its page really needs as a second value, so a short page shows no scrollbar. Without
+-- `pageHeight` the pages do not scroll. Also returns scrollBy(index, delta), which scrolls a page
+-- (delta above 0 scrolls down); see Kit.onWheel.
+function Kit.tabs(parent, x, y, w, h, names, build, pageHeight)
     local made = {}
+    local pageObjects = {}
     local function clear(index)
         for _, part in ipairs(made[index] or {}) do
             pcall(function() part:Destroy() end)
         end
         made[index] = nil
+    end
+    -- Builds a page and tells PrettyUI how tall its contents are.
+    local function buildPage(index, page, parent, originX, originY)
+        local parts, height = build(index, parent, originX, originY)
+        height = height or pageHeight
+        if page ~= nil and height ~= nil then
+            pcall(function() page:SetContentHeight(height) end)
+        end
+        return parts
     end
     if Kit.available() and prettyui.Tabs ~= nil then
         local tabList = {}
@@ -199,7 +239,8 @@ function Kit.tabs(parent, x, y, w, h, names, build)
             tabList[i] = { text = name }
         end
         local ok, tabs = pcall(prettyui.Tabs.new, parent, tabList, {
-            x = x, y = y, width = w, height = h, absolute = true, activeIndex = 1, scrollable = false,
+            x = x, y = y, width = w, height = h, absolute = true, activeIndex = 1,
+            scrollable = pageHeight ~= nil, contentHeight = pageHeight,
         })
         if ok and tabs ~= nil then
             local pages = {}
@@ -207,19 +248,25 @@ function Kit.tabs(parent, x, y, w, h, names, build)
             for i = 1, #names do
                 local okPage, page = pcall(function() return tabs:GetPage(i) end)
                 pages[i] = okPage and page ~= nil and (page.content or page) or nil
+                pageObjects[i] = okPage and page or nil
                 if pages[i] == nil then
                     complete = false
                 end
             end
             if complete then
                 for i = 1, #names do
-                    made[i] = build(i, pages[i], 0, 0)
+                    made[i] = buildPage(i, pageObjects[i], pages[i], 0, 0)
                 end
                 return {
                     select = function(index) pcall(function() tabs:SetActive(index, false) end) end,
                     rebuild = function(index)
                         clear(index)
-                        made[index] = build(index, pages[index], 0, 0)
+                        made[index] = buildPage(index, pageObjects[index], pages[index], 0, 0)
+                    end,
+                    scrollBy = function(index, delta)
+                        if pageObjects[index] ~= nil and type(delta) == "number" and delta ~= 0 then
+                            pcall(function() pageObjects[index]:ScrollBy(delta > 0 and 64 or -64) end)
+                        end
                     end,
                     destroy = function()
                         for i = 1, #names do clear(i) end
@@ -252,6 +299,7 @@ function Kit.tabs(parent, x, y, w, h, names, build)
     made[1] = build(1, parent, x, y + 40)
     return {
         select = function(index) show(index) end,
+        scrollBy = function() end,
         rebuild = function(index)
             if index == active then
                 clear(index)
