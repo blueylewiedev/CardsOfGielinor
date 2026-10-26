@@ -47,7 +47,7 @@ The `dev/` folder holds the developer tools. They load automatically when the fo
 
 ## Adding a card
 
-The **Card Builder** (the _Card Builder_ button on the Home window) makes a new card for you and
+The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
 checks it as you go. You do not need to know how the code works to be able to contribute :).
 
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
@@ -58,35 +58,36 @@ checks it as you go. You do not need to know how the code works to be able to co
      models, and the one standing in front of you is the one to use),
 
    <img width="1070" height="576" alt="image" src="https://github.com/user-attachments/assets/a2ca367c-35ec-4251-888e-b8b1f27efdf5" />
+
    - or press the **Search NPCs** button (the magnifying glass beside the NPC box), type part of the name and press **Use**,
 
    <img width="711" height="579" alt="image" src="https://github.com/user-attachments/assets/7040bd1b-614e-4b6e-890a-2c63ed4f11aa" />
-   - or type the NPC's _config name_ (for example `FATHER_AERECK`) into the box. In the developer
+
+   - or type the NPC's *config name* (for example `FATHER_AERECK`) into the box. In the developer
      console, `pan NPC` lists the config names.
 
    <img width="1344" height="988" alt="image" src="https://github.com/user-attachments/assets/1084552a-c8a3-4e45-84ba-3185022cf06c" />
 
    The box says **Found** when the client knows the NPC. The name and the id are filled in for
    you, and the card appears in the preview.
-
-2. **Check the name and id.** The name is what is printed on the card. The id follows the name
+3. **Check the name and id.** The name is what is printed on the card. The id follows the name
    (see [Ids](#ids)). Change either if you need to.
 
-   If the generated Card Id automatically defaults to the name of the npc followed by "\_2" check to make sure a card for that NPC doesn't
+   If the generated Card Id automatically defaults to the name of the npc followed by "_2" check to make sure a card for that NPC doesn't
    already exist.
 
    <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
 
-3. **Write a description** (up to 60 letters, shorter is better).
+5. **Write a description** (up to 60 letters, shorter is better).
 
    <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
 
-4. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
+6. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
    We may not agree with the rarity you choose for your submitted cards, in this case we will open a discussion with you to reach an agreement.
 
    <img width="417" height="247" alt="image" src="https://github.com/user-attachments/assets/435df749-9a57-47fc-9128-8287b677fb12" />
 
-5. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
+8. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
    that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
    (click it again to remove it). The Filter box narrows the words. You can also type them. Press **Pick tags** to choose from the words
    that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
@@ -101,7 +102,7 @@ We will select the Thieving tag for Skills as Women are a common early Thieving 
 For the Category tags we will select Humanoid and Monster (Monster signifies that this NPC is attackable)
 
 You may add new tags should you wish, just type the tag manually into the text field, separated by commas.
-\*If you do create new tags, make sure you also add them to the relevant list in the Cards file.
+*If you do create new tags, make sure you also add them to the relevant list in the Cards file.
 If you don't know or are unsure on how to do that, make a note of the tags that need adding in your PR.
 
 <img width="1331" height="371" alt="image" src="https://github.com/user-attachments/assets/b0a76167-5038-4253-9d78-263e4d17c2b3" />
@@ -111,31 +112,32 @@ If you don't know or are unsure on how to do that, make a note of the tags that 
 <img width="571" height="231" alt="image" src="https://github.com/user-attachments/assets/b1ae1091-bcf3-446e-a540-616815358fa2" />
 
 11. **Tune the art.**
-
-- **Model** switches between the NPC's whole body (the default) and its head.
-- The **camera controls** (each has a label and a pair of buttons) zoom, move and turn the camera, and the
-  arrow icon at the top right of the section puts the camera back to where it started. Aim to fill the picture window with
-  the NPC, with the face visible. A look through the existing cards gives a good idea.
+   - **Model** switches between the NPC's whole body (the default) and its head.
+   - The **camera controls** (each has a label and a pair of buttons) zoom, move and turn the camera, and the
+     arrow icon at the top right of the section puts the camera back to where it started. Aim to fill the picture window with
+     the NPC, with the face visible. A look through the existing cards gives a good idea.
 
 <img width="736" height="379" alt="image" src="https://github.com/user-attachments/assets/260b93a7-7885-4100-abea-7537df0bb1f9" />
 
-- **Animation** is optional. Type a sequence id, step through ids with the -100 to +100 buttons, or
-  press the magnifying glass beside the box (**Search anims**) to look for an animation by name and **Use** to try it. Pick an idle
-  or other animation that loops smoothly.
-- On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
-  While the specific animation you need might not be named exactly the same, it will likely be similar.
+     
+   - **Animation** is optional. Type a sequence id, step through ids with the -100 to +100 buttons, or
+     press the magnifying glass beside the box (**Search anims**) to look for an animation by name and **Use** to try it. Pick an idle
+     or other animation that loops smoothly.
+   - On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
+     While the specific animation you need might not be named exactly the same, it will likely be similar.
 
-  <img width="595" height="175" alt="image" src="https://github.com/user-attachments/assets/937f213f-4f48-4ead-b68a-99b9160181c0" />
-  <img width="707" height="368" alt="image" src="https://github.com/user-attachments/assets/214aa0db-a9ef-4bb5-a3bf-9804666e272b" />
-  <img width="731" height="608" alt="Selecting_Animation" src="https://github.com/user-attachments/assets/b6342b75-d511-4237-b034-2c62b1a9b0ea" />
+     <img width="595" height="175" alt="image" src="https://github.com/user-attachments/assets/937f213f-4f48-4ead-b68a-99b9160181c0" />
+     <img width="707" height="368" alt="image" src="https://github.com/user-attachments/assets/214aa0db-a9ef-4bb5-a3bf-9804666e272b" />
+     <img width="731" height="608" alt="Selecting_Animation" src="https://github.com/user-attachments/assets/b6342b75-d511-4237-b034-2c62b1a9b0ea" />
 
+     
 11. **Read the checks** at the bottom left. Anything marked **Fix** has to be sorted out before
-    the block is ready. **Note** lines are worth a look but will not stop you.
+   the block is ready. **Note** lines are worth a look but will not stop you.
 
 <img width="318" height="159" alt="image" src="https://github.com/user-attachments/assets/a75d2842-b0d2-4da7-8595-7e1b555121a7" />
 
-13. **Copy the card block.** Click the box under _Your card block_, press **Ctrl+A** then
-    **Ctrl+C**.
+13. **Copy the card block.** Click the box under *Your card block*, press **Ctrl+A** then
+   **Ctrl+C**.
 
    <img width="735" height="74" alt="image" src="https://github.com/user-attachments/assets/d25a5483-fb0b-43e7-bb43-12c2c543e6e3" />
 
@@ -197,11 +199,11 @@ Tags group cards so that themed packs can draw from them. Each tag kind holds wo
 commas. A tag is never required, but a card with a good `category` and `location` is much more
 useful to the packs.
 
-| Kind       | Meaning                                                                                 | Example                                        |
-| ---------- | --------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Kind | Meaning | Example |
+|------|---------|---------|
 | `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
-| `skills`   | skills it is linked to                                                                  | `cooking`, `prayer`, `slayer`                  |
-| `category` | what kind of character it is, what it does, or whether it can be fought                 | `humanoid`, `shopkeeper`, `monster`            |
+| `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
+| `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
 
 The region comes from the deck file, so it is not asked for.
 
@@ -223,7 +225,7 @@ is reloaded (`prl`).
 
 **Choosing a location**
 
-- Tag where the NPC _you picked_ is found: a card is one version of an NPC, with its own model,
+- Tag where the NPC *you picked* is found: a card is one version of an NPC, with its own model,
   so tag the places where players would expect to meet that version.
 - If it is found in a town, use the town. If it is in a dungeon or a general area, use that.
 - If it is found in several places, tag the **one to three best-known places**. Tagging every
@@ -292,12 +294,12 @@ Alternative artwork for the **card frames, the card back and the pack** is welco
 `resources/images/`. A new look is submitted as replacement files, so please open an issue
 first to agree what you are making before spending time on it.
 
-| File                 | Size      | Notes                                                                                                                                                                                                                                                  |
-| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| File | Size | Notes |
+|------|------|-------|
 | `frame_<rarity>.png` | 320 x 448 | One for each of common, uncommon, rare, epic, legendary. The window for the NPC must be **transparent**. Its position is set in `CardView.FRAME_ZONES` in `ui/cardview.lua`, so a frame with a window in a different place needs a code change as well |
-| `card_back.png`      | 320 x 448 | The back of a card, with transparent rounded corners                                                                                                                                                                                                   |
-| `pack.png`           | 320 x 512 | The sealed pack                                                                                                                                                                                                                                        |
-| `glow_<rarity>.png`  | 456 x 616 | The glow behind a card in the pack opening                                                                                                                                                                                                             |
+| `card_back.png` | 320 x 448 | The back of a card, with transparent rounded corners |
+| `pack.png` | 320 x 512 | The sealed pack |
+| `glow_<rarity>.png` | 456 x 616 | The glow behind a card in the pack opening |
 
 Rules for artwork:
 
@@ -314,19 +316,34 @@ Each region has a themed pack (listed in `deck/packs.lua`) that is designed in t
 one of the developer tools. The wrapper is built from the game's own login screen, banner and logo
 sprites at runtime, with a shading overlay and a region title from `resources/images/`. The shading
 (`pack_shading*.png`) and title (`title_*.png`) images are generated by `dev/make_pack_art.py`, so
-please don't submit them by hand. A new themed pack should be agreed in an issue first; it needs a
+please don't submit them by hand. A new themed pack should be agreed in an issue first. It needs a
 region word that cards already use, and a pack with no cards in its region is not offered to players.
 
 ---
 
 ## Code changes
 
-The code is looked after by the project owner, and contributions to it are not expected. If you
-have found a bug or have an idea:
+The code is looked after by the project owner. If you have found a bug or have an idea:
 
 1. Open an **issue** describing it (what you saw, or what you would like).
 2. Wait for a reply before writing code. A pull request that changes code outside `deck/` and
    `resources/` without a discussion first may be closed.
+
+### Working together
+
+Regular contributors are given access to the repository so they can work on branches in it; everyone
+else works from a fork. Either way:
+
+- Work on a branch and open a pull request. `main` is protected, and a pull request needs the
+  project owner's approval (see `.github/CODEOWNERS`) before it is merged.
+- Keep pull requests small and about one thing. Large ones are hard to review and hard to rebase.
+- Say in the issue or the pull request when you are about to start something large. Several files
+  (`core/cards.lua`, `ui/kit.lua` and the pack code) are often changed by more than one piece of
+  work at once.
+- Before asking for a review, bring your branch up to date with `main` and run the plugin: open the
+  windows you changed (and the Card Builder, if you touched `ui/` or `core/`) and check them in the
+  game. Run `prf` then `prl` in the developer console after adding new files such as images.
+- Releases are made by the project owner.
 
 ---
 
