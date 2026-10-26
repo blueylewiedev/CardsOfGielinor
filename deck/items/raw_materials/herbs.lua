@@ -1,0 +1,248 @@
+local Set = {}
+
+Set.cards = {
+
+    {
+        id = "clean_arbuck", name = "Clean arbuck", kind = "item", rarity = "epic",
+        desc = "A fresh herb.",
+        art = { item = "ARBUCK", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_avantoe", name = "Clean avantoe", kind = "item", rarity = "rare",
+        desc = "A fresh herb.",
+        art = { item = "AVANTOE", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_bloodweed", name = "Clean bloodweed", kind = "item", rarity = "rare",
+        desc = "A fresh herb.",
+        art = { item = "BLOODWEED", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { regions = { "wilderness" }, skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_cadantine", name = "Clean cadantine", kind = "item", rarity = "rare",
+        desc = "A fresh herb.",
+        art = { item = "CADANTINE", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_dwarf_weed", name = "Clean dwarf weed", kind = "item", rarity = "epic",
+        desc = "A fresh herb.",
+        art = { item = "DWARF_WEED", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_fellstalk", name = "Clean fellstalk", kind = "item", rarity = "legendary",
+        desc = "A fresh herb.",
+        art = { item = "FELLSTALK", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_guam", name = "Clean guam", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "GUAM_LEAF", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_harralander", name = "Clean harralander", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "HARRALANDER", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_irit", name = "Clean irit", kind = "item", rarity = "uncommon",
+        desc = "A fresh herb.",
+        art = { item = "IRIT_LEAF", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_kwuarm", name = "Clean kwuarm", kind = "item", rarity = "rare",
+        desc = "A fresh herb.",
+        art = { item = "KWUARM", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_lantadyme", name = "Clean lantadyme", kind = "item", rarity = "epic",
+        desc = "A fresh herb.",
+        art = { item = "LANTADYME", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_marrentill", name = "Clean marrentill", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "MARENTILL", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_ranarr", name = "Clean ranarr", kind = "item", rarity = "uncommon",
+        desc = "A fresh herb.",
+        art = { item = "RANARR_WEED", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_snapdragon", name = "Clean snapdragon", kind = "item", rarity = "rare",
+        desc = "A fresh herb.",
+        art = { item = "SNAPDRAGON", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_spirit_weed", name = "Clean spirit weed", kind = "item", rarity = "uncommon",
+        desc = "A fresh herb.",
+        art = { item = "LORE_SPIRIT_WEED", cam = { dist = 227, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_tarromin", name = "Clean tarromin", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "TARROMIN", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_toadflax", name = "Clean toadflax", kind = "item", rarity = "uncommon",
+        desc = "A fresh herb.",
+        art = { item = "TOADFLAX", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_torstol", name = "Clean torstol", kind = "item", rarity = "epic",
+        desc = "A fresh herb.",
+        art = { item = "TORSTOL", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "clean_wergali", name = "Clean wergali", kind = "item", rarity = "uncommon",
+        desc = "A fresh herb.",
+        art = { item = "WERGALI", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_arbuck", name = "Grimy arbuck", kind = "item", rarity = "epic",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_ARBUCK", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_avantoe", name = "Grimy avantoe", kind = "item", rarity = "rare",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_AVANTOE", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_bloodweed", name = "Grimy bloodweed", kind = "item", rarity = "rare",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_BLOODWEED", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { regions = { "wilderness" }, skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_cadantine", name = "Grimy cadantine", kind = "item", rarity = "rare",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_CADANTINE", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_dwarf_weed", name = "Grimy dwarf weed", kind = "item", rarity = "epic",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_DWARF_WEED", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_fellstalk", name = "Grimy fellstalk", kind = "item", rarity = "legendary",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_FELLSTALK", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_guam", name = "Grimy guam", kind = "item", rarity = "common",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_GUAM", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_harralander", name = "Grimy harralander", kind = "item", rarity = "common",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_HARRALANDER", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_irit", name = "Grimy irit", kind = "item", rarity = "uncommon",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_IRIT", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_kwuarm", name = "Grimy kwuarm", kind = "item", rarity = "rare",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_KWUARM", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_lantadyme", name = "Grimy lantadyme", kind = "item", rarity = "epic",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_LANTADYME", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_marrentill", name = "Grimy marrentill", kind = "item", rarity = "common",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_MARENTILL", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_ranarr", name = "Grimy ranarr", kind = "item", rarity = "uncommon",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_RANARR", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_snapdragon", name = "Grimy snapdragon", kind = "item", rarity = "rare",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_SNAPDRAGON", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_spirit_weed", name = "Grimy spirit weed", kind = "item", rarity = "uncommon",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "LORE_SPIRIT_WEED_DIRTY", cam = { dist = 227, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_tarromin", name = "Grimy tarromin", kind = "item", rarity = "common",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_TARROMIN", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_toadflax", name = "Grimy toadflax", kind = "item", rarity = "uncommon",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_TOADFLAX", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_torstol", name = "Grimy torstol", kind = "item", rarity = "epic",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_TORSTOL", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "grimy_wergali", name = "Grimy wergali", kind = "item", rarity = "uncommon",
+        desc = "I need to clean this herb before I can use it.",
+        art = { item = "UNIDENTIFIED_WERGALI", cam = { dist = 227, ty = 20, tx = 10 } },
+        tags = { skills = { "herblore" }, category = { "raw_material" } },
+    },
+    {
+        id = "enriched_snapdragon", name = "Enriched snapdragon", kind = "item", rarity = "rare",
+        desc = "An enriched snapdragon herb.",
+        art = { item = "LUC2_RICH_SNAPDRAGON_HERB", cam = { yaw = 0.20, pitch = 1.25, dist = 261, fov = 45, ty = -20, tx = 20 } },
+        tags = { regions = { "asgarnia" }, skills = { "herblore" }, category = { "raw_material", "quest_item" } },
+    },
+    {
+        id = "goutweed", name = "Goutweed", kind = "item", rarity = "uncommon",
+        desc = "A pale, tough looking herb.",
+        art = { item = "EADGAR_GOUTWEED_HERB", cam = { pitch = 1.55, dist = 198, fov = 60, tx = 10 } },
+        tags = { regions = { "fremennik_province" }, skills = { "farming", "herblore" }, category = { "raw_material", "quest_item" } },
+    },
+
+}
+
+return Set

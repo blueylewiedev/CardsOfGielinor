@@ -289,6 +289,39 @@ local function currentCam()
     return nil
 end
 
+-- Cameras saved for a kind of item (local to this computer, in PersistentDB): the models of one
+-- kind (all the scimitars, all the logs) mostly want the same camera, so a card of a kind with a
+-- saved camera starts from it. The kind is the card's most specific category word.
+local CAMERA_DB_KEY = "dev_category_cameras"
+
+-- The most specific word of an item's category tags: one that needs another word (scimitar, which
+-- needs weapon) if there is one, otherwise the first word. nil if there are none.
+function Builder.categoryKey(words)
+    local first = nil
+    for _, word in ipairs(words or {}) do
+        if Cards.requiredWord("item", "category", word) ~= nil then
+            return word
+        end
+        first = first or word
+    end
+    return first
+end
+
+local function savedCameras()
+    local ok, saved = pcall(function() return PersistentDB:GetStructuredData(CAMERA_DB_KEY) end)
+    return (ok and type(saved) == "table") and saved or {}
+end
+
+local function copyCamera(cam)
+    return { yaw = cam.yaw, pitch = cam.pitch, dist = cam.dist, fov = cam.fov, ty = cam.ty, tx = cam.tx }
+end
+
+-- A copy of the camera saved for a category word, or nil.
+local function categoryCamera(key)
+    local cam = key ~= nil and savedCameras()[key] or nil
+    return type(cam) == "table" and copyCamera(cam) or nil
+end
+
 local function quote(text)
     local escaped = string.gsub(text, "\\", "\\\\")
     escaped = string.gsub(escaped, '"', '\\"')
@@ -708,7 +741,8 @@ local function setSubject(configName)
         return
     end
     draft[isItem() and "item" or "npc"] = configName
-    draft.cam = nil
+    -- An item starts from the camera saved for its kind, if there is one.
+    draft.cam = isItem() and categoryCamera(Builder.categoryKey(tagWords("category"))) or nil
     draft.anim = nil
     setField(widgets.animField, "")
     local subjectId, displayName = lookupSubject(configName)
@@ -990,6 +1024,9 @@ function Builder.loadCandidate(candidate, configName)
     for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category" } or { "skills", "location", "category" }) do
         fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
     end
+    if fresh.kind == "item" then
+        fresh.cam = categoryCamera(Builder.categoryKey(Builder.parseWords(fresh.category)))
+    end
     for key in pairs(draft) do
         draft[key] = nil
     end
@@ -1187,6 +1224,36 @@ function Builder.show()
     y = y + STEP + 12
     if isItem() then
         caption("An item has no animation.", RIGHT_X, y, RIGHT_W)
+        -- The camera of this kind of item (its most specific category word), kept for the next
+        -- card of the kind: tune one, press Save, and the others start from it.
+        y = y + 26
+        widgets.categoryCameraNote = Kit.text(content, RIGHT_X, y + 68, RIGHT_W, 20, "", GREY, ui.AlignMode.TOPLEFT)
+        local function note(text)
+            widgets.categoryCameraNote.content = text
+        end
+        Kit.buttonAt(content, "Save camera for this kind", RIGHT_X, y, RIGHT_W - 4, 28, function()
+            local key, cam = Builder.categoryKey(tagWords("category")), currentCam()
+            if key == nil then
+                return note("Choose a category first")
+            end
+            if cam == nil then
+                return note("No card is shown")
+            end
+            local saved = savedCameras()
+            saved[key] = copyCamera(cam)
+            pcall(function() PersistentDB:SetStructuredData(CAMERA_DB_KEY, saved) end)
+            note("Saved the camera for " .. key)
+        end, "neutral", "Keep this camera for every other card of the same kind (its most specific category word)")
+        Kit.buttonAt(content, "Use the saved camera", RIGHT_X, y + 34, RIGHT_W - 4, 28, function()
+            local key = Builder.categoryKey(tagWords("category"))
+            local cam = categoryCamera(key)
+            if cam == nil then
+                return note(key ~= nil and ("No camera saved for " .. key) or "Choose a category first")
+            end
+            draft.cam = cam
+            showCard()
+            note("Using the camera saved for " .. key)
+        end, "neutral", "Start this card from the camera saved for its kind")
     else
         caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
         y = y + 20

@@ -19,7 +19,7 @@ local PLACES = {
     { "Shilo Village", 55 }, { "Menaphos", 351 }, { "Prifddinas", 527 },
 }
 local ITEMS = {
-    { "Logs", 75 }, { "Runes", 58 }, { "Fish", 142 }, { "Food", 351 }, { "Potions", 293 },
+    { "Logs", 75 }, { "Herbs", 96 }, { "Runes", 58 }, { "Fish", 142 }, { "Food", 351 }, { "Potions", 293 },
     { "Seeds", 155 }, { "Ores", 72 }, { "Gems", 58 }, { "Scimitars", 8 }, { "Daggers", 19 },
     { "Two-handed swords", 6 }, { "Battleaxes", 2 }, { "Maces", 2 }, { "Spears", 64 },
     { "Halberds", 42 }, { "Crossbows", 183 }, { "Longbows", 31 }, { "Staves", 232 },
@@ -50,8 +50,8 @@ local widgets = {}
 -- Splits "A, B ,C" into { "A", "B", "C" }.
 local function list(text)
     local out = {}
-    for part in string.gmatch(text or "", "[^,]+") do
-        part = part:match("^%s*(.-)%s*$")
+    for raw in string.gmatch(text or "", "[^,]+") do
+        local part = raw:match("^%s*(.-)%s*$")
         if part ~= "" then
             out[#out + 1] = part
         end
@@ -136,7 +136,7 @@ function WikiFetch.show()
     end
     widgets = {}
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window, content = Kit.window(gameWindow, "Wiki Fetch", WIDTH, 820 + Kit.titleBarHeight(),
+    window, content = Kit.window(gameWindow, "Wiki Fetch", WIDTH, 864 + Kit.titleBarHeight(),
         function() WikiFetch.hide() end, 0.5, 0.05)
 
     caption("NPCs from a place", 4, GOLD)
@@ -155,6 +155,10 @@ function WikiFetch.show()
     end)
 
     y = y + 112
+    -- Not sure of a category's name? Ask the wiki for the subcategories of a bigger one.
+    caption("To find category names, run: python dev/wiki_cards.py --subcategories \"Equipment Slots\"", y)
+    caption("(equipment kinds by slot: Head, Body, Legs, Hands, Feet, Cape, Neck, Ring, Shield... slot items)", y + 18)
+    y = y + 44
     caption("The command", y, GOLD)
     widgets.command = Kit.inputField(content, 10, y + 22, WIDTH - 20, 28, 1000, false)
     widgets.estimate = caption("", y + 54)
