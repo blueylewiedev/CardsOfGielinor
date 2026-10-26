@@ -196,7 +196,7 @@ local function artLine()
     end
     local cam = currentCam()
     if cam ~= nil then
-        local defaults = CardView.CAMERA_DEFAULTS[draft.body and "body" or "head"]
+        local defaults = CardView.defaultsFor({ body = draft.body })
         local camParts = {}
         for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
             local value, default = cam[field], defaults[field]

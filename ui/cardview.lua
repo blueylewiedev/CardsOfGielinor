@@ -111,11 +111,25 @@ end
 --   ty         : height of the point the camera looks at
 --   tx         : left/right of centre it looks at (negative moves the NPC right on the card)
 -- Anything left out uses these defaults. NPC cards show the whole body model unless they set
--- `art.body = false` (the head), so each has its own defaults (the body is much bigger).
+-- `art.body = false` (the head), so each has its own defaults (the body is much bigger). Item
+-- cards show the item's model, which is far smaller than an NPC, so they have their own too.
+-- Item models lie flat, as if on the ground, so the item camera looks down on them (pitch 1.5,
+-- nearly straight down). The distance is a first guess: items differ a lot in size, so most item
+-- cards will set `art.cam`.
 CardView.CAMERA_DEFAULTS = {
     head = { yaw = 0.0, pitch = 0.0, dist = 2040, fov = 55, ty = 0, tx = 0 },
     body = { yaw = 0.0, pitch = 0.0, dist = 1500, fov = 50, ty = 0, tx = 0 },
+    item = { yaw = 0.0, pitch = 1.5, dist = 300, fov = 50, ty = 0, tx = 0 },
 }
+
+-- The camera defaults for a camera state or art table: { kind = "item" } for an item card,
+-- otherwise the body model if `body` is true and the head if not.
+function CardView.defaultsFor(state)
+    if state ~= nil and state.kind == "item" then
+        return CardView.CAMERA_DEFAULTS.item
+    end
+    return CardView.CAMERA_DEFAULTS[(state ~= nil and state.body) and "body" or "head"]
+end
 
 -- Makes a camera object. The docs call the type ui.ModelCamera, but the client calls it
 -- ui.ModelCameraInfo, so try both.
@@ -130,19 +144,36 @@ end
 -- Moves the camera to match cam.yaw / pitch / dist / fov / ty / tx. A camera the group hands
 -- back is only a copy, so instead of editing it a fresh camera is added, switched to, and the
 -- old one deleted.
+local ITEM_MAX_PITCH = 1.55      -- just short of straight down (1.5708); past it the picture flips over
+
 local function applyCamera(cam)
     local camera = newCamera()
     camera:SetFOV(cam.fov, 0)
     -- The camera orbits the look-at point. tx slides that point sideways (along the camera's
     -- right-hand direction) and the camera moves with it, so the NPC shifts across the card
     -- without changing angle or size.
-    local targetX = cam.tx * math.cos(cam.yaw)
-    local targetZ = cam.tx * math.sin(cam.yaw)
-    local x = targetX + cam.dist * math.sin(cam.yaw) * math.cos(cam.pitch)
-    local y = cam.ty + cam.dist * math.sin(cam.pitch)
-    local z = targetZ - cam.dist * math.cos(cam.yaw) * math.cos(cam.pitch)
+    local sinYaw, cosYaw = math.sin(cam.yaw), math.cos(cam.yaw)
+    local targetX, targetY, targetZ
+    if cam.kind == "item" then
+        -- An item is looked at from nearly straight above, where "up" in the world is no longer
+        -- up on the card (it would move the item towards the camera). So tx and ty move the look-at
+        -- point along the camera's own right and up directions, which stay up and sideways on the
+        -- card at any pitch. The pitch is stopped before it passes straight down, which flips the picture.
+        cam.pitch = math.max(-ITEM_MAX_PITCH, math.min(ITEM_MAX_PITCH, cam.pitch))
+        local sinPitch, cosPitch = math.sin(cam.pitch), math.cos(cam.pitch)
+        targetX = cam.tx * cosYaw - cam.ty * sinYaw * sinPitch
+        targetY = cam.ty * cosPitch
+        targetZ = cam.tx * sinYaw + cam.ty * cosYaw * sinPitch
+    else
+        targetX = cam.tx * cosYaw
+        targetY = cam.ty
+        targetZ = cam.tx * sinYaw
+    end
+    local x = targetX + cam.dist * sinYaw * math.cos(cam.pitch)
+    local y = targetY + cam.dist * math.sin(cam.pitch)
+    local z = targetZ - cam.dist * cosYaw * math.cos(cam.pitch)
     camera:SetPosition(Vector3.new(x, y, z), 0)
-    camera:SetLookAt(Vector3.new(targetX, cam.ty, targetZ), 0)
+    camera:SetLookAt(Vector3.new(targetX, targetY, targetZ), 0)
     camera:SetClipPlanes(1, cam.dist * 20)
     camera.clearColour = Vector4.new(0, 0, 0, 0)      -- see-through, so the card backdrop shows
     camera.useLookAt = true
@@ -176,30 +207,64 @@ function CardView.playAnimation(model, animId)
     return ok
 end
 
--- Shows the card's NPC inside the art box `box` = { x, y, w, h }. Returns the model and the
--- `cam` table (the camera settings, which applyCamera can re-apply), or nil if the NPC could
--- not be shown. If the camera cannot be set up, a plain model is shown instead (no `cam`).
+-- Shows the icon of an item (its inventory picture) in the art box. Used when the item's model
+-- cannot be shown. Returns the sprite, or nil.
+local function addItemIcon(parent, objId, box)
+    local ok, sprite = pcall(function()
+        local icon = ui.Sprite.new(parent)
+        local size = math.min(box.w, box.h)
+        icon:SetSize(size, size)
+        icon:SetPos(box.x + (box.w - size) // 2, box.y + (box.h - size) // 2)
+        icon.associatedObjectID = objId
+        icon.associatedObjectQuantity = 1
+        return icon
+    end)
+    if ok then
+        return sprite
+    end
+    log("card art: item icon failed for", objId, tostring(sprite))
+    return nil
+end
+
+-- Shows the card's NPC (or, for an item card, its item) inside the art box `box` = { x, y, w, h }.
+-- Returns the model and the `cam` table (the camera settings, which applyCamera can re-apply),
+-- or nil if it could not be shown. If the camera cannot be set up, a plain model is shown
+-- instead (no `cam`). An item whose model will not load shows its icon instead (no `cam`).
 local function addArt(parent, card, box, bodyOverride)
     local art = Cards.getArt(card)
+    local isItem = Cards.kindOf(card) == "item"
     -- Developer-saved settings (from the preview's Save button) sit on top of the card's own.
     -- Only the development tools set CardView.artOverride; it is nil in the released plugin.
+    -- An item has no body/head choice and no animation, so only its camera is overridden.
     local saved = CardView.artOverride and CardView.artOverride(card.id) or nil
     if saved ~= nil then
-        art.body = saved.body
+        if not isItem then
+            art.body = saved.body
+            art.anim = saved.anim
+        end
         art.cam = saved.cam
-        art.anim = saved.anim
     end
     -- `bodyOverride` (true/false, from the preview) beats the card's own setting.
     local body = art.body
-    if bodyOverride ~= nil then
+    if bodyOverride ~= nil and not isItem then
         body = bodyOverride
     end
-    local ok, npcID = pcall(function() return id.NPC[art.npc] end)
-    if not ok or not Cards.isValidNpcId(npcID) then
-        log("card art: NPC not found for", card.id, art.npc, "->", tostring(npcID))
-        return nil
+    local modelId, modelType
+    if isItem then
+        local ok, objId = pcall(function() return id.Obj[art.item] end)
+        if not ok or not Cards.isValidObjId(objId) then
+            log("card art: item not found for", card.id, tostring(art.item), "->", tostring(objId))
+            return nil
+        end
+        modelId, modelType = objId, ui.ModelType.OBJECT
+    else
+        local ok, npcID = pcall(function() return id.NPC[art.npc] end)
+        if not ok or not Cards.isValidNpcId(npcID) then
+            log("card art: NPC not found for", card.id, art.npc, "->", tostring(npcID))
+            return nil
+        end
+        modelId, modelType = npcID, ui.ModelType[body and "NPC_MODEL" or "NPC_HEAD"]
     end
-    local modelType = ui.ModelType[body and "NPC_MODEL" or "NPC_HEAD"]
 
     local built, model, cam = pcall(function()
         local group = ui.ModelGroup.new(parent)
@@ -207,16 +272,16 @@ local function addArt(parent, card, box, bodyOverride)
         group:SetSize(box.w, box.h)
         local child = ui.Model.new(group)
         child:SetSize(box.w, box.h)
-        child:SetModel(modelType, npcID)
+        child:SetModel(modelType, modelId)
 
-        local state = { group = group, body = body == true, anim = art.anim }
-        if art.anim ~= nil then
+        local state = { group = group, body = body == true, anim = art.anim, kind = isItem and "item" or nil }
+        if art.anim ~= nil and not isItem then
             CardView.playAnimation(child, art.anim)
         end
-        local defaults = CardView.CAMERA_DEFAULTS[body and "body" or "head"]
+        local defaults = CardView.defaultsFor(state)
         -- The card's own camera values belong to its own model type, so they are ignored when
-        -- the preview has switched to the other one.
-        local own = ((body == true) == (art.body == true)) and art.cam or {}
+        -- the preview has switched to the other one. (An item has only one model type.)
+        local own = (isItem or (body == true) == (art.body == true)) and art.cam or {}
         for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
             state[field] = own[field] or defaults[field]
         end
@@ -231,15 +296,18 @@ local function addArt(parent, card, box, bodyOverride)
     local plain = ui.Model.new(parent)
     plain:SetPos(box.x, box.y)
     plain:SetSize(box.w, box.h)
-    local shown, err = pcall(function() plain:SetModel(modelType, npcID) end)
+    local shown, err = pcall(function() plain:SetModel(modelType, modelId) end)
     if not shown then
         log("card art: SetModel failed for", card.id, err)
         plain:Destroy()
+        if isItem then
+            return addItemIcon(parent, modelId, box)
+        end
         return nil
     end
     plain.modelWidth = box.w
     plain.modelHeight = box.h
-    plain.viewDistance = body and 1500 or 1000
+    plain.viewDistance = isItem and 300 or (body and 1500 or 1000)
     return plain
 end
 
