@@ -47,7 +47,7 @@ local function freshDraft()
         idTouched = false,
         desc = "",
         rarity = "common",
-        skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
+        regions = "", skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
         deck = 1,              -- which deck file (index into Cards.sets); one of the kind's own files
         body = true,           -- body model (true) or head model (false)
         cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
@@ -414,6 +414,10 @@ function Builder.checks()
             parentProblem = missing.word .. " needs " .. missing.needs .. " (add " .. missing.needs .. " to " .. tagKind .. ")"
             break
         end
+    end
+    if isItem() and #tagWords("regions") > Cards.MAX_ITEM_REGIONS then
+        tagProblem = tagProblem or ("An item takes at most " .. Cards.MAX_ITEM_REGIONS
+            .. " regions; leave regions empty if it comes from more")
     end
     if tagProblem ~= nil then
         add("fix", tagProblem)
@@ -830,6 +834,8 @@ local function setKind(cardKind)
     draft.category = ""
     if cardKind == "item" then
         draft.location = ""
+    else
+        draft.regions = ""          -- an NPC's region comes from its deck file
     end
     -- A name or id that only followed the old NPC or item is cleared; one that was typed stays.
     if not draft.nameTouched then
@@ -965,7 +971,7 @@ function Builder.show()
         TagPicker.refresh()
     end, "Choose tags from the words that are allowed")
     local tagY = 334
-    for _, tagKind in ipairs(isItem() and { "skills", "category" } or { "skills", "location", "category" }) do
+    for _, tagKind in ipairs(isItem() and { "regions", "skills", "category" } or { "skills", "location", "category" }) do
         Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
             draft[tagKind] = text

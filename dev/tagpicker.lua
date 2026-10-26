@@ -1,7 +1,7 @@
 -- tagpicker.lua
 -- Developer-only: a window for choosing a card's tags from the words that are allowed (the lists in
 -- Cards.tagWords), so nobody has to type them or remember them. There is a page (tab) for each
--- kind of tag: location, skills and category. Click a word to add it to the card; click it again
+-- kind of tag: region (items only), location, skills and category. Click a word to add it to the card; click it again
 -- to take it off. Words on the card already show as pressed in. The Filter box narrows the words
 -- on every page.
 --
@@ -10,7 +10,7 @@
 -- toggle = function(kind, word, on) -> add or remove one, cardKind = function() -> "npc" or "item"
 -- (optional, "npc" if left out) }, and calls TagPicker.refresh() when the tag boxes are changed by
 -- typing so the buttons agree, and TagPicker.rebuild() when the kind of card changes (an item's
--- category words are not an NPC's, and items have no location).
+-- category words are not an NPC's, items have no location and only items pick a region).
 --
 -- A group with a `requires` word (see Cards.itemTagGroups) is only shown while that word is on the
 -- card, and its words are taken off the card when the required word is.
@@ -27,8 +27,8 @@ local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
 local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 
-local KINDS = { "location", "skills", "category" }
-local TAB_NAMES = { "Location", "Skills", "Category" }
+local KINDS = { "regions", "location", "skills", "category" }
+local TAB_NAMES = { "Region", "Location", "Skills", "Category" }
 local COLS, COL_W, ROW_H = 3, 190, 32
 local MAX_ROWS = 80               -- a page never gets this long; it is only a safety stop
 local TABS_Y = 62              -- below the Filter box and the line of instructions
@@ -156,6 +156,11 @@ local function buildPage(index, parent, originX, originY)
     if cardKind == "item" and kind == "location" then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
             "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
+        return parts, ROW_H
+    end
+    if cardKind ~= "item" and kind == "regions" then
+        parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
+            "An NPC's region comes from its deck file.", GREY, ui.AlignMode.TOPLEFT)
         return parts, ROW_H
     end
     local selected = chosen(kind)
