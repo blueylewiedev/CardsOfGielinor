@@ -1,0 +1,18 @@
+name: Check deck index
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-deck-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Every deck file is listed in deck/index.lua
+        run: python dev/check_deck_index.py

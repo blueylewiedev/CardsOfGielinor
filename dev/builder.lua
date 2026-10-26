@@ -731,10 +731,18 @@ end
 
 -- The name of a deck file as shown in the drop-down: just the region ("deck/npcs/kharidian_desert"
 -- becomes "Kharidian Desert"), so it can be found by typing the region's name.
+-- "deck/npcs/kharidian_desert" -> "Kharidian Desert". Item files can sit in folders
+-- ("deck/items/weapons/sword" -> "Weapons: Sword"), so the folder is part of the label and two
+-- files with the same name in different folders still get different labels.
 function Builder.deckLabel(setName)
-    local name = string.match(setName, "([^/]+)$") or setName
-    name = string.gsub(name, "_", " ")
-    return (string.gsub(name, "(%a)(%w*)", function(first, rest) return string.upper(first) .. rest end))
+    local path = string.gsub(setName, "^deck/%a+/", "")
+    local parts = {}
+    for piece in string.gmatch(path, "[^/]+") do
+        local words = string.gsub(piece, "_", " ")
+        parts[#parts + 1] = (string.gsub(words, "(%a)(%w*)", function(first, rest) return string.upper(first) .. rest end))
+    end
+    if #parts == 0 then return setName end
+    return table.concat(parts, ": ")
 end
 
 -- A drop-down at x, y, w wide, made with PrettyUI's drop-down when it can be (or the button
