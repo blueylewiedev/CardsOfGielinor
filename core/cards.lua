@@ -133,10 +133,8 @@ end
 Cards.itemTagGroups = {
     category = {
         { title = "What it is used for", words = { "raw_material", "processed_material", "food", "drink", "potion",
-            "tool", "ammunition", "rune", "seed", "quest_item", "currency", "decoration", "equipable", "craftable" } },
-        -- `requires`: the Card Builder's tag picker only shows this group while that word is on the card.
-        { title = "What it is worn or wielded as", requires = "equipable",
-            words = { "weapon", "armour", "jewellery", "pocket", "ammo" } },
+            "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", 
+            "armour", "jewellery", "pocket", "ammunition", "fashion" } },
         { title = "What kind of weapon", requires = "weapon",
             words = { "dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd",
                 "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon" } },
@@ -144,8 +142,8 @@ Cards.itemTagGroups = {
             words = { "helmet", "body", "legs", "gloves", "boots", "off_hand", "back" } },
         { title = "Which jewellery slot", requires = "jewellery",
             words = { "ring", "neck" } },
-        { title = "What type of ammo", requires = "ammo", 
-            words = { "arrow", "bolt", "dart", "knife", "rune", "spike" } },
+        { title = "What type of ammo", requires = "ammunition",
+            words = { "arrow", "bolt", "spike" } },
     },
 }
 local npcCategoryWords = {}
