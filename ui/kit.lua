@@ -488,6 +488,17 @@ function Kit.setStyle(button, style)
     end
 end
 
+-- The mouse's x on the screen, or nil if the client can't say (for dragging).
+function Kit.mouseX()
+    local ok, x = pcall(function()
+        if not Mouse.IsAvailable() then
+            return nil
+        end
+        return Mouse.GetPosition().x
+    end)
+    return ok and x or nil
+end
+
 -- Extra window height the PrettyUI title bar takes, to add to a plain window's height.
 function Kit.titleBarHeight()
     return Kit.available() and 40 or 0

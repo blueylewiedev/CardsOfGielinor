@@ -384,6 +384,7 @@ local function isKnownWord(tagKind, word, cardKind)
     end
     return false
 end
+Cards.isKnownWord = isKnownWord
 
 local function checkTags(card)
     if card.tags == nil then
@@ -423,11 +424,22 @@ for _, card in ipairs(Cards.list) do
     Cards.byId[card.id] = card
 end
 Cards.THEMED_PRICE_FACTOR = 1.25
+-- A line in deck/packs.lua with the id of a pack type already here (such as "standard") changes
+-- that pack's fields (its name and look) and keeps the rest; any other is a new themed pack.
+local listed = {}
 for _, packType in ipairs(require("deck/packs")) do
     assert(type(packType.id) == "string" and packType.id ~= "", "A pack in deck/packs.lua has no id")
-    packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
-    assert(Cards.packTypes[packType.id] == nil, "Duplicate pack type id " .. packType.id)
-    Cards.packTypes[packType.id] = packType
+    assert(not listed[packType.id], "Duplicate pack type id " .. packType.id)
+    listed[packType.id] = true
+    local existing = Cards.packTypes[packType.id]
+    if existing ~= nil then
+        for field, value in pairs(packType) do
+            existing[field] = value
+        end
+    else
+        packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
+        Cards.packTypes[packType.id] = packType
+    end
 end
 for key, packType in pairs(Cards.packTypes) do
     assert(packType.id == key, "Pack type id must match its key: " .. key)
