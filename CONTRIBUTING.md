@@ -168,8 +168,16 @@ file gets that region's tag automatically.
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
 
-Item cards go in `deck/items/`. There is one file, `general.lua`, for now; it will be split into
-files for each kind of item (herbs, logs, weapons...) once there are enough cards.
+Item cards go in `deck/items/`. There is one file, `general.lua`, for now. As item cards are added
+they are grouped in a folder for each item category, with a file for each sub-type, for example
+`deck/items/raw_material/logs.lua` or `deck/items/weapons/scimitar.lua`. Use the category words as
+the folder and file names. There is no limit on the number of cards in a file; split a file when it
+gets hard to work with or when two people keep editing the same one.
+
+**Every deck file has to be listed in `deck/index.lua`**, including the ones in folders, because
+the plugin cannot look inside folders. A file that is not listed is never loaded. Run
+`python dev/check_deck_index.py` to check that the files and the list agree. It also runs on every
+pull request, and the pull request cannot be merged while it fails.
 
 ---
 
