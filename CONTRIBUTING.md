@@ -58,13 +58,17 @@ location boxes go away, because items have neither. Item cards go in `deck/items
 **Starting from the wiki (optional).** Instead of filling every box in by hand, you can have
 candidates made from the [RuneScape Wiki](https://runescape.wiki) and review them:
 
-1. Run `python dev/wiki_cards.py --category Lumbridge --contact "@you on Discord"` (any wiki
-   category, or `--page "Duke Horacio"`). It writes `dev/wiki_candidates.lua`: for each NPC page,
-   the NPC, the name, the examine text, tags, a suggested rarity and notes on what to check.
-2. In the game, `prf`, then open **Wiki Review** from the Home window. **Load into Card Builder**
-   fills the builder in; check and change anything that is wrong (the tags and rarity are only
-   guesses), frame the art, and copy the block as below. Then press **Done**, or **Skip** for an
-   NPC that shouldn't be a card. NPCs already in the deck are left out.
+1. Open **Wiki Review** from the Home window and press its search button: **Wiki Fetch** lets you
+   pick wiki categories (places, for NPC cards, and kinds of item, for item cards) or type pages,
+   and gives you the command, for example
+   `python dev/wiki_cards.py --category "Lumbridge" --category "Logs"`. Copy it and run it in the
+   plugin's folder. It writes `dev/wiki_candidates.lua`: for each NPC or item page, the NPC or item,
+   the name, the examine text, tags, a suggested rarity and notes on what to check. Categories
+   asked for before are remembered, so the list grows.
+2. In the game, `prf`, then open **Wiki Review**. **Load into Card Builder** fills the builder in;
+   check and change anything that is wrong (the tags and rarity are only guesses), try the other
+   models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
+   **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
 
 Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
 at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in

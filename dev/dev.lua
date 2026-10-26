@@ -4,7 +4,8 @@
 -- load fails quietly and none of this exists.
 --
 -- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window,
--- the Pack Maker (dev/packmaker.lua), the Wiki Review window (dev/wikireview.lua), the saved camera
+-- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
+-- dev/wikifetch.lua), the saved camera
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
 -- toggles), and a few debug extras at login and when XP is gained.
 

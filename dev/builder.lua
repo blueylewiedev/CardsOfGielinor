@@ -917,38 +917,73 @@ function Builder.rebuild()
     end
 end
 
--- Fills the card in from a wiki candidate (see dev/wikireview.lua) and shows it, replacing
--- anything entered before: an NPC card with the candidate's NPC, name, description, suggested
--- rarity and tags, in its region's deck file (whose defaults give the region tag), or the general
--- file if the region is unknown. The camera starts from the defaults, and the animation is a
--- guess at the NPC's standing one (see Builder.readyAnim).
-function Builder.loadCandidate(candidate)
-    closeDropdown()
-    pending = nil
-    local fresh = freshDraft()
-    local tags = candidate.tags or {}
-    local humanoid = false
-    for _, word in ipairs(tags.category or {}) do
-        humanoid = humanoid or word == "humanoid"
+-- True if a candidate's tags call it a humanoid (for the standing animation guess).
+local function isHumanoid(candidate)
+    for _, word in ipairs((candidate.tags or {}).category or {}) do
+        if word == "humanoid" then
+            return true
+        end
     end
-    fresh.npc = candidate.npc
-    fresh.anim = Builder.readyAnim(candidate.npc, humanoid)
-    fresh.name, fresh.nameTouched = candidate.name, true
-    fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
-    fresh.desc = candidate.desc or ""
-    fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
-    for _, tagKind in ipairs({ "skills", "location", "category" }) do
-        fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
+    return false
+end
+
+-- Switches the card to another model of the same NPC or item (the Wiki Review window's Next
+-- model), keeping everything else that was entered. The camera goes back to the defaults, and an
+-- NPC's standing animation is guessed again, as each model can have its own.
+function Builder.useModel(configName, candidate)
+    setField(widgets.npcField, configName)
+    setSubject(configName)
+    if not isItem() then
+        draft.anim = Builder.readyAnim(configName, isHumanoid(candidate))
+        setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
     end
-    local function deckIndex(setName)
+    if window == nil then
+        Builder.show()
+    end
+end
+
+-- The index in Cards.sets of the first of these deck files that exists, or nil.
+local function firstDeck(setNames)
+    for _, setName in ipairs(setNames) do
         for i, name in ipairs(Cards.sets) do
             if name == setName then
                 return i
             end
         end
     end
-    local region = tags.regions and tags.regions[1]
-    fresh.deck = (region and deckIndex("deck/npcs/" .. region)) or deckIndex("deck/npcs/general") or fresh.deck
+    return nil
+end
+
+-- Fills the card in from a wiki candidate (see dev/wikireview.lua) and shows it, replacing
+-- anything entered before: an NPC or item card with the candidate's model `configName`, name,
+-- description, suggested rarity and tags. An NPC goes in its region's deck file (whose defaults
+-- give the region tag), an item in the file for its category (deck/items/<category>/<kind>.lua,
+-- see deck/index.lua) if there is one; otherwise the general file. The camera starts from the
+-- defaults, and an NPC's animation is a guess at its standing one (see Builder.readyAnim).
+function Builder.loadCandidate(candidate, configName)
+    closeDropdown()
+    pending = nil
+    local fresh = freshDraft()
+    local tags = candidate.tags or {}
+    if candidate.kind == "item" then
+        fresh.kind = "item"
+        fresh.item = configName
+        local category = tags.category or {}
+        fresh.deck = firstDeck({ "deck/items/" .. table.concat(category, "/", 1, math.min(#category, 2)),
+            "deck/items/" .. (category[1] or ""), "deck/items/general" }) or fresh.deck
+    else
+        fresh.npc = configName or candidate.npc
+        fresh.anim = Builder.readyAnim(fresh.npc, isHumanoid(candidate))
+        local region = tags.regions and tags.regions[1]
+        fresh.deck = firstDeck({ "deck/npcs/" .. (region or ""), "deck/npcs/general" }) or fresh.deck
+    end
+    fresh.name, fresh.nameTouched = candidate.name, true
+    fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
+    fresh.desc = candidate.desc or ""
+    fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
+    for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category" } or { "skills", "location", "category" }) do
+        fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
+    end
     for key in pairs(draft) do
         draft[key] = nil
     end

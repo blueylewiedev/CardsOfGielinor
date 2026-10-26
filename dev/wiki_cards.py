@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Makes card candidates from the RuneScape Wiki, for review in the plugin's Wiki Review window
-(dev/wikireview.lua), which loads each one into the Card Builder to check, frame and copy.
+(dev/wikireview.lua), which loads each one into the Card Builder to check, frame and copy. The
+Wiki Fetch window (dev/wikifetch.lua) puts the command together for you.
 
 Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [options]
-  e.g.  python dev/wiki_cards.py --category Lumbridge --contact "@me on Discord"
+  e.g.  python dev/wiki_cards.py --category Lumbridge --category Logs
 
-  --category NAME   the NPC pages in a wiki category (without "Category:"), e.g. Lumbridge
+  --category NAME   the pages in a wiki category (without "Category:"): places for NPCs, such as
+                    Lumbridge, or kinds of item, such as Logs or Scimitars
   --page TITLE      one page, e.g. "Duke Horacio" (both can be given, and more than once)
   --contact TEXT    how the wiki's admins can reach you; added to the User-Agent (recommended).
                     Without it, the first line of dev/wiki_contact.txt is used (a file on your
@@ -13,11 +15,16 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
   --max-requests N  the most requests this run may make (default 30). Anything not fetched yet
                     is fetched next run; what was fetched is kept.
   --refresh         fetch again even what is in the cache (only for pages changed on the wiki)
+  --only            candidates from this run's categories and pages only (see below)
+  --forget          forget the categories and pages asked for before (see below)
 
-It writes dev/wiki_candidates.lua: for each NPC page with an infobox, the NPC's config name
-(the wiki gives the NPC ids; dev/npc.txt turns them into names), the card name, the examine text
-as the description, tags, a suggested rarity, and notes on anything to check. Cards that are
-already in the deck are left out by the review window, not here.
+The categories and pages asked for are remembered (dev/wiki_cache/sources.json), and the
+candidates are made from all of them each run, from the cache, so asking for more adds to the
+list. It writes dev/wiki_candidates.lua: for each NPC page, the NPC's config name (the wiki gives
+the NPC ids; dev/npc.txt turns them into names), and for each item page, the item's ids (the
+plugin turns them into config names); with each, the card name, the examine text as the
+description, tags, a suggested rarity, and notes on anything to check. Cards already in the
+deck are left out by the review window, not here.
 
 Being a good guest of the wiki (https://runescape.wiki/w/Help:APIs, and MediaWiki's
 https://www.mediawiki.org/wiki/API:Etiquette):
@@ -170,12 +177,12 @@ def fetch_pages(wiki, titles, refresh):
         if answers is None:
             print(f"  request limit reached; {len(wanted) - start} pages left for next time")
             break
-        found = {}
+        found, asked = {}, {}
         for answer in answers:
             query = answer.get("query", {})
             # A title asked for may come back under its normalised or redirected name.
             for hop in query.get("normalized", []) + query.get("redirects", []):
-                found.setdefault("_asked", {})[hop["to"]] = hop["from"]
+                asked[hop["to"]] = hop["from"]
             for page in query.get("pages", []):
                 entry = found.setdefault(page["title"], {"title": page["title"], "categories": []})
                 if page.get("missing"):
@@ -184,7 +191,6 @@ def fetch_pages(wiki, titles, refresh):
                     entry["revid"] = revision["revid"]
                     entry["text"] = revision["slots"]["main"]["content"]
                 entry["categories"] += [c["title"].removeprefix("Category:") for c in page.get("categories", [])]
-        asked = found.pop("_asked", {})
         for title, entry in found.items():
             entry["fetched"] = time.strftime("%Y-%m-%d")
             original = title
@@ -287,18 +293,28 @@ def npc_names():
 
 
 def allowed_words():
-    """The words cards may use for regions, location and NPC category, from core/cards.lua."""
+    """The words cards may use, from core/cards.lua: regions, location, skills, the NPC category
+    words (category), the item category words (item_category) and, for the item words that need
+    another, that word (item_requires: scimitar -> weapon)."""
     text = CARDS.read_text(encoding="utf-8")
 
     def quoted(block):
         return re.findall(r'"([a-z0-9_]+)"', block)
 
     words = {}
-    for kind in ("regions", "location"):
+    for kind in ("regions", "location", "skills"):
         match = re.search(r"Cards\.tagWords\s*=\s*\{.*?" + kind + r"\s*=\s*\{([^}]*)\}", text, re.S)
         words[kind] = quoted(match.group(1)) if match else []
     groups = re.search(r"Cards\.tagGroups\s*=\s*\{(.*?)\n\}", text, re.S)
     words["category"] = quoted(groups.group(1)) if groups else []
+    words["item_category"], words["item_requires"] = [], {}
+    item_groups = re.search(r"Cards\.itemTagGroups\s*=\s*\{(.*?)\n\}", text, re.S)
+    for requires, block in re.findall(r'\{\s*title\s*=\s*"[^"]*",\s*(?:requires\s*=\s*"(\w+)",\s*)?'
+                                      r'words\s*=\s*\{([^}]*)\}', item_groups.group(1) if item_groups else ""):
+        for word in quoted(block):
+            words["item_category"].append(word)
+            if requires:
+                words["item_requires"][word] = requires
     return words
 
 
@@ -326,6 +342,34 @@ CATEGORY_WORDS = {
 }
 
 
+# Item category words suggested by the equipment slot (Infobox Bonuses' slot).
+SLOT_WORDS = {
+    "weapon": ["weapon"], "2h": ["weapon"], "main-hand": ["weapon"], "off-hand": ["armour", "off_hand"],
+    "shield": ["armour", "off_hand"], "head": ["armour", "helmet"], "torso": ["armour", "body"],
+    "body": ["armour", "body"], "legs": ["armour", "legs"], "hands": ["armour", "gloves"],
+    "feet": ["armour", "boots"], "cape": ["armour", "back"], "back": ["armour", "back"],
+    "neck": ["jewellery", "neck"], "ring": ["jewellery", "ring"], "ammo": ["ammunition"], "pocket": ["pocket"],
+}
+
+# Item category words suggested by the page's wiki categories: a whole word of a category's name
+# (the "Disassemble category/..." ones name the kind of item well). Words that need another
+# (scimitar needs weapon) get it added.
+ITEM_CATEGORY_WORDS = {
+    "logs": ["raw_material"], "ores": ["raw_material"], "ore": ["raw_material"], "hides": ["raw_material"],
+    "bars": ["processed_material"], "bar": ["processed_material"], "planks": ["processed_material"],
+    "runes": ["rune"], "food": ["food"], "fish": ["food"], "drinks": ["drink"], "potions": ["potion"],
+    "potion": ["potion"], "seeds": ["seed"], "jewellery": ["jewellery"], "quest items": ["quest_item"],
+    "arrows": ["ammunition", "arrow"], "bolts": ["ammunition", "bolt"], "dagger": ["dagger"], "daggers": ["dagger"],
+    "scimitar": ["scimitar"], "scimitars": ["scimitar"], "longsword": ["sword"], "sword": ["sword"],
+    "2h sword": ["two_handed_sword"], "two-handed swords": ["two_handed_sword"], "battleaxe": ["axe"],
+    "battleaxes": ["axe"], "mace": ["mace"], "maces": ["mace"], "spear": ["spear"], "spears": ["spear"],
+    "halberd": ["halberd"], "halberds": ["halberd"], "whip": ["whip"], "claws": ["claw"], "shortbow": ["shortbow"],
+    "longbow": ["longbow"], "longbows": ["longbow"], "crossbow": ["crossbow"], "crossbows": ["crossbow"],
+    "thrown": ["thrown"], "staff": ["staff"], "staves": ["staff"], "wand": ["wand"], "wands": ["wand"],
+    "lantern": ["lantern"], "siphon": ["siphon"],
+}
+
+
 def slug(text):
     return re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
 
@@ -336,11 +380,84 @@ def slug(text):
 
 
 def candidate(page, names, words):
-    """A card candidate from a page, or (None, reason) if it isn't one."""
-    kind, inside = find_template(page.get("text", ""), ["Infobox NPC", "Infobox Monster"])
-    if inside is None:
-        return None, "no NPC infobox"
-    fields = template_fields(inside)
+    """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one."""
+    text = page.get("text", "")
+    kind, inside = find_template(text, ["Infobox NPC", "Infobox Monster"])
+    if inside is not None:
+        return npc_candidate(page, kind, template_fields(inside), names, words)
+    _, inside = find_template(text, ["Infobox Item"])
+    if inside is not None:
+        _, bonuses = find_template(text, ["Infobox Bonuses"])
+        return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words)
+    return None, "no NPC or item infobox"
+
+
+def name_and_desc(page, fields, notes):
+    """The card name (the infobox's, or the page title without its brackets) and description
+    (the examine text), with a note if the description needs work."""
+    name = plain(first_version(fields, "name")) or re.sub(r"\s*\(.*\)$", "", page["title"])
+    desc = plain(first_version(fields, "examine"))
+    if not desc:
+        notes.append("no examine text: write a description")
+    elif len(desc) > MAX_DESC:
+        notes.append(f"description is {len(desc)} letters; cards show about {MAX_DESC}")
+    return name, desc
+
+
+def item_candidate(page, fields, bonuses, words):
+    """A candidate from an item page. The ids go to the plugin, which knows the items' config
+    names. Tags: the item category words from its equipment slot and its wiki categories, and the
+    skills whose categories it is in."""
+    notes = []
+    ids = all_ids(fields)
+    if not ids:
+        return None, "no item id on the page"
+    if len(ids) > 1:
+        notes.append(f"{len(ids)} item ids listed; using the first")
+    name, desc = name_and_desc(page, fields, notes)
+
+    found = list(SLOT_WORDS.get(plain(bonuses.get("slot", "")).lower(), []))
+    style = plain(bonuses.get("style", "")).lower()
+    if "ammunition" in found:
+        found += ["arrow"] if "arrow" in style else ["bolt"] if "bolt" in style else []
+    for category in page.get("categories", []):
+        name_part = category.lower().removeprefix("disassemble category/")
+        for key, keyed in ITEM_CATEGORY_WORDS.items():
+            if re.search(r"\b" + re.escape(key) + r"\b", name_part):
+                found += keyed
+    category = []
+    for word in found:
+        parent = words["item_requires"].get(word)
+        for needed in ([parent] if parent else []) + [word]:
+            if needed in words["item_category"] and needed not in category:
+                category.append(needed)
+    tags = {"category": category} if category else {}
+    if not category:
+        notes.append("no category found: choose what kind of item it is")
+
+    skills = [s for s in words["skills"]
+              if any(c.lower() in (s, s + " items") for c in page.get("categories", []))]
+    if skills:
+        tags["skills"] = skills
+
+    value = re.search(r"\d[\d,]*", first_version(fields, "value"))
+    value = int(value.group().replace(",", "")) if value else 0
+    if value >= 500000:
+        rarity = "epic"
+    elif value >= 50000:
+        rarity = "rare"
+    elif value >= 5000:
+        rarity = "uncommon"
+    else:
+        rarity = "common"
+    notes.append(f"rarity is a guess (worth {value:,} coins)")
+
+    return {"page": page["title"], "kind": "item", "ids": ids[:6], "name": name, "desc": desc,
+            "rarity": rarity, "tags": tags, "notes": notes}, None
+
+
+def npc_candidate(page, kind, fields, names, words):
+    """A candidate from an NPC or monster page."""
     notes = []
 
     ids = all_ids(fields)
@@ -349,13 +466,7 @@ def candidate(page, names, words):
         return None, "no NPC id the plugin knows" if ids else "no NPC id on the page"
     if len(configs) > 1:
         notes.append(f"{len(configs)} models listed; using the first ({configs[0]})")
-
-    name = plain(first_version(fields, "name")) or re.sub(r"\s*\(.*\)$", "", page["title"])
-    desc = plain(first_version(fields, "examine"))
-    if not desc:
-        notes.append("no examine text: write a description")
-    elif len(desc) > MAX_DESC:
-        notes.append(f"description is {len(desc)} letters; cards show about {MAX_DESC}")
+    name, desc = name_and_desc(page, fields, notes)
 
     tags = {}
     region = slug(plain(first_version(fields, "leagueregion")))
@@ -423,8 +534,8 @@ def candidate(page, names, words):
     if first_version(fields, "removal") not in ("", "No"):
         notes.append("the wiki says this NPC was removed from the game")
 
-    return {"page": page["title"], "npc": configs[0], "others": configs[1:6], "name": name, "desc": desc,
-            "rarity": rarity, "tags": tags, "notes": notes, "revid": page.get("revid")}, None
+    return {"page": page["title"], "kind": "npc", "npc": configs[0], "others": configs[1:6], "name": name,
+            "desc": desc, "rarity": rarity, "tags": tags, "notes": notes}, None
 
 
 def lua_string(text):
@@ -454,6 +565,26 @@ def write_candidates(found):
     OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+SOURCES = CACHE / "sources.json"
+
+
+def remembered_sources(args):
+    """The categories and pages to make candidates from: this run's, added to the ones asked for
+    before (unless --only), which are saved for next time."""
+    saved = {"categories": [], "pages": []}
+    if SOURCES.exists() and not args.forget:
+        saved = json.loads(SOURCES.read_text(encoding="utf-8"))
+    for key, new in (("categories", args.category), ("pages", args.page)):
+        for item in new:
+            if item not in saved[key]:
+                saved[key].append(item)
+    SOURCES.parent.mkdir(parents=True, exist_ok=True)
+    SOURCES.write_text(json.dumps(saved, indent=1), encoding="utf-8")
+    if args.only:
+        return list(args.category), list(args.page)
+    return saved["categories"], saved["pages"]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--category", action="append", default=[])
@@ -461,23 +592,43 @@ def main():
     parser.add_argument("--contact", default="")
     parser.add_argument("--max-requests", type=int, default=30)
     parser.add_argument("--refresh", action="store_true")
+    parser.add_argument("--only", action="store_true")
+    parser.add_argument("--forget", action="store_true")
     args = parser.parse_args()
-    if not args.category and not args.page:
+    if not args.category and not args.page and not SOURCES.exists():
         print(__doc__)
+        return 1
+    categories, page_titles = remembered_sources(args)
+    if not categories and not page_titles:
+        print("Nothing to fetch: give --category or --page.")
         return 1
 
     contact = args.contact
     if not contact and CONTACT_FILE.exists():
-        contact = (CONTACT_FILE.read_text(encoding="utf-8").strip().splitlines() or [""])[0].strip()
+        # (utf-8-sig, as Windows editors often put an invisible marker at the start of the file)
+        contact = (CONTACT_FILE.read_text(encoding="utf-8-sig").strip().splitlines() or [""])[0].strip()
     if not contact:
         print("No contact given: please pass --contact or put one in dev/wiki_contact.txt, so the wiki's"
               " admins can reach you if anything goes wrong.")
     wiki = Wiki(contact, args.max_requests)
-    titles = list(args.page)
-    for category in args.category:
-        for title in category_pages(wiki, category, args.refresh):
-            if title not in titles:
-                titles.append(title)
+    print("From:", ", ".join(categories + [f'page "{p}"' for p in page_titles]))
+    # Each title, with the categories (or the page asked for) it came from, so the review window
+    # can show one at a time.
+    titles, sources = [], {}
+
+    def add(title, source):
+        if title not in sources:
+            titles.append(title)
+            sources[title] = []
+        if source not in sources[title]:
+            sources[title].append(source)
+
+    for title in page_titles:
+        add(title, title)
+    for category in categories:
+        # (--refresh only re-asks for this run's categories, not every remembered one)
+        for title in category_pages(wiki, category, args.refresh and category in args.category):
+            add(title, category)
     pages = fetch_pages(wiki, titles, args.refresh)
 
     names, words = npc_names(), allowed_words()
@@ -488,18 +639,20 @@ def main():
             continue
         made, reason = candidate(page, names, words)
         if made is not None:
+            made["sources"] = sources[title]
             found.append(made)
         else:
             skipped[reason] = skipped.get(reason, 0) + 1
-    found.sort(key=lambda c: (c["tags"].get("regions", ["~"])[0], c["name"]))
+    found.sort(key=lambda c: (c["kind"], (c["tags"].get("regions") or c["tags"].get("category") or ["~"])[0], c["name"]))
     write_candidates(found)
 
     print(f"{len(found)} candidates written to {OUTPUT.relative_to(ROOT)}")
     for reason, count in sorted(skipped.items()):
         print(f"  {count} pages skipped: {reason}")
-    print(f"{args.max_requests - wiki.left} requests made this run;"
-          f" {len(titles) - len(pages)} pages still to fetch" if len(pages) < len(titles) else
-          f"{args.max_requests - wiki.left} requests made this run")
+    summary = f"{args.max_requests - wiki.left} requests made this run"
+    if len(pages) < len(titles):
+        summary += f"; {len(titles) - len(pages)} pages still to fetch (run it again)"
+    print(summary)
     return 0
 
 
