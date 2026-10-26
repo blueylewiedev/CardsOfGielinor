@@ -12,6 +12,9 @@
 -- typing so the buttons agree, and TagPicker.rebuild() when the kind of card changes (an item's
 -- category words are not an NPC's, and items have no location).
 --
+-- A group with a `requires` word (see Cards.itemTagGroups) is only shown while that word is on the
+-- card, and its words are taken off the card when the required word is.
+--
 -- A page holds at most MAX_ROWS rows of words; when there are more (a long list, or the filter
 -- is empty), a line at the bottom says so, and typing in the Filter box finds the rest.
 
@@ -37,6 +40,8 @@ local window, content = nil, nil
 local filterField, tabs = nil, nil
 local target = nil
 local buttons = {}            -- kind -> { word -> the toggle button }
+local builtSignature = {}     -- kind -> which groups were open when its page was built
+local needsRebuild = false    -- set when a group has opened or closed since a page was built
 
 -- Lets the Card Builder say which card the picker works on. Pass nil to remove it.
 function TagPicker.setTarget(newTarget)
@@ -72,16 +77,32 @@ function TagPicker.matchesFilter(word, filterText)
     return wanted == "" or string.find(simplify(word), wanted, 1, true) ~= nil
 end
 
+-- True if a group is shown: it has no `requires`, or the word it requires is in `selected`
+-- (a set of the words now on the card).
+local function groupOpen(group, selected)
+    return group.requires == nil or (selected ~= nil and selected[group.requires] == true)
+end
+
+-- Which of a kind's groups are open, as a string like "10", to tell when a page needs rebuilding.
+local function openSignature(kind, cardKind, selected)
+    local parts = {}
+    for _, group in ipairs(TagPicker.groups(kind, cardKind)) do
+        parts[#parts + 1] = groupOpen(group, selected) and "1" or "0"
+    end
+    return table.concat(parts)
+end
+
 -- The layout of one page: a list of entries { heading = text } or { word = w, col = c, row = r }
--- and how many words did not fit. Pure, so it can be tested without the client.
-function TagPicker.layout(kind, filterText, cardKind)
+-- and how many words did not fit. `selected` is the set of words now on the card, which opens the
+-- groups that need one of them. Pure, so it can be tested without the client.
+function TagPicker.layout(kind, filterText, cardKind, selected)
     local entries = {}
     local row, col = 0, 0
     local hidden = 0
     for _, group in ipairs(TagPicker.groups(kind, cardKind)) do
         local shown = {}
         for _, word in ipairs(group.words) do
-            if TagPicker.matchesFilter(word, filterText) then
+            if groupOpen(group, selected) and TagPicker.matchesFilter(word, filterText) then
                 shown[#shown + 1] = word
             end
         end
@@ -136,8 +157,9 @@ local function buildPage(index, parent, originX, originY)
             "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
         return parts
     end
-    local entries, hidden = TagPicker.layout(kind, filterText, cardKind)
     local selected = chosen(kind)
+    builtSignature[kind] = openSignature(kind, cardKind, selected)
+    local entries, hidden = TagPicker.layout(kind, filterText, cardKind, selected)
     for _, entry in ipairs(entries) do
         if entry.heading ~= nil then
             parts[#parts + 1] = Kit.text(parent, originX + 4, originY + entry.row * ROW_H, COLS * COL_W, 26,
@@ -149,6 +171,7 @@ local function buildPage(index, parent, originX, originY)
                     if target ~= nil then
                         target.toggle(kind, word, on)
                     end
+                    TagPicker.refresh()
                 end)
             buttons[kind][word] = toggle
             parts[#parts + 1] = toggle.part
@@ -179,15 +202,62 @@ function TagPicker.rebuild()
     rebuildAll()
 end
 
--- Makes the buttons show the words that are on the card now, without rebuilding them.
+-- Makes the buttons show the words that are on the card now. If that opens or closes a group
+-- (such as "equipable" opening the worn-or-wielded words), the page is rebuilt on the next frame,
+-- not here, as this can be called from the button that is being pressed.
 function TagPicker.refresh()
     for _, kind in ipairs(KINDS) do
         local selected = chosen(kind)
         for word, toggle in pairs(buttons[kind] or {}) do
             toggle.setActive(selected[word] == true)
         end
+        if builtSignature[kind] ~= nil and builtSignature[kind] ~= openSignature(kind, targetKind(), selected) then
+            needsRebuild = true
+        end
     end
 end
+
+-- Rebuilds the pages whose groups opened or closed. A word from a group that has just closed is
+-- taken off the card, as it could no longer be seen or taken off in the picker.
+local function syncGroups()
+    needsRebuild = false
+    if tabs == nil then
+        return
+    end
+    local cardKind = targetKind()
+    for index, kind in ipairs(KINDS) do
+        -- Taking words off can close more groups (turning "equipable" off takes "weapon" off, which
+        -- closes the weapon types), so go on until nothing more comes off.
+        local removed, passes = true, 0
+        while removed and target ~= nil and passes < 5 do
+            removed = false
+            passes = passes + 1
+            local selected = chosen(kind)
+            for _, group in ipairs(TagPicker.groups(kind, cardKind)) do
+                if not groupOpen(group, selected) then
+                    for _, word in ipairs(group.words) do
+                        if selected[word] then
+                            target.toggle(kind, word, false)
+                            removed = true
+                        end
+                    end
+                end
+            end
+        end
+        if builtSignature[kind] ~= nil and builtSignature[kind] ~= openSignature(kind, cardKind, chosen(kind)) then
+            tabs.rebuild(index)
+        end
+    end
+end
+Event.Draw.Subscribe("cardcollector_tagpicker", function()
+    if needsRebuild then
+        local ok, err = pcall(syncGroups)
+        if not ok then
+            needsRebuild = false
+            log("tag picker: could not update the groups:", tostring(err))
+        end
+    end
+end)
 
 function TagPicker.show()
     if window ~= nil then
@@ -215,6 +285,8 @@ function TagPicker.hide()
     end
     window, content, filterField, tabs = nil, nil, nil, nil
     buttons = {}
+    builtSignature = {}
+    needsRebuild = false
 end
 
 function TagPicker.isOpen()
