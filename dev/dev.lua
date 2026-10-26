@@ -4,7 +4,8 @@
 -- load fails quietly and none of this exists.
 --
 -- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window,
--- the Pack Maker (dev/packmaker.lua), the saved camera
+-- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
+-- dev/wikifetch.lua), the saved camera
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
 -- toggles), and a few debug extras at login and when XP is gained.
 
@@ -22,6 +23,7 @@ local OutputWindow = require("dev/outputwindow")
 local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
+local WikiReview = require("dev/wikireview")
 
 local Dev = {}
 
@@ -65,6 +67,7 @@ function Dev.buttons(api, refresh)
         end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
+        { label = "Wiki Review", action = WikiReview.toggle },
         { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
@@ -96,6 +99,7 @@ end
 function Dev.shutdown()
     Preview.hide()
     Builder.hide()
+    WikiReview.hide()
     PackMaker.hide()
     NpcBrowser.hide()
     Nearby.hide()

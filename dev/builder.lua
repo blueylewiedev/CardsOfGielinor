@@ -150,6 +150,63 @@ function Builder.lookupNpc(configName)
     return npcId, displayName
 end
 
+-- A guess at the NPC's standing animation (a sequence id), or nil. The client doesn't say which
+-- animation an NPC stands with (its animation set, config.NPC's `bas`, only has a name), but
+-- the standing sequences are named after the creature (GOBLIN_READY, DRAGON_READY,
+-- CHICKEN_UPDATE_READY). So each run of words in the animation set's name, then in the NPC's
+-- config name, longest first, is tried with these endings; a humanoid with no match gets the
+-- normal human one. It is only a guess: the preview shows it, and the builder can change it.
+local READY_ENDINGS = { "_READY", "_UPDATE_READY", "_IDLE", "_STAND" }
+local HUMAN_READY = "HUMAN_READY"
+
+-- The id of a sequence by name, or nil if the client doesn't know it.
+local function seqId(name)
+    local ok, value = pcall(function() return id.Seq[name] end)
+    return (ok and type(value) == "number" and value >= 0) and value or nil
+end
+
+-- Every run of words in an underscore name, longest first ("A_B_C": A_B_C, A_B, B_C, A, B, C).
+local function wordRuns(name)
+    local words = {}
+    for word in string.gmatch(name or "", "[^_]+") do
+        if word ~= "BAS" then
+            words[#words + 1] = word
+        end
+    end
+    local runs = {}
+    for length = #words, 1, -1 do
+        for first = 1, #words - length + 1 do
+            runs[#runs + 1] = table.concat(words, "_", first, first + length - 1)
+        end
+    end
+    return runs
+end
+
+function Builder.readyAnim(configName, humanoid)
+    local npcId = Builder.lookupNpc(configName)
+    if npcId == nil then
+        return nil
+    end
+    local basName = nil
+    pcall(function() basName = tostring(config.NPC.FromID(npcId).bas.configName) end)
+    for _, source in ipairs({ basName, configName }) do
+        for _, run in ipairs(wordRuns(source)) do
+            for _, ending in ipairs(READY_ENDINGS) do
+                local found = seqId(run .. ending)
+                if found ~= nil then
+                    log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):",
+                        run .. ending, "=", found)
+                    return found
+                end
+            end
+        end
+    end
+    local fallback = humanoid and seqId(HUMAN_READY) or nil
+    log("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
+        .. (fallback and "; using " .. HUMAN_READY or ""))
+    return fallback
+end
+
 -- Looks up an item by config name. Returns its numeric id and in-game name, or nil if the client
 -- does not know the name.
 function Builder.lookupItem(configName)
@@ -863,6 +920,86 @@ function Builder.rebuild()
             TagPicker.rebuild()
             TagPicker.refresh()
         end
+    end
+end
+
+-- True if a candidate's tags call it a humanoid (for the standing animation guess).
+local function isHumanoid(candidate)
+    for _, word in ipairs((candidate.tags or {}).category or {}) do
+        if word == "humanoid" then
+            return true
+        end
+    end
+    return false
+end
+
+-- Switches the card to another model of the same NPC or item (the Wiki Review window's Next
+-- model), keeping everything else that was entered. The camera goes back to the defaults, and an
+-- NPC's standing animation is guessed again, as each model can have its own.
+function Builder.useModel(configName, candidate)
+    setField(widgets.npcField, configName)
+    setSubject(configName)
+    if not isItem() then
+        draft.anim = Builder.readyAnim(configName, isHumanoid(candidate))
+        setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
+    end
+    if window == nil then
+        Builder.show()
+    end
+end
+
+-- The index in Cards.sets of the first of these deck files that exists, or nil.
+local function firstDeck(setNames)
+    for _, setName in ipairs(setNames) do
+        for i, name in ipairs(Cards.sets) do
+            if name == setName then
+                return i
+            end
+        end
+    end
+    return nil
+end
+
+-- Fills the card in from a wiki candidate (see dev/wikireview.lua) and shows it, replacing
+-- anything entered before: an NPC or item card with the candidate's model `configName`, name,
+-- description, suggested rarity and tags. An NPC goes in its region's deck file (whose defaults
+-- give the region tag), an item in the file for its category (deck/items/<category>/<kind>.lua,
+-- see deck/index.lua) if there is one; otherwise the general file. The camera starts from the
+-- defaults, and an NPC's animation is a guess at its standing one (see Builder.readyAnim).
+function Builder.loadCandidate(candidate, configName)
+    closeDropdown()
+    pending = nil
+    local fresh = freshDraft()
+    local tags = candidate.tags or {}
+    if candidate.kind == "item" then
+        fresh.kind = "item"
+        fresh.item = configName
+        local category = tags.category or {}
+        fresh.deck = firstDeck({ "deck/items/" .. table.concat(category, "/", 1, math.min(#category, 2)),
+            "deck/items/" .. (category[1] or ""), "deck/items/general" }) or fresh.deck
+    else
+        fresh.npc = configName or candidate.npc
+        fresh.anim = Builder.readyAnim(fresh.npc, isHumanoid(candidate))
+        local region = tags.regions and tags.regions[1]
+        fresh.deck = firstDeck({ "deck/npcs/" .. (region or ""), "deck/npcs/general" }) or fresh.deck
+    end
+    fresh.name, fresh.nameTouched = candidate.name, true
+    fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
+    fresh.desc = candidate.desc or ""
+    fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
+    for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category" } or { "skills", "location", "category" }) do
+        fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
+    end
+    for key in pairs(draft) do
+        draft[key] = nil
+    end
+    for key, value in pairs(fresh) do
+        draft[key] = value
+    end
+    if window ~= nil then
+        Builder.rebuild()
+    else
+        Builder.show()
     end
 end
 
