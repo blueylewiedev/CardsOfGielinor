@@ -158,10 +158,13 @@ for _, group in ipairs(Cards.itemTagGroups.category) do
 end
 
 -- The tag kinds that cards of this kind ("npc" or "item") use, in the order they are written.
--- Items are not tagged with a location.
+-- Items are not tagged with a location. An NPC's region comes from its deck file; an item's is
+-- chosen by hand (at most Cards.MAX_ITEM_REGIONS, see "Choosing regions for an item" in
+-- CONTRIBUTING.md).
+Cards.MAX_ITEM_REGIONS = 2
 function Cards.tagKindsFor(cardKind)
     if cardKind == "item" then
-        return { "skills", "category" }
+        return { "regions", "skills", "category" }
     end
     return { "location", "skills", "category" }
 end
@@ -432,6 +435,8 @@ local function checkTags(card)
                 "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" for "
                 .. (Cards.kindOf(card) == "item" and "an item" or "an NPC") .. " card (add it to Cards.tagWords?)")
         end
+        assert(not (tagKind == "regions" and Cards.kindOf(card) == "item" and #words > Cards.MAX_ITEM_REGIONS),
+            "Card " .. card.id .. ": an item takes at most " .. Cards.MAX_ITEM_REGIONS .. " regions (leave it empty if it comes from more)")
         -- A word from a group with a `requires` (such as a weapon kind) needs that word too.
         local missing = Cards.missingRequired(Cards.kindOf(card), tagKind, words)[1]
         assert(missing == nil, "Card " .. card.id .. ": the " .. tagKind .. " tag \"" .. tostring(missing and missing.word)
