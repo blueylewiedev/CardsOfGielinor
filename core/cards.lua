@@ -132,7 +132,7 @@ end
 -- group that fits it best, and must not already be an NPC category word.
 Cards.itemTagGroups = {
     category = {
-        { title = "What it is used for", words = { "raw_material", "processed_material", "food", "drink", "potion",
+        { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
             "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", 
             "armour", "jewellery", "pocket", "ammunition", "fashion" } },
         { title = "What kind of weapon", requires = "weapon",
