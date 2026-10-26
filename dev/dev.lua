@@ -75,13 +75,24 @@ function Dev.buttons(api, refresh)
     }
 end
 
--- Switches the saved camera tuning on and opens the preview window.
+-- Reports draft cards in the log, once, when the plugin starts.
 function Dev.start()
     if #Cards.drafts > 0 then
         log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end
-    Tuning.enabled = true                  -- apply the camera settings saved from the preview
-    CardView.artOverride = Tuning.get
+end
+
+-- Switches the tools on or off. Off (the "Preview as released" setting) makes the plugin look and
+-- behave as players will have it: the camera settings saved from the preview stop applying to the
+-- cards, and the tools' windows close. (main.lua also leaves out the Home buttons and the login
+-- and XP extras.)
+function Dev.setActive(active)
+    Dev.active = active
+    Tuning.enabled = active
+    CardView.artOverride = active and Tuning.get or nil
+    if not active then
+        Dev.shutdown()
+    end
 end
 
 function Dev.shutdown()

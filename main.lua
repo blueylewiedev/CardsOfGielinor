@@ -28,6 +28,11 @@ if not devLoaded then
     Dev = nil
 end
 
+-- True while the development tools are in use (see applyDevTools below).
+local function devOn()
+    return Dev ~= nil and Dev.active
+end
+
 -- Save at most once every this many server ticks (about 0.6 seconds each) while
 -- changes are pending, so frequent changes such as XP gains do not save every tick.
 local SAVE_INTERVAL_TICKS = 10
@@ -72,7 +77,7 @@ local function startSession(name)
         "unique cards:", Storage.countUniqueOwned(session.state),
         "variants:", Storage.countVariantsOwned(session.state))
 
-    if Dev ~= nil then
+    if devOn() then
         Dev.onLogin(session.state)
         saveSession()
     end
@@ -114,7 +119,7 @@ Event.SkillTransmit.Subscribe("cardcollector_xp", function(e)
     local gain = Earning.xpGainFromEvent(e)
     if gain > 0 then
         local earned = Earning.addXP(session.state, gain)
-        if Dev ~= nil then
+        if devOn() then
             Dev.onXp(e.skill, gain, session.state, earned, ticksSinceLoad)
         end
     end
@@ -139,12 +144,13 @@ function PluginShutdown()
     endSession()
 end
 
--- What the windows and pages need from the plugin: the character's collection, a way to save it
--- and the extra buttons the development tools add (if they are there).
+-- What the windows and pages need from the plugin: the character's collection, a way to save it,
+-- whether the development tools are there, and the extra buttons they add while in use.
 local api = {
     getState = function() return session and session.state or nil end,
     saveNow = saveSession,
     openSettings = function() SettingsPage.toggleWindow() end,
+    devTools = Dev ~= nil,
 }
 
 -- Opens the main window if it was closed. A failure is logged and does not stop the plugin.
@@ -153,6 +159,25 @@ local function openMain()
     if not ok then
         log("pack window failed:", err)
     end
+end
+
+-- Puts the development tools in use unless the "Preview as released" setting is on: their Home
+-- buttons and their effects on the cards.
+local function applyDevTools()
+    if Dev == nil then
+        return
+    end
+    Dev.setActive(not Settings.get("releasePreview"))
+    api.extraButtons = Dev.active and Dev.buttons(api, PackWindow.refresh) or nil
+end
+
+-- Turning "Preview as released" on or off swaps the main window's developer buttons in place.
+api.onSettingChanged = function(optionId)
+    if optionId ~= "releasePreview" then
+        return
+    end
+    applyDevTools()
+    PackWindow.rebuildExtras()
 end
 
 -- The saved options, then the pages in the client's settings and behind the ribbon icon.
@@ -165,14 +190,9 @@ Hub.init({
     toggleStats = function() Stats.toggle(api) end,
 })
 
--- With the development tools present, their buttons go on the Home window...
-if Dev ~= nil then
-    api.extraButtons = Dev.buttons(api, PackWindow.refresh)
-end
-
+-- With the development tools in use, their buttons go on the Home window.
+applyDevTools()
 openMain()
-
--- ...and their windows open (after the main window, so they sit on top of it).
 if Dev ~= nil then
     Dev.start()
 end
