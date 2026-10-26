@@ -42,6 +42,13 @@ local target = nil
 local buttons = {}            -- kind -> { word -> the toggle button }
 local builtSignature = {}     -- kind -> which groups were open when its page was built
 local needsRebuild = false    -- set when a group has opened or closed since a page was built
+local builtLayout = {}       -- kind -> what its page shows, so a rebuild that would change nothing is skipped
+local filterWait = nil        -- frames left before the Filter box's new text is applied (nil if none)
+local FILTER_FRAMES = 20      -- typing is applied this many frames after the last key
+
+-- Every component uses one of the client's 4096 dynamic IDs, so this counts what the picker has
+-- made, to show in the log if the IDs ever run out.
+local builtTotal = 0
 
 -- Lets the Card Builder say which card the picker works on. Pass nil to remove it.
 function TagPicker.setTarget(newTarget)
@@ -142,6 +149,27 @@ local function chosen(kind)
     return set
 end
 
+-- A short text that is the same for two pages that look the same.
+local function layoutSignature(kind, filterText, cardKind, selected)
+    if cardKind == "item" and kind == "location" then
+        return "no location"
+    end
+    if cardKind ~= "item" and kind == "regions" then
+        return "no regions"
+    end
+    local entries, hidden = TagPicker.layout(kind, filterText, cardKind, selected)
+    local parts = { hidden }
+    for _, entry in ipairs(entries) do
+        parts[#parts + 1] = (entry.heading or entry.word) .. "@" .. entry.row .. "," .. (entry.col or "")
+    end
+    return table.concat(parts, "|")
+end
+
+local function currentFilter()
+    local text = filterField ~= nil and filterField.content or ""
+    return type(text) == "string" and text or ""
+end
+
 -- Builds the contents of one page (used by Kit.tabs). Returns the components it made and how tall
 -- the page is.
 local function buildPage(index, parent, originX, originY)
@@ -153,14 +181,17 @@ local function buildPage(index, parent, originX, originY)
         filterText = ""
     end
     local cardKind = targetKind()
+    builtLayout[kind] = layoutSignature(kind, filterText, cardKind, chosen(kind))
     if cardKind == "item" and kind == "location" then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
             "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
+        builtTotal = builtTotal + #parts
         return parts, ROW_H
     end
     if cardKind ~= "item" and kind == "regions" then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
             "An NPC's region comes from its deck file.", GREY, ui.AlignMode.TOPLEFT)
+        builtTotal = builtTotal + #parts
         return parts, ROW_H
     end
     local selected = chosen(kind)
@@ -202,22 +233,29 @@ local function buildPage(index, parent, originX, originY)
         rows = MAX_ROWS + 1
     end
     -- How tall this page really is, so the scrollbar only shows when its words do not fit.
+    builtTotal = builtTotal + #parts
     return parts, rows * ROW_H
 end
 
--- Rebuilds every page (after the filter changes).
-local function rebuildAll()
+-- Rebuilds the pages whose words have changed (after the filter changes), or every page with
+-- `force`. A page that would look the same is left alone: rebuilding makes and destroys all of
+-- its buttons.
+local function rebuildAll(force)
     if tabs == nil then
         return
     end
-    for index = 1, #KINDS do
-        tabs.rebuild(index)
+    local filterText, cardKind = currentFilter(), targetKind()
+    for index, kind in ipairs(KINDS) do
+        if force or builtLayout[kind] ~= layoutSignature(kind, filterText, cardKind, chosen(kind)) then
+            tabs.rebuild(index)
+        end
     end
 end
 
 -- Rebuilds every page, for when the kind of card has changed.
 function TagPicker.rebuild()
-    rebuildAll()
+    filterWait = nil
+    rebuildAll(true)
 end
 
 -- Makes the buttons show the words that are on the card now. If that opens or closes a group
@@ -268,6 +306,16 @@ local function syncGroups()
     end
 end
 Event.Draw.Subscribe("cardcollector_tagpicker", function()
+    if filterWait ~= nil then
+        filterWait = filterWait - 1
+        if filterWait <= 0 then
+            filterWait = nil
+            local ok, err = pcall(rebuildAll)
+            if not ok then
+                log("tag picker: could not apply the filter:", tostring(err))
+            end
+        end
+    end
     if needsRebuild then
         local ok, err = pcall(syncGroups)
         if not ok then
@@ -299,6 +347,7 @@ function TagPicker.show()
     -- Each page is as tall as the longest one needs. The tabs are shorter than that if they have
     -- to be, and then the page scrolls inside them (PrettyUI tab pages scroll with the mouse wheel;
     -- the window itself stays a fixed size).
+    log("tag picker: opened;", builtTotal, "components built so far")
     local pageHeight = (tallestPage() + 1) * ROW_H + 10
     local tabsHeight = math.min(TAB_HEADER_H + pageHeight, MAX_VISIBLE_H - TABS_Y - 50)
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
@@ -306,8 +355,9 @@ function TagPicker.show()
         function() TagPicker.hide() end, 0.6, 0.08)
     Kit.text(content, 10, 4, 70, 26, "Filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 80, 4, 300, 26, 30, false)
+    -- Wait until the typing stops, so a word typed letter by letter rebuilds the pages once.
     filterField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
-        rebuildAll()
+        filterWait = FILTER_FRAMES
     end)
     Kit.text(content, 10, 34, WIDTH - 20, 22, "Click a word to add it; click again to remove it.", GREY,
         ui.AlignMode.TOPLEFT)
@@ -324,6 +374,8 @@ function TagPicker.hide()
     window, content, filterField, tabs = nil, nil, nil, nil
     buttons = {}
     builtSignature = {}
+    builtLayout = {}
+    filterWait = nil
     needsRebuild = false
 end
 

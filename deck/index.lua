@@ -40,4 +40,6 @@ return {
 
     -- Items
     "deck/items/general",
+    "deck/items/raw_materials/herbs",
+    "deck/items/raw_materials/logs",
 }

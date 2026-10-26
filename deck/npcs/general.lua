@@ -62,6 +62,7 @@ Set.cards = {
     },
 
     {
+
         id = "shopkeeper", name = "Shopkeeper", rarity = "epic",
         desc = "Sells stuff",
         art = { npc = "GENERALSHOPKEEPER1", anim = 23783, cam = { yaw = 0.40, dist = 750, fov = 35, ty = 620, tx = 10 } },

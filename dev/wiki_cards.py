@@ -17,6 +17,11 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
   --refresh         fetch again even what is in the cache (only for pages changed on the wiki)
   --only            candidates from this run's categories and pages only (see below)
   --forget          forget the categories and pages asked for before (see below)
+  --subcategories NAME
+                    list the subcategories of a wiki category with how many pages each has, to find
+                    category names to use with --category (one request, cached). Makes no candidates
+                    and does not change the remembered categories. e.g.
+                    python dev/wiki_cards.py --subcategories "Equipment Slots"
 
 The categories and pages asked for are remembered (dev/wiki_cache/sources.json), and the
 candidates are made from all of them each run, from the cache, so asking for more adds to the
@@ -157,6 +162,27 @@ def category_pages(wiki, category, refresh):
     titles = [m["title"] for a in answers for m in a["query"]["categorymembers"]]
     write_cache("categories", category, titles)
     return titles
+
+
+def list_subcategories(wiki, category, refresh):
+    """The subcategories of a category with their page counts, as [(name, pages, subcategories)]
+    (cached). One request: a generator over the category's members with their category info."""
+    cached = None if refresh else read_cache("subcategories", category)
+    if cached is not None:
+        return [tuple(row) for row in cached]
+    answers = wiki.get_all({"action": "query", "generator": "categorymembers", "gcmtitle": "Category:" + category,
+                            "gcmtype": "subcat", "gcmlimit": "500", "prop": "categoryinfo"})
+    if answers is None:
+        print("  request limit reached before the subcategories were listed")
+        return []
+    rows = []
+    for answer in answers:
+        for page in answer.get("query", {}).get("pages", []):
+            info = page.get("categoryinfo", {})
+            rows.append((page["title"].removeprefix("Category:"), info.get("pages", 0), info.get("subcats", 0)))
+    rows.sort()
+    write_cache("subcategories", category, rows)
+    return rows
 
 
 def fetch_pages(wiki, titles, refresh):
@@ -367,7 +393,22 @@ ITEM_CATEGORY_WORDS = {
     "longbow": ["longbow"], "longbows": ["longbow"], "crossbow": ["crossbow"], "crossbows": ["crossbow"],
     "thrown": ["thrown"], "staff": ["staff"], "staves": ["staff"], "wand": ["wand"], "wands": ["wand"],
     "lantern": ["lantern"], "siphon": ["siphon"],
+    # Herbs, gems and tools.
+    "herbs": ["raw_material"], "herb": ["raw_material"], "gems": ["raw_material"], "gem": ["raw_material"],
+    "tools": ["tool"], "pickaxes": ["tool"], "hatchets": ["tool"],
+    # Equipment categories by slot (the names are a best guess: check them with --subcategories).
+    # The slot in the page's Infobox Bonuses gives the same words; these help when it is missing.
+    "head slot items": ["armour", "helmet"], "body slot items": ["armour", "body"],
+    "legs slot items": ["armour", "legs"], "hands slot items": ["armour", "gloves"],
+    "feet slot items": ["armour", "boots"], "cape slot items": ["armour", "back"],
+    "shield slot items": ["armour", "off_hand"], "neck slot items": ["jewellery", "neck"],
+    "ring slot items": ["jewellery", "ring"], "ammunition slot items": ["ammunition"],
+    "pocket slot items": ["pocket"],
 }
+
+# A wiki category that says an item is a cosmetic (an override, only worn for its looks): it is
+# tagged fashion, and nothing else, as the Contributing guide says.
+COSMETIC_CATEGORY = re.compile(r"\bcosmetic|\boverride")
 
 
 def slug(text):
@@ -420,11 +461,16 @@ def item_candidate(page, fields, bonuses, words):
     style = plain(bonuses.get("style", "")).lower()
     if "ammunition" in found:
         found += ["arrow"] if "arrow" in style else ["bolt"] if "bolt" in style else []
-    for category in page.get("categories", []):
-        name_part = category.lower().removeprefix("disassemble category/")
-        for key, keyed in ITEM_CATEGORY_WORDS.items():
-            if re.search(r"\b" + re.escape(key) + r"\b", name_part):
-                found += keyed
+    cosmetic = [c for c in page.get("categories", []) if COSMETIC_CATEGORY.search(c.lower())]
+    if cosmetic:
+        found = ["fashion"]
+        notes.append(f"looks like a cosmetic ({cosmetic[0]}): tagged fashion only")
+    else:
+        for category in page.get("categories", []):
+            name_part = category.lower().removeprefix("disassemble category/")
+            for key, keyed in ITEM_CATEGORY_WORDS.items():
+                if re.search(r"\b" + re.escape(key) + r"\b", name_part):
+                    found += keyed
     category = []
     for word in found:
         parent = words["item_requires"].get(word)
@@ -585,6 +631,30 @@ def remembered_sources(args):
     return saved["categories"], saved["pages"]
 
 
+def make_wiki(args):
+    """The polite wiki client, with the contact from --contact or dev/wiki_contact.txt."""
+    contact = args.contact
+    if not contact and CONTACT_FILE.exists():
+        # (utf-8-sig, as Windows editors often put an invisible marker at the start of the file)
+        contact = (CONTACT_FILE.read_text(encoding="utf-8-sig").strip().splitlines() or [""])[0].strip()
+    if not contact:
+        print("No contact given: please pass --contact or put one in dev/wiki_contact.txt, so the wiki's"
+              " admins can reach you if anything goes wrong.")
+    return Wiki(contact, args.max_requests)
+
+
+def show_subcategories(args):
+    wiki = make_wiki(args)
+    for category in args.subcategories:
+        rows = list_subcategories(wiki, category, args.refresh)
+        print(f"Subcategories of {category}: {len(rows)}")
+        for name, pages, subcats in rows:
+            print(f"  {name}  ({pages} pages" + (f", {subcats} subcategories" if subcats else "") + ")")
+    print(f"{args.max_requests - wiki.left} requests made")
+    print('Use a name with --category "NAME", or ask for its subcategories the same way.')
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--category", action="append", default=[])
@@ -594,7 +664,10 @@ def main():
     parser.add_argument("--refresh", action="store_true")
     parser.add_argument("--only", action="store_true")
     parser.add_argument("--forget", action="store_true")
+    parser.add_argument("--subcategories", action="append", default=[])
     args = parser.parse_args()
+    if args.subcategories:
+        return show_subcategories(args)
     if not args.category and not args.page and not SOURCES.exists():
         print(__doc__)
         return 1
@@ -603,14 +676,7 @@ def main():
         print("Nothing to fetch: give --category or --page.")
         return 1
 
-    contact = args.contact
-    if not contact and CONTACT_FILE.exists():
-        # (utf-8-sig, as Windows editors often put an invisible marker at the start of the file)
-        contact = (CONTACT_FILE.read_text(encoding="utf-8-sig").strip().splitlines() or [""])[0].strip()
-    if not contact:
-        print("No contact given: please pass --contact or put one in dev/wiki_contact.txt, so the wiki's"
-              " admins can reach you if anything goes wrong.")
-    wiki = Wiki(contact, args.max_requests)
+    wiki = make_wiki(args)
     print("From:", ", ".join(categories + [f'page "{p}"' for p in page_titles]))
     # Each title, with the categories (or the page asked for) it came from, so the review window
     # can show one at a time.
