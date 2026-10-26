@@ -47,8 +47,11 @@ The `dev/` folder holds the developer tools. They load automatically when the fo
 
 ## Adding a card
 
-The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
+The **Card Builder** (the _Card Builder_ button on the Home window) makes a new card for you and
 checks it as you go. You do not need to know how the code works to be able to contribute :).
+It makes NPC cards. For an item card, press **Item** at the top of the window: the NPC search is
+replaced by an item search (and a list of your Grand Exchange offers), and the animation and
+location boxes go away, because items have neither. Item cards go in `deck/items/`.
 
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
@@ -58,36 +61,35 @@ checks it as you go. You do not need to know how the code works to be able to co
      models, and the one standing in front of you is the one to use),
 
    <img width="1070" height="576" alt="image" src="https://github.com/user-attachments/assets/a2ca367c-35ec-4251-888e-b8b1f27efdf5" />
-
    - or press the **Search NPCs** button (the magnifying glass beside the NPC box), type part of the name and press **Use**,
 
    <img width="711" height="579" alt="image" src="https://github.com/user-attachments/assets/7040bd1b-614e-4b6e-890a-2c63ed4f11aa" />
-
-   - or type the NPC's *config name* (for example `FATHER_AERECK`) into the box. In the developer
+   - or type the NPC's _config name_ (for example `FATHER_AERECK`) into the box. In the developer
      console, `pan NPC` lists the config names.
 
    <img width="1344" height="988" alt="image" src="https://github.com/user-attachments/assets/1084552a-c8a3-4e45-84ba-3185022cf06c" />
 
    The box says **Found** when the client knows the NPC. The name and the id are filled in for
    you, and the card appears in the preview.
-3. **Check the name and id.** The name is what is printed on the card. The id follows the name
+
+2. **Check the name and id.** The name is what is printed on the card. The id follows the name
    (see [Ids](#ids)). Change either if you need to.
 
-   If the generated Card Id automatically defaults to the name of the npc followed by "_2" check to make sure a card for that NPC doesn't
+   If the generated Card Id automatically defaults to the name of the npc followed by "\_2" check to make sure a card for that NPC doesn't
    already exist.
 
    <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
 
-5. **Write a description** (up to 60 letters, shorter is better).
+3. **Write a description** (up to 60 letters, shorter is better).
 
    <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
 
-6. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
+4. **Suggest a rarity** from the drop-down. This is only a suggestion; see [Rarity](#rarity).
    We may not agree with the rarity you choose for your submitted cards, in this case we will open a discussion with you to reach an agreement.
 
    <img width="417" height="247" alt="image" src="https://github.com/user-attachments/assets/435df749-9a57-47fc-9128-8287b677fb12" />
 
-8. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
+5. **Add tags**, if they apply (see [Tags](#tags)). Press **Pick tags** to choose from the words
    that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
    (click it again to remove it). The Filter box narrows the words. You can also type them. Press **Pick tags** to choose from the words
    that are allowed: there is a page for each kind of tag, and clicking a word adds it to the card
@@ -102,7 +104,7 @@ We will select the Thieving tag for Skills as Women are a common early Thieving 
 For the Category tags we will select Humanoid and Monster (Monster signifies that this NPC is attackable)
 
 You may add new tags should you wish, just type the tag manually into the text field, separated by commas.
-*If you do create new tags, make sure you also add them to the relevant list in the Cards file.
+\*If you do create new tags, make sure you also add them to the relevant list in the Cards file.
 If you don't know or are unsure on how to do that, make a note of the tags that need adding in your PR.
 
 <img width="1331" height="371" alt="image" src="https://github.com/user-attachments/assets/b0a76167-5038-4253-9d78-263e4d17c2b3" />
@@ -112,32 +114,31 @@ If you don't know or are unsure on how to do that, make a note of the tags that 
 <img width="571" height="231" alt="image" src="https://github.com/user-attachments/assets/b1ae1091-bcf3-446e-a540-616815358fa2" />
 
 11. **Tune the art.**
-   - **Model** switches between the NPC's whole body (the default) and its head.
-   - The **camera controls** (each has a label and a pair of buttons) zoom, move and turn the camera, and the
-     arrow icon at the top right of the section puts the camera back to where it started. Aim to fill the picture window with
-     the NPC, with the face visible. A look through the existing cards gives a good idea.
+
+- **Model** switches between the NPC's whole body (the default) and its head.
+- The **camera controls** (each has a label and a pair of buttons) zoom, move and turn the camera, and the
+  arrow icon at the top right of the section puts the camera back to where it started. Aim to fill the picture window with
+  the NPC, with the face visible. A look through the existing cards gives a good idea.
 
 <img width="736" height="379" alt="image" src="https://github.com/user-attachments/assets/260b93a7-7885-4100-abea-7537df0bb1f9" />
 
-     
-   - **Animation** is optional. Type a sequence id, step through ids with the -100 to +100 buttons, or
-     press the magnifying glass beside the box (**Search anims**) to look for an animation by name and **Use** to try it. Pick an idle
-     or other animation that loops smoothly.
-   - On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
-     While the specific animation you need might not be named exactly the same, it will likely be similar.
+- **Animation** is optional. Type a sequence id, step through ids with the -100 to +100 buttons, or
+  press the magnifying glass beside the box (**Search anims**) to look for an animation by name and **Use** to try it. Pick an idle
+  or other animation that loops smoothly.
+- On the Nearby NPC's window, you can see the animation sequence being used by the NPC in the game world.
+  While the specific animation you need might not be named exactly the same, it will likely be similar.
 
-     <img width="595" height="175" alt="image" src="https://github.com/user-attachments/assets/937f213f-4f48-4ead-b68a-99b9160181c0" />
-     <img width="707" height="368" alt="image" src="https://github.com/user-attachments/assets/214aa0db-a9ef-4bb5-a3bf-9804666e272b" />
-     <img width="731" height="608" alt="Selecting_Animation" src="https://github.com/user-attachments/assets/b6342b75-d511-4237-b034-2c62b1a9b0ea" />
+  <img width="595" height="175" alt="image" src="https://github.com/user-attachments/assets/937f213f-4f48-4ead-b68a-99b9160181c0" />
+  <img width="707" height="368" alt="image" src="https://github.com/user-attachments/assets/214aa0db-a9ef-4bb5-a3bf-9804666e272b" />
+  <img width="731" height="608" alt="Selecting_Animation" src="https://github.com/user-attachments/assets/b6342b75-d511-4237-b034-2c62b1a9b0ea" />
 
-     
 11. **Read the checks** at the bottom left. Anything marked **Fix** has to be sorted out before
-   the block is ready. **Note** lines are worth a look but will not stop you.
+    the block is ready. **Note** lines are worth a look but will not stop you.
 
 <img width="318" height="159" alt="image" src="https://github.com/user-attachments/assets/a75d2842-b0d2-4da7-8595-7e1b555121a7" />
 
-13. **Copy the card block.** Click the box under *Your card block*, press **Ctrl+A** then
-   **Ctrl+C**.
+13. **Copy the card block.** Click the box under _Your card block_, press **Ctrl+A** then
+    **Ctrl+C**.
 
    <img width="735" height="74" alt="image" src="https://github.com/user-attachments/assets/d25a5483-fb0b-43e7-bb43-12c2c543e6e3" />
 
@@ -164,6 +165,9 @@ file gets that region's tag automatically.
 
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
+
+Item cards go in `deck/items/`. There is one file, `general.lua`, for now; it will be split into
+files for each kind of item (herbs, logs, weapons...) once there are enough cards.
 
 ---
 
@@ -199,13 +203,17 @@ Tags group cards so that themed packs can draw from them. Each tag kind holds wo
 commas. A tag is never required, but a card with a good `category` and `location` is much more
 useful to the packs.
 
-| Kind | Meaning | Example |
-|------|---------|---------|
-| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
-| `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
-| `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
+| Kind       | Meaning                                                                                                                                      | Example                                                                       |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town                                                      | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan`                                |
+| `skills`   | skills it is linked to                                                                                                                       | `cooking`, `prayer`, `slayer`                                                 |
+| `category` | what kind of character it is, what it does, or whether it can be fought (for an item: what it is used for, or what it is worn or wielded as) | `humanoid`, `shopkeeper`, `monster` (items: `raw_material`, `food`, `weapon`) |
 
-The region comes from the deck file, so it is not asked for.
+The region comes from the deck file, so it is not asked for. Item cards are tagged with `skills` and
+`category` only: an item has no location or region, and its category words are not the NPC ones (an
+item cannot be a `dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the
+words for the kind of card you are making. Some words only appear after another is picked (see
+"Choosing a category for an item").
 
 **Rules for words**
 
@@ -225,7 +233,7 @@ is reloaded (`prl`).
 
 **Choosing a location**
 
-- Tag where the NPC *you picked* is found: a card is one version of an NPC, with its own model,
+- Tag where the NPC _you picked_ is found: a card is one version of an NPC, with its own model,
   so tag the places where players would expect to meet that version.
 - If it is found in a town, use the town. If it is in a dungeon or a general area, use that.
 - If it is found in several places, tag the **one to three best-known places**. Tagging every
@@ -243,6 +251,20 @@ what it does (`shopkeeper`, `guard`, `knight`) and, for anything you can attack,
 nothing says what it is, `monster` alone is fine; a new word is worth adding once several cards
 need it.
 
+**Choosing a category for an item.** Say what it is used for: `raw_material` for something that is
+gathered and then made into something else (logs, a herb), `processed_material` for something made
+from that (planks, bars), `craftable` for something that can be made, and `food`, `drink`, `potion`,
+`tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. Something that is worn, wielded or
+fired is tagged with what it is: `weapon`, `armour`, `jewellery`, `pocket` (the pocket slot) or
+`ammunition`. Each of those opens a last choice in the tag picker: the kind of weapon (`sword`,
+`longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
+the type of ammunition (`arrow`, `bolt` or `spike`). These only show once the word above them is on
+the card, and taking that word off takes them off too. A card that has one of them also needs the
+word above it, so a rune scimitar is `{ "weapon", "scimitar" }`. Throwing knives and darts are
+`thrown` weapons. Items that are only worn or wielded for their looks (hats, masks, novelty weapons)
+are `fashion` and are not given `weapon`, `armour` or a slot, so a pack of helmets or weapons never
+contains them. An item can have several words, for example `{ "raw_material" }` for logs.
+
 **Choosing skills.** Only add a skill when the link is clear: a skill trainer or shop for that
 skill (`cooking`), or a creature you train a skill on (`slayer`). Leave it out if you would have
 to guess.
@@ -251,7 +273,8 @@ to guess.
 
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
-- `category`: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`
 
 For reference, the regions (set by the deck file, not typed on a card) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 
@@ -294,12 +317,12 @@ Alternative artwork for the **card frames, the card back and the pack** is welco
 `resources/images/`. A new look is submitted as replacement files, so please open an issue
 first to agree what you are making before spending time on it.
 
-| File | Size | Notes |
-|------|------|-------|
+| File                 | Size      | Notes                                                                                                                                                                                                                                                  |
+| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `frame_<rarity>.png` | 320 x 448 | One for each of common, uncommon, rare, epic, legendary. The window for the NPC must be **transparent**. Its position is set in `CardView.FRAME_ZONES` in `ui/cardview.lua`, so a frame with a window in a different place needs a code change as well |
-| `card_back.png` | 320 x 448 | The back of a card, with transparent rounded corners |
-| `pack.png` | 320 x 512 | The sealed pack |
-| `glow_<rarity>.png` | 456 x 616 | The glow behind a card in the pack opening |
+| `card_back.png`      | 320 x 448 | The back of a card, with transparent rounded corners                                                                                                                                                                                                   |
+| `pack.png`           | 320 x 512 | The sealed pack                                                                                                                                                                                                                                        |
+| `glow_<rarity>.png`  | 456 x 616 | The glow behind a card in the pack opening                                                                                                                                                                                                             |
 
 Rules for artwork:
 
