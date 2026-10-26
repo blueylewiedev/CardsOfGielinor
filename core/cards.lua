@@ -189,6 +189,39 @@ function Cards.wordsFor(cardKind, tagKind)
     return words
 end
 
+-- The word a tag word needs on the same card, from the `requires` of the group it is in (a
+-- scimitar needs a weapon), or nil if it needs nothing.
+function Cards.requiredWord(cardKind, tagKind, word)
+    for _, group in ipairs(Cards.tagGroupsFor(cardKind, tagKind) or {}) do
+        if group.requires ~= nil then
+            for _, groupWord in ipairs(group.words) do
+                if groupWord == word then
+                    return group.requires
+                end
+            end
+        end
+    end
+    return nil
+end
+
+-- The words in a list whose required word is not in the list too, as { word = w, needs = n }.
+-- A chain is checked a link at a time: a word is reported if its own parent is missing, and a
+-- parent that is there but is missing its own parent is reported in the same way.
+function Cards.missingRequired(cardKind, tagKind, words)
+    local have = {}
+    for _, word in ipairs(words) do
+        have[word] = true
+    end
+    local missing = {}
+    for _, word in ipairs(words) do
+        local needs = Cards.requiredWord(cardKind, tagKind, word)
+        if needs ~= nil and not have[needs] then
+            missing[#missing + 1] = { word = word, needs = needs }
+        end
+    end
+    return missing
+end
+
 -- What kind of cards a deck file holds: "item" for the files in deck/items/, otherwise "npc".
 function Cards.setKind(setName)
     if string.sub(setName or "", 1, 11) == "deck/items/" then
@@ -398,6 +431,10 @@ local function checkTags(card)
                 "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" for "
                 .. (Cards.kindOf(card) == "item" and "an item" or "an NPC") .. " card (add it to Cards.tagWords?)")
         end
+        -- A word from a group with a `requires` (such as a weapon kind) needs that word too.
+        local missing = Cards.missingRequired(Cards.kindOf(card), tagKind, words)[1]
+        assert(missing == nil, "Card " .. card.id .. ": the " .. tagKind .. " tag \"" .. tostring(missing and missing.word)
+            .. "\" needs \"" .. tostring(missing and missing.needs) .. "\" on the card too")
     end
 end
 -- Drafts are checked too, so a typo is found before the card goes live.

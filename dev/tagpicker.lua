@@ -15,8 +15,8 @@
 -- A group with a `requires` word (see Cards.itemTagGroups) is only shown while that word is on the
 -- card, and its words are taken off the card when the required word is.
 --
--- A page holds at most MAX_ROWS rows of words; when there are more (a long list, or the filter
--- is empty), a line at the bottom says so, and typing in the Filter box finds the rest.
+-- The pages are as tall as the longest one needs (with every group open). If that is taller than
+-- MAX_VISIBLE_H the page scrolls, and the Filter box narrows the words down.
 
 local Kit = require("ui/kit")
 local Cards = require("core/cards")
@@ -30,11 +30,11 @@ local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 local KINDS = { "location", "skills", "category" }
 local TAB_NAMES = { "Location", "Skills", "Category" }
 local COLS, COL_W, ROW_H = 3, 190, 32
-local MAX_ROWS = 14
-local TABS_Y = 40
-local TABS_H = 40 + (MAX_ROWS + 1) * ROW_H
+local MAX_ROWS = 80               -- a page never gets this long; it is only a safety stop
+local TABS_Y = 62              -- below the Filter box and the line of instructions
+local TAB_HEADER_H = 40           -- the row of tab titles
 local WIDTH = COLS * COL_W + 30
-local HEIGHT = TABS_Y + TABS_H + 50
+local MAX_VISIBLE_H = 640         -- taller than this and the page scrolls
 
 local window, content = nil, nil
 local filterField, tabs = nil, nil
@@ -142,7 +142,8 @@ local function chosen(kind)
     return set
 end
 
--- Builds the contents of one page (used by Kit.tabs). Returns the components it made.
+-- Builds the contents of one page (used by Kit.tabs). Returns the components it made and how tall
+-- the page is.
 local function buildPage(index, parent, originX, originY)
     local kind = KINDS[index]
     local parts = {}
@@ -155,7 +156,7 @@ local function buildPage(index, parent, originX, originY)
     if cardKind == "item" and kind == "location" then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
             "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
-        return parts
+        return parts, ROW_H
     end
     local selected = chosen(kind)
     builtSignature[kind] = openSignature(kind, cardKind, selected)
@@ -174,8 +175,18 @@ local function buildPage(index, parent, originX, originY)
                     TagPicker.refresh()
                 end)
             buttons[kind][word] = toggle
+            -- A hand-placed button does not pass the mouse wheel on to the page, so it does.
+            Kit.onWheel(toggle.part, function(delta)
+                if tabs ~= nil then
+                    tabs.scrollBy(index, delta)
+                end
+            end)
             parts[#parts + 1] = toggle.part
         end
+    end
+    local rows = 1
+    for _, entry in ipairs(entries) do
+        rows = math.max(rows, entry.row + 1)
     end
     if #entries == 0 then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
@@ -183,8 +194,10 @@ local function buildPage(index, parent, originX, originY)
     elseif hidden > 0 then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY + MAX_ROWS * ROW_H, COLS * COL_W, 26,
             hidden .. " more words: type in the Filter box to find them.", GREY, ui.AlignMode.TOPLEFT)
+        rows = MAX_ROWS + 1
     end
-    return parts
+    -- How tall this page really is, so the scrollbar only shows when its words do not fit.
+    return parts, rows * ROW_H
 end
 
 -- Rebuilds every page (after the filter changes).
@@ -259,21 +272,41 @@ Event.Draw.Subscribe("cardcollector_tagpicker", function()
     end
 end)
 
+-- How many rows the tallest page needs, for any kind of card with every group open, so a page
+-- never has to cut words off.
+local ALL_OPEN = setmetatable({}, { __index = function() return true end })
+local function tallestPage()
+    local tallest = 1
+    for _, cardKind in ipairs({ "npc", "item" }) do
+        for _, kind in ipairs(KINDS) do
+            for _, entry in ipairs((TagPicker.layout(kind, "", cardKind, ALL_OPEN))) do
+                tallest = math.max(tallest, entry.row + 1)
+            end
+        end
+    end
+    return tallest
+end
+
 function TagPicker.show()
     if window ~= nil then
         return
     end
+    -- Each page is as tall as the longest one needs. The tabs are shorter than that if they have
+    -- to be, and then the page scrolls inside them (PrettyUI tab pages scroll with the mouse wheel;
+    -- the window itself stays a fixed size).
+    local pageHeight = (tallestPage() + 1) * ROW_H + 10
+    local tabsHeight = math.min(TAB_HEADER_H + pageHeight, MAX_VISIBLE_H - TABS_Y - 50)
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window, content = Kit.window(gameWindow, "Pick tags", WIDTH, HEIGHT + Kit.titleBarHeight(),
+    window, content = Kit.window(gameWindow, "Pick tags", WIDTH, TABS_Y + tabsHeight + 50 + Kit.titleBarHeight(),
         function() TagPicker.hide() end, 0.6, 0.08)
     Kit.text(content, 10, 4, 70, 26, "Filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 80, 4, 300, 26, 30, false)
     filterField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
         rebuildAll()
     end)
-    Kit.text(content, 390, 4, WIDTH - 400, 26, "Click a word to add it; click again to remove it.", GREY,
+    Kit.text(content, 10, 34, WIDTH - 20, 22, "Click a word to add it; click again to remove it.", GREY,
         ui.AlignMode.TOPLEFT)
-    tabs = Kit.tabs(content, 10, TABS_Y, WIDTH - 30, TABS_H, TAB_NAMES, buildPage)
+    tabs = Kit.tabs(content, 10, TABS_Y, WIDTH - 30, tabsHeight, TAB_NAMES, buildPage, pageHeight)
 end
 
 function TagPicker.hide()
