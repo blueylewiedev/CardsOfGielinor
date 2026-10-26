@@ -150,6 +150,63 @@ function Builder.lookupNpc(configName)
     return npcId, displayName
 end
 
+-- A guess at the NPC's standing animation (a sequence id), or nil. The client doesn't say which
+-- animation an NPC stands with (its animation set, config.NPC's `bas`, only has a name), but
+-- the standing sequences are named after the creature (GOBLIN_READY, DRAGON_READY,
+-- CHICKEN_UPDATE_READY). So each run of words in the animation set's name, then in the NPC's
+-- config name, longest first, is tried with these endings; a humanoid with no match gets the
+-- normal human one. It is only a guess: the preview shows it, and the builder can change it.
+local READY_ENDINGS = { "_READY", "_UPDATE_READY", "_IDLE", "_STAND" }
+local HUMAN_READY = "HUMAN_READY"
+
+-- The id of a sequence by name, or nil if the client doesn't know it.
+local function seqId(name)
+    local ok, value = pcall(function() return id.Seq[name] end)
+    return (ok and type(value) == "number" and value >= 0) and value or nil
+end
+
+-- Every run of words in an underscore name, longest first ("A_B_C": A_B_C, A_B, B_C, A, B, C).
+local function wordRuns(name)
+    local words = {}
+    for word in string.gmatch(name or "", "[^_]+") do
+        if word ~= "BAS" then
+            words[#words + 1] = word
+        end
+    end
+    local runs = {}
+    for length = #words, 1, -1 do
+        for first = 1, #words - length + 1 do
+            runs[#runs + 1] = table.concat(words, "_", first, first + length - 1)
+        end
+    end
+    return runs
+end
+
+function Builder.readyAnim(configName, humanoid)
+    local npcId = Builder.lookupNpc(configName)
+    if npcId == nil then
+        return nil
+    end
+    local basName = nil
+    pcall(function() basName = tostring(config.NPC.FromID(npcId).bas.configName) end)
+    for _, source in ipairs({ basName, configName }) do
+        for _, run in ipairs(wordRuns(source)) do
+            for _, ending in ipairs(READY_ENDINGS) do
+                local found = seqId(run .. ending)
+                if found ~= nil then
+                    log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):",
+                        run .. ending, "=", found)
+                    return found
+                end
+            end
+        end
+    end
+    local fallback = humanoid and seqId(HUMAN_READY) or nil
+    log("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
+        .. (fallback and "; using " .. HUMAN_READY or ""))
+    return fallback
+end
+
 -- Looks up an item by config name. Returns its numeric id and in-game name, or nil if the client
 -- does not know the name.
 function Builder.lookupItem(configName)
@@ -857,6 +914,51 @@ function Builder.rebuild()
             TagPicker.rebuild()
             TagPicker.refresh()
         end
+    end
+end
+
+-- Fills the card in from a wiki candidate (see dev/wikireview.lua) and shows it, replacing
+-- anything entered before: an NPC card with the candidate's NPC, name, description, suggested
+-- rarity and tags, in its region's deck file (whose defaults give the region tag), or the general
+-- file if the region is unknown. The camera starts from the defaults, and the animation is a
+-- guess at the NPC's standing one (see Builder.readyAnim).
+function Builder.loadCandidate(candidate)
+    closeDropdown()
+    pending = nil
+    local fresh = freshDraft()
+    local tags = candidate.tags or {}
+    local humanoid = false
+    for _, word in ipairs(tags.category or {}) do
+        humanoid = humanoid or word == "humanoid"
+    end
+    fresh.npc = candidate.npc
+    fresh.anim = Builder.readyAnim(candidate.npc, humanoid)
+    fresh.name, fresh.nameTouched = candidate.name, true
+    fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
+    fresh.desc = candidate.desc or ""
+    fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
+    for _, tagKind in ipairs({ "skills", "location", "category" }) do
+        fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
+    end
+    local function deckIndex(setName)
+        for i, name in ipairs(Cards.sets) do
+            if name == setName then
+                return i
+            end
+        end
+    end
+    local region = tags.regions and tags.regions[1]
+    fresh.deck = (region and deckIndex("deck/npcs/" .. region)) or deckIndex("deck/npcs/general") or fresh.deck
+    for key in pairs(draft) do
+        draft[key] = nil
+    end
+    for key, value in pairs(fresh) do
+        draft[key] = value
+    end
+    if window ~= nil then
+        Builder.rebuild()
+    else
+        Builder.show()
     end
 end
 

@@ -1,0 +1,6 @@
+# Made by dev/wiki_cards.py: the wiki's answers, kept so it never asks twice, and the candidates.
+dev/wiki_cache/
+dev/wiki_candidates.lua
+# Your own contact for the wiki's admins (see dev/wiki_cards.py); each person keeps their own.
+dev/wiki_contact.txt
+__pycache__/

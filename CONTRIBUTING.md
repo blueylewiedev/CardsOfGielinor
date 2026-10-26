@@ -55,6 +55,26 @@ location boxes go away, because items have neither. Item cards go in `deck/items
 
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
+**Starting from the wiki (optional).** Instead of filling every box in by hand, you can have
+candidates made from the [RuneScape Wiki](https://runescape.wiki) and review them:
+
+1. Run `python dev/wiki_cards.py --category Lumbridge --contact "@you on Discord"` (any wiki
+   category, or `--page "Duke Horacio"`). It writes `dev/wiki_candidates.lua`: for each NPC page,
+   the NPC, the name, the examine text, tags, a suggested rarity and notes on what to check.
+2. In the game, `prf`, then open **Wiki Review** from the Home window. **Load into Card Builder**
+   fills the builder in; check and change anything that is wrong (the tags and rarity are only
+   guesses), frame the art, and copy the block as below. Then press **Done**, or **Skip** for an
+   NPC that shouldn't be a card. NPCs already in the deck are left out.
+
+Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
+at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in
+`dev/wiki_cache/` so running it again asks the wiki for nothing it already has. Don't lower those
+limits or delete the cache to fetch again; use `--refresh` only for pages that have changed. Give
+a contact so the wiki's admins can reach you if anything goes wrong (see
+[their API guidelines](https://runescape.wiki/w/Help:APIs)): `--contact`, or put it once in
+`dev/wiki_contact.txt` (for example `@yourname on Discord`). The cache, the candidates and your
+contact file are not committed.
+
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
      NPC you want. This picks the exact NPC (many NPCs have several versions with different
