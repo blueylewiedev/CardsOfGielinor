@@ -323,22 +323,46 @@ local function metrics(scale)
     return scale, math.floor(160 * scale), math.floor(224 * scale)
 end
 
+-- A card-sized window that CardView.uncover can shrink to any part of the card: a layer (which
+-- crops what is inside it) holding a card-sized layer that moves the other way, so whatever is
+-- built in `inner` stays put while the window around it changes.
+local function window(root, W, H)
+    local clip = ui.Layer.new(root)
+    clip:SetSize(W, H)
+    local inner = ui.Layer.new(clip)
+    inner:SetSize(W, H)
+    return { clip = clip, inner = inner }
+end
+
 -- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.)
 -- Builds a card that uses a frame image. Order matters: whatever is created later is drawn on
 -- top, so the backdrop and the model go first, then the frame, then the text.
+-- With opts.animated it also returns what CardView.squash needs (the pieces that can be
+-- narrowed, with their places and sizes) and what CardView.uncover needs (windows round the
+-- model and the text, which cannot be narrowed, and the middle of the art box).
 local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour, s, W, H)
     local base = CardView.FRAME_ZONES
     local zones = { title = scaled(base.title, s), rarity = scaled(base.rarity, s), desc = scaled(base.desc, s) }
     local win = scaled(base.window[card.rarity] or base.window.common, s)
     local nameColour = locked and DIM_TEXT_COLOUR or TEXT_COLOUR
+    local animated = opts ~= nil and opts.animated
+    local squash = { mid = W / 2, parts = {} }
+    local function part(comp, x, y, w, h)
+        squash.parts[#squash.parts + 1] = { comp = comp, x = x, y = y, w = w, h = h }
+    end
+    -- Where the model and the text go: windows for uncover, or the card itself.
+    local function holder()
+        return animated and window(root, W, H) or { inner = root }
+    end
 
-    solid(root, win.x, win.y, win.w, win.h, 0, 0, ART_COLOUR)   -- backdrop behind the model
+    part(solid(root, win.x, win.y, win.w, win.h, 0, 0, ART_COLOUR), win.x, win.y, win.w, win.h)   -- backdrop behind the model
+    local art = holder()
     local model, cam = nil, nil
     if not locked then
-        model, cam = addArt(root, card, win, opts and opts.body)
+        model, cam = addArt(art.inner, card, win, opts and opts.body)
     end
     if model == nil then
-        label(root, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
+        label(art.inner, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
     end
 
     local frame = ui.Sprite.new(root)                            -- frame on top of the model
@@ -348,14 +372,98 @@ local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityC
     if locked then
         frame.alpha = 0.5
     end
+    part(frame, 0, 0, W, H)
 
-    label(root, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, card.name, nameColour)
-    label(root, zones.rarity.x, zones.rarity.y, zones.rarity.w - W, zones.rarity.h, rarity.name,
+    local text = holder()
+    label(text.inner, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, card.name, nameColour)
+    label(text.inner, zones.rarity.x, zones.rarity.y, zones.rarity.w - W, zones.rarity.h, rarity.name,
         locked and DIM_TEXT_COLOUR or rarityColour)
-    label(root, zones.desc.x, zones.desc.y, zones.desc.w - W, zones.desc.h,
+    label(text.inner, zones.desc.x, zones.desc.y, zones.desc.w - W, zones.desc.h,
         locked and "Not collected yet" or card.desc,
         locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
-    return model, cam
+    if not animated then
+        return model, cam
+    end
+    local uncover = { windows = { art, text }, w = W, h = H, x = win.x + win.w / 2, y = win.y + win.h / 2 }
+    return model, cam, squash, uncover
+end
+
+-- The look of a card of `rarity` before its picture and text: its frame image, with the dark
+-- backdrop in its art window. (The pack window's face-up stacks are made of these.) Returns
+-- { place(x, y, w, h), destroy() }, or nil if the rarity has no frame image.
+function CardView.shell(parent, rarity)
+    local frameImage = CardView.frameResource(rarity)
+    if frameImage == nil then
+        return nil
+    end
+    local zone = CardView.FRAME_ZONES.window[rarity] or CardView.FRAME_ZONES.window.common
+    local backdrop = solid(parent, 0, 0, 1, 1, 0, 0, ART_COLOUR)
+    local frame = ui.Sprite.new(parent)
+    frame.sprite = frameImage
+    return {
+        place = function(x, y, w, h)
+            local win = scaled(zone, w / 160)                    -- the zones are in 160-wide card units
+            backdrop:SetPos(x + win.x, y + win.y)
+            backdrop:SetSize(win.w, win.h)
+            frame:SetPos(x, y)
+            frame:SetSize(w, h)
+        end,
+        destroy = function()
+            pcall(function() backdrop:Destroy() end)
+            pcall(function() frame:Destroy() end)
+        end,
+    }
+end
+
+-- Squeezes a card sideways to `f` (0 to 1) of its width, about its middle, as if it were turned
+-- away. Only the frame and the backdrop behind the model narrow: the model and the text cannot
+-- be squeezed, so hide them first with CardView.uncover(view, 0). Only a card made with
+-- opts.animated and a frame image can be squeezed; for any other this returns false.
+function CardView.squash(view, f)
+    local squash = view.squash
+    if squash == nil then
+        return false
+    end
+    for _, part in ipairs(squash.parts) do
+        part.comp:SetPos(squash.mid + (part.x - squash.mid) * f, part.y)
+        part.comp:SetSize(math.max(1, part.w * f), part.h)
+    end
+    return true
+end
+
+-- Where CardView.uncover grows from (the middle of the art box), as x, y in card units, and how
+-- far it has to reach from there to uncover the whole card. nil for a card that can't be uncovered.
+function CardView.uncoverOrigin(view)
+    local u = view.uncover
+    if u == nil then
+        return nil
+    end
+    return u.x, u.y, math.max(u.x, u.w - u.x, u.y, u.h - u.y)
+end
+
+-- Shows a card's model and text within `reach` card units of CardView.uncoverOrigin (a square
+-- round it, cut to the card). 0 hides them; the reach uncoverOrigin gives shows all of them.
+-- Only a card made with opts.animated and a frame image can do this; for any other it returns false.
+function CardView.uncover(view, reach)
+    local u = view.uncover
+    if u == nil then
+        return false
+    end
+    local left, top = math.max(0, u.x - reach), math.max(0, u.y - reach)
+    local right, bottom = math.min(u.w, u.x + reach), math.min(u.h, u.y + reach)
+    local shown = reach > 0
+    for _, win in ipairs(u.windows) do
+        if u.shown ~= shown then
+            pcall(function() win.clip.hidden = not shown end)
+        end
+        if shown then
+            win.clip:SetPos(left, top)
+            win.clip:SetSize(math.max(1, right - left), math.max(1, bottom - top))
+            win.inner:SetPos(-left, -top)
+        end
+    end
+    u.shown = shown
+    return true
 end
 
 -- Builds a card inside `parent` at the top-left (call :SetPos on the result to move it).
@@ -366,7 +474,10 @@ end
 -- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text
 -- stays the same size; the picture, frame and layout scale.
 -- opts.body = true/false forces the body or head model, whatever the card says (preview only).
--- Returns { root = <Layer>, model = <Model or nil>, cam = <camera settings or nil>, card = <card data> }.
+-- opts.animated = true makes a card that can be flipped and revealed (CardView.squash and
+-- CardView.uncover; the pack opening). Other cards are built without the extra layers that needs.
+-- Returns { root = <Layer>, model = <Model or nil>, cam = <camera settings or nil>, card = <card data>,
+-- squash, uncover = <what CardView.squash and CardView.uncover use, or nil> }.
 function CardView.create(parent, card, opts)
     local S, W, H = metrics(opts and opts.scale)
     local locked = opts ~= nil and opts.locked == true
@@ -384,8 +495,8 @@ function CardView.create(parent, card, opts)
     -- the card, like the card back in the pack opening.)
     local frameImage = CardView.frameResource(card.rarity)
     if frameImage ~= nil and not (opts and opts.frame == false) then
-        local model, cam = buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour, S, W, H)
-        return { root = root, model = model, cam = cam, card = card }
+        local model, cam, squash, uncover = buildFramed(root, card, opts, locked, frameImage, rarity, rarityColour, S, W, H)
+        return { root = root, model = model, cam = cam, card = card, squash = squash, uncover = uncover }
     end
 
     solid(root, 0, 0, 0, 0, 1.0, 1.0, frameColour)           -- frame

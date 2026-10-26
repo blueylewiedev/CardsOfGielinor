@@ -15,11 +15,14 @@ local SettingsPage = {}
 
 local SUBSCRIBER = "cardcollector_settings"
 local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 330
+local DEV_HEIGHT = 40    -- extra height for the Developer options, when the development tools are there
 -- The divider line sits low in its box, so a negative space above pulls it up under the note and
 -- the space below keeps the "Effects" heading off it. Adjust these to move it.
 local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 
-local api = nil          -- api.getState() and api.saveNow(), as for the pack window
+-- api.getState() and api.saveNow(), as for the pack window; api.devTools (true when the
+-- development tools are there) and api.onSettingChanged(id, on), called after an option changes.
+local api = nil
 local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, widgets = {...} }
 local window = nil       -- the settings window's frame, while it is open
 local updating = false   -- true while the page itself changes a control, so that is not mistaken for the player
@@ -63,16 +66,28 @@ local function build(key, parent, width, height)
     -- PrettyUI's divider is 60 units tall by default; `height` shrinks it if it is supported.
     view:AddDivider({ height = DIVIDER_HEIGHT, marginTop = DIVIDER_ABOVE, marginBottom = DIVIDER_BELOW })
 
-    view:AddText("Effects")
-    local effects = {}
-    for _, option in ipairs(Settings.options) do
-        effects[#effects + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
+    -- The options, as checkboxes: the effects, then (only with the development tools) theirs.
+    local function checkboxes(heading, dev)
+        local list = {}
+        for _, option in ipairs(Settings.options) do
+            if (option.dev == true) == dev then
+                list[#list + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
+            end
+        end
+        view:AddText(heading)
+        return view:AddCheckboxButton(list, {
+            onChange = function(_, _, changedValue, selected)
+                Settings.set(changedValue, selected)
+                if api.onSettingChanged ~= nil then
+                    api.onSettingChanged(changedValue, selected)
+                end
+            end,
+        })
     end
-    page.widgets.effects = view:AddCheckboxButton(effects, {
-        onChange = function(_, _, changedValue, selected)
-            Settings.set(changedValue, selected)
-        end,
-    })
+    page.widgets.effects = checkboxes("Effects", false)
+    if api.devTools then
+        page.widgets.dev = checkboxes("Developer (hides the dev tools)", true)
+    end
 end
 
 -- Brings one page in step with the logged-in character.
@@ -126,9 +141,10 @@ function SettingsPage.openWindow()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     local content
-    window, content = Kit.window(gameWindow, "Settings", WINDOW_WIDTH, WINDOW_HEIGHT + Kit.titleBarHeight(),
+    local height = WINDOW_HEIGHT + (api.devTools and DEV_HEIGHT or 0)
+    window, content = Kit.window(gameWindow, "Settings", WINDOW_WIDTH, height + Kit.titleBarHeight(),
         function() SettingsPage.closeWindow() end, 0.3, 0.2)
-    local ok, err = pcall(build, "window", content, WINDOW_WIDTH, WINDOW_HEIGHT)
+    local ok, err = pcall(build, "window", content, WINDOW_WIDTH, height)
     if not ok then
         log("settings window failed:", err)
         SettingsPage.closeWindow()

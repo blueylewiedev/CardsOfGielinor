@@ -12,8 +12,13 @@
 --   Cards.THEMED_PRICE_FACTOR times the standard price unless they set their own).
 --
 -- Every pack listed here is offered in the pack window, after the standard pack.
+--
+-- A line with the id of a pack type that already exists is not a new pack: it changes that pack's
+-- fields. The Pack Maker makes one for the standard pack (choose "All cards" under Cards): it
+-- gives it a name and look, and it keeps every card and the standard price.
 
 return {
+    { id = "standard", name = "Gielinor pack", art = { screen = "RS3_LOGINSCREEN_DEFAULT_NXT", front = 0.549, back = 0.040, name = { title = "gielinor", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
     { id = "misthalin_pack", name = "Misthalin pack", filter = { regions = "misthalin" }, art = { screen = "RS3_LOGINSCREEN_CONCONTRACTS_NXT", front = 0.067, back = 0.553, name = { title = "misthalin", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
     { id = "kharidian_pack", name = "Kharidian pack", filter = { regions = "kharidian_desert" }, art = { screen = "RS3_LOGINSCREEN_MENAPHOS_CHARS_ALL_NXT", front = 0.600, back = 0.029, name = { title = "kharidian_desert", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
     { id = "asgarnia_pack", name = "Asgarnia pack", filter = { regions = "asgarnia" }, art = { screen = "RS3_LOGINSCREEN_NEX2_NXT", front = 0.042, back = 0.571, name = { title = "asgarnia", x = 0, y = 230, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 44, w = 130 } } },

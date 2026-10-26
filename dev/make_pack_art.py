@@ -16,7 +16,7 @@ From resources/images/pack.png it makes:
                                         shadow and a thin outline, without the pack's lettering
   resources/images/pack_shading_back.png the same mirrored, with a seal seam down the middle
 
-And for every region in Cards.tagWords.regions (core/cards.lua):
+And for every region in Cards.tagWords.regions (core/cards.lua), and each of EXTRA_TITLES below:
   resources/images/title_<region>.png    the region's name in Cinzel Bold, gold with a dark outline
                                         and a shadow, cropped to the text. The client can't scale
                                         text (and Cinzel Bold only comes at 18pt in game), so titles
@@ -51,6 +51,9 @@ SHADOW = (2, 3)
 PAD = 8
 GOLD_TOP, GOLD_BOTTOM = (255, 240, 180), (196, 140, 52)
 OUTLINE_COLOUR = (36, 22, 8)
+# Titles for packs that aren't one region's, made after the regions' (gielinor: the standard
+# pack, which has every card).
+EXTRA_TITLES = ["gielinor"]
 
 
 def lum(p):
@@ -194,7 +197,7 @@ def make_titles(font_path):
     font = ImageFont.truetype(font_path, TITLE_SIZE)
     font.set_variation_by_name("Bold")
     rows = []
-    for word in regions():
+    for word in regions() + EXTRA_TITLES:
         text = " ".join(part.capitalize() for part in word.split("_"))
         image = render_title(font, text)
         image.save(IMAGES / ("title_" + word + ".png"), optimize=True)

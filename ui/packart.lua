@@ -30,6 +30,8 @@
 --     height) are written below.
 -- The mask, shading and titles are made by dev/make_pack_art.py.
 
+local Packs = require("core/packs")
+
 local PackArt = {}
 
 local MASK = require("ui/packmask")
@@ -127,6 +129,15 @@ function PackArt.canDraw(art)
     return art ~= nil and PackArt.tiles(art.screen) ~= nil
 end
 
+-- A pack type's look, if it has one that can be drawn; otherwise nil (it shows the plain pack
+-- image, resources/images/pack.png, PACK_IMAGE_ASPECT wide for its height).
+function PackArt.designFor(packTypeId)
+    local packType = Packs.typeById(packTypeId)
+    local art = packType and packType.art
+    return PackArt.canDraw(art) and art or nil
+end
+PackArt.PACK_IMAGE_ASPECT = 320 / 512
+
 -- The grid the tiles make: the columns x rows closest to the picture's shape.
 local function gridFor(count)
     local bestC, bestErr = count, math.huge
@@ -161,8 +172,9 @@ end
 local image = PackArt.image
 
 -- Draws the picture's tiles into `container`, the picture filling (x, y, w, h). Tiles wholly
--- outside (0, 0, clipW, clipH) are not made. New parts go in `parts`.
-function PackArt.drawPicture(container, parts, tiles, x, y, w, h, clipW, clipH)
+-- outside (0, 0, clipW, clipH) are not made. New parts go in `parts`, and (if given) where each
+-- one was put goes in `rects`, as { x, y, w, h }, for PackArt.squash.
+function PackArt.drawPicture(container, parts, tiles, x, y, w, h, clipW, clipH, rects)
     local cols, rows = gridFor(#tiles)
     local tw, th = w / cols, h / rows
     for i, tileId in ipairs(tiles) do
@@ -172,8 +184,12 @@ function PackArt.drawPicture(container, parts, tiles, x, y, w, h, clipW, clipH)
             parts[#parts + 1] = tile
             tile.spriteID = tileId
             -- +1 so neighbouring tiles overlap by a pixel instead of leaving a seam
-            tile:SetPos(math.floor(tx), math.floor(ty))
-            tile:SetSize(math.ceil(tw) + 1, math.ceil(th) + 1)
+            local rect = { math.floor(tx), math.floor(ty), math.ceil(tw) + 1, math.ceil(th) + 1 }
+            tile:SetPos(rect[1], rect[2])
+            tile:SetSize(rect[3], rect[4])
+            if rects ~= nil then
+                rects[#parts] = rect
+            end
         end
     end
 end
@@ -187,12 +203,72 @@ function PackArt.destroyAll(list)
 end
 local destroyAll = PackArt.destroyAll
 
+-- Tearing a pack open: it tears across the top of the body, just under the top crimp, along a
+-- jagged line about TEAR_Y pack units down. PackArt.new draws the two pieces: the cap (above the
+-- line) and the body (the rest), which together look like the whole pack. Where the line runs,
+-- the strips are cut into columns TEAR_COL wide, each ending at the line, and the shading, banner
+-- and logo are shown through matching windows.
+PackArt.TEAR_Y = 52
+local TEAR_JAG = 3                     -- how far the line wanders above and below TEAR_Y
+local TEAR_COL = 2
+
+-- Where the tear crosses the column holding pack x (in pack units): jagged, but the same every time.
+function PackArt.tearY(x)
+    x = x - x % TEAR_COL
+    return PackArt.TEAR_Y + math.floor(TEAR_JAG * (0.6 * math.sin(x * 0.9) + 0.4 * math.sin(x * 2.7 + 1.3)) + 0.5)
+end
+
+-- The highest and lowest the tear goes, in pack units. (The pack window flies the cap clear of
+-- TEAR_MAX.)
+local TEAR_MIN, TEAR_MAX = math.huge, -math.huge
+for x = 0, PackArt.W - 1, TEAR_COL do
+    TEAR_MIN, TEAR_MAX = math.min(TEAR_MIN, PackArt.tearY(x)), math.max(TEAR_MAX, PackArt.tearY(x))
+end
+PackArt.TEAR_MAX = TEAR_MAX
+
+-- The mask's strips for a whole pack (piece nil) or one piece ("cap" or "body"), as
+-- { x, y, w, h, dy }. A strip the tear runs through is cut in three: what is above the band the
+-- tear can be in (the cap's), what is below it (the body's), and the band itself, cut into
+-- columns that end at the line. Only the band is cut up, to keep the parts few.
+local function pieceRects(piece)
+    if piece == nil then
+        return MASK.rects
+    end
+    local out = {}
+    for _, r in ipairs(MASK.rects) do
+        local x, y, w, h, dy = r[1], r[2], r[3], r[4], r[5]
+        local bottom = y + h
+        if piece == "cap" and y < TEAR_MIN then
+            out[#out + 1] = { x, y, w, math.min(bottom, TEAR_MIN) - y, dy }
+        elseif piece == "body" and bottom > TEAR_MAX then
+            local top = math.max(y, TEAR_MAX)
+            out[#out + 1] = { x, top, w, bottom - top, dy }
+        end
+        local bandTop, bandBottom = math.max(y, TEAR_MIN), math.min(bottom, TEAR_MAX)
+        local cx = x
+        while bandBottom > bandTop and cx < x + w do
+            local nx = math.min(x + w, cx - cx % TEAR_COL + TEAR_COL)
+            local tear = math.max(bandTop, math.min(bandBottom, PackArt.tearY(cx)))
+            if piece == "cap" and tear > bandTop then
+                out[#out + 1] = { cx, bandTop, nx - cx, tear - bandTop, dy }
+            elseif piece == "body" and bandBottom > tear then
+                out[#out + 1] = { cx, tear, nx - cx, bandBottom - tear, dy }
+            end
+            cx = nx
+        end
+    end
+    return out
+end
+
 -- A pack, `height` pixels tall, inside `parent` (move it with pack.root:SetPos). `side` is
--- "front" or "back". Draw it with PackArt.draw.
-function PackArt.new(parent, side, height)
+-- "front" or "back". `piece` (optional) draws only the "cap" or the "body" of the pack torn open
+-- (see PackArt.tearY). Draw it with PackArt.draw.
+function PackArt.new(parent, side, height, piece)
     local s = height / PackArt.H
     local w = math.floor(PackArt.W * s + 0.5)
-    local pack = { side = side, s = s, w = w, h = height, strips = {}, stripLayers = {}, artParts = {}, topParts = {} }
+    -- artRects holds where each of artParts was put (for PackArt.squash).
+    local pack = { side = side, s = s, w = w, h = height, strips = {}, stripLayers = {},
+        artParts = {}, topParts = {}, artRects = {} }
     pack.root = ui.Layer.new(parent)
     pack.root:SetSize(w, height)
     -- Made in this order so the art is under the shading and the name and logo are on top.
@@ -201,7 +277,7 @@ function PackArt.new(parent, side, height)
     pack.art:SetSize(w, height)
     -- The strips that trace the outline depend only on the side and size, so they are made once
     -- here and only the picture's tiles inside them are redrawn.
-    for _, r in ipairs(MASK.rects) do
+    for _, r in ipairs(pieceRects(piece)) do
         local rx, ry, rw, rh, dy = r[1], r[2], r[3], r[4], r[5]
         if side == "back" then
             rx = PackArt.W - rx - rw
@@ -217,12 +293,56 @@ function PackArt.new(parent, side, height)
             pack.strips[#pack.strips + 1] = { layer = layer, x = x0, y = y0, w = x1 - x0, h = y1 - y0, dy = dy * s }
         end
     end
-    local shade = ui.Sprite.new(pack.root)
-    shade:SetPos(0, 0)
-    shade:SetSize(w, height)
     local shading = image(side == "back" and "pack_shading_back" or "pack_shading")
-    if shading ~= nil then
-        shade.sprite = shading
+    if piece == nil then
+        local shade = ui.Sprite.new(pack.root)
+        shade:SetPos(0, 0)
+        shade:SetSize(w, height)
+        if shading ~= nil then
+            shade.sprite = shading
+        end
+        pack.shade = shade
+    else
+        -- A piece shows only its own part of the shading (and later the banner and logo, see
+        -- addTop) through windows: one over the rows wholly its own, and one per column across
+        -- the band the tear runs through, ending at the line.
+        local shades = ui.Layer.new(pack.root)
+        shades:SetSize(w, height)
+        pack.windows = {}
+        local function window(x, y, ww, hh)
+            if ww <= 0 or hh <= 0 then
+                return
+            end
+            local clip = ui.Layer.new(shades)
+            clip:SetPos(x, y)
+            clip:SetSize(ww, hh)
+            local shade = ui.Sprite.new(clip)
+            shade:SetPos(-x, -y)
+            shade:SetSize(w, height)
+            if shading ~= nil then
+                shade.sprite = shading
+            end
+            pack.stripLayers[#pack.stripLayers + 1] = clip
+            -- parts: what is inside the window, placed relative to it (for PackArt.squash).
+            pack.windows[#pack.windows + 1] = { layer = clip, x = x, y = y, w = ww, h = hh,
+                parts = { { shade, -x, -y, w, height } } }
+        end
+        local bandTop, bandBottom = math.floor(TEAR_MIN * s), math.floor(TEAR_MAX * s)
+        if piece == "cap" then
+            window(0, 0, w, bandTop)
+        else
+            window(0, bandBottom, w, height - bandBottom)
+        end
+        for cx = 0, PackArt.W - 1, TEAR_COL do
+            local rx = (side == "back") and (PackArt.W - cx - TEAR_COL) or cx
+            local x0, x1 = math.floor(rx * s), math.floor((rx + TEAR_COL) * s)
+            local tear = math.floor(PackArt.tearY(cx) * s)
+            if piece == "cap" then
+                window(x0, bandTop, x1 - x0, tear - bandTop)
+            else
+                window(x0, tear, x1 - x0, bandBottom - tear)
+            end
+        end
     end
     pack.top = ui.Layer.new(pack.root)
     pack.top:SetPos(0, 0)
@@ -233,6 +353,7 @@ end
 -- The side's part of the login screen over the pack's outline.
 function PackArt.drawArt(pack, art)
     destroyAll(pack.artParts)
+    pack.artRects = {}
     local tiles = PackArt.tiles(art.screen)
     if tiles == nil then
         return
@@ -248,7 +369,34 @@ function PackArt.drawArt(pack, art)
     local py = outline.y * s
     for _, strip in ipairs(pack.strips) do
         PackArt.drawPicture(strip.layer, pack.artParts, tiles, px - strip.x, py - strip.y + strip.dy, pw, ph,
-            strip.w, strip.h)
+            strip.w, strip.h, pack.artRects)
+    end
+end
+
+-- Puts a part on top of the pack (a game sprite `sprite`, or an image `picture`) at x, y, w, h
+-- in pixels: in pack.top for a whole pack, or for a torn piece in each of its windows it
+-- overlaps (see PackArt.new), so it is cut along the tear with the rest of the piece.
+local function addTop(pack, sprite, picture, x, y, w, h)
+    local function make(parent, ox, oy)
+        local part = ui.Sprite.new(parent)
+        pack.topParts[#pack.topParts + 1] = part
+        if sprite ~= nil then
+            part.spriteID = sprite
+        else
+            part.sprite = picture
+        end
+        part:SetPos(x - ox, y - oy)
+        part:SetSize(w, h)
+    end
+    if pack.windows == nil then
+        make(pack.top, 0, 0)
+        return
+    end
+    for _, win in ipairs(pack.windows) do
+        if x < win.x + win.w and x + w > win.x and y < win.y + win.h and y + h > win.y then
+            make(win.layer, win.x, win.y)
+            win.parts[#win.parts + 1] = { pack.topParts[#pack.topParts], x - win.x, y - win.y, w, h }
+        end
     end
 end
 
@@ -262,17 +410,18 @@ local function placeSprite(pack, name, shape, x, y, w)
     local s = pack.s
     local pxW, pxH = math.floor(w * s + 0.5), math.floor(w / shape * s + 0.5)
     local pxX, pxY = math.floor((PackArt.W - w) / 2 * s + x * s + 0.5), math.floor(y * s + 0.5)
-    local part = ui.Sprite.new(pack.top)
-    pack.topParts[#pack.topParts + 1] = part
-    part.spriteID = sprite
-    part:SetPos(pxX, pxY)
-    part:SetSize(pxW, pxH)
+    addTop(pack, sprite, nil, pxX, pxY, pxW, pxH)
     return pxX, pxY, pxW, pxH
 end
 
 -- The name (banner and title) and logo. Only the front has them.
 function PackArt.drawTop(pack, art)
     destroyAll(pack.topParts)
+    for _, win in ipairs(pack.windows or {}) do
+        for i = #win.parts, 2, -1 do        -- all but the shading (the first)
+            win.parts[i] = nil
+        end
+    end
     if pack.side ~= "front" then
         return
     end
@@ -286,11 +435,7 @@ function PackArt.drawTop(pack, art)
             -- Fitted inside the banner's inner panel, keeping its shape.
             local scale = math.min(bw * banner.innerW / title.w, bh * banner.innerH / title.h)
             local tw, th = math.floor(title.w * scale + 0.5), math.floor(title.h * scale + 0.5)
-            local part = ui.Sprite.new(pack.top)
-            pack.topParts[#pack.topParts + 1] = part
-            part.sprite = titleImage
-            part:SetPos(bx + (bw - tw) // 2, by + (bh - th) // 2)
-            part:SetSize(tw, th)
+            addTop(pack, nil, titleImage, bx + (bw - tw) // 2, by + (bh - th) // 2, tw, th)
         end
     end
     local logo = art.logo and PackArt.logoBySprite(art.logo.sprite)
@@ -302,6 +447,42 @@ end
 function PackArt.draw(pack, art)
     PackArt.drawArt(pack, art)
     PackArt.drawTop(pack, art)
+end
+
+-- Squeezes a torn piece of a pack (see PackArt.new) sideways to `f` (0 to 1) of its width, about
+-- the pack's middle, as if it were turned away (for flipping it over). Every part is moved and
+-- resized; nothing is redrawn.
+function PackArt.squash(pack, f)
+    local mid = pack.w / 2
+    -- The strips and windows are placed in the pack's own units, so they close in towards its
+    -- middle. Whole pixels from the squeezed edges, so neighbouring strips still meet.
+    local function place(comp, x, y, w, h)
+        local x0 = math.floor(mid + (x - mid) * f + 0.5)
+        local x1 = math.floor(mid + (x + w - mid) * f + 0.5)
+        comp:SetPos(x0, y)
+        comp:SetSize(math.max(1, x1 - x0), h)
+    end
+    for _, strip in ipairs(pack.strips) do
+        place(strip.layer, strip.x, strip.y, strip.w, strip.h)
+    end
+    -- A tile is placed inside its strip, which has already moved, so it only narrows (with an
+    -- extra pixel, as when it was drawn, so tiles still overlap).
+    for i, tile in ipairs(pack.artParts) do
+        local r = pack.artRects[i]
+        if r ~= nil then
+            tile:SetPos(math.floor(r[1] * f), r[2])
+            tile:SetSize(math.max(1, math.ceil(r[3] * f) + 1), r[4])
+        end
+    end
+    -- What is inside a window (the shading, banner and logo) only narrows, as the window has
+    -- already moved.
+    for _, win in ipairs(pack.windows) do
+        place(win.layer, win.x, win.y, win.w, win.h)
+        for _, part in ipairs(win.parts) do
+            part[1]:SetPos(math.floor(part[2] * f), part[3])
+            part[1]:SetSize(math.max(1, math.ceil(part[4] * f)), part[5])
+        end
+    end
 end
 
 function PackArt.destroy(pack)
