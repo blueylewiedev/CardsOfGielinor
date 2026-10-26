@@ -97,10 +97,9 @@ Cards.packTypes = {
 -- that are not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
-
                 "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe" },
     location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "ranch_out_of_time", "lumbridge_swamp", "dorgesh_kaan", "burthorpe", "chaos_tunnels",
-                "fremennik_slayer_dungeon" },
+                "fremennik_slayer_dungeon", "catherby" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
@@ -125,6 +124,113 @@ for _, group in ipairs(Cards.tagGroups.category) do
     for _, word in ipairs(group.words) do
         Cards.tagWords.category[#Cards.tagWords.category + 1] = word
     end
+end
+
+-- The category words for item cards, in groups the same way. A card's category tag only takes
+-- words for its own kind (an item cannot be a "dragon", an NPC cannot be "food"), but a pack
+-- filter can use any of them, so Cards.tagWords.category holds both lists. A new word goes in the
+-- group that fits it best, and must not already be an NPC category word.
+Cards.itemTagGroups = {
+    category = {
+        { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
+            "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", 
+            "armour", "jewellery", "pocket", "ammunition", "fashion" } },
+        { title = "What kind of weapon", requires = "weapon",
+            words = { "dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd",
+                "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon" } },
+        { title = "Which armour slot", requires = "armour",
+            words = { "helmet", "body", "legs", "gloves", "boots", "off_hand", "back" } },
+        { title = "Which jewellery slot", requires = "jewellery",
+            words = { "ring", "neck" } },
+        { title = "What type of ammo", requires = "ammunition",
+            words = { "arrow", "bolt", "spike" } },
+    },
+}
+local npcCategoryWords = {}
+for _, word in ipairs(Cards.tagWords.category) do
+    npcCategoryWords[word] = true
+end
+for _, group in ipairs(Cards.itemTagGroups.category) do
+    for _, word in ipairs(group.words) do
+        assert(not npcCategoryWords[word], "The category word \"" .. word .. "\" is in both the NPC and the item lists")
+        Cards.tagWords.category[#Cards.tagWords.category + 1] = word
+    end
+end
+
+-- The tag kinds that cards of this kind ("npc" or "item") use, in the order they are written.
+-- Items are not tagged with a location. An NPC's region comes from its deck file; an item's is
+-- chosen by hand (at most Cards.MAX_ITEM_REGIONS, see "Choosing regions for an item" in
+-- CONTRIBUTING.md).
+Cards.MAX_ITEM_REGIONS = 2
+function Cards.tagKindsFor(cardKind)
+    if cardKind == "item" then
+        return { "regions", "skills", "category" }
+    end
+    return { "location", "skills", "category" }
+end
+
+-- The groups the words of a tag kind are shown in for this kind of card, or nil if the words
+-- are not in groups.
+function Cards.tagGroupsFor(cardKind, tagKind)
+    local groups = cardKind == "item" and Cards.itemTagGroups or Cards.tagGroups
+    return groups[tagKind]
+end
+
+-- The words a card of this kind may use under a tag kind, or nil if the tag kind has no list.
+-- With no card kind, every word that any pack filter may use.
+function Cards.wordsFor(cardKind, tagKind)
+    local groups = cardKind ~= nil and Cards.tagGroupsFor(cardKind, tagKind) or nil
+    if groups == nil then
+        return Cards.tagWords[tagKind]
+    end
+    local words = {}
+    for _, group in ipairs(groups) do
+        for _, word in ipairs(group.words) do
+            words[#words + 1] = word
+        end
+    end
+    return words
+end
+
+-- The word a tag word needs on the same card, from the `requires` of the group it is in (a
+-- scimitar needs a weapon), or nil if it needs nothing.
+function Cards.requiredWord(cardKind, tagKind, word)
+    for _, group in ipairs(Cards.tagGroupsFor(cardKind, tagKind) or {}) do
+        if group.requires ~= nil then
+            for _, groupWord in ipairs(group.words) do
+                if groupWord == word then
+                    return group.requires
+                end
+            end
+        end
+    end
+    return nil
+end
+
+-- The words in a list whose required word is not in the list too, as { word = w, needs = n }.
+-- A chain is checked a link at a time: a word is reported if its own parent is missing, and a
+-- parent that is there but is missing its own parent is reported in the same way.
+function Cards.missingRequired(cardKind, tagKind, words)
+    local have = {}
+    for _, word in ipairs(words) do
+        have[word] = true
+    end
+    local missing = {}
+    for _, word in ipairs(words) do
+        local needs = Cards.requiredWord(cardKind, tagKind, word)
+        if needs ~= nil and not have[needs] then
+            missing[#missing + 1] = { word = word, needs = needs }
+        end
+    end
+    return missing
+end
+
+-- What kind of cards a deck file holds: "item" for the files in deck/items/, otherwise "npc".
+function Cards.setKind(setName)
+    if string.sub(setName or "", 1, 11) == "deck/items/" then
+        return "item"
+    end
+    return "npc"
 end
 
 -- The cards are written in their own files in the deck folder (the layout is described in
@@ -300,9 +406,10 @@ end
 -- Stops with an error naming the card if its tags are malformed or use a word that is not on
 -- Cards.tagWords.
 -- True if `word` may be used for this tag kind: it is on the kind's list in Cards.tagWords, or
--- the kind has no list.
-local function isKnownWord(tagKind, word)
-    local allowed = Cards.tagWords[tagKind]
+-- the kind has no list. With a card kind ("npc" or "item"), the category words are the ones for
+-- that kind of card only.
+local function isKnownWord(tagKind, word, cardKind)
+    local allowed = Cards.wordsFor(cardKind, tagKind)
     if allowed == nil then
         return true
     end
@@ -313,6 +420,7 @@ local function isKnownWord(tagKind, word)
     end
     return false
 end
+Cards.isKnownWord = isKnownWord
 
 local function checkTags(card)
     if card.tags == nil then
@@ -323,9 +431,16 @@ local function checkTags(card)
             "Tags on card " .. card.id .. " must be lists of words, e.g. skills = { \"thieving\" }")
         for _, word in ipairs(words) do
             assert(type(word) == "string", "Tag words on card " .. card.id .. " must be text")
-            assert(isKnownWord(tagKind, word),
-                "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" (add it to Cards.tagWords?)")
+            assert(isKnownWord(tagKind, word, Cards.kindOf(card)),
+                "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" for "
+                .. (Cards.kindOf(card) == "item" and "an item" or "an NPC") .. " card (add it to Cards.tagWords?)")
         end
+        assert(not (tagKind == "regions" and Cards.kindOf(card) == "item" and #words > Cards.MAX_ITEM_REGIONS),
+            "Card " .. card.id .. ": an item takes at most " .. Cards.MAX_ITEM_REGIONS .. " regions (leave it empty if it comes from more)")
+        -- A word from a group with a `requires` (such as a weapon kind) needs that word too.
+        local missing = Cards.missingRequired(Cards.kindOf(card), tagKind, words)[1]
+        assert(missing == nil, "Card " .. card.id .. ": the " .. tagKind .. " tag \"" .. tostring(missing and missing.word)
+            .. "\" needs \"" .. tostring(missing and missing.needs) .. "\" on the card too")
     end
 end
 -- Drafts are checked too, so a typo is found before the card goes live.
@@ -351,11 +466,22 @@ for _, card in ipairs(Cards.list) do
     Cards.byId[card.id] = card
 end
 Cards.THEMED_PRICE_FACTOR = 1.25
+-- A line in deck/packs.lua with the id of a pack type already here (such as "standard") changes
+-- that pack's fields (its name and look) and keeps the rest; any other is a new themed pack.
+local listed = {}
 for _, packType in ipairs(require("deck/packs")) do
     assert(type(packType.id) == "string" and packType.id ~= "", "A pack in deck/packs.lua has no id")
-    packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
-    assert(Cards.packTypes[packType.id] == nil, "Duplicate pack type id " .. packType.id)
-    Cards.packTypes[packType.id] = packType
+    assert(not listed[packType.id], "Duplicate pack type id " .. packType.id)
+    listed[packType.id] = true
+    local existing = Cards.packTypes[packType.id]
+    if existing ~= nil then
+        for field, value in pairs(packType) do
+            existing[field] = value
+        end
+    else
+        packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
+        Cards.packTypes[packType.id] = packType
+    end
 end
 for key, packType in pairs(Cards.packTypes) do
     assert(packType.id == key, "Pack type id must match its key: " .. key)

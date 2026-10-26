@@ -9,10 +9,14 @@ local Settings = {}
 
 local KEY = "card_settings"
 
--- Every option, with what it does and whether it starts on. `order` is the order they are
--- listed on the settings page.
+-- Every option, with what it does and whether it starts on, in the order they are listed on the
+-- settings page. A `dev` option is only shown while the development tools are there (the dev
+-- folder, which the released plugin leaves out). PrettyUI cuts a checkbox's label off at about
+-- 35 characters (it doesn't wrap), so keep labels shorter than that.
 Settings.options = {
     { id = "glow", label = "Glow behind rare cards when flipped", default = true },
+    { id = "burst", label = "Colour burst as a card is revealed", default = true },
+    { id = "releasePreview", label = "Preview as released", default = false, dev = true },
 }
 
 local values = {}

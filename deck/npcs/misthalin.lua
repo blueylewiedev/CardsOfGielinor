@@ -152,6 +152,13 @@ Set.cards = {
         art = { npc = "CAVE_GOBLIN4", anim = 6047, cam = { dist = 988, fov = 30, ty = 400 } },
         tags = { location = { "dorgesh_kaan" }, skills = { "thieving" }, category = { "goblin" } },
     },
+
+    {
+        id = "king_roald", name = "King Roald", rarity = "epic",
+        desc = "The King of Varrock",
+        art = { npc = "KING_ROALD", anim = 5363, cam = { dist = 650, fov = 40, ty = 620 } },
+        tags = { location = { "varrock" }, category = { "humanoid", "royalty" } },
+    },
 }
 
 return Set

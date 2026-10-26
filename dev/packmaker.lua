@@ -9,8 +9,10 @@
 --                     resized with the buttons.
 --   3. Logo         : which RuneScape logo (or none), moved and resized with the buttons.
 --   4. Cards        : which cards the pack gives: a region for now (the pack's filter, see
---                     Cards.packTypes, so other tags can be added later). It follows the pack name
---                     until a region is picked here.
+--                     Cards.packTypes, so other tags can be added later), or "All cards", which
+--                     makes the design the standard pack's look instead of a new pack. It follows
+--                     the pack name until a region is picked here (a name that isn't a region,
+--                     such as Gielinor, gives All cards).
 --   5. Save         : the pack's name and Save. Saved designs are kept in the plugin's database
 --                     (PersistentDB, on this computer only) and can be loaded again or deleted.
 --                     To put a pack in the game, its line (shown under Save) is pasted into
@@ -180,18 +182,34 @@ local function packName()
     return titleText(design.art.name.title) .. " pack"
 end
 
--- The pack's id: its name in lower case with underscores ("Misthalin pack" -> misthalin_pack).
+-- The "region" that means every card: the design is the standard pack's look, not a new pack.
+local ALL_CARDS = "*all"
+
+-- The region a title gives: its own (the region titles are named after the regions), or all
+-- cards for a title that isn't a region (such as Gielinor).
+local function regionForTitle(titleId)
+    return Cards.isKnownWord("regions", titleId) and titleId or ALL_CARDS
+end
+
+-- The pack's id: its name in lower case with underscores ("Misthalin pack" -> misthalin_pack), or
+-- "standard" for the standard pack's look.
 local function packId()
+    if design.region == ALL_CARDS then
+        return "standard"
+    end
     local text = string.lower(packName())
     text = string.gsub(text, "[^a-z0-9]+", "_")
     return (string.gsub(text, "^_+", ""):gsub("_+$", ""))
 end
 
+-- The pack's filter (none for all cards).
 local function filter()
+    if design.region == ALL_CARDS then
+        return nil
+    end
     return { regions = design.region }
 end
 
--- How many cards in the game the pack's filter lets through.
 -- How many cards the pack would give (the same rule the pack window uses), counted once per
 -- region as the cards don't change while the plugin runs.
 local cardCounts = {}
@@ -204,10 +222,11 @@ local function cardCount()
     return count
 end
 
--- The pack type as one line, to paste into deck/packs.lua.
+-- The pack type as one line, to paste into deck/packs.lua. All cards has no filter (and its id,
+-- "standard", makes the line the standard pack's name and look; see deck/packs.lua).
 local function packLine()
-    return string.format("{ id = %q, name = %q, filter = { regions = %q }, %s },", packId(), packName(),
-        design.region, artBlock(design.art))
+    local regions = filter() and string.format("filter = { regions = %q }, ", design.region) or ""
+    return string.format("{ id = %q, name = %q, %s%s },", packId(), packName(), regions, artBlock(design.art))
 end
 
 -- -------------------------------------------------------------------------------------------
@@ -538,15 +557,7 @@ end
 -- Dragging the Front and Back boxes
 -- -------------------------------------------------------------------------------------------
 
-local function mouseX()
-    local ok, x = pcall(function()
-        if not Mouse.IsAvailable() then
-            return nil
-        end
-        return Mouse.GetPosition().x
-    end)
-    return ok and x or nil
-end
+local mouseX = Kit.mouseX
 
 local function updateDrag()
     if drag == nil then
@@ -832,17 +843,19 @@ function PackMaker.show()
     for _, t in ipairs(PackArt.TITLES) do
         titleEntries[#titleEntries + 1] = { label = t.text, value = t.id }
     end
+    -- (Short: the drop-down's box scrolls a longer label to its end, cutting off the start.)
+    regionEntries[1] = { label = "All cards", value = ALL_CARDS }
     for _, word in ipairs(Cards.tagWords.regions) do
         regionEntries[#regionEntries + 1] = { label = titleText(word), value = word }
     end
     widgets.titleDropdown = Kit.dropdown(content, LEFT_X, nameY + 24, DROPDOWN_W, 28, titleEntries,
         design.art.name.title, function(titleId)
             design.art.name.title = titleId
-            -- The region follows the title (the titles are the regions, made by
+            -- The region follows the title (the region titles are named after the regions, by
             -- dev/make_pack_art.py) until it is set by hand.
             if not design.regionTouched then
-                design.region = titleId
-                widgets.regionDropdown.select(titleId)
+                design.region = regionForTitle(titleId)
+                widgets.regionDropdown.select(design.region)
             end
             redrawTop()
             refreshDetails()

@@ -49,8 +49,35 @@ The `dev/` folder holds the developer tools. They load automatically when the fo
 
 The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
 checks it as you go. You do not need to know how the code works to be able to contribute :).
+It makes NPC cards. For an item card, press **Item** at the top of the window: the NPC search is
+replaced by an item search (and a list of your Grand Exchange offers), and the animation and
+location boxes go away, because items have neither. Item cards go in `deck/items/`.
 
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
+
+**Starting from the wiki (optional).** Instead of filling every box in by hand, you can have
+candidates made from the [RuneScape Wiki](https://runescape.wiki) and review them:
+
+1. Open **Wiki Review** from the Home window and press its search button: **Wiki Fetch** lets you
+   pick wiki categories (places, for NPC cards, and kinds of item, for item cards) or type pages,
+   and gives you the command, for example
+   `python dev/wiki_cards.py --category "Lumbridge" --category "Logs"`. Copy it and run it in the
+   plugin's folder. It writes `dev/wiki_candidates.lua`: for each NPC or item page, the NPC or item,
+   the name, the examine text, tags, a suggested rarity and notes on what to check. Categories
+   asked for before are remembered, so the list grows.
+2. In the game, `prf`, then open **Wiki Review**. **Load into Card Builder** fills the builder in;
+   check and change anything that is wrong (the tags and rarity are only guesses), try the other
+   models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
+   **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
+
+Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
+at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in
+`dev/wiki_cache/` so running it again asks the wiki for nothing it already has. Don't lower those
+limits or delete the cache to fetch again; use `--refresh` only for pages that have changed. Give
+a contact so the wiki's admins can reach you if anything goes wrong (see
+[their API guidelines](https://runescape.wiki/w/Help:APIs)): `--contact`, or put it once in
+`dev/wiki_contact.txt` (for example `@yourname on Discord`). The cache, the candidates and your
+contact file are not committed.
 
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
@@ -165,6 +192,17 @@ file gets that region's tag automatically.
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
 
+Item cards go in `deck/items/`. There is one file, `general.lua`, for now. As item cards are added
+they are grouped in a folder for each item category, with a file for each sub-type, for example
+`deck/items/raw_material/logs.lua` or `deck/items/weapons/scimitar.lua`. Use the category words as
+the folder and file names. There is no limit on the number of cards in a file; split a file when it
+gets hard to work with or when two people keep editing the same one.
+
+**Every deck file has to be listed in `deck/index.lua`**, including the ones in folders, because
+the plugin cannot look inside folders. A file that is not listed is never loaded. Run
+`python dev/check_deck_index.py` to check that the files and the list agree. It also runs on every
+pull request, and the pull request cannot be merged while it fails.
+
 ---
 
 ## Card rules
@@ -203,9 +241,14 @@ useful to the packs.
 |------|---------|---------|
 | `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
 | `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
-| `category` | what kind of character it is, what it does, or whether it can be fought | `humanoid`, `shopkeeper`, `monster` |
+| `category` | what kind of character it is, what it does, or whether it can be fought (for an item: what it is used for, or what it is worn or wielded as) | `humanoid`, `shopkeeper`, `monster` (items: `raw_material`, `food`, `weapon`) |
 
-The region comes from the deck file, so it is not asked for.
+For an NPC the region comes from the deck file, so it is not asked for. Item cards are tagged with
+`regions`, `skills` and `category`: an item has no `location`, and its region is chosen by hand (see
+"Choosing regions for an item"). The category words are not the NPC ones (an item cannot be a
+`dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the words for the
+kind of card you are making. Some words only appear after another is picked (see "Choosing a
+category for an item").
 
 **Rules for words**
 
@@ -243,6 +286,42 @@ what it does (`shopkeeper`, `guard`, `knight`) and, for anything you can attack,
 nothing says what it is, `monster` alone is fine; a new word is worth adding once several cards
 need it.
 
+**Choosing a category for an item.** Say what it is used for: `raw_material` for something that is
+gathered and then made into something else (logs, a herb), `processed_material` for something made
+from that (planks, bars), `craftable` for something that can be made, and `food`, `drink`, `potion`,
+`tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. Something that is worn, wielded or
+fired is tagged with what it is: `weapon`, `armour`, `jewellery`, `pocket` (the pocket slot) or
+`ammunition`. Each of those opens a last choice in the tag picker: the kind of weapon (`sword`,
+`longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
+the type of ammunition (`arrow`, `bolt` or `spike`). These only show once the word above them is on
+the card, and taking that word off takes them off too. A card that has one of them also needs the
+word above it, so a rune scimitar is `{ "weapon", "scimitar" }`. Throwing knives and darts are
+`thrown` weapons. Items that are only worn or wielded for their looks (hats, masks, novelty weapons)
+are `fashion` and are not given `weapon`, `armour` or a slot, so a pack of helmets or weapons never
+contains them. An item can have several words, for example `{ "raw_material" }` for logs.
+
+**Choosing regions for an item.** A region tag says that an item belongs to a region's story or
+loot. It does not say that the item can be found there. Anything that can be had almost anywhere is
+left without a region, and is still given out by the Gielinor pack, which has every card. Work down
+this list and use the first rule that fits:
+
+1. **One clear source.** A boss drop, a dungeon, a quest reward, a shop found in one region, or a
+   named set (Barrows, Noxious weaponry, God Wars drops). Tag that region. Barrows items are
+   `morytania`; items dropped in God Wars Dungeon are `asgarnia`.
+2. **A few sources.** If it comes from two regions, tag both. Never tag more than **two**.
+3. **Everywhere, or three or more regions.** Leave `regions` empty. A bronze longsword is sold in
+   three regions and can be made almost anywhere, so it has no region. This keeps the regional packs
+   for items that belong to their region.
+4. **Can only be crafted.** Look at the item's one distinctive ingredient and tag the region(s) it
+   comes from, going back **one step only**. Do not follow the ingredients back to the raw
+   materials. If that ingredient comes from more than two regions, leave `regions` empty. A necronium
+   greataxe is made from necronium bars, so it takes the region(s) where necronium ore is found.
+
+Where an item is made does not matter: crafting is not a source on its own. Common materials such
+as copper, tin or iron do not give a bronze or iron item a region, because those items are not
+craft-only. If you cannot tell the answer within a few seconds, leave `regions` empty; it is easy
+to add a region later, and an empty one never puts a card in the wrong pack.
+
 **Choosing skills.** Only add a skill when the link is clear: a skill trainer or shop for that
 skill (`cooking`), or a creature you train a skill on (`slayer`). Leave it out if you would have
 to guess.
@@ -251,9 +330,10 @@ to guess.
 
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
-- `category`: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`
 
-For reference, the regions (set by the deck file, not typed on a card) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
+For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 
 ### Art
 

@@ -4,7 +4,8 @@
 -- load fails quietly and none of this exists.
 --
 -- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window,
--- the Pack Maker (dev/packmaker.lua), the saved camera
+-- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
+-- dev/wikifetch.lua), the saved camera
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
 -- toggles), and a few debug extras at login and when XP is gained.
 
@@ -22,6 +23,7 @@ local OutputWindow = require("dev/outputwindow")
 local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
+local WikiReview = require("dev/wikireview")
 
 local Dev = {}
 
@@ -65,6 +67,7 @@ function Dev.buttons(api, refresh)
         end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
+        { label = "Wiki Review", action = WikiReview.toggle },
         { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
@@ -73,18 +76,30 @@ function Dev.buttons(api, refresh)
     }
 end
 
--- Switches the saved camera tuning on and opens the preview window.
+-- Reports draft cards in the log, once, when the plugin starts.
 function Dev.start()
     if #Cards.drafts > 0 then
         log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end
-    Tuning.enabled = true                  -- apply the camera settings saved from the preview
-    CardView.artOverride = Tuning.get
+end
+
+-- Switches the tools on or off. Off (the "Preview as released" setting) makes the plugin look and
+-- behave as players will have it: the camera settings saved from the preview stop applying to the
+-- cards, and the tools' windows close. (main.lua also leaves out the Home buttons and the login
+-- and XP extras.)
+function Dev.setActive(active)
+    Dev.active = active
+    Tuning.enabled = active
+    CardView.artOverride = active and Tuning.get or nil
+    if not active then
+        Dev.shutdown()
+    end
 end
 
 function Dev.shutdown()
     Preview.hide()
     Builder.hide()
+    WikiReview.hide()
     PackMaker.hide()
     NpcBrowser.hide()
     Nearby.hide()

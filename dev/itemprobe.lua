@@ -12,6 +12,8 @@
 --     the plugin does, in its own window with buttons to move the camera. Each change logs a
 --     `cam = { ... }` line to the Output window that can be pasted into a card's `art`.
 --   * Results are paged (arrows at the bottom of the list), so a search is not limited to a few rows.
+-- When a function is set with setPicker (the Card Builder does this), each row also has a Use
+-- button that hands that item { id, configName, name } to the function.
 -- Every id/name line it finds also goes to the Output window, where it can be copied.
 -- Item ids: id.Obj. Icon: ui.Sprite with associatedObjectID. Model: ui.ModelType.OBJECT.
 
@@ -21,6 +23,9 @@ local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
 
 local ItemProbe = {}
+
+local picker = nil     -- set by the Card Builder: called with { id, configName, name } for the item to use
+local renderPage       -- redraws the list (made below), so a new picker's Use buttons show at once
 
 local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
@@ -245,7 +250,7 @@ local function pageCount()
     return math.max(1, math.ceil(#results / PAGE_SIZE))
 end
 
-local function renderPage()
+function renderPage()
     destroyAll(rowParts)
     if content == nil then
         return
@@ -267,10 +272,26 @@ local function renderPage()
             rowParts[#rowParts + 1] = Kit.iconButton(content, "EYE", 10, y, function()
                 showItem(entry.id)
             end, "Show this item", "Show", 70)
+            if picker ~= nil then
+                rowParts[#rowParts + 1] = Kit.smallButton(content, "Use", LEFT_W - 60, y, 60, ROW_H - 4, function()
+                    local cfg = configOf(entry.id)
+                    if picker ~= nil then
+                        picker({ id = entry.id, configName = prop(cfg, "configName") or "", name = prop(cfg, "name") })
+                    end
+                end, "Use this item for the card")
+            end
         end
     end
     if pageText ~= nil then
         pageText.content = "Page " .. page .. " of " .. pageCount() .. "   (" .. #results .. " results)"
+    end
+end
+
+-- Lets the Card Builder choose from the results. Pass nil to take the Use buttons away.
+function ItemProbe.setPicker(fn)
+    picker = fn
+    if content ~= nil then
+        renderPage()
     end
 end
 
