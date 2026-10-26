@@ -1,11 +1,14 @@
 -- builder.lua
 -- The Card Builder: a developer window for making a new card without knowing how the code
--- works. You fill in the details, tune how the NPC is framed, and the window gives you the
--- finished card block to paste into a deck file. It is built so that someone who has only
+-- works. You fill in the details, tune how the NPC (or item) is framed, and the window gives you
+-- the finished card block to paste into a deck file. The NPC / Item buttons at the top choose
+-- which kind of card it makes: an item card is picked by the item's config name (or from the
+-- item search), has no body/head choice, animation or location, and its category words are the
+-- item ones. It is built so that someone who has only
 -- cloned the repository can add a card and send it back as a pull request.
 --
 -- The window has five parts:
---   1. Card details  : the NPC (by config name), the card's name and id, description, suggested
+--   1. Card details  : the NPC or item (by config name), the card's name and id, description, suggested
 --                      rarity, tags and the deck file it belongs in
 --   2. Live preview  : the card as it will look
 --   3. Tune the art  : body or head model, camera, animation
@@ -28,13 +31,16 @@ local Nearby = require("dev/nearby")
 local NpcSearch = require("dev/npcsearch")
 local AnimSearch = require("dev/animsearch")
 local TagPicker = require("dev/tagpicker")
+local ItemProbe = require("dev/itemprobe")
 
 local Builder = {}
 
 -- A new, empty card. (Reset goes back to this.)
 local function freshDraft()
     return {
+        kind = "npc",          -- "npc" or "item": what kind of card this is
         npc = "",              -- the NPC's config name, e.g. FATHER_AERECK; this sets the model
+        item = "",             -- for an item card, the item's config name, e.g. RANARR_WEED
         name = "",             -- the name printed on the card
         nameTouched = false,   -- true once the name has been typed (so it stops following the NPC)
         cardId = "",           -- the card's id; follows the name until it is typed
@@ -42,7 +48,7 @@ local function freshDraft()
         desc = "",
         rarity = "common",
         skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
-        deck = 1,              -- which deck file (index into Cards.sets)
+        deck = 1,              -- which deck file (index into Cards.sets); one of the kind's own files
         body = true,           -- body model (true) or head model (false)
         cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
         anim = nil,            -- animation (sequence) id, or nil
@@ -144,6 +150,50 @@ function Builder.lookupNpc(configName)
     return npcId, displayName
 end
 
+-- Looks up an item by config name. Returns its numeric id and in-game name, or nil if the client
+-- does not know the name.
+function Builder.lookupItem(configName)
+    if configName == nil or configName == "" then
+        return nil
+    end
+    local ok, objId = pcall(function() return id.Obj[configName] end)
+    if not ok or not Cards.isValidObjId(objId) then
+        return nil
+    end
+    local displayName = nil
+    pcall(function() displayName = tostring(config.Obj.FromID(objId).name) end)
+    return objId, displayName
+end
+
+-- True while the window is making an item card.
+local function isItem()
+    return draft.kind == "item"
+end
+
+-- The config name of the NPC or item the card shows.
+local function subject()
+    return isItem() and draft.item or draft.npc
+end
+
+-- Looks up the card's NPC or item: its numeric id and in-game name, or nil.
+local function lookupSubject(configName)
+    if isItem() then
+        return Builder.lookupItem(configName)
+    end
+    return Builder.lookupNpc(configName)
+end
+
+-- The deck files for this kind of card, as { setName, index into Cards.sets }.
+local function decksFor(cardKind)
+    local list = {}
+    for i, setName in ipairs(Cards.sets) do
+        if Cards.setKind(setName) == cardKind then
+            list[#list + 1] = { setName = setName, index = i }
+        end
+    end
+    return list
+end
+
 -- Words used in a tag kind by cards that already exist, as a set.
 local function existingWords(tagKind)
     local used = {}
@@ -163,7 +213,10 @@ end
 -- The checks and the card block (both are worked out from `draft`)
 -- ---------------------------------------------------------------------------------------------
 
-local TAG_KINDS = { "location", "skills", "category" }   -- the order they are written in
+-- The tag kinds the card has, in the order they are written in.
+local function tagKinds()
+    return Cards.tagKindsFor(draft.kind)
+end
 
 -- The words typed for a tag kind, split apart.
 local function tagWords(tagKind)
@@ -187,16 +240,17 @@ end
 
 -- The `art = { ... }` text. Only values that differ from the defaults are written.
 local function artLine()
-    local parts = { "npc = " .. quote(draft.npc) }
-    if not draft.body then
+    local parts = { (isItem() and "item = " or "npc = ") .. quote(subject()) }
+    -- An item has no body/head choice and no animation.
+    if not isItem() and not draft.body then
         parts[#parts + 1] = "body = false"
     end
-    if draft.anim ~= nil then
+    if not isItem() and draft.anim ~= nil then
         parts[#parts + 1] = "anim = " .. string.format("%.0f", draft.anim)
     end
     local cam = currentCam()
     if cam ~= nil then
-        local defaults = CardView.defaultsFor({ body = draft.body })
+        local defaults = CardView.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil })
         local camParts = {}
         for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
             local value, default = cam[field], defaults[field]
@@ -221,12 +275,15 @@ function Builder.blockLine()
     local parts = {
         "id = " .. quote(draft.cardId),
         "name = " .. quote(draft.name),
-        "rarity = " .. quote(draft.rarity),
-        "desc = " .. quote(draft.desc),
-        artLine(),
     }
+    if isItem() then
+        parts[#parts + 1] = 'kind = "item"'
+    end
+    parts[#parts + 1] = "rarity = " .. quote(draft.rarity)
+    parts[#parts + 1] = "desc = " .. quote(draft.desc)
+    parts[#parts + 1] = artLine()
     local tagParts = {}
-    for _, tagKind in ipairs(TAG_KINDS) do
+    for _, tagKind in ipairs(tagKinds()) do
         local words = tagWords(tagKind)
         if #words > 0 then
             local quoted = {}
@@ -244,8 +301,9 @@ end
 
 -- Where in core/cards.lua a new word goes (the category words are in groups).
 local function wordHome(tagKind)
-    if Cards.tagGroups ~= nil and Cards.tagGroups[tagKind] ~= nil then
-        return "a group in Cards.tagGroups." .. tagKind
+    local groupTable = isItem() and "Cards.itemTagGroups." or "Cards.tagGroups."
+    if Cards.tagGroupsFor(draft.kind, tagKind) ~= nil then
+        return "a group in " .. groupTable .. tagKind
     end
     return "Cards.tagWords." .. tagKind
 end
@@ -256,8 +314,8 @@ function Builder.blockLines()
     local lines = { Builder.blockLine() }
 
     -- New words for tag kinds that have a fixed list.
-    for _, tagKind in ipairs(TAG_KINDS) do
-        local allowed = Cards.tagWords[tagKind]
+    for _, tagKind in ipairs(tagKinds()) do
+        local allowed = Cards.wordsFor(draft.kind, tagKind)
         if allowed ~= nil then
             local known = {}
             for _, word in ipairs(allowed) do known[word] = true end
@@ -279,16 +337,33 @@ function Builder.checks()
         list[#list + 1] = { level = level, text = text }
     end
 
-    -- The NPC.
-    if draft.npc == "" then
-        add("fix", "Enter the NPC's config name")
+    -- The NPC or item.
+    local noun = isItem() and "Item" or "NPC"
+    if subject() == "" then
+        add("fix", "Enter the " .. string.lower(noun) .. "'s config name")
     else
-        local npcId, displayName = Builder.lookupNpc(draft.npc)
-        if npcId == nil then
-            add("fix", "NPC " .. draft.npc .. " was not found")
+        local subjectId, displayName = lookupSubject(subject())
+        if subjectId == nil then
+            add("fix", noun .. " " .. subject() .. " was not found")
         else
-            add("ok", "NPC found: " .. tostring(displayName or draft.npc))
+            add("ok", noun .. " found: " .. tostring(displayName or subject()))
+            if isItem() then
+                -- Another card for the same item is allowed (it may be a different version), but worth a look.
+                for _, list in ipairs({ Cards.list, Cards.drafts }) do
+                    for _, card in ipairs(list) do
+                        if Cards.kindOf(card) == "item" and Cards.getArt(card).item == subject() and card.id ~= draft.cardId then
+                            add("note", "The card " .. card.id .. " already shows this item")
+                            break
+                        end
+                    end
+                end
+            end
         end
+    end
+
+    -- The deck file is one of this kind's own.
+    if Cards.setKind(Cards.sets[draft.deck] or "") ~= draft.kind then
+        add("fix", "Choose a deck file for " .. (isItem() and "item" or "NPC") .. " cards")
     end
 
     -- Name and id.
@@ -316,8 +391,8 @@ function Builder.checks()
 
     -- Tags.
     local tagProblem, tagNotes = nil, {}
-    for _, tagKind in ipairs(TAG_KINDS) do
-        local allowed = Cards.tagWords[tagKind]
+    for _, tagKind in ipairs(tagKinds()) do
+        local allowed = Cards.wordsFor(draft.kind, tagKind)
         local known = {}
         for _, word in ipairs(allowed or {}) do known[word] = true end
         local used = existingWords(tagKind)
@@ -339,7 +414,7 @@ function Builder.checks()
         add("ok", "The tags look right")
     end
 
-    if draft.anim == nil then
+    if not isItem() and draft.anim == nil then
         add("note", "No animation set (optional)")
     end
 
@@ -499,14 +574,22 @@ local function showCard()
         id = "builder_draft", name = draft.name, rarity = rarity, desc = draft.desc,
         art = { npc = draft.npc, body = draft.body, anim = draft.anim, cam = draft.cam },
     }
-    local npcId = Builder.lookupNpc(draft.npc)
-    if npcId == nil then
-        card.art.npc = ""      -- shows the empty art box without asking the client for a bad name
+    if isItem() then
+        card.kind = "item"
+        card.art = { item = draft.item, cam = draft.cam }
+    end
+    if lookupSubject(subject()) == nil then
+        -- shows the empty art box without asking the client for a bad name
+        card.art[isItem() and "item" or "npc"] = ""
     end
     view = CardView.create(content, card, { scale = PREVIEW_SCALE })
     view.root:SetPos(MID_X + (MID_W - CARD_W) // 2, 30)
     if widgets.modelButton ~= nil then
-        Kit.setLabel(widgets.modelButton, draft.body and "Model: Body" or "Model: Head")
+        if isItem() then
+            Kit.setLabel(widgets.modelButton, "Model: Item")
+        else
+            Kit.setLabel(widgets.modelButton, draft.body and "Model: Body" or "Model: Head")
+        end
     end
     refreshChecks()
 end
@@ -517,7 +600,15 @@ local function soon()
     refreshChecks()
 end
 
+local rebuildRequested = false   -- true when the window must be built again (the kind of card changed)
+
 local function onDraw(e)
+    if rebuildRequested then
+        -- Done here, not in the button's own handler, so a button is never destroyed while it is pressed.
+        rebuildRequested = false
+        Builder.rebuild()
+        return
+    end
     if pending == nil then
         return
     end
@@ -537,22 +628,22 @@ local function followName()
     end
 end
 
--- Chooses the NPC. A new NPC starts again with the default camera and no animation, and fills
--- in the name from the NPC's in-game name if the name has not been typed.
-local function setNpc(configName)
+-- Chooses the NPC (or, for an item card, the item). A new one starts again with the default
+-- camera and no animation, and fills in the name from the in-game name if the name has not been typed.
+local function setSubject(configName)
     configName = string.upper((string.gsub(configName or "", "%s", "")))
-    if configName == draft.npc then
+    if configName == subject() then
         return
     end
-    draft.npc = configName
+    draft[isItem() and "item" or "npc"] = configName
     draft.cam = nil
     draft.anim = nil
     setField(widgets.animField, "")
-    local npcId, displayName = Builder.lookupNpc(configName)
+    local subjectId, displayName = lookupSubject(configName)
     if widgets.npcStatus ~= nil then
-        widgets.npcStatus.content = npcId ~= nil and "Found" or (configName == "" and "" or "Not found")
+        widgets.npcStatus.content = subjectId ~= nil and "Found" or (configName == "" and "" or "Not found")
     end
-    if npcId ~= nil and displayName ~= nil and not draft.nameTouched then
+    if subjectId ~= nil and displayName ~= nil and not draft.nameTouched then
         draft.name = displayName
         setField(widgets.nameField, displayName)
         followName()
@@ -652,7 +743,7 @@ end
 
 -- True if anything has been entered for the card (so Reset should ask first).
 local function hasWork()
-    for _, key in ipairs({ "npc", "name", "desc", "skills", "location", "category" }) do
+    for _, key in ipairs({ "npc", "item", "name", "desc", "skills", "location", "category" }) do
         if draft[key] ~= nil and draft[key] ~= "" then
             return true
         end
@@ -665,6 +756,9 @@ local function resetAll()
     closeDropdown()
     pending = nil
     local fresh = freshDraft()
+    fresh.kind = draft.kind                       -- Reset keeps the kind of card
+    local decks = decksFor(fresh.kind)
+    fresh.deck = decks[1] ~= nil and decks[1].index or nil
     for key in pairs(draft) do
         draft[key] = nil
     end
@@ -686,6 +780,65 @@ local function resetAll()
     end
     TagPicker.refresh()
     showCard()
+end
+
+-- Takes the window down without touching the pickers or the card being made.
+local function destroyWindow()
+    pending = nil
+    closeDropdown()
+    clearParts(checkParts)
+    if view ~= nil then
+        pcall(function() view.root:Destroy() end)
+        view = nil
+    end
+    if window ~= nil then
+        pcall(function() window:Destroy() end)
+    end
+    window, content = nil, nil
+    widgets = {}
+end
+
+-- Switches between NPC cards and item cards. The two use different camera defaults, category
+-- words and deck files, so the camera, animation and category words are cleared, the deck goes to
+-- the first file of the new kind, and the window is built again.
+local function setKind(cardKind)
+    if draft.kind == cardKind then
+        return
+    end
+    draft.kind = cardKind
+    draft.cam = nil
+    draft.anim = nil
+    draft.category = ""
+    if cardKind == "item" then
+        draft.location = ""
+    end
+    -- A name or id that only followed the old NPC or item is cleared; one that was typed stays.
+    if not draft.nameTouched then
+        draft.name = ""
+    end
+    if not draft.idTouched then
+        draft.cardId = ""
+    end
+    local decks = decksFor(cardKind)
+    draft.deck = decks[1] ~= nil and decks[1].index or nil
+    -- The searches were picking for the other kind.
+    Nearby.setPicker(nil)
+    NpcSearch.setPicker(nil)
+    ItemProbe.setPicker(nil)
+    rebuildRequested = true
+end
+
+-- Builds the window again for the card as it is now (after the kind changed).
+function Builder.rebuild()
+    local wasOpen = window ~= nil
+    destroyWindow()
+    if wasOpen then
+        Builder.show()
+        if TagPicker.isOpen() then
+            TagPicker.rebuild()
+            TagPicker.refresh()
+        end
+    end
 end
 
 function Builder.show()
@@ -718,28 +871,41 @@ function Builder.show()
     end, "Clear the card and start a new one", "Reset", 80)
 
     caption("What kind of card?", LEFT_X, 26, LEFT_W)
-    Kit.buttonAt(content, "NPC", LEFT_X, 44, HALF_W, 30, function() end, "positive")
-    local itemButton = Kit.buttonAt(content, "Item (soon)", LEFT_X + HALF_W + GAP, 44, HALF_W, 30, function() end)
-    Kit.setEnabled(itemButton, false)
+    Kit.buttonAt(content, "NPC", LEFT_X, 44, HALF_W, 30, function() setKind("npc") end,
+        isItem() and "neutral" or "positive")
+    Kit.buttonAt(content, "Item", LEFT_X + HALF_W + GAP, 44, HALF_W, 30, function() setKind("item") end,
+        isItem() and "positive" or "neutral")
 
-    caption("NPC config name (this sets the model)", LEFT_X, 82, LEFT_W)
-    widgets.npcField = field(LEFT_X, 100, 250, 60, draft.npc, setNpc)
-    local npcId = Builder.lookupNpc(draft.npc)
+    caption((isItem() and "Item" or "NPC") .. " config name (this sets the model)", LEFT_X, 82, LEFT_W)
+    widgets.npcField = field(LEFT_X, 100, 250, 60, subject(), setSubject)
+    local subjectId = lookupSubject(subject())
     widgets.npcStatus = Kit.text(content, LEFT_X + 350, 100, 110, 28,
-        npcId ~= nil and "Found" or (draft.npc == "" and "" or "Not found"), GREY, ui.AlignMode.TOPLEFT)
-    -- Both lists hand the NPC that was picked back to this window.
-    local function usePicked(npc)
-        setField(widgets.npcField, npc.configName)
-        setNpc(npc.configName)
+        subjectId ~= nil and "Found" or (subject() == "" and "" or "Not found"), GREY, ui.AlignMode.TOPLEFT)
+    -- The lists hand the NPC or item that was picked back to this window.
+    local function usePicked(picked)
+        setField(widgets.npcField, picked.configName)
+        setSubject(picked.configName)
     end
-    Kit.iconButton(content, "SEARCH", LEFT_X + 262, 102, function()
-        NpcSearch.setPicker(usePicked)
-        NpcSearch.show()
-    end, "Find any NPC in the game by name", "Search NPCs", 110)
-    Kit.iconButton(content, "EYE", LEFT_X + 306, 102, function()
-        Nearby.setPicker(usePicked)
-        Nearby.show()
-    end, "List the NPCs standing near you and use one of them", "Nearby NPCs", 110)
+    if isItem() then
+        Kit.iconButton(content, "SEARCH", LEFT_X + 262, 102, function()
+            ItemProbe.setPicker(usePicked)
+            ItemProbe.show()
+        end, "Find any item in the game by name and use it", "Search items", 110)
+        Kit.iconButton(content, "SWAP", LEFT_X + 306, 102, function()
+            ItemProbe.setPicker(usePicked)
+            ItemProbe.show()
+            pcall(ItemProbe.readGrandExchange)
+        end, "List my Grand Exchange offers and use one of the items", "GE offers", 110)
+    else
+        Kit.iconButton(content, "SEARCH", LEFT_X + 262, 102, function()
+            NpcSearch.setPicker(usePicked)
+            NpcSearch.show()
+        end, "Find any NPC in the game by name", "Search NPCs", 110)
+        Kit.iconButton(content, "EYE", LEFT_X + 306, 102, function()
+            Nearby.setPicker(usePicked)
+            Nearby.show()
+        end, "List the NPCs standing near you and use one of them", "Nearby NPCs", 110)
+    end
 
     caption("Card name", LEFT_X, 136, 225)
     caption("Card id (follows the name)", LEFT_X + 235, 136, 225)
@@ -768,6 +934,7 @@ function Builder.show()
     caption("Tags: words separated by commas", LEFT_X, 316, LEFT_W - 160)
     Kit.smallButton(content, "Pick tags", LEFT_X + LEFT_W - 150, 310, 140, 24, function()
         TagPicker.setTarget({
+            cardKind = function() return draft.kind end,
             words = function(kind) return tagWords(kind) end,
             toggle = function(kind, word, on)
                 draft[kind] = Builder.withWord(draft[kind], word, on)
@@ -779,7 +946,7 @@ function Builder.show()
         TagPicker.refresh()
     end, "Choose tags from the words that are allowed")
     local tagY = 334
-    for _, tagKind in ipairs({ "skills", "location", "category" }) do
+    for _, tagKind in ipairs(isItem() and { "skills", "category" } or { "skills", "location", "category" }) do
         Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
             draft[tagKind] = text
@@ -796,11 +963,18 @@ function Builder.show()
 
     -- 3. Tune the art -------------------------------------------------------------------------
     section("3. Tune the art", RIGHT_X, 4, RIGHT_W)
-    widgets.modelButton = Kit.buttonAt(content, "Model: Body", RIGHT_X, 28, RIGHT_W - 4, 30, function()
-        draft.body = not draft.body
-        draft.cam = nil          -- the head and body models use different camera defaults
-        showCard()
-    end)
+    widgets.modelButton = Kit.buttonAt(content, isItem() and "Model: Item" or "Model: Body", RIGHT_X, 28, RIGHT_W - 4, 30,
+        function()
+            if isItem() then
+                return           -- an item has one model
+            end
+            draft.body = not draft.body
+            draft.cam = nil          -- the head and body models use different camera defaults
+            showCard()
+        end)
+    if isItem() then
+        Kit.setEnabled(widgets.modelButton, false)
+    end
 
     -- Reset camera sits at the right of the section title, like Reset does for section 1.
     Kit.iconButton(content, "UNDO", RIGHT_X + RIGHT_W - 40, 2, function()
@@ -849,43 +1023,47 @@ function Builder.show()
         function(c) c.yaw = c.yaw - 0.2 end, function(c) c.yaw = c.yaw + 0.2 end)
 
     y = y + STEP + 12
-    caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
-    y = y + 20
-    widgets.animField = Kit.inputField(content, RIGHT_X, y, RIGHT_W - 100, 28, 6, true)
-    setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
-    widgets.animField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
-        if settingField then
-            return
-        end
-        if widgets.animField.content == lastSet[widgets.animField] then
+    if isItem() then
+        caption("An item has no animation.", RIGHT_X, y, RIGHT_W)
+    else
+        caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
+        y = y + 20
+        widgets.animField = Kit.inputField(content, RIGHT_X, y, RIGHT_W - 100, 28, 6, true)
+        setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
+        widgets.animField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
+            if settingField then
+                return
+            end
+            if widgets.animField.content == lastSet[widgets.animField] then
+                lastSet[widgets.animField] = nil
+                return
+            end
             lastSet[widgets.animField] = nil
-            return
-        end
-        lastSet[widgets.animField] = nil
-        local typed = tonumber(widgets.animField.content)
-        if typed ~= nil or widgets.animField.content == "" then
-            setAnim(typed)
-        end
-    end)
-    -- Search animations by name ("Use" on a result plays it on the card), or switch the animation off.
-    Kit.iconButton(content, "SEARCH", RIGHT_X + RIGHT_W - 84, y + 2, function()
-        AnimSearch.setPicker(function(seq)
-            setAnim(seq.id)
-            setField(widgets.animField, string.format("%.0f", seq.id))
+            local typed = tonumber(widgets.animField.content)
+            if typed ~= nil or widgets.animField.content == "" then
+                setAnim(typed)
+            end
         end)
-        AnimSearch.show()
-    end, "Find an animation by name and try it on the card", "Search anims", 110)
-    Kit.iconButton(content, "CROSS", RIGHT_X + RIGHT_W - 44, y + 2, function()
-        setAnim(nil)
-        setField(widgets.animField, "")
-    end, "Show the card without an animation", "Anim off", 80)
-    y = y + 36
-    -- Two rows of three (the "+100" label does not fit in a button six across).
-    local steps = { -100, -10, -1, 1, 10, 100 }
-    for i, amount in ipairs(steps) do
-        local column, row = (i - 1) % 3, (i - 1) // 3
-        Kit.smallButton(content, (amount > 0 and "+" or "") .. amount, RIGHT_X + column * 108, y + row * STEP, 100, 28,
-            function() stepAnim(amount) end)
+        -- Search animations by name ("Use" on a result plays it on the card), or switch the animation off.
+        Kit.iconButton(content, "SEARCH", RIGHT_X + RIGHT_W - 84, y + 2, function()
+            AnimSearch.setPicker(function(seq)
+                setAnim(seq.id)
+                setField(widgets.animField, string.format("%.0f", seq.id))
+            end)
+            AnimSearch.show()
+        end, "Find an animation by name and try it on the card", "Search anims", 110)
+        Kit.iconButton(content, "CROSS", RIGHT_X + RIGHT_W - 44, y + 2, function()
+            setAnim(nil)
+            setField(widgets.animField, "")
+        end, "Show the card without an animation", "Anim off", 80)
+        y = y + 36
+        -- Two rows of three (the "+100" label does not fit in a button six across).
+        local steps = { -100, -10, -1, 1, 10, 100 }
+        for i, amount in ipairs(steps) do
+            local column, row = (i - 1) % 3, (i - 1) // 3
+            Kit.smallButton(content, (amount > 0 and "+" or "") .. amount, RIGHT_X + column * 108, y + row * STEP, 100, 28,
+                function() stepAnim(amount) end)
+        end
     end
 
     -- 5. The block's buttons sit at the right of the bottom strip.
@@ -924,34 +1102,32 @@ function Builder.show()
     end)
     widgets.deckRefresh = choiceDropdown(LEFT_X, 460, LEFT_W - 10, function()
         local list = {}
-        for _, setName in ipairs(Cards.sets) do
-            list[#list + 1] = { label = Builder.deckLabel(setName) }
+        for _, deck in ipairs(decksFor(draft.kind)) do
+            list[#list + 1] = { label = Builder.deckLabel(deck.setName) }
         end
         return list
-    end, function() return draft.deck end, function(i)
-        draft.deck = i
+    end, function()
+        for i, deck in ipairs(decksFor(draft.kind)) do
+            if deck.index == draft.deck then
+                return i
+            end
+        end
+        return 1
+    end, function(i)
+        local deck = decksFor(draft.kind)[i]
+        draft.deck = deck ~= nil and deck.index or draft.deck
         refreshChecks()
     end)
 end
 
 function Builder.hide()
-    pending = nil
-    closeDropdown()
     TagPicker.setTarget(nil)
     TagPicker.hide()
     Nearby.setPicker(nil)
     NpcSearch.setPicker(nil)
     AnimSearch.setPicker(nil)
-    clearParts(checkParts)
-    if view ~= nil then
-        pcall(function() view.root:Destroy() end)
-        view = nil
-    end
-    if window ~= nil then
-        pcall(function() window:Destroy() end)
-    end
-    window, content = nil, nil
-    widgets = {}
+    ItemProbe.setPicker(nil)
+    destroyWindow()
 end
 
 function Builder.isOpen()
