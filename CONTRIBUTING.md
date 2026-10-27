@@ -79,6 +79,11 @@ a contact so the wiki's admins can reach you if anything goes wrong (see
 `dev/wiki_contact.txt` (for example `@yourname on Discord`). The cache, the candidates and your
 contact file are not committed.
 
+To find NPCs that still need a card, open **Uncarded NPCs** on the Home window. While the developer tools
+are in use, NPCs near you that have no card get a yellow **No card** label in the game world. Use **Ignore**
+in that window for NPCs that will not get a card, or that have one with a different model (it ignores every
+version of that name, and is remembered).
+
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
      NPC you want. This picks the exact NPC (many NPCs have several versions with different
