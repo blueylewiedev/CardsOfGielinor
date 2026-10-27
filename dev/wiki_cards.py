@@ -440,8 +440,9 @@ def only_in_cutscenes(page, fields):
     return all("cutscene" in v.lower() for v in locations)
 
 
-def candidate(page, names, words):
-    """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one."""
+def candidate(page, names, words, exchange=None):
+    """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
+    `exchange` is the item's Module:Exchange page (its Grand Exchange price), if fetched."""
     if REMOVED_CATEGORIES & set(page.get("categories", [])):
         return None, "removed from the game"
     text = page.get("text", "")
@@ -454,7 +455,7 @@ def candidate(page, names, words):
     _, inside = find_template(text, ["Infobox Item"])
     if inside is not None:
         _, bonuses = find_template(text, ["Infobox Bonuses"])
-        return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words)
+        return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words, exchange)
     return None, "no NPC or item infobox"
 
 
@@ -495,7 +496,56 @@ def name_and_desc(page, fields, notes, versions_merge=False):
     return name, desc
 
 
-def item_candidate(page, fields, bonuses, words):
+# ---------------------------------------------------------------------------------------------
+# Item rarity (CONTRIBUTING, "Guidelines for items"). Each signal gives a rarity and the highest wins.
+# The thresholds are all here so they are easy to tune.
+# ---------------------------------------------------------------------------------------------
+
+RARITIES = ["common", "uncommon", "rare", "epic", "legendary"]
+LEVEL_BANDS = [(90, "legendary"), (70, "epic"), (50, "rare"), (25, "uncommon")]    # level needed
+PRICE_BANDS = [(100_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
+DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
+PET_CATEGORY = re.compile(r"\bpets?$")
+DISCONTINUED_CATEGORY = re.compile(r"discontinued|unobtainable")
+
+
+def band(value, bands):
+    """The rarity for a value: that of the first (highest) threshold it reaches, else common."""
+    for threshold, rarity in bands:
+        if value >= threshold:
+            return rarity
+    return "common"
+
+
+def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False):
+    """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
+    (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its rarest drop
+    rate of 1 in N; any can be None when not known. Pets and discontinued items are legendary.
+    Otherwise the highest rarity any known signal gives wins."""
+    given = []
+    if pet:
+        given.append(("legendary", "a pet"))
+    if discontinued:
+        given.append(("legendary", "discontinued or unobtainable"))
+    if level is not None:
+        given.append((band(level, LEVEL_BANDS), f"level {level}"))
+    if price is not None:
+        given.append((band(price, PRICE_BANDS), f"GE price {price:,}"))
+    if drop is not None:
+        given.append((band(drop, DROP_BANDS), f"drop rate 1/{drop:,}"))
+    if not given:
+        return "common", ["no signal"]
+    best = max(RARITIES.index(r) for r, _ in given)
+    return RARITIES[best], [f"{why} ({rarity})" for rarity, why in given]
+
+
+def exchange_price(text):
+    """The Grand Exchange price in an item's Module:Exchange page, or None."""
+    found = re.search(r"\bprice\s*=\s*([\d,]+)", text or "")
+    return int(found.group(1).replace(",", "")) if found else None
+
+
+def item_candidate(page, fields, bonuses, words, exchange=None):
     """A candidate from an item page. The ids go to the plugin, which knows the items' config
     names. Tags: the item category words from its equipment slot and its wiki categories, and the
     skills whose categories it is in."""
@@ -536,17 +586,17 @@ def item_candidate(page, fields, bonuses, words):
     if skills:
         tags["skills"] = skills
 
-    value = re.search(r"\d[\d,]*", first_version(fields, "value"))
-    value = int(value.group().replace(",", "")) if value else 0
-    if value >= 500000:
-        rarity = "epic"
-    elif value >= 50000:
-        rarity = "rare"
-    elif value >= 5000:
-        rarity = "uncommon"
-    else:
-        rarity = "common"
-    notes.append(f"rarity is a guess (worth {value:,} coins)")
+    categories = [c.lower() for c in page.get("categories", [])]
+    price = exchange_price((exchange or {}).get("text"))
+    rarity, why = item_rarity(
+        price=price,
+        pet=any(PET_CATEGORY.search(c) for c in categories),
+        discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
+    notes.append("rarity is a guess: " + ", ".join(why))
+    if price is None:
+        notes.append("no Grand Exchange price found (not tradeable?)")
+    if rarity != "legendary":
+        notes.append("check the level needed and the drop rate: the rarity is the highest of them")
 
     return {"page": page["title"], "kind": "item", "ids": ids[:6], "name": name, "desc": desc,
             "rarity": rarity, "tags": tags, "notes": notes}, None
@@ -900,6 +950,10 @@ def main():
         for title in category_pages(wiki, category, args.refresh and category in args.category):
             add(title, category)
     pages = fetch_pages(wiki, titles, args.refresh)
+    # The Grand Exchange price of each item page is on its own Module:Exchange page.
+    exchange_titles = {title: "Module:Exchange/" + title for title in titles
+                       if title in pages and "Infobox Item" in pages[title].get("text", "")}
+    exchange = fetch_pages(wiki, list(exchange_titles.values()), args.refresh) if exchange_titles else {}
 
     names, words = npc_names(), allowed_words()
     found, skipped = [], {}
@@ -907,7 +961,7 @@ def main():
         page = pages.get(title)
         if page is None:
             continue
-        made, reason = candidate(page, names, words)
+        made, reason = candidate(page, names, words, exchange.get(exchange_titles.get(title)))
         if made is not None:
             made["sources"] = sources[title]
             found.append(made)

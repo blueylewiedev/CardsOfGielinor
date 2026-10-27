@@ -278,7 +278,36 @@ The rules cannot see everything. An NPC that is famous for other reasons can go 
 Doomsayer is uncommon), and so can a joke or a secret (the penguins disguised as sheep). Say why
 in your pull request.
 
-Item guidelines are still being worked out.
+#### Guidelines for items
+
+An item gets a rarity from each of the signals below that applies to it, and **the highest one wins**.
+These are guides, not laws: the maintainer can change a rarity that does not feel right.
+
+| Signal | Common | Uncommon | Rare | Epic | Legendary |
+| --- | --- | --- | --- | --- | --- |
+| **Level needed** (a skill level, or a combat level for gear) | 1-24 | 25-49 | 50-69 | 70-89 | 90+ |
+| **Grand Exchange price** (the infobox's Exchange line, for one item) | under 50k | 50k+ | 1M+ | 10M+ | 100M+ |
+| **Rarest drop rate** (of any monster that drops it, 1 in N) | under 1 in 25 | 1 in 25 to 99 | 1 in 100 to 999 | 1 in 1,000 to 2,499 | 1 in 2,500 or rarer |
+
+Also:
+
+- **Pets** are legendary, however they are obtained. They are very hard to get.
+- **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
+- **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and
+  pyre logs the same as the logs.
+- An item with none of these (cheap, no level, no drops) is **common**.
+- Members-only does not change rarity.
+- Being the rarest drop of a boss does not matter by itself, only the actual drop rate. Use the rate from the
+  wiki's drop table, and the rarest of them if several monsters drop the item.
+
+Examples: clean lantadyme costs about 3k (common) but needs level 73 (epic), so it is **epic**. An Armadyl
+chestplate drops at 1 in 384 (rare) and costs about 4.8M (rare), so it is **rare**. A godsword shard drops at
+1 in 768 (rare) and costs about 118k (uncommon), so it is **rare**.
+
+The wiki tool suggests a rarity from the Grand Exchange price, pets and discontinued items, and lists what
+it used in the notes. It does not read the level needed or the drop rate yet, so check those on the wiki
+page and raise the rarity if they give a higher one. The thresholds are at the top of the rarity section in
+`dev/wiki_cards.py`.
 
 ### Tags
 
