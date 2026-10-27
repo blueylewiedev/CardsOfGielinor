@@ -106,6 +106,8 @@ Cards.tagWords = {
                 "runecrafting", "hunter", "construction", "summoning", "dungeoneering",
                 "divination", "invention", "archaeology", "necromancy" },
     category = {},        -- filled in below from Cards.tagGroups.category
+    -- Whether the card's NPC or item is free to play or members only: one word, or none if unknown.
+    membership = { "f2p", "p2p" },
 }
 
 -- Tag words that are shown in groups when they are picked in the Card Builder. The groups are
@@ -160,13 +162,13 @@ end
 -- The tag kinds that cards of this kind ("npc" or "item") use, in the order they are written.
 -- Items are not tagged with a location. An NPC's region comes from its deck file; an item's is
 -- chosen by hand (at most Cards.MAX_ITEM_REGIONS, see "Choosing regions for an item" in
--- CONTRIBUTING.md).
+-- CONTRIBUTING.md). Both kinds of card may say whether they are free to play or members only.
 Cards.MAX_ITEM_REGIONS = 2
 function Cards.tagKindsFor(cardKind)
     if cardKind == "item" then
-        return { "regions", "skills", "category" }
+        return { "regions", "skills", "category", "membership" }
     end
-    return { "location", "skills", "category" }
+    return { "location", "skills", "category", "membership" }
 end
 
 -- The groups the words of a tag kind are shown in for this kind of card, or nil if the words
@@ -435,6 +437,8 @@ local function checkTags(card)
                 "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" for "
                 .. (Cards.kindOf(card) == "item" and "an item" or "an NPC") .. " card (add it to Cards.tagWords?)")
         end
+        assert(not (tagKind == "membership" and #words > 1),
+            "Card " .. card.id .. ": membership is one word, f2p or p2p")
         assert(not (tagKind == "regions" and Cards.kindOf(card) == "item" and #words > Cards.MAX_ITEM_REGIONS),
             "Card " .. card.id .. ": an item takes at most " .. Cards.MAX_ITEM_REGIONS .. " regions (leave it empty if it comes from more)")
         -- A word from a group with a `requires` (such as a weapon kind) needs that word too.

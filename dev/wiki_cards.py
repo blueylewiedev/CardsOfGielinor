@@ -459,6 +459,20 @@ def candidate(page, names, words, exchange=None):
     return None, "no NPC or item infobox"
 
 
+def membership_tag(fields, notes):
+    """The membership tag word for an infobox's `members` field: ["p2p"] for Yes, ["f2p"] for No,
+    and [] (with a note) when the wiki does not say. The wiki lists several versions of some pages
+    with different answers; the first version's is used."""
+    # (not first_version: that skips "No", which is an answer here)
+    value = next((plain(fields[k]).lower() for k in ("members1", "members") if plain(fields.get(k, ""))), "")
+    if value.startswith("yes"):
+        return ["p2p"]
+    if value.startswith("no"):
+        return ["f2p"]
+    notes.append("members only or free to play is not on the page: choose F2P or P2P")
+    return []
+
+
 def title_bracket(title):
     """The text in brackets at the end of a title or name ("Cook (Lumbridge)" -> Lumbridge), or None."""
     bracket = re.search(r"\(([^)]+)\)$", title)
@@ -585,6 +599,9 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
               if any(c.lower() in (s, s + " items") for c in page.get("categories", []))]
     if skills:
         tags["skills"] = skills
+    membership = membership_tag(fields, notes)
+    if membership:
+        tags["membership"] = membership
 
     categories = [c.lower() for c in page.get("categories", [])]
     price = exchange_price((exchange or {}).get("text"))
@@ -817,6 +834,10 @@ def npc_candidate(page, kind, fields, names, words):
     skills = [s for s in words["skills"] if re.search(r"\b" + s + r" (?:master )?cape\b", shop)]
     if skills and "Skill masters" in page.get("categories", []):
         tags["skills"] = skills
+
+    membership = membership_tag(fields, notes)
+    if membership:
+        tags["membership"] = membership
 
     gender = gender_of(page)
     character = is_character(page, race)
