@@ -311,9 +311,11 @@ Examples: clean lantadyme costs about 3k (common) but needs level 73 (epic), so 
 chestplate drops at 1 in 384 (rare) and costs about 4.8M (rare), so it is **rare**. A godsword shard drops at
 1 in 768 (rare) and costs about 118k (uncommon), so it is **rare**.
 
-The wiki tool suggests a rarity from the Grand Exchange price, pets and discontinued items, and lists what
-it used in the notes. It does not read the level needed or the drop rate yet, so check those on the wiki
-page and raise the rarity if they give a higher one. The thresholds are at the top of the rarity section in
+The wiki tool suggests a rarity from the level needed, the Grand Exchange price, pets and discontinued
+items, and lists what it used in the notes. The level and the `skills` tag come from the page's Recipe
+infobox (only recipes that make the item; if there are several, the easiest one). It does not read the
+level for items that are not made (gear, say) or the drop rate yet, so check those on the wiki page and
+raise the rarity if they give a higher one. The thresholds are at the top of the rarity section in
 `dev/wiki_cards.py`.
 
 ### Tags
