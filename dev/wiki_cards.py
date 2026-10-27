@@ -69,7 +69,7 @@ MIN_GAP = 2.0           # seconds between requests
 MAXLAG = 5              # seconds of database lag at which the wiki asks us to wait
 BATCH = 25              # pages per request (their categories fit in one answer at this size)
 RETRIES = 3             # times to wait and try again when the wiki asks us to wait
-MAX_DESC = 40           # the longest description that fits on a card without being cut off
+MAX_DESC = 65           # the longest description that fits on a card (as in the Card Builder)
 
 # ---------------------------------------------------------------------------------------------
 # The wiki, politely

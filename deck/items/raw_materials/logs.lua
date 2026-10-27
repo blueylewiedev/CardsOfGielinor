@@ -166,7 +166,7 @@ Set.cards = {
     },
     {
         id = "oak_logs", name = "Oak logs", kind = "item", rarity = "common",
-        desc = "Logs cut from an oak tree. Used in Firemaking (15), Fletching (20).",
+        desc = "Logs cut from an oak tree.",
         art = { item = "OAK_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
         tags = { skills = { "woodcutting", "fletching", "firemaking", "crafting" }, category = { "raw_material" } },
     },

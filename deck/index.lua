@@ -16,9 +16,9 @@
 --   deck/npcs/    NPC cards, one file for each region (misthalin.lua, asgarnia.lua, ...), plus
 --                 general.lua for NPCs found all over the game (guards, shop keepers, animals)
 --   deck/items/   item cards. general.lua for now; as cards are added they go in a folder for each
---                 item category with a file for each sub-type, named after the category words
---                 (deck/items/raw_material/logs.lua, deck/items/weapons/scimitar.lua, ...).
---                 The card builder shows these as "Raw Material: Logs", "Weapons: Scimitar".
+--                 item category (the word in the plural) with a file for each kind of item, also
+--                 in the plural (deck/items/raw_materials/logs.lua, deck/items/weapons/scimitars.lua).
+--                 The card builder shows these as "Raw Materials: Logs", "Weapons: Scimitars".
 --
 -- Every file has to be listed below, including the ones in folders. Run
 -- `python dev/check_deck_index.py` to check; it also runs on every pull request.
