@@ -63,7 +63,7 @@ local draft = freshDraft()
 -- ---------------------------------------------------------------------------------------------
 
 -- The longest description that fits on a card. (The longest one in the deck is 45.)
-local MAX_DESC = 60
+local MAX_DESC = 65
 
 -- The card id rule: lower case, spaces become underscores, anything else that is not a letter or
 -- digit is dropped. "Sir Amik Varze" becomes sir_amik_varze.
@@ -982,6 +982,75 @@ function Builder.useModel(configName, candidate)
     end
 end
 
+-- The singular and plural spellings of a name, as the names a deck file or folder might use
+-- (raw_material and raw_materials, scimitars and scimitar), the one given first.
+local function nameForms(name)
+    local forms = { name }
+    local function add(form)
+        for _, existing in ipairs(forms) do
+            if existing == form then
+                return
+            end
+        end
+        forms[#forms + 1] = form
+    end
+    if string.sub(name, -1) == "y" then
+        add(string.sub(name, 1, -2) .. "ies")
+    elseif string.sub(name, -1) ~= "s" then
+        add(name .. "s")
+    end
+    if #name > 3 and string.sub(name, -1) == "s" and string.sub(name, -2) ~= "ss" then
+        add(string.sub(name, 1, -2))
+    end
+    return forms
+end
+
+-- The same names with the plural first, which is how the folders and files are named (a name
+-- already in the plural is first as it is).
+local function pluralFirst(name)
+    local forms = nameForms(name)
+    if string.sub(name, -1) ~= "s" and forms[2] ~= nil then
+        return { forms[2], forms[1] }
+    end
+    return forms
+end
+
+-- The deck files to try for an item, best first: in the folder for its first category word
+-- (raw_materials, the word in the plural; as it is is tried too), the file named
+-- for its second category word (weapons/scimitars) or for the wiki category it came from
+-- (raw_materials/logs), then that folder's general file, then deck/items/general. `sources` are
+-- the wiki categories the candidate came from ("Logs").
+function Builder.itemDeckNames(category, sources)
+    local names = {}
+    local first = category[1]
+    if first ~= nil and first ~= "" then
+        -- The folder: the word in the plural, which is how they are named, then as it is.
+        local folders = pluralFirst(first)
+        -- The kinds of item: the second category word, then the wiki categories it came from.
+        local kinds = { category[2] }
+        for _, source in ipairs(sources or {}) do
+            local slug = string.gsub(string.lower(source), "[^a-z0-9]+", "_")
+            slug = string.gsub(slug, "^_+", "")
+            slug = string.gsub(slug, "_+$", "")
+            kinds[#kinds + 1] = slug
+        end
+        for _, kind in ipairs(kinds) do
+            if kind ~= "" then
+                for _, form in ipairs(pluralFirst(kind)) do
+                    for _, folder in ipairs(folders) do
+                        names[#names + 1] = "deck/items/" .. folder .. "/" .. form
+                    end
+                end
+            end
+        end
+        for _, folder in ipairs(folders) do
+            names[#names + 1] = "deck/items/" .. folder .. "/general"
+        end
+    end
+    names[#names + 1] = "deck/items/general"
+    return names
+end
+
 -- The index in Cards.sets of the first of these deck files that exists, or nil.
 local function firstDeck(setNames)
     for _, setName in ipairs(setNames) do
@@ -997,7 +1066,7 @@ end
 -- Fills the card in from a wiki candidate (see dev/wikireview.lua) and shows it, replacing
 -- anything entered before: an NPC or item card with the candidate's model `configName`, name,
 -- description, suggested rarity and tags. An NPC goes in its region's deck file (whose defaults
--- give the region tag), an item in the file for its category (deck/items/<category>/<kind>.lua,
+-- give the region tag), an item in the file for its category (deck/items/<categories>/<kind>.lua,
 -- see deck/index.lua) if there is one; otherwise the general file. The camera starts from the
 -- defaults, and an NPC's animation is a guess at its standing one (see Builder.readyAnim).
 function Builder.loadCandidate(candidate, configName)
@@ -1009,8 +1078,7 @@ function Builder.loadCandidate(candidate, configName)
         fresh.kind = "item"
         fresh.item = configName
         local category = tags.category or {}
-        fresh.deck = firstDeck({ "deck/items/" .. table.concat(category, "/", 1, math.min(#category, 2)),
-            "deck/items/" .. (category[1] or ""), "deck/items/general" }) or fresh.deck
+        fresh.deck = firstDeck(Builder.itemDeckNames(category, candidate.sources)) or fresh.deck
     else
         fresh.npc = configName or candidate.npc
         fresh.anim = Builder.readyAnim(fresh.npc, isHumanoid(candidate))

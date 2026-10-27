@@ -105,7 +105,7 @@ contact file are not committed.
 
    <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
 
-5. **Write a description** (up to 60 letters, shorter is better).
+5. **Write a description** (up to 65 letters, shorter is better).
 
    <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
 
@@ -194,8 +194,10 @@ be created and listed in `deck/index.lua`.
 
 Item cards go in `deck/items/`. There is one file, `general.lua`, for now. As item cards are added
 they are grouped in a folder for each item category, with a file for each sub-type, for example
-`deck/items/raw_material/logs.lua` or `deck/items/weapons/scimitar.lua`. Use the category words as
-the folder and file names. There is no limit on the number of cards in a file; split a file when it
+`deck/items/raw_materials/logs.lua` or `deck/items/weapons/scimitars.lua`. The folder is the plural
+of the category word (`raw_materials`, `weapons`) and the file is named for the kind of item, in the
+plural (`logs`, `herbs`, `scimitars`). The Wiki Review window looks for the folder and file this way
+when it loads a candidate, and falls back to `general.lua`. There is no limit on the number of cards in a file; split a file when it
 gets hard to work with or when two people keep editing the same one.
 
 **Every deck file has to be listed in `deck/index.lua`**, including the ones in folders, because
@@ -220,7 +222,7 @@ against it. Choose it carefully.
 
 - The name is the NPC's name as it appears in the game.
 - The description is one short, friendly line in the style of the existing cards ("Sells axes
-  and strong opinions."). Keep it to 60 letters at most.
+  and strong opinions."). Keep it to 65 letters at most.
 - Keep everything suitable for all ages. No real people, no references to real-world events or
   accounts, no copying text from elsewhere.
 
