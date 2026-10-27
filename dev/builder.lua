@@ -1011,6 +1011,9 @@ local function fillWindow()
         widgets.npcStatus.content = subject() == "" and ""
             or (lookupSubject(subject()) ~= nil and "Found" or "Not found")
     end
+    if widgets.animSet ~= nil then
+        widgets.animSet.content = animSetLine(subject())
+    end
     if widgets.outputStatus ~= nil then
         widgets.outputStatus.content = ""
     end
