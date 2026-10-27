@@ -30,8 +30,17 @@ Set.cards = {
     {
         id = "doric", name = "Doric", rarity = "rare",
         desc = "A dwarf serious about his anvil.",
+        art = { anim = 17846, cam = { yaw = -0.40, dist = 859, ty = 280, tx = 50 } },
         tags = { skills = { "smithing" }, category = { "shopkeeper" } },
     },
+    { id = "aksel", name = "Aksel", rarity = "common", desc = "* An excited dwarf. * A worried looking dwarf.", art = { npc = "ARTISAN_AKSEL", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { category = { "humanoid" } } },
+    { id = "ambassador_spanfipple", name = "Ambassador Spanfipple", rarity = "uncommon", desc = "Peaceful man!", art = { npc = "ALUFT_GNOME_DIPLOMAT_FALADOR", anim = 37961, cam = { yaw = -0.20, dist = 566, ty = 320 } }, tags = { category = { "humanoid" } } },
+    { id = "apprentice_workman", name = "Apprentice workman", rarity = "common", desc = "He's learning a trade.", art = { npc = "FALADOR_WORKMAN_YOUNG", anim = 808, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { location = { "falador" }, category = { "humanoid" } } },
+    { id = "drunken_man", name = "Drunken man", rarity = "common", desc = "One of Gielinor's many citizens, currently incapacitated by alcohol.", art = { npc = "FALADOR_MAN1", anim = 2770, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { category = { "humanoid", "monster" } } },
+    { id = "dwarf", name = "Dwarf", rarity = "uncommon", desc = "A dwarf who looks after the mining guild.", art = { npc = "GUILDDWARF", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { category = { "humanoid" } } },
+    { id = "egil", name = "Egil", rarity = "uncommon", desc = "A particularly neat dwarf.", art = { npc = "ARTISAN_EGIL_SCORER", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { category = { "humanoid", "shopkeeper" } } },
+    { id = "elof", name = "Elof", rarity = "common", desc = "A pen-pushing sort of fellow.", art = { npc = "ARTISAN_ELOF", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } }, tags = { category = { "humanoid", "shopkeeper" } } },
+    { id = "emily", name = "Emily", rarity = "uncommon", desc = "Works in the Rising Sun.", art = { npc = "QUEST_DAUGHTER2_MUSICAL_EMILY", anim = 12456, cam = { yaw = 6.40, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" } } },
 
     -- Drafts (waiting for an NPC name)
 

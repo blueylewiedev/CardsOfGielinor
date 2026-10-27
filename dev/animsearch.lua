@@ -57,6 +57,12 @@ local function loadIndex()
     return index
 end
 
+-- Every sequence, as a list of { id, name, lower } sorted by name, or nil if the client would
+-- not list them (the Card Builder uses it to guess standing animations).
+function AnimSearch.all()
+    return loadIndex()
+end
+
 -- The sequences whose name contains `text` (any case), as a list of { id, name }, at most
 -- MAX_MATCHES. Returns nil if the sequence names are not available.
 function AnimSearch.find(text)
