@@ -14,7 +14,7 @@ Set.cards = {
         tags = { skills = { "fishing", "construction" }, category = { "decoration" }, membership = { "p2p" } },
     },
     {
-        id = "big_swordfish", name = "Big swordfish", kind = "item", rarity = "common",
+        id = "big_swordfish", name = "Big swordfish", kind = "item", rarity = "legendary",
         desc = "Whopper! I should get this stuffed!",
         art = { item = "POH_TROPHYDROP_SWORDFISH", cam = { pitch = 1.40, dist = 345, fov = 65, ty = 20 } },
         tags = { skills = { "fishing", "construction" }, category = { "decoration" }, membership = { "p2p" } },

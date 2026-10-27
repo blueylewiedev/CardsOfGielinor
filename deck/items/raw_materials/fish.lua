@@ -128,7 +128,7 @@ Set.cards = {
         tags = { skills = { "fishing" }, category = { "food" }, membership = { "f2p" } },
     },
     {
-        id = "", name = "Raw hogfish", kind = "item", rarity = "rare",
+        id = "raw_hogfish", name = "Raw hogfish", kind = "item", rarity = "rare",
         desc = "An incredibly fatty fish.",
         art = { item = "RAW_HOGFISH", cam = { yaw = 0.20, dist = 456, tx = 40 } },
         tags = { regions = { "havenhythe" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
