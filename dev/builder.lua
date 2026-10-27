@@ -48,6 +48,7 @@ local function freshDraft()
         desc = "",
         rarity = "common",
         regions = "", skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
+        membership = "",       -- "f2p", "p2p" or "" (chosen with the two buttons beside the rarity)
         deck = 1,              -- which deck file (index into Cards.sets); one of the kind's own files
         body = true,           -- body model (true) or head model (false)
         cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
@@ -628,6 +629,9 @@ function Builder.checks()
             break
         end
     end
+    if #tagWords("membership") > 1 then
+        tagProblem = tagProblem or "Choose f2p or p2p, not both"
+    end
     if isItem() and #tagWords("regions") > Cards.MAX_ITEM_REGIONS then
         tagProblem = tagProblem or ("An item takes at most " .. Cards.MAX_ITEM_REGIONS
             .. " regions; leave regions empty if it comes from more")
@@ -640,6 +644,10 @@ function Builder.checks()
         add("note", tagNotes[1] .. (#tagNotes > 1 and (" and " .. (#tagNotes - 1) .. " more") or ""))
     else
         add("ok", "The tags look right")
+    end
+
+    if #tagWords("membership") == 0 then
+        add("note", "Free to play or members? Choose F2P or P2P (optional)")
     end
 
     if not isItem() and draft.anim == nil then
@@ -995,6 +1003,14 @@ local function hasWork()
     return draft.anim ~= nil or draft.cam ~= nil
 end
 
+-- Shows the draft's membership on the F2P and P2P buttons.
+local function showMembership()
+    if widgets.f2pToggle ~= nil then
+        widgets.f2pToggle.setActive(draft.membership == "f2p")
+        widgets.p2pToggle.setActive(draft.membership == "p2p")
+    end
+end
+
 -- Writes the draft into the open window's boxes and redraws the card (after Reset, or when a
 -- wiki candidate is loaded: filling the window again rather than building it again, which would
 -- make hundreds of new parts each time, and the client only has room for about 4096).
@@ -1006,6 +1022,7 @@ local function fillWindow()
     for _, tagKind in ipairs(isItem() and { "regions", "skills", "category" } or { "skills", "location", "category" }) do
         setField(widgets[tagKind .. "Field"], draft[tagKind] or "")
     end
+    showMembership()
     setField(widgets.animField, animText())
     if widgets.npcStatus ~= nil then
         widgets.npcStatus.content = subject() == "" and ""
@@ -1363,7 +1380,8 @@ function Builder.loadCandidate(candidate, configName)
     fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
     fresh.desc = candidate.desc or ""
     fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
-    for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category" } or { "skills", "location", "category" }) do
+    for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category", "membership" }
+        or { "skills", "location", "category", "membership" }) do
         fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
     end
     if fresh.kind == "item" then
@@ -1474,6 +1492,17 @@ function Builder.show()
     -- Left column, below the description: rarity, tags, deck file. (The drop-downs are made
     -- last so their lists open over everything else.)
     caption("Suggested rarity (we may change it in review)", LEFT_X, 256, LEFT_W)
+
+    -- Free to play or members only, beside the rarity: pressing the one that is on turns it off.
+    local function chooseMembership(word, on)
+        draft.membership = on and word or ""
+        showMembership()
+        soon()
+    end
+    widgets.f2pToggle = Kit.toggleButton(content, "F2P", LEFT_X + 318, 274, 70, 28, draft.membership == "f2p",
+        function(on) chooseMembership("f2p", on) end, "Free to play: anyone can get this")
+    widgets.p2pToggle = Kit.toggleButton(content, "P2P", LEFT_X + 396, 274, 70, 28, draft.membership == "p2p",
+        function(on) chooseMembership("p2p", on) end, "Members only (pay to play)")
 
     caption("Tags: words separated by commas", LEFT_X, 316, LEFT_W - 160)
     Kit.smallButton(content, "Pick tags", LEFT_X + LEFT_W - 150, 310, 140, 24, function()

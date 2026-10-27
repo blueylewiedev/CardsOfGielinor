@@ -327,13 +327,19 @@ useful to the packs.
 | `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
 | `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
 | `category` | what kind of character it is, what it does, or whether it can be fought (for an item: what it is used for, or what it is worn or wielded as) | `humanoid`, `shopkeeper`, `monster` (items: `raw_material`, `food`, `weapon`) |
+| `membership` | whether it is free to play or members only: `f2p` or `p2p`, one word | `f2p`, `p2p` |
 
 For an NPC the region comes from the deck file, so it is not asked for. Item cards are tagged with
-`regions`, `skills` and `category`: an item has no `location`, and its region is chosen by hand (see
+`regions`, `skills`, `category` and `membership`: an item has no `location`, and its region is chosen by hand (see
 "Choosing regions for an item"). The category words are not the NPC ones (an item cannot be a
 `dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the words for the
 kind of card you are making. Some words only appear after another is picked (see "Choosing a
 category for an item").
+
+**Membership.** Tag every new card `f2p` or `p2p`, for an NPC or an item. It is one word, from the wiki's
+"Members" line (Yes is `p2p`, No is `f2p`): the wiki tool suggests it, and the Card Builder has **F2P** and **P2P**
+buttons beside the rarity. Pressing the one that is on turns it off. A card with neither is left as it is
+(older cards are not tagged yet).
 
 **Rules for words**
 
