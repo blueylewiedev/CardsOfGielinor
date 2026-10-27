@@ -229,6 +229,8 @@ against it. Choose it carefully.
 ### Rarity
 
 Rarity is the card's chance of turning up in a pack: common, uncommon, rare, epic and legendary.
+Every card in a pack is drawn at random: first NPC or item (equal chances, set by `Packs.kindWeights`
+in `core/packs.lua`), then a rarity, then a card. No slot is reserved for a kind of card.
 Your choice is a **suggestion**. The maintainer decides the final rarity so the deck stays
 balanced, and will either change it or leave a comment on your pull request explaining what is
 wanted. Looking at where similar NPCs sit in the existing files is the best guide.
