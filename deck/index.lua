@@ -42,4 +42,8 @@ return {
     "deck/items/general",
     "deck/items/raw_materials/herbs",
     "deck/items/raw_materials/logs",
+    "deck/items/runes",
+    "deck/items/raw_materials/fish",
+    "deck/items/food/cooked_fish",
+    "deck/items/decoration"
 }

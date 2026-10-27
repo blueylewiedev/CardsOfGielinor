@@ -97,9 +97,10 @@ Cards.packTypes = {
 -- that are not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
-                "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe", "daemonheim" },
-    location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "ranch_out_of_time", "lumbridge_swamp", "dorgesh_kaan", "burthorpe", "chaos_tunnels",
-                "fremennik_slayer_dungeon", "catherby" },
+                "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe", "daemonheim",
+                "the_arc" },
+    location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "ranch_out_of_time", "lumbridge_swamp",
+                 "dorgesh_kaan", "burthorpe", "chaos_tunnels", "fremennik_slayer_dungeon", "catherby" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
@@ -136,7 +137,7 @@ Cards.itemTagGroups = {
     category = {
         { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
             "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", 
-            "armour", "jewellery", "pocket", "ammunition", "fashion", "treasure_trail", "slayer_drop" } },
+            "armour", "jewellery", "pocket", "ammunition", "fashion", "treasure_trail", "slayer_drop", "minigame" } },
         { title = "What kind of weapon", requires = "weapon",
             words = { "dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd",
                 "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon" } },
