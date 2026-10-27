@@ -14,6 +14,7 @@
 
 local Cards = require("core/cards")
 local Kit = require("ui/kit")
+local Builder = require("dev/builder")
 
 local Uncarded = {}
 
@@ -29,13 +30,14 @@ local OUTLINE_WIDTH = 2
 
 -- The window. The visible width of its contents is a little less than WIDTH, so things lined up on
 -- the right edge use RIGHT.
-local WIDTH, ROW_H = 640, 34
+local WIDTH, ROW_H = 640, 52
 local RIGHT = WIDTH - 80
-local ROWS = 10              -- rows on a page
+local ROWS = 7               -- rows on a page
 local ROWS_TOP = 118
 local BUTTON_H = 30
-local NAME_W = 190           -- width of the name column; the config name follows it
-local ACTION_W = 110         -- width of the Ignore / Restore buttons
+local LINE_H = 17            -- each row has three lines of text: name, config name, animation set
+local ACTION_W = 100         -- width of the Ignore / Restore buttons
+local CARD_W = 100           -- width of the Card button
 local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
 
@@ -161,7 +163,10 @@ local function look()
                 tracked[#tracked + 1] = { npc = npc, name = name }
                 if seen[key] == nil then
                     local okCfg, configName = pcall(function() return tostring(npc.config.configName) end)
-                    seen[key] = { name = name, configName = okCfg and configName or "?", order = 0 }
+                    -- The animation set is a clue to which animations suit the NPC.
+                    local okBas, bas = pcall(function() return tostring(npc.config.bas.configName) end)
+                    seen[key] = { name = name, configName = okCfg and configName or "?",
+                        bas = okBas and bas or "none", order = 0 }
                 end
                 seenCounter = seenCounter + 1
                 seen[key].order = seenCounter
@@ -279,13 +284,14 @@ local function listed()
     local list = {}
     if showIgnored then
         for key, name in pairs(data.ignored) do
-            list[#list + 1] = { key = key, name = name, configName = "" }
+            list[#list + 1] = { key = key, name = name }
         end
         table.sort(list, function(a, b) return a.key < b.key end)
     else
         for key, entry in pairs(seen) do
             if data.ignored[key] == nil then
-                list[#list + 1] = { key = key, name = entry.name, configName = entry.configName, order = entry.order }
+                list[#list + 1] = { key = key, name = entry.name, configName = entry.configName, bas = entry.bas,
+                    order = entry.order }
             end
         end
         table.sort(list, function(a, b) return a.order > b.order end)
@@ -333,10 +339,18 @@ refresh = function()
     for i = first, math.min(#list, first + ROWS - 1) do
         local entry = list[i]
         local y = ROWS_TOP + (i - first) * ROW_H
-        rows[#rows + 1] = Kit.text(content, 10, y, NAME_W, BUTTON_H, entry.name, WHITE, ui.AlignMode.TOPLEFT)
-        rows[#rows + 1] = Kit.text(content, 10 + NAME_W, y, RIGHT - ACTION_W - NAME_W - 20, BUTTON_H,
-            entry.configName, GREY, ui.AlignMode.TOPLEFT)
-        rows[#rows + 1] = Kit.buttonAt(content, showIgnored and "Restore" or "Ignore", RIGHT - ACTION_W, y,
+        local textW = RIGHT - ACTION_W - (showIgnored and 0 or CARD_W) - 30
+        rows[#rows + 1] = Kit.text(content, 10, y, textW, LINE_H, entry.name, WHITE, ui.AlignMode.TOPLEFT)
+        if not showIgnored then
+            rows[#rows + 1] = Kit.text(content, 10, y + LINE_H, textW, LINE_H, entry.configName, GREY,
+                ui.AlignMode.TOPLEFT)
+            rows[#rows + 1] = Kit.text(content, 10, y + 2 * LINE_H, textW, LINE_H, "Animation set: " .. entry.bas,
+                GREY, ui.AlignMode.TOPLEFT)
+            -- Starts a card for this NPC in the Card Builder.
+            rows[#rows + 1] = Kit.buttonAt(content, "Card", RIGHT - ACTION_W - CARD_W - 10, y + 8, CARD_W, BUTTON_H,
+                function() Builder.loadNpc(entry) end, "positive", "Start a card for this NPC in the Card Builder")
+        end
+        rows[#rows + 1] = Kit.buttonAt(content, showIgnored and "Restore" or "Ignore", RIGHT - ACTION_W, y + 8,
             ACTION_W, BUTTON_H, function() setIgnored(entry, not showIgnored) end)
     end
     if #list == 0 then
@@ -380,10 +394,10 @@ function Uncarded.show()
     Kit.buttonAt(content, "+ " .. RANGE_STEP, RIGHT - 90, 40, 90, BUTTON_H, function() changeRange(RANGE_STEP) end)
 
     -- Third row: what the list holds, and the pages.
-    statusText = Kit.text(content, 10, 78, 340, 24, "", WHITE, ui.AlignMode.TOPLEFT)
-    Kit.buttonAt(content, "<", RIGHT - 240, 76, 50, 28, function() page = page - 1 refresh() end)
-    pageText = Kit.text(content, RIGHT - 135, 78, 80, 24, "", WHITE)
-    Kit.buttonAt(content, ">", RIGHT - 50, 76, 50, 28, function() page = page + 1 refresh() end)
+    statusText = Kit.text(content, 10, 78, 320, 24, "", WHITE, ui.AlignMode.TOPLEFT)
+    Kit.buttonAt(content, "Prev", RIGHT - 300, 76, 80, 28, function() page = page - 1 refresh() end)
+    pageText = Kit.text(content, RIGHT - 210, 78, 120, 24, "", WHITE)
+    Kit.buttonAt(content, "Next", RIGHT - 80, 76, 80, 28, function() page = page + 1 refresh() end)
     refresh()
 end
 

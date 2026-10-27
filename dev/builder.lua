@@ -298,6 +298,25 @@ function Builder.readyAnim(configName, humanoid, text, gender)
     return fallback
 end
 
+-- The name of the animation set an NPC uses (its config's `bas`), or nil if it is not known. Its
+-- name is the best clue to which animations suit the NPC.
+function Builder.animSetOf(configName)
+    local npcId = Builder.lookupNpc(configName)
+    if npcId == nil then
+        return nil
+    end
+    local ok, name = pcall(function() return tostring(config.NPC.FromID(npcId).bas.configName) end)
+    if ok and name ~= "nil" then
+        return name
+    end
+    return nil
+end
+
+local function animSetLine(configName)
+    local name = Builder.animSetOf(configName)
+    return name ~= nil and ("Animation set: " .. name) or ""
+end
+
 -- Looks up an item by config name. Returns its numeric id and in-game name, or nil if the client
 -- does not know the name.
 function Builder.lookupItem(configName)
@@ -853,6 +872,9 @@ local function setSubject(configName)
     if widgets.npcStatus ~= nil then
         widgets.npcStatus.content = subjectId ~= nil and "Found" or (configName == "" and "" or "Not found")
     end
+    if widgets.animSet ~= nil then
+        widgets.animSet.content = animSetLine(configName)
+    end
     if subjectId ~= nil and displayName ~= nil and not draft.nameTouched then
         draft.name = displayName
         setField(widgets.nameField, displayName)
@@ -1207,6 +1229,14 @@ function Builder.useModel(configName, candidate)
     if window == nil then
         Builder.show()
     end
+end
+
+-- Starts an NPC card for an NPC found in the game (the Uncarded NPCs window): its model, name, card
+-- id and a guess at its standing animation, in the general NPC deck file. `npc` is { configName,
+-- name }. Anything entered before is replaced.
+function Builder.loadNpc(npc)
+    Builder.loadCandidate({ kind = "npc", name = npc.name, desc = "", rarity = "common", tags = {},
+        npc = npc.configName }, npc.configName)
 end
 
 -- The singular and plural spellings of a name, as the names a deck file or folder might use
@@ -1598,6 +1628,9 @@ function Builder.show()
             setField(widgets.animField, "")
         end, "Show the card without an animation", "Anim off", 80)
         y = y + 36
+        -- The NPC's animation set: its name is a clue for what to search for.
+        widgets.animSet = Kit.text(content, RIGHT_X, y + 2 * STEP + 4, RIGHT_W, 20, animSetLine(subject()), GREY,
+            ui.AlignMode.TOPLEFT)
         -- Two rows of three (the "+100" label does not fit in a button six across).
         local steps = { -100, -10, -1, 1, 10, 100 }
         for i, amount in ipairs(steps) do

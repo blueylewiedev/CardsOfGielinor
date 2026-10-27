@@ -83,7 +83,8 @@ To find NPCs that still need a card, open **Uncarded NPCs** on the Home window. 
 are in use, NPCs near you that have no card get a yellow box round them in the game world (the window
 switches the boxes off and sets how many tiles to look). Use **Ignore** in that window for NPCs that will
 not get a card, or that have one with a different model (it ignores every version of that name, and is
-remembered).
+remembered). **Card** on a row opens the Card Builder with the NPC, its name, a card id and a guess at its standing
+animation filled in. Each row also shows the NPC's animation set, and so does the Builder, as a clue when searching for an animation.
 
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
