@@ -29,8 +29,8 @@ local OUTLINE_WIDTH = 2
 
 -- The window. The visible width of its contents is a little less than WIDTH, so things lined up on
 -- the right edge use RIGHT.
-local WIDTH, ROW_H = 620, 34
-local RIGHT = WIDTH - 40
+local WIDTH, ROW_H = 640, 34
+local RIGHT = WIDTH - 80
 local ROWS = 10              -- rows on a page
 local ROWS_TOP = 118
 local BUTTON_H = 30
@@ -354,7 +354,7 @@ function Uncarded.show()
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     local height = ROWS_TOP + ROWS * ROW_H + 10 + Kit.titleBarHeight()
     window, content = Kit.window(gameWindow, "Uncarded NPCs", WIDTH, height,
-        function() Uncarded.hide() end, 0.8, 0.05)
+        function() Uncarded.hide() end, 0.2, 0.10)
 
     -- Top row: the switch, and which list is shown.
     boxButton = Kit.buttonAt(content, "Boxes", 10, 2, 150, BUTTON_H, function()
@@ -381,7 +381,7 @@ function Uncarded.show()
 
     -- Third row: what the list holds, and the pages.
     statusText = Kit.text(content, 10, 78, 340, 24, "", WHITE, ui.AlignMode.TOPLEFT)
-    Kit.buttonAt(content, "<", RIGHT - 190, 76, 50, 28, function() page = page - 1 refresh() end)
+    Kit.buttonAt(content, "<", RIGHT - 240, 76, 50, 28, function() page = page - 1 refresh() end)
     pageText = Kit.text(content, RIGHT - 135, 78, 80, 24, "", WHITE)
     Kit.buttonAt(content, ">", RIGHT - 50, 76, 50, 28, function() page = page + 1 refresh() end)
     refresh()
