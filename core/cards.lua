@@ -97,7 +97,7 @@ Cards.packTypes = {
 -- that are not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
-                "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe" },
+                "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe", "daemonheim" },
     location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "ranch_out_of_time", "lumbridge_swamp", "dorgesh_kaan", "burthorpe", "chaos_tunnels",
                 "fremennik_slayer_dungeon", "catherby" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
