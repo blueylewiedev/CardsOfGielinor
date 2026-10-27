@@ -3,7 +3,8 @@
 -- pcall(require, "dev/dev"). The released plugin does not contain the dev folder, so there the
 -- load fails quietly and none of this exists.
 --
--- It provides: the card preview window, the NPC browser, the nearby NPC lister, the Output window,
+-- It provides: the card preview window, the NPC browser, the nearby NPC lister, the labels over
+-- NPCs that have no card (dev/uncarded.lua), the Output window,
 -- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
 -- dev/wikifetch.lua), the saved camera
 -- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
@@ -16,6 +17,7 @@ local Preview = require("dev/preview")
 local Builder = require("dev/builder")
 local NpcBrowser = require("dev/npcbrowser")
 local Nearby = require("dev/nearby")
+local Uncarded = require("dev/uncarded")
 local NpcSearch = require("dev/npcsearch")
 local AnimSearch = require("dev/animsearch")
 local TagPicker = require("dev/tagpicker")
@@ -71,6 +73,7 @@ function Dev.buttons(api, refresh)
         { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
+        { label = "Uncarded NPCs", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
         { label = "Output", action = OutputWindow.toggle },
     }
@@ -91,7 +94,9 @@ function Dev.setActive(active)
     Dev.active = active
     Tuning.enabled = active
     CardView.artOverride = active and Tuning.get or nil
-    if not active then
+    if active then
+        Uncarded.start()
+    else
         Dev.shutdown()
     end
 end
@@ -103,6 +108,8 @@ function Dev.shutdown()
     PackMaker.hide()
     NpcBrowser.hide()
     Nearby.hide()
+    Uncarded.hide()
+    Uncarded.stop()
     NpcSearch.hide()
     AnimSearch.hide()
     TagPicker.hide()

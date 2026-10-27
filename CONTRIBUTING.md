@@ -79,6 +79,13 @@ a contact so the wiki's admins can reach you if anything goes wrong (see
 `dev/wiki_contact.txt` (for example `@yourname on Discord`). The cache, the candidates and your
 contact file are not committed.
 
+To find NPCs that still need a card, open **Uncarded NPCs** on the Home window. While the developer tools
+are in use, NPCs near you that have no card get a yellow box round them in the game world (the window
+switches the boxes off and sets how many tiles to look). Use **Ignore** in that window for NPCs that will
+not get a card, or that have one with a different model (it ignores every version of that name, and is
+remembered). **Card** on a row opens the Card Builder with the NPC, its name, a card id and a guess at its standing
+animation filled in. Each row also shows the NPC's animation set, and so does the Builder, as a clue when searching for an animation.
+
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
      NPC you want. This picks the exact NPC (many NPCs have several versions with different
@@ -229,9 +236,85 @@ against it. Choose it carefully.
 ### Rarity
 
 Rarity is the card's chance of turning up in a pack: common, uncommon, rare, epic and legendary.
+Every card in a pack is drawn at random: first NPC or item (equal chances, set by `Packs.kindWeights`
+in `core/packs.lua`), then a rarity, then a card. No slot is reserved for a kind of card.
 Your choice is a **suggestion**. The maintainer decides the final rarity so the deck stays
 balanced, and will either change it or leave a comment on your pull request explaining what is
 wanted. Looking at where similar NPCs sit in the existing files is the best guide.
+
+#### Guidelines for NPCs
+
+These describe where the existing NPC cards sit, and the Wiki Review's suggested rarities follow
+them. Go down the list and stop at the first one that fits:
+
+| # | The NPC is... | Rarity | For example |
+|---|---|---|---|
+| 1 | A boss | **Epic**, or **legendary** from combat level 200 | Elvarg, King Black Dragon |
+| 2 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
+| 3 | A named character, skill master or Slayer master | See the next table | |
+| 4 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
+| 5 | A Slayer monster from Slayer level 5 | **Uncommon** | Cave crawler, Cave bug |
+| 6 | Found almost everywhere (60 or more spawns), whatever its level | **Common** | Goblin, Giant rat, Chicken |
+| 7 | Combat level 100 or more | **Rare** | |
+| 8 | Combat level 30 or more | **Uncommon** | |
+| 9 | Anyone else | **Common** | Man, animals |
+
+Named characters, skill masters and Slayer masters (again, the first that fits):
+
+| The character is... | Rarity | For example |
+|---|---|---|
+| In 12 or more quests, or in 5 or more and found in 5 or more places | **Epic** | King Roald, Wise Old Man |
+| A skill master (sells a skillcape) | **Rare** | Captain Harlan |
+| In 5 or more quests, or royalty | **Rare** | Duke Horacio, Aggie |
+| A Slayer master in no quests | **Uncommon** | Jacquelyn |
+| In no quests (a local) | **Common** | Donie, Barfy Bill |
+| In 1 to 4 quests | **Uncommon** | Gillie Groats |
+
+What the words mean:
+
+- **Named character**: a person with a name, not a job. "Hans" and "Wise Old Man" are names;
+  "Lumbridge guard" and "Cook (Lumbridge)" are roles.
+- **Quests**: the quests the RuneScape Wiki lists the NPC in.
+- **Spawns**: how many places the NPC stands in the world, from the wiki's maps and location
+  tables. The number of spawn points, not the number of areas it is found in.
+
+Locals with no quests are common on purpose. Region packs do not include the general cards,
+where most commons live, so a region's commons have to come from its own locals.
+
+The rules cannot see everything. An NPC that is famous for other reasons can go up a step (the
+Doomsayer is uncommon), and so can a joke or a secret (the penguins disguised as sheep). Say why
+in your pull request.
+
+#### Guidelines for items
+
+An item gets a rarity from each of the signals below that applies to it, and **the highest one wins**.
+These are guides, not laws: the maintainer can change a rarity that does not feel right.
+
+| Signal | Common | Uncommon | Rare | Epic | Legendary |
+| --- | --- | --- | --- | --- | --- |
+| **Level needed** (a skill level, or a combat level for gear) | 1-24 | 25-49 | 50-69 | 70-89 | 90+ |
+| **Grand Exchange price** (the infobox's Exchange line, for one item) | under 50k | 50k+ | 1M+ | 10M+ | 100M+ |
+| **Rarest drop rate** (of any monster that drops it, 1 in N) | under 1 in 25 | 1 in 25 to 99 | 1 in 100 to 999 | 1 in 1,000 to 2,499 | 1 in 2,500 or rarer |
+
+Also:
+
+- **Pets** are legendary, however they are obtained. They are very hard to get.
+- **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
+- **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and
+  pyre logs the same as the logs.
+- An item with none of these (cheap, no level, no drops) is **common**.
+- Members-only does not change rarity.
+- Being the rarest drop of a boss does not matter by itself, only the actual drop rate. Use the rate from the
+  wiki's drop table, and the rarest of them if several monsters drop the item.
+
+Examples: clean lantadyme costs about 3k (common) but needs level 73 (epic), so it is **epic**. An Armadyl
+chestplate drops at 1 in 384 (rare) and costs about 4.8M (rare), so it is **rare**. A godsword shard drops at
+1 in 768 (rare) and costs about 118k (uncommon), so it is **rare**.
+
+The wiki tool suggests a rarity from the Grand Exchange price, pets and discontinued items, and lists what
+it used in the notes. It does not read the level needed or the drop rate yet, so check those on the wiki
+page and raise the rarity if they give a higher one. The thresholds are at the top of the rarity section in
+`dev/wiki_cards.py`.
 
 ### Tags
 
@@ -244,13 +327,19 @@ useful to the packs.
 | `location` | where the NPC is found: its town, or its dungeon or general area if it is not in a town | `lumbridge`, `lumbridge_swamp`, `dorgesh_kaan` |
 | `skills` | skills it is linked to | `cooking`, `prayer`, `slayer` |
 | `category` | what kind of character it is, what it does, or whether it can be fought (for an item: what it is used for, or what it is worn or wielded as) | `humanoid`, `shopkeeper`, `monster` (items: `raw_material`, `food`, `weapon`) |
+| `membership` | whether it is free to play or members only: `f2p` or `p2p`, one word | `f2p`, `p2p` |
 
 For an NPC the region comes from the deck file, so it is not asked for. Item cards are tagged with
-`regions`, `skills` and `category`: an item has no `location`, and its region is chosen by hand (see
+`regions`, `skills`, `category` and `membership`: an item has no `location`, and its region is chosen by hand (see
 "Choosing regions for an item"). The category words are not the NPC ones (an item cannot be a
 `dragon`, and an NPC cannot be `food`). The Card Builder and the tag picker show the words for the
 kind of card you are making. Some words only appear after another is picked (see "Choosing a
 category for an item").
+
+**Membership.** Tag every new card `f2p` or `p2p`, for an NPC or an item. It is one word, from the wiki's
+"Members" line (Yes is `p2p`, No is `f2p`): the wiki tool suggests it, and the Card Builder has **F2P** and **P2P**
+buttons beside the rarity. Pressing the one that is on turns it off. A card with neither is left as it is
+(older cards are not tagged yet).
 
 **Rules for words**
 

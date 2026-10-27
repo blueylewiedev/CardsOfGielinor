@@ -19,48 +19,46 @@
 --   Frames: On/Off  : draws cards with the frame images, or the plain layout, to compare
 --   Show: Back      : shows the card back image (resources/images/card_back.png) over a
 --                     magenta and white backdrop, to check its transparency in the client
--- Animation (right side): type a sequence id, or step it with the buttons; Off stops it.
+-- Animation (right side): type a sequence id, or step it with the buttons; Off stops it. Search
+-- finds one by name (its Use plays it on the card); Guess tries the NPC's standing animation
+-- (see Builder.readyAnim).
 --
--- Every press logs a line to the console and to the Output window (toggle it from the Home
--- window) that can be pasted into the card's `art` entry in core/cards.lua, e.g.
--- `cam = { ... }`, with `body = false, ` in front for a head model (the body is the default). Only created when DEBUG
--- is on in main.lua.
+-- Under everything, a box holds the card's `art = { ... }` line as tuned, to copy (Ctrl+A, Ctrl+C)
+-- over the card's art line in its deck file. Every press also logs the line to the console and to
+-- the Output window (toggle it from the Home window).
 
 local Kit = require("ui/kit")
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
+local AnimSearch = require("dev/animsearch")
+local Builder = require("dev/builder")
 
 local Preview = {}
 
--- The text to put in a card's `art = { ... }` entry for a camera. Only the values that differ
--- from the defaults are written, so the line stays short enough to type by hand.
-local function pasteText(cam)
-    local defaults = CardView.defaultsFor(cam)
-    local isItem = cam.kind == "item"
-    local parts = {}
-    for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
-        local value, default = cam[field], defaults[field]
-        if math.abs(value - default) >= 0.005 then
-            if field == "yaw" or field == "pitch" then
-                parts[#parts + 1] = string.format("%s = %.2f", field, value)
-            else
-                parts[#parts + 1] = string.format("%s = %.0f", field, value)
+-- The card's `art = { ... }` line for a camera `cam` (with its body and anim), as written in the
+-- deck files (see Builder.artText), with the card's own npc or item if it names one.
+local function artLine(card, cam)
+    local art = (card and card.art) or {}
+    local itemArt = cam.kind == "item"
+    return Builder.artText(itemArt, itemArt and art.item or art.npc, cam.body, cam.anim, cam,
+        CardView.defaultsFor(cam)) .. ","
+end
+
+-- The deck file a card is written in (as listed in deck/index.lua), or nil.
+local function deckFileOf(card)
+    for _, setName in ipairs(Cards.sets) do
+        local ok, set = pcall(require, setName)
+        if ok and type(set) == "table" then
+            for _, written in ipairs(set.cards or {}) do
+                if written == card then
+                    return setName .. ".lua"
+                end
             end
         end
     end
-    local text = "cam = { " .. table.concat(parts, ", ") .. " }"
-    if #parts == 0 then
-        text = "cam = { }  -- same as the defaults"
-    end
-    if not cam.body and not isItem then
-        text = "body = false, " .. text   -- body is the default, so only the head needs saying
-    end
-    if cam.anim ~= nil and not isItem then
-        text = "anim = " .. string.format("%.0f", cam.anim) .. ", " .. text
-    end
-    return text
+    return nil
 end
 
 
@@ -91,11 +89,12 @@ function Preview.show()
         return
     end
 
-    -- Where each part of the right-hand panel starts.
+    -- Where each part of the right-hand panel starts, and the art line's box under everything.
     local cameraTop = 10
     local viewTop = cameraTop + 24 + 6 * STEP + 8
     local animTop = viewTop + 24 + 4 * STEP + 8
-    local contentH = math.max(UNDER_Y + STEP + 30, animTop + 24 + 34 + 3 * STEP - 6) + 10
+    local boxTop = math.max(UNDER_Y + STEP + 30, animTop + 24 + 34 + 4 * STEP - 6) + 14
+    local contentH = boxTop + 20 + 32 + 22
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Card Preview", CONTENT_W, contentH + Kit.titleBarHeight(),
@@ -106,6 +105,30 @@ function Preview.show()
     local bodyOverride = nil      -- nil = the card's own setting; true/false = chosen with the button
     local modelButton = nil
     local showAnimLabel = nil      -- set once the Anim box is made
+    local artBox, artHint = nil, nil
+
+    -- Puts the shown card's art line in the box (and says which file it goes in). Returns it.
+    local function showArtLine()
+        if view == nil or view.cam == nil then
+            return nil
+        end
+        local text = artLine(view.card, view.cam)
+        if artBox ~= nil then
+            artBox.content = text
+            artHint.content = "Click the box, Ctrl+A, Ctrl+C, and paste it over the art line of " .. view.card.id
+                .. " in " .. (deckFileOf(view.card) or "its deck file") .. "."
+        end
+        return text
+    end
+
+    -- Shows the art line in the box and logs it (after every change).
+    local function report(label)
+        local text = showArtLine()
+        if text ~= nil then
+            log("preview: paste into", view.card.id, text)
+            OutputWindow.add(view.card.id .. (label or ""), text)
+        end
+    end
 
     -- The card back test: a split backdrop with the image on top. If the image's corners
     -- are truly transparent, magenta shows in the left corners and white in the right ones.
@@ -188,6 +211,7 @@ function Preview.show()
         if showAnimLabel ~= nil then
             showAnimLabel()
         end
+        showArtLine()
 
         if view.cam ~= nil then
             local c = view.cam
@@ -211,17 +235,14 @@ function Preview.show()
         Kit.text(content, PANEL_X, y, PANEL_W, 20, title, GREY, ui.AlignMode.TOPLEFT)
     end
 
-    -- Changes the camera with `change(cam)`, applies it and logs a paste-ready line.
+    -- Changes the camera with `change(cam)`, applies it and shows the new art line.
     local function withCamera(change)
         if view == nil or view.cam == nil then
             return
         end
-        local cam = view.cam
-        change(cam)
-        CardView.applyCamera(cam)
-        local text = pasteText(cam)
-        log("preview: paste into", view.card.id, "art:", text)
-        OutputWindow.add(view.card.id, text)
+        change(view.cam)
+        CardView.applyCamera(view.cam)
+        report()
     end
 
     -- Zoom + moves the camera closer: the distance shrinks by about 13%.
@@ -264,9 +285,7 @@ function Preview.show()
         if view ~= nil and view.cam ~= nil then
             local cam = view.cam
             if Tuning.set(view.card.id, cam.body, cam, cam.anim) then
-                local text = pasteText(cam)
-                log("preview: saved", view.card.id, text)
-                OutputWindow.add(view.card.id .. " (saved)", text)
+                report(" (saved)")
             end
         end
     end, "positive")
@@ -344,16 +363,14 @@ function Preview.show()
         settingField = false
     end
 
-    -- Plays animation `animId` (nil stops it) on the shown model and logs the paste-ready line.
+    -- Plays animation `animId` (nil stops it) on the shown model and shows the new art line.
     local function setAnim(animId)
         if view == nil or view.cam == nil or view.model == nil or Cards.kindOf(view.card) == "item" then
             return          -- (items have no animation)
         end
         view.cam.anim = animId
         CardView.playAnimation(view.model, animId)
-        local text = pasteText(view.cam)
-        log("preview: paste into", view.card.id, "art:", text)
-        OutputWindow.add(view.card.id, text)
+        report()
     end
 
     local function stepAnim(change)
@@ -385,6 +402,31 @@ function Preview.show()
         setAnim(nil)
         showAnimLabel()
     end)
+    y = y + STEP
+    -- Search finds an animation by name; its Use plays it on this card.
+    panelButton("Search", 1, y, function()
+        AnimSearch.setPicker(function(seq)
+            setAnim(seq.id)
+            showAnimLabel()
+        end)
+        AnimSearch.show()
+    end)
+    -- Guess tries the NPC's standing animation from its name (as the Wiki Review does).
+    panelButton("Guess", 2, y, function()
+        if view == nil or Cards.kindOf(view.card) == "item" then
+            return
+        end
+        local guess = Builder.readyAnimFor(Cards.getArt(view.card).npc, view.card)
+        if guess ~= nil then
+            setAnim(guess)
+            showAnimLabel()
+        end
+    end)
+
+    -- The art line to copy into the deck file.
+    Kit.text(content, CARD_X, boxTop, CONTENT_W - 20, 20, "Art line (as tuned)", GREY, ui.AlignMode.TOPLEFT)
+    artBox = Kit.inputField(content, CARD_X, boxTop + 20, CONTENT_W - 20, 28, 1000, false)
+    artHint = Kit.text(content, CARD_X, boxTop + 52, CONTENT_W - 20, 18, "", GREY, ui.AlignMode.TOPLEFT)
 
     -- List what is already saved, so it can be read from the Output window.
     for _, cardId in ipairs(Tuning.ids()) do
@@ -398,7 +440,7 @@ function Preview.show()
         for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
             cam[field] = cam[field] or CardView.defaultsFor(cam)[field]
         end
-        OutputWindow.add(cardId .. " (saved)", pasteText(cam))
+        OutputWindow.add(cardId .. " (saved)", artLine(saved, cam))
     end
 
     showCard()
