@@ -156,7 +156,9 @@ end
 -- CHICKEN_UPDATE_READY). So each run of words in the animation set's name, then in the NPC's
 -- config name, longest first, is tried with these endings; a humanoid with no match gets the
 -- normal human one. It is only a guess: the preview shows it, and the builder can change it.
-local READY_ENDINGS = { "_READY", "_UPDATE_READY", "_IDLE", "_STAND" }
+-- (_PLAYING_BASIC: the resting musicians, whose animation set names their instrument, REST_LUTE
+-- or REST_DRUM, and whose standing animation is REST_LUTE_PLAYING_BASIC and so on.)
+local READY_ENDINGS = { "_READY", "_UPDATE_READY", "_IDLE", "_STAND", "_PLAYING_BASIC" }
 local HUMAN_READY = "HUMAN_READY"
 
 -- The id of a sequence by name, or nil if the client doesn't know it.
@@ -182,23 +184,112 @@ local function wordRuns(name)
     return runs
 end
 
-function Builder.readyAnim(configName, humanoid)
+-- True if two names differ by at most one letter (one changed, added or left out).
+local function oneLetterApart(a, b)
+    if math.abs(#a - #b) > 1 then
+        return false
+    end
+    local i = 1
+    while i <= math.min(#a, #b) and a:sub(i, i) == b:sub(i, i) do
+        i = i + 1
+    end
+    if #a == #b then
+        return a:sub(i + 1) == b:sub(i + 1)
+    end
+    local longer, shorter = #a > #b and a or b, #a > #b and b or a
+    return longer:sub(i + 1) == shorter:sub(i)
+end
+
+-- The standing sequences, as { stem, ending, id } lists by the stem's length: the stem is the
+-- name without its ending (ADVISOR_RODDICK_READY -> ADVISOR_RODDICK). Made once, from the
+-- client's list. (By length, as a name one letter off is at most one letter longer or shorter.)
+local readyStems = nil
+local function standingSequences()
+    if readyStems == nil then
+        readyStems = {}
+        for _, entry in ipairs(AnimSearch.all() or {}) do
+            for _, ending in ipairs(READY_ENDINGS) do
+                if #entry.name > #ending and entry.name:sub(-#ending) == ending then
+                    local stem = entry.name:sub(1, -#ending - 1)
+                    readyStems[#stem] = readyStems[#stem] or {}
+                    table.insert(readyStems[#stem], { stem = stem, ending = ending, id = entry.id })
+                end
+            end
+        end
+    end
+    return readyStems
+end
+
+-- Names this long or longer may match a standing sequence one letter off: the game's names are
+-- sometimes spelt differently (ADVISOR_RODDECK stands with ADVISOR_RODDICK_READY). Shorter ones
+-- only match exactly, so that short words don't match each other.
+local NEAR_MATCH_LETTERS = 8
+
+-- A trade's standing pose for a humanoid whose name finds nothing: the game has one for some
+-- trades, a man's and a woman's (MALE_FARMER_INTERFACE_ANIM, FEMALE_FISHERMAN_INTERFACE_ANIM).
+-- Each word of `text` (the card's name and description: Seth Groats is "A large well built
+-- farmer.") is tried as the trade. `gender` is "male" or "female" (the wiki's); without it, the
+-- description's he or she decides, and a man's pose is used if it says neither.
+local function tradePose(text, gender)
+    local lower = string.lower(text or "")
+    if gender == nil then
+        local she = lower:find("%f[%a]she%f[%A]") or lower:find("%f[%a]her%f[%A]")
+        gender = she and "female" or "male"
+    end
+    for word in lower:gmatch("%a+") do
+        local name = string.upper(gender) .. "_" .. string.upper(word) .. "_INTERFACE_ANIM"
+        local id = seqId(name)
+        if id ~= nil then
+            return name, id
+        end
+    end
+    return nil
+end
+
+-- `text` and `gender` are optional: the card's name and description, and the wiki's gender, for
+-- a humanoid's trade pose (see tradePose).
+function Builder.readyAnim(configName, humanoid, text, gender)
     local npcId = Builder.lookupNpc(configName)
     if npcId == nil then
         return nil
     end
     local basName = nil
     pcall(function() basName = tostring(config.NPC.FromID(npcId).bas.configName) end)
-    for _, source in ipairs({ basName, configName }) do
-        for _, run in ipairs(wordRuns(source)) do
+    local function found(name, id)
+        log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):", name, "=", id)
+        return id
+    end
+    local runs = wordRuns(basName)
+    for _, run in ipairs(wordRuns(configName)) do
+        runs[#runs + 1] = run
+    end
+    for _, run in ipairs(runs) do
+        for _, ending in ipairs(READY_ENDINGS) do
+            local id = seqId(run .. ending)
+            if id ~= nil then
+                return found(run .. ending, id)
+            end
+        end
+    end
+    -- No exact name: one spelt a letter differently.
+    local stems = standingSequences()
+    for _, run in ipairs(runs) do
+        if #run >= NEAR_MATCH_LETTERS then
             for _, ending in ipairs(READY_ENDINGS) do
-                local found = seqId(run .. ending)
-                if found ~= nil then
-                    log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):",
-                        run .. ending, "=", found)
-                    return found
+                for length = #run - 1, #run + 1 do
+                    for _, entry in ipairs(stems[length] or {}) do
+                        if entry.ending == ending and oneLetterApart(run, entry.stem) then
+                            return found(entry.stem .. ending .. " (spelt " .. run .. " here)", entry.id)
+                        end
+                    end
                 end
             end
+        end
+    end
+    if humanoid then
+        local name, id = tradePose(text, gender)
+        if id ~= nil then
+            return found(name .. " (a trade in its description)", id)
         end
     end
     local fallback = humanoid and seqId(HUMAN_READY) or nil
@@ -322,25 +413,32 @@ local function categoryCamera(key)
     return type(cam) == "table" and copyCamera(cam) or nil
 end
 
+-- The animation box's text for the draft's animation.
+local function animText()
+    return draft.anim ~= nil and string.format("%.0f", draft.anim) or ""
+end
+
 local function quote(text)
     local escaped = string.gsub(text, "\\", "\\\\")
     escaped = string.gsub(escaped, '"', '\\"')
     return '"' .. escaped .. '"'
 end
 
--- The `art = { ... }` text. Only values that differ from the defaults are written.
-local function artLine()
-    local parts = { (isItem() and "item = " or "npc = ") .. quote(subject()) }
-    -- An item has no body/head choice and no animation.
-    if not isItem() and not draft.body then
+-- The `art = { ... }` text, as the deck files write it: the NPC or item `subjectName` (if there is
+-- one), body = false for a head, the animation, and the camera values that differ from
+-- `defaults`. An item has no body/head choice and no animation. (The Preview writes it too.)
+function Builder.artText(itemArt, subjectName, body, anim, cam, defaults)
+    local parts = {}
+    if subjectName ~= nil and subjectName ~= "" then
+        parts[#parts + 1] = (itemArt and "item = " or "npc = ") .. quote(subjectName)
+    end
+    if not itemArt and not body then
         parts[#parts + 1] = "body = false"
     end
-    if not isItem() and draft.anim ~= nil then
-        parts[#parts + 1] = "anim = " .. string.format("%.0f", draft.anim)
+    if not itemArt and anim ~= nil then
+        parts[#parts + 1] = "anim = " .. string.format("%.0f", anim)
     end
-    local cam = currentCam()
     if cam ~= nil then
-        local defaults = CardView.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil })
         local camParts = {}
         for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
             local value, default = cam[field], defaults[field]
@@ -357,6 +455,12 @@ local function artLine()
         end
     end
     return "art = { " .. table.concat(parts, ", ") .. " }"
+end
+
+-- The draft's `art = { ... }` text.
+local function artLine()
+    return Builder.artText(isItem(), subject(), draft.body, draft.anim, currentCam(),
+        CardView.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil }))
 end
 
 -- The card block on ONE line (the text boxes in the client cannot hold line breaks, and Lua does
@@ -850,6 +954,10 @@ local function choiceDropdown(x, y, w, choices, current, onPick)
     end
     local native = Kit.dropdown(content, x, y, w, 26, entries, current(), onPick)
     if native ~= nil then
+        -- Kept so destroyWindow removes it: PrettyUI's list is not inside the window, so it
+        -- would outlive it (and the client only has room for about 4096 parts in all).
+        widgets.dropdowns = widgets.dropdowns or {}
+        widgets.dropdowns[#widgets.dropdowns + 1] = native
         return function() native.select(current()) end
     end
     return select(2, dropdown(x, y, w, choices, current, onPick))
@@ -863,6 +971,32 @@ local function hasWork()
         end
     end
     return draft.anim ~= nil or draft.cam ~= nil
+end
+
+-- Writes the draft into the open window's boxes and redraws the card (after Reset, or when a
+-- wiki candidate is loaded: filling the window again rather than building it again, which would
+-- make hundreds of new parts each time, and the client only has room for about 4096).
+local function fillWindow()
+    setField(widgets.npcField, subject())
+    setField(widgets.nameField, draft.name)
+    setField(widgets.idField, draft.cardId)
+    setField(widgets.descField, draft.desc)
+    for _, tagKind in ipairs(isItem() and { "regions", "skills", "category" } or { "skills", "location", "category" }) do
+        setField(widgets[tagKind .. "Field"], draft[tagKind] or "")
+    end
+    setField(widgets.animField, animText())
+    if widgets.npcStatus ~= nil then
+        widgets.npcStatus.content = subject() == "" and ""
+            or (lookupSubject(subject()) ~= nil and "Found" or "Not found")
+    end
+    if widgets.outputStatus ~= nil then
+        widgets.outputStatus.content = ""
+    end
+    for _, refresh in ipairs({ widgets.rarityRefresh, widgets.deckRefresh }) do
+        refresh()
+    end
+    TagPicker.refresh()
+    showCard()
 end
 
 -- Puts the whole window back to a new, empty card.
@@ -879,21 +1013,7 @@ local function resetAll()
     for key, value in pairs(fresh) do
         draft[key] = value
     end
-    for _, key in ipairs({ "npcField", "nameField", "idField", "descField", "skillsField", "locationField",
-        "categoryField", "animField" }) do
-        setField(widgets[key], "")
-    end
-    if widgets.npcStatus ~= nil then
-        widgets.npcStatus.content = ""
-    end
-    if widgets.outputStatus ~= nil then
-        widgets.outputStatus.content = ""
-    end
-    for _, refresh in ipairs({ widgets.rarityRefresh, widgets.deckRefresh }) do
-        refresh()
-    end
-    TagPicker.refresh()
-    showCard()
+    fillWindow()
 end
 
 -- Takes the window down without touching the pickers or the card being made.
@@ -901,6 +1021,9 @@ local function destroyWindow()
     pending = nil
     closeDropdown()
     clearParts(checkParts)
+    for _, native in ipairs(widgets.dropdowns or {}) do
+        native.destroy()
+    end
     if view ~= nil then
         pcall(function() view.root:Destroy() end)
         view = nil
@@ -957,25 +1080,129 @@ function Builder.rebuild()
     end
 end
 
--- True if a candidate's tags call it a humanoid (for the standing animation guess).
-local function isHumanoid(candidate)
-    for _, word in ipairs((candidate.tags or {}).category or {}) do
-        if word == "humanoid" then
-            return true
+-- Framing a new NPC card like the deck's own: the cards are put in groups by what they show,
+-- and a candidate gets the whole camera of the most typical card in its group (the one whose
+-- camera is closest to all the others'), so the values stay together as one framing rather than
+-- being averaged into something no card uses. Worked out from the deck as it is, so it follows
+-- how cards are framed as more are made.
+local HUMANOID_WORDS = { humanoid = true, shopkeeper = true, stallholder = true, royalty = true, guard = true,
+    knight = true, wizard = true, priest = true, pirate = true, banker = true, farmer = true, thief = true,
+    adventurer = true, quest_giver = true }
+
+-- Builder.readyAnim for the NPC `configName` of a card or wiki candidate, from what it says: a
+-- person by its category tags (HUMANOID_WORDS), its name and description, and its gender.
+function Builder.readyAnimFor(configName, card)
+    local humanoid = false
+    for _, word in ipairs((card.tags or {}).category or {}) do
+        humanoid = humanoid or HUMANOID_WORDS[word] == true
+    end
+    return Builder.readyAnim(configName, humanoid, (card.name or "") .. " " .. (card.desc or ""), card.gender)
+end
+local CAMERA_FIELDS = { "yaw", "pitch", "dist", "fov", "ty", "tx" }
+-- How much a difference in each camera value counts when comparing two framings.
+local CAMERA_SCALE = { yaw = 1, pitch = 1, dist = 1000, fov = 30, ty = 300, tx = 100 }
+-- A person's card is a close portrait (like Bob's) when its field of view is this narrow or less,
+-- and shows them whole (like a guard's) when it is wider.
+local PORTRAIT_FOV = 25
+-- A short card's close-up is made by moving in rather than narrowing the view (Aksel: dist 566,
+-- the usual field of view), so for short cards a camera this close or closer is one as well.
+local SHORT_CLOSE_DIST = 700
+
+-- The short peoples, framed lower and closer than a person (the deck has no category word for
+-- dwarves or gnomes: they are humanoids).
+local SHORT_WORDS = { dwarf = true, gnome = true, goblin = true, halfling = true }
+
+-- True if any of the texts (a race, a name, a description: Aksel is "An excited dwarf.") names a
+-- short people.
+function Builder.isShort(...)
+    for _, text in pairs({ ... }) do
+        for word in string.gmatch(string.lower(tostring(text)), "%a+") do
+            if SHORT_WORDS[word] then
+                return true
+            end
         end
     end
     return false
 end
 
+-- The group an NPC card or candidate is framed with, from its category tags: "large" (dragons,
+-- bosses), "short character" or "short" (goblins, and anything `short`: see Builder.isShort;
+-- framed close like Aksel, or whole like a goblin), "character" (a person framed close, like Bob),
+-- "person" (a person framed whole, like a guard) or "creature". For a candidate, closeUp is
+-- whether it is a named person rather than a role (dev/wiki_cards.py works that out); for a card,
+-- whether its camera is a close-up (PORTRAIT_FOV, and SHORT_CLOSE_DIST for short cards).
+function Builder.framingGroup(categoryWords, closeUp, short)
+    local person = false
+    for _, word in ipairs(categoryWords or {}) do
+        if word == "dragon" or word == "boss" then
+            return "large"
+        end
+        short = short or word == "goblin"
+        person = person or HUMANOID_WORDS[word] == true
+    end
+    if short then
+        return closeUp and "short character" or "short"
+    end
+    if person then
+        return closeUp and "character" or "person"
+    end
+    return "creature"
+end
+
+-- The camera of the most typical NPC card framed with the body model in `group`, as a copy, and
+-- that card; or nil if no card is in the group yet.
+function Builder.typicalCamera(group)
+    local defaults = CardView.defaultsFor({ body = true })
+    local members = {}
+    for _, card in ipairs(Cards.list) do
+        local art = card.art or {}
+        if Cards.kindOf(card) ~= "item" and art.body ~= false then
+            local cam = {}
+            for _, field in ipairs(CAMERA_FIELDS) do
+                cam[field] = (art.cam or {})[field] or defaults[field]
+            end
+            local short = Builder.isShort(card.name, card.desc, art.npc)
+            local closeUp = cam.fov <= PORTRAIT_FOV or (short and cam.dist <= SHORT_CLOSE_DIST)
+            if Builder.framingGroup((card.tags or {}).category, closeUp, short) == group then
+                members[#members + 1] = { card = card, cam = cam }
+            end
+        end
+    end
+    local function apart(a, b)
+        local total = 0
+        for _, field in ipairs(CAMERA_FIELDS) do
+            total = total + math.abs(a[field] - b[field]) / CAMERA_SCALE[field]
+        end
+        return total
+    end
+    local best, bestTotal = nil, math.huge
+    for _, member in ipairs(members) do
+        local total = 0
+        for _, other in ipairs(members) do
+            total = total + apart(member.cam, other.cam)
+        end
+        if total < bestTotal then
+            best, bestTotal = member, total
+        end
+    end
+    if best == nil then
+        return nil
+    end
+    return copyCamera(best.cam), best.card
+end
+
 -- Switches the card to another model of the same NPC or item (the Wiki Review window's Next
--- model), keeping everything else that was entered. The camera goes back to the defaults, and an
--- NPC's standing animation is guessed again, as each model can have its own.
+-- model), keeping everything else that was entered, the camera too (the framing suggested when
+-- it was loaded, or as tuned since: it is the same NPC). An NPC's standing animation is guessed
+-- again, as each model can have its own.
 function Builder.useModel(configName, candidate)
+    local cam = draft.cam
     setField(widgets.npcField, configName)
-    setSubject(configName)
+    setSubject(configName)          -- (which starts a new NPC from the default camera)
+    draft.cam = cam
     if not isItem() then
-        draft.anim = Builder.readyAnim(configName, isHumanoid(candidate))
-        setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
+        draft.anim = Builder.readyAnimFor(configName, candidate)
+        setField(widgets.animField, animText())
     end
     if window == nil then
         Builder.show()
@@ -1067,8 +1294,9 @@ end
 -- anything entered before: an NPC or item card with the candidate's model `configName`, name,
 -- description, suggested rarity and tags. An NPC goes in its region's deck file (whose defaults
 -- give the region tag), an item in the file for its category (deck/items/<categories>/<kind>.lua,
--- see deck/index.lua) if there is one; otherwise the general file. The camera starts from the
--- defaults, and an NPC's animation is a guess at its standing one (see Builder.readyAnim).
+-- see deck/index.lua) if there is one; otherwise the general file. An NPC's camera is the most
+-- typical one of the deck's cards like it (see Builder.typicalCamera), an item's the one saved
+-- for its category, and an NPC's animation is a guess at its standing one (see Builder.readyAnim).
 function Builder.loadCandidate(candidate, configName)
     closeDropdown()
     pending = nil
@@ -1081,7 +1309,20 @@ function Builder.loadCandidate(candidate, configName)
         fresh.deck = firstDeck(Builder.itemDeckNames(category, candidate.sources)) or fresh.deck
     else
         fresh.npc = configName or candidate.npc
-        fresh.anim = Builder.readyAnim(fresh.npc, isHumanoid(candidate))
+        fresh.anim = Builder.readyAnimFor(fresh.npc, candidate)
+        -- Short by the wiki's race if it gives one, otherwise by what the name and description say.
+        local short
+        if candidate.race ~= nil then
+            short = Builder.isShort(candidate.race)
+        else
+            short = Builder.isShort(candidate.name, candidate.desc, fresh.npc)
+        end
+        local group = Builder.framingGroup(tags.category, candidate.named == true, short)
+        local cam, like = Builder.typicalCamera(group)
+        if cam ~= nil then
+            fresh.cam = cam
+            log("builder: framing", candidate.name, "as a " .. group .. ", like", like.name)
+        end
         local region = tags.regions and tags.regions[1]
         fresh.deck = firstDeck({ "deck/npcs/" .. (region or ""), "deck/npcs/general" }) or fresh.deck
     end
@@ -1095,16 +1336,19 @@ function Builder.loadCandidate(candidate, configName)
     if fresh.kind == "item" then
         fresh.cam = categoryCamera(Builder.categoryKey(Builder.parseWords(fresh.category)))
     end
+    local sameKind = draft.kind == fresh.kind
     for key in pairs(draft) do
         draft[key] = nil
     end
     for key, value in pairs(fresh) do
         draft[key] = value
     end
-    if window ~= nil then
-        Builder.rebuild()
-    else
+    if window == nil then
         Builder.show()
+    elseif not sameKind then
+        Builder.rebuild()           -- an NPC card and an item card have different boxes
+    else
+        fillWindow()                -- the same kind of card: its boxes are filled in again
     end
 end
 
@@ -1326,7 +1570,7 @@ function Builder.show()
         caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
         y = y + 20
         widgets.animField = Kit.inputField(content, RIGHT_X, y, RIGHT_W - 100, 28, 6, true)
-        setField(widgets.animField, draft.anim ~= nil and string.format("%.0f", draft.anim) or "")
+        setField(widgets.animField, animText())
         widgets.animField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
             if settingField then
                 return

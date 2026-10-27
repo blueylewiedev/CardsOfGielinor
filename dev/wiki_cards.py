@@ -292,6 +292,11 @@ def first_version(fields, key):
     return ""
 
 
+def numbered_fields(fields, key):
+    """The values of a field and its numbered versions (location, location1, location2...)."""
+    return [v for k, v in fields.items() if re.fullmatch(key + r"\d*", k)]
+
+
 def all_ids(fields):
     """Every NPC id the infobox lists, first version first."""
     ids = []
@@ -420,12 +425,32 @@ def slug(text):
 # ---------------------------------------------------------------------------------------------
 
 
+# Wiki categories of pages about things no longer in the game (the Saradominist priests of the
+# Battle of Lumbridge camp, the old attackable Lumbridge guard). Those make no candidates.
+REMOVED_CATEGORIES = {"Removed content", "Historical article"}
+
+
+def only_in_cutscenes(page, fields):
+    """True if the NPC is only seen in cutscenes (the guards Billy and Bob, in Falador's cutscene):
+    the wiki files it under cutscene characters, and every location it gives says "(cutscene)".
+    One filed there that can also be met in the world (a location without it) is kept."""
+    if "Cutscene characters" not in page.get("categories", []):
+        return False
+    locations = [v for v in numbered_fields(fields, "location") if v.strip()]
+    return all("cutscene" in v.lower() for v in locations)
+
+
 def candidate(page, names, words):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one."""
+    if REMOVED_CATEGORIES & set(page.get("categories", [])):
+        return None, "removed from the game"
     text = page.get("text", "")
     kind, inside = find_template(text, ["Infobox NPC", "Infobox Monster"])
     if inside is not None:
-        return npc_candidate(page, kind, template_fields(inside), names, words)
+        fields = template_fields(inside)
+        if only_in_cutscenes(page, fields):
+            return None, "only seen in cutscenes"
+        return npc_candidate(page, kind, fields, names, words)
     _, inside = find_template(text, ["Infobox Item"])
     if inside is not None:
         _, bonuses = find_template(text, ["Infobox Bonuses"])
@@ -433,10 +458,35 @@ def candidate(page, names, words):
     return None, "no NPC or item infobox"
 
 
-def name_and_desc(page, fields, notes):
-    """The card name (the infobox's, or the page title without its brackets) and description
-    (the examine text), with a note if the description needs work."""
-    name = plain(first_version(fields, "name")) or re.sub(r"\s*\(.*\)$", "", page["title"])
+def title_bracket(title):
+    """The text in brackets at the end of a title or name ("Cook (Lumbridge)" -> Lumbridge), or None."""
+    bracket = re.search(r"\(([^)]+)\)$", title)
+    return bracket.group(1) if bracket else None
+
+
+def strip_bracket(name):
+    """A title or name without its bracket ("Guard (Catherby)" -> Guard)."""
+    return re.sub(r"\s*\(.*\)$", "", name)
+
+
+def place_in_brackets(page):
+    """The place in a page title's brackets ("Cook (Lumbridge)" -> Lumbridge), if the page is
+    filed under it; None for other brackets, which only say which version it is ("(attackable)")."""
+    bracket = title_bracket(page["title"])
+    return bracket if bracket in page.get("categories", []) else None
+
+
+def name_and_desc(page, fields, notes, versions_merge=False):
+    """The card name and description (the examine text), with a note if the description needs
+    work. The name is the page title when it has brackets, as the wiki uses those to tell NPCs of
+    the same name apart ("Cook (Lumbridge)", "Cook (Blue Moon Inn)"), and the deck names cards
+    the same way; otherwise the infobox's name, or the title. With versions_merge (NPCs, whose
+    version pages become one card: see merge_versions), only a place is kept in brackets."""
+    infobox_name = plain(first_version(fields, "name"))
+    if title_bracket(page["title"]) and (not versions_merge or place_in_brackets(page)):
+        name = page["title"]
+    else:
+        name = infobox_name or strip_bracket(page["title"])
     desc = plain(first_version(fields, "examine"))
     if not desc:
         notes.append("no examine text: write a description")
@@ -502,17 +552,163 @@ def item_candidate(page, fields, bonuses, words):
             "rarity": rarity, "tags": tags, "notes": notes}, None
 
 
+# Config names of an NPC's special copies (events, quests, tutorials, cutscenes, internal ones
+# starting with "_"): an NPC's models are listed with these last, so its everyday look is first.
+SPECIAL_MODEL = re.compile(r"^_|XMAS|EASTER|HALLOWEEN|^HW\d|ANNIVERSARY|TUTORIAL|CUTSCENE|^QUEST_|HEIST|MTX|TRANSMOG")
+
+
+def everyday_first(models):
+    """The models in order with the special copies (SPECIAL_MODEL) moved to the end."""
+    return sorted(models, key=lambda m: bool(SPECIAL_MODEL.search(m)))
+
+
+# NPCs the wiki names differently that the deck has as one card: name -> the card's name.
+SAME_CARD = {
+    "Lumbridge guardsman": "Lumbridge guard",      # both are members of the Lumbridge Guard
+}
+
+
+def merge_versions(found):
+    """One NPC candidate per card. The wiki often has a page for each version of an NPC ("Lumbridge
+    guard (attackable)", "Lumbridge guardsman (bridge)"): candidates with the same card name (see
+    name_and_desc and SAME_CARD) become one, with every page's models to choose from (in order,
+    without repeats, everyday looks first: see everyday_first). Its other details come from the
+    page named like the card if there is one, otherwise the first; a note lists the pages."""
+    merged, order = {}, []
+    for c in found:
+        if c["kind"] != "npc":
+            order.append(c)
+            continue
+        group = merged.get(c["name"])
+        if group is None:
+            merged[c["name"]] = [c]
+            order.append(c["name"])
+        else:
+            group.append(c)
+    out = []
+    for entry in order:
+        if isinstance(entry, dict):
+            out.append(entry)
+            continue
+        group = sorted(merged[entry], key=lambda c: (c["page"] != entry, c["page"]))
+        first = dict(group[0])
+        models = everyday_first(list(dict.fromkeys(m for c in group for m in [c["npc"]] + c["others"])))
+        first["npc"], first["others"] = models[0], models[1:8]
+        first["sources"] = sorted({s for c in group for s in c["sources"]})
+        places = list(dict.fromkeys(p for c in group for p in c["tags"].get("location", [])))
+        if places:
+            first["tags"] = dict(first["tags"], location=places)
+        if len(group) > 1:
+            first["notes"] = [f"{len(group)} wiki pages: " + ", ".join(c["page"] for c in group)] + first["notes"]
+        if len(models) > 1:
+            first["notes"] = [f"{len(models)} models (Next model); first is {models[0]}"] + first["notes"]
+        out.append(first)
+    return out
+
+
+# The races of animals: an animal with a name and a gender on the wiki is still not a character.
+ANIMAL_RACES = {"sheep", "cow", "chicken", "dog", "cat", "rat", "bird", "bear", "wolf", "goat", "horse", "frog", "spider"}
+
+# Words for a job rather than a person: an NPC whose name ends in one is a role ("Cooking Tutor").
+ROLE_WORDS = {"tutor", "instructor", "guard", "guardsman", "guardswoman", "priest", "priestess", "herbalist",
+              "shopkeeper", "assistant", "banker", "merchant", "musician", "citizen", "villager", "monk", "nun",
+              "sailor", "worker", "cleaner", "trader", "soldier", "knight", "cook", "chef"}
+# (Not "man" or "woman": the plain Man and Woman aren't filed as characters anyway, and the Wise
+# Old Man is one.)
+NAME_LINKS = {"the", "of", "de", "von", "van", "du", "la", "le"}     # small words in real names
+
+
+def is_role(name):
+    """True if a name is a role, not a person's: the wiki ends those in a word in lower case
+    ("Lumbridge guardsman") or a job ("Cooking Tutor"). A name ending in a capitalised name is a
+    person, whatever comes before ("H.A.M. agent William", Explorer Jack, Fred the Farmer). A
+    part in brackets ("Guard (Catherby)") is left out: it only says which one."""
+    words = strip_bracket(name).replace("'s", "").split()
+    if not words:
+        return False
+    last = words[-1]
+    if last[0].isalpha() and last[0].islower():
+        return True
+    return last.lower() in ROLE_WORDS and not any(w in NAME_LINKS for w in words)
+
+
+def gender_of(page):
+    """ "male" or "female" if the wiki files the NPC as a male or female character, else None."""
+    categories = page.get("categories", [])
+    return "female" if "Female characters" in categories else "male" if "Male characters" in categories else None
+
+
+def is_character(page, race):
+    """True if the wiki files the NPC as a character (male or female characters), not an animal."""
+    return gender_of(page) is not None and race not in ANIMAL_RACES
+
+
+def npc_rarity(page, fields, character, named):
+    """A guess at an NPC's rarity, and why: the "Guidelines for NPCs" in CONTRIBUTING.md, which
+    follow the deck's own cards (keep the two the same). `character` is whether the wiki files it
+    as a character, `named` whether its name is a person's rather than a role's (see is_role).
+    Spawns are the spawn points in the page's location table (monsters), or the pins on its maps
+    (NPCs). A quest is one linked in the infobox, or a "Characters in <quest>" category."""
+    categories = page.get("categories", [])
+    text = page.get("text", "")
+
+    def number(value):
+        found = re.search(r"\d+", value or "")
+        return int(found.group()) if found else 0
+
+    level = number(first_version(fields, "level") or first_version(fields, "combat"))
+    slayer = number(fields.get("slaylvl"))
+    quests = set(links(" ".join(numbered_fields(fields, "quest"))))
+    quests |= {c[len("Characters in "):] for c in categories if c.startswith("Characters in ")}
+    # Each location row (LocLine) and each map lists its spawn points as x:..,y:.. (or x=..).
+    location_rows = " ".join(re.findall(r"\{\{\s*LocLine.*?\}\}", text, re.S))
+    maps = " ".join(numbered_fields(fields, "map"))
+    spawns = len(re.findall(r"\bx\s*[:=]\s*\d+", location_rows or maps))
+    royalty = any(c in ("Monarchs", "Royalty") for c in categories)
+    skill_master = "Skill masters" in categories
+    slayer_master = "Slayer Master" in categories
+
+    if any("boss" in c.lower() for c in categories):
+        return ("legendary", f"a boss of combat level {level}") if level >= 200 else ("epic", "a boss")
+    if slayer >= 10 and spawns < 20:
+        return "rare", f"a Slayer monster of level {slayer} with {spawns} spawns"
+    if named or skill_master or slayer_master:
+        if len(quests) >= 12 or (len(quests) >= 5 and spawns >= 5):
+            return "epic", f"a character in {len(quests)} quests" + (f", with {spawns} spawns" if spawns >= 5 else "")
+        if skill_master:
+            return "rare", "a skill master (sells a skillcape)"
+        if len(quests) >= 5 or royalty:
+            return "rare", "royalty" if royalty else f"a character in {len(quests)} quests"
+        if slayer_master and not quests:
+            return "uncommon", "a Slayer master"
+        if not quests:
+            return "common", "a named character in no quests"
+        return "uncommon", f"a named character in {len(quests)} quests"
+    if character and len(quests) >= 3:
+        return "uncommon", f"a role in {len(quests)} quests"
+    if slayer >= 5:
+        return "uncommon", f"a Slayer monster of level {slayer}" + (f" with {spawns} spawns" if slayer >= 10 else "")
+    if spawns >= 60:
+        return "common", f"{spawns} spawns"
+    if level >= 100:
+        return "rare", f"combat level {level}"
+    if level >= 30:
+        return "uncommon", f"combat level {level}"
+    return "common", "an everyday NPC"
+
+
 def npc_candidate(page, kind, fields, names, words):
     """A candidate from an NPC or monster page."""
     notes = []
 
+    if page["title"].endswith("(unreleased)"):
+        return None, "unreleased"
     ids = all_ids(fields)
     configs = [names[i] for i in ids if i in names]
     if not configs:
         return None, "no NPC id the plugin knows" if ids else "no NPC id on the page"
-    if len(configs) > 1:
-        notes.append(f"{len(configs)} models listed; using the first ({configs[0]})")
-    name, desc = name_and_desc(page, fields, notes)
+    name, desc = name_and_desc(page, fields, notes, versions_merge=True)
+    name = SAME_CARD.get(name, name)
 
     tags = {}
     region = slug(plain(first_version(fields, "leagueregion")))
@@ -522,27 +718,30 @@ def npc_candidate(page, kind, fields, names, words):
     else:
         notes.append("region unknown: choose the deck file")
 
-    # The location words for the places the infobox links to (Lumbridge Castle -> lumbridge).
-    # Failing that, the place in the page title's brackets ("Guard (Catherby)"), when the page is
-    # also in that place's category: it is suggested as a new word if it isn't one yet (the Card
-    # Builder points that out). Other unknown places are only mentioned in a note, as the infobox
-    # often links to a shop or building rather than a town.
+    # The location words for the place in the page title's brackets ("Guard (Catherby)",
+    # "Lumbridge guardsman (Lumbridge Market)") and the places the infobox links to (Lumbridge
+    # Castle -> lumbridge). A bracketed place that isn't a word yet is suggested as a new one if
+    # the page is filed under it (the Card Builder points that out); other unknown places are only
+    # mentioned in a note, as the infobox often links to a shop or building rather than a town.
     def location_word(place):
         return place if place in words["location"] else max(
             (w for w in words["location"] if place.startswith(w + "_")), key=len, default=None)
 
     location_text = first_version(fields, "location")
     places = []
+    bracket = title_bracket(page["title"])
+    if bracket:
+        place = slug(bracket)
+        word = location_word(place)
+        if word is None and place_in_brackets(page):
+            word = place
+            notes.append(f"new location word '{place}' (add it to Cards.tagWords.location, or change it)")
+        if word:
+            places.append(word)
     for target in links(location_text):
         word = location_word(slug(target))
         if word and word not in places:
             places.append(word)
-    bracket = re.search(r"\(([^)]+)\)$", page["title"])
-    if not places and bracket and bracket.group(1) in page.get("categories", []):
-        place = slug(bracket.group(1))
-        places.append(location_word(place) or place)
-        if place not in words["location"]:
-            notes.append(f"new location word '{place}' (add it to Cards.tagWords.location, or change it)")
     if places:
         tags["location"] = places
     elif location_text:
@@ -563,25 +762,28 @@ def npc_candidate(page, kind, fields, names, words):
     if category:
         tags["category"] = category
 
-    # A rough rarity: the reviewer decides.
-    level = re.search(r"\d+", first_version(fields, "level") or first_version(fields, "combat") or "")
-    level = int(level.group()) if level else 0
-    quests = links(first_version(fields, "quest"))
-    if "boss" in category:
-        rarity, why = "epic", "a boss"
-    elif level >= 150:
-        rarity, why = "rare", f"combat level {level}"
-    elif "royalty" in category or len(quests) >= 3:
-        rarity, why = "uncommon", "royalty" if "royalty" in category else f"in {len(quests)} quests"
-    else:
-        rarity, why = "common", "nothing stands out"
+    # A skill master's skill, from the skillcape they sell ("[[Defence cape]]" -> defence).
+    shop = " ".join(numbered_fields(fields, "shop")).lower()
+    skills = [s for s in words["skills"] if re.search(r"\b" + s + r" (?:master )?cape\b", shop)]
+    if skills and "Skill masters" in page.get("categories", []):
+        tags["skills"] = skills
+
+    gender = gender_of(page)
+    character = is_character(page, race)
+    # named: a person with a name, not a role (the Card Builder frames them close, like Bob; a
+    # role or anyone else whole, like a guard).
+    named = character and not is_role(name)
+    rarity, why = npc_rarity(page, fields, character, named)
     notes.append(f"rarity is a guess ({why})")
 
     if first_version(fields, "removal") not in ("", "No"):
         notes.append("the wiki says this NPC was removed from the game")
 
+    # (gender: the Card Builder picks a trade's male or female pose by it, such as
+    # MALE_FARMER_INTERFACE_ANIM; race whether to frame it as short, like a dwarf.)
     return {"page": page["title"], "kind": "npc", "npc": configs[0], "others": configs[1:6], "name": name,
-            "desc": desc, "rarity": rarity, "tags": tags, "notes": notes}, None
+            "named": named, "gender": gender, "race": race or None, "desc": desc, "rarity": rarity, "tags": tags,
+            "notes": notes}, None
 
 
 def lua_string(text):
@@ -589,6 +791,8 @@ def lua_string(text):
 
 
 def lua_value(value):
+    if isinstance(value, bool):
+        return "true" if value else "false"
     if isinstance(value, dict):
         return "{ " + ", ".join(f"{k} = {lua_value(v)}" for k, v in value.items()) + " }"
     if isinstance(value, list):
@@ -709,6 +913,7 @@ def main():
             found.append(made)
         else:
             skipped[reason] = skipped.get(reason, 0) + 1
+    found = merge_versions(found)
     found.sort(key=lambda c: (c["kind"], (c["tags"].get("regions") or c["tags"].get("category") or ["~"])[0], c["name"]))
     write_candidates(found)
 

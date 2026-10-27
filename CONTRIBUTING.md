@@ -235,6 +235,51 @@ Your choice is a **suggestion**. The maintainer decides the final rarity so the 
 balanced, and will either change it or leave a comment on your pull request explaining what is
 wanted. Looking at where similar NPCs sit in the existing files is the best guide.
 
+#### Guidelines for NPCs
+
+These describe where the existing NPC cards sit, and the Wiki Review's suggested rarities follow
+them. Go down the list and stop at the first one that fits:
+
+| # | The NPC is... | Rarity | For example |
+|---|---|---|---|
+| 1 | A boss | **Epic**, or **legendary** from combat level 200 | Elvarg, King Black Dragon |
+| 2 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
+| 3 | A named character, skill master or Slayer master | See the next table | |
+| 4 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
+| 5 | A Slayer monster from Slayer level 5 | **Uncommon** | Cave crawler, Cave bug |
+| 6 | Found almost everywhere (60 or more spawns), whatever its level | **Common** | Goblin, Giant rat, Chicken |
+| 7 | Combat level 100 or more | **Rare** | |
+| 8 | Combat level 30 or more | **Uncommon** | |
+| 9 | Anyone else | **Common** | Man, animals |
+
+Named characters, skill masters and Slayer masters (again, the first that fits):
+
+| The character is... | Rarity | For example |
+|---|---|---|
+| In 12 or more quests, or in 5 or more and found in 5 or more places | **Epic** | King Roald, Wise Old Man |
+| A skill master (sells a skillcape) | **Rare** | Captain Harlan |
+| In 5 or more quests, or royalty | **Rare** | Duke Horacio, Aggie |
+| A Slayer master in no quests | **Uncommon** | Jacquelyn |
+| In no quests (a local) | **Common** | Donie, Barfy Bill |
+| In 1 to 4 quests | **Uncommon** | Gillie Groats |
+
+What the words mean:
+
+- **Named character**: a person with a name, not a job. "Hans" and "Wise Old Man" are names;
+  "Lumbridge guard" and "Cook (Lumbridge)" are roles.
+- **Quests**: the quests the RuneScape Wiki lists the NPC in.
+- **Spawns**: how many places the NPC stands in the world, from the wiki's maps and location
+  tables. The number of spawn points, not the number of areas it is found in.
+
+Locals with no quests are common on purpose. Region packs do not include the general cards,
+where most commons live, so a region's commons have to come from its own locals.
+
+The rules cannot see everything. An NPC that is famous for other reasons can go up a step (the
+Doomsayer is uncommon), and so can a joke or a secret (the penguins disguised as sheep). Say why
+in your pull request.
+
+Item guidelines are still being worked out.
+
 ### Tags
 
 Tags group cards so that themed packs can draw from them. Each tag kind holds words separated by

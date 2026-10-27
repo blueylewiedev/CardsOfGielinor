@@ -118,7 +118,7 @@ Set.cards = {
         tags = { location = { "ardougne" }, skills = { "thieving" }, category = { "stallholder" } },
     },
     {
-        id = "guard", name = "Guard", rarity = "common",
+        id = "guard", name = "Guard (Catherby)", rarity = "common",
         desc = "Maintaining order in the market",
         art = { npc = "OMGE_MARKET_GUARD", anim = 808, cam = { pitch = 0.15, dist = 859, ty = 480 } },
         tags = { location = { "catherby" }, category = { "humanoid", "guard", "monster" } },

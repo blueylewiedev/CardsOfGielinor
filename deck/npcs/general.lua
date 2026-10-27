@@ -19,25 +19,28 @@ Set.cards = {
     {
         id = "POF_ANIMAL_COW_COW", name = "Cow", rarity = "common",
         desc = "Content to stand in a field all day.",
-        art = { npc = "POF_ANIMAL_COW_COW" },
+        art = { npc = "POF_ANIMAL_COW_COW", anim = 32197, cam = { yaw = 0.40, dist = 1306, ty = 300 } },
         tags = { category = { "animal" } },
     },
 
     {
         id = "sheep", name = "Sheep", rarity = "common",
         desc = "Gives wool and little else.",
+        art = { anim = 32190, cam = { yaw = -0.60, dist = 988, ty = 220 } },
         tags = { category = { "animal" } },
     },
 
     {
         id = "GOBLIN_UNARMED_MELEE_1", name = "Goblin", rarity = "common",
         desc = "Squabbles over the colour of its armour.",
+        art = { anim = 6180, cam = { yaw = -0.20, dist = 859, ty = 280 } },
         tags = { category = { "monster" } },
     },
 
     {
         id = "LUMBRIDGE_GIANTRAT_BROWN", name = "Giant rat", rarity = "common",
         desc = "Larger than a rat should be.",
+        art = { anim = 33921, cam = { pitch = 0.15, dist = 859, ty = 100, tx = -70 } },
         tags = { category = { "animal" } },
     },
 
@@ -51,6 +54,7 @@ Set.cards = {
     {
         id = "LUMBRIDGE_MARKET_MAN1", name = "Man", rarity = "common",
         desc = "Just a man, going about his day.",
+        art = { anim = 808, cam = { yaw = -0.20, pitch = 0.15, dist = 748, ty = 500 } },
         tags = { skills = { "thieving" }, category = { "humanoid" } },
     },
 
@@ -63,7 +67,7 @@ Set.cards = {
 
     {
 
-        id = "shopkeeper", name = "Shopkeeper", rarity = "epic",
+        id = "shopkeeper", name = "Shopkeeper", rarity = "common",
         desc = "Sells stuff",
         art = { npc = "GENERALSHOPKEEPER1", anim = 23783, cam = { yaw = 0.40, dist = 750, fov = 35, ty = 620, tx = 10 } },
         tags = { category = { "humanoid", "shopkeeper" } },
