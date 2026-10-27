@@ -1,14 +1,13 @@
 -- uncarded.lua
--- Developer-only: marks the NPCs standing near the player that have no card yet, with a label
--- above their head, so the ones we missed are easy to spot while walking around.
+-- Developer-only: draws a yellow box round every NPC near the player that has no card yet, so the
+-- ones we missed are easy to spot while walking around.
 --
 -- It is passive: from the moment the developer tools are in use it looks at the NPCs around the
--- player every half second or so and keeps a label on each one that has no card. Nothing has to be
--- opened or scanned. The "Uncarded NPCs" window (Home window button) turns the labels and the
--- outline round each NPC on or off, sets how far to look, and
--- lists the NPCs seen, each with an Ignore button, for the ones that will never get a card or
--- that have a card with another model. Ignoring is by NPC name, so every variant of that NPC goes
--- quiet, and it is remembered between sessions (PersistentDB).
+-- player every half second or so and keeps a box round each one that has no card. Nothing has to
+-- be opened or scanned. The "Uncarded NPCs" window (Home window button) turns the boxes on or off,
+-- sets how far to look, and lists the NPCs seen, each with an Ignore button, for the ones that will
+-- never get a card or that have a card with another model. Ignoring is by NPC name, so every
+-- variant of that NPC goes quiet, and it is remembered between sessions (PersistentDB).
 --
 -- An NPC counts as having a card when a card's NPC has the same config id, or the same display
 -- name (so a card for "Giant rat" covers every variant of it). Item cards are not looked at.
@@ -24,25 +23,28 @@ local SUBSCRIBER = "cardcollector_uncarded"
 local DEFAULT_RANGE = 20     -- how many tiles around the player to look, until it is changed
 local MIN_RANGE, MAX_RANGE, RANGE_STEP = 2, 50, 2
 local SCAN_FRAMES = 30       -- frames between looks at the NPCs around the player
-local MAX_MARKERS = 12       -- labels on screen at once (the nearest ones)
-local LABEL_HEIGHT = 2000    -- how far above the NPC's feet the label sits, in game units
-local LABEL_W, LABEL_H = 220, 22
-local MAX_ROWS = 10          -- rows in the window
-local WIDTH, ROW_H, LIST_TOP = 620, 34, 112
-local WHITE = Vector4.new(1, 1, 1, 1)
-local LABEL_COLOUR = Vector4.new(1, 0.9, 0.2, 1)
-local BACK_COLOUR = Vector4.new(0, 0, 0, 0.55)
-local OUTLINE_RGBA = 0xFFE633FF     -- the outline round the NPC: yellow, as a packed RGBA number
+local MAX_BOXES = 12         -- boxes drawn at once (the nearest NPCs)
+local OUTLINE_RGBA = 0xFFE633FF     -- the box round the NPC: yellow, as a packed RGBA number
 local OUTLINE_WIDTH = 2
 
-local data = nil             -- { enabled = true/false, outline = true/false, range = tiles, ignored = { [lower case name] = name } }
+-- The window. The visible width of its contents is a little less than WIDTH, so things lined up on
+-- the right edge use RIGHT.
+local WIDTH, ROW_H = 620, 34
+local RIGHT = WIDTH - 40
+local ROWS = 10              -- rows on a page
+local ROWS_TOP = 118
+local BUTTON_H = 30
+local NAME_W = 190           -- width of the name column; the config name follows it
+local ACTION_W = 110         -- width of the Ignore / Restore buttons
+local WHITE = Vector4.new(1, 1, 1, 1)
+local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
+
+local data = nil             -- { enabled = true/false, range = tiles, ignored = { [lower case name] = name } }
 local active = false         -- true while the Draw handler is running
 local frame = 0
 local tracked = {}           -- the uncarded NPCs found by the last look: { npc, name }, nearest first
 local seen = {}              -- [lower case name] = { name, configName, order } for the window
 local seenCounter = 0
-local markers = {}           -- { back, text } pairs, made when first needed
-local parentLayer = nil      -- the game layer the labels are drawn on
 
 local carded = nil           -- { ids = { [config id] = true }, names = { [lower case name] = true } }
 local cardedCount = -1       -- how many cards the sets above were built for
@@ -50,10 +52,12 @@ local cardedCount = -1       -- how many cards the sets above were built for
 local window, content = nil, nil
 local rows = {}
 local statusText = nil
-local toggleButton = nil
-local outlineButton = nil
+local pageText = nil
+local boxButton = nil
+local modeButton = nil
 local rangeText = nil
 local showIgnored = false
+local page = 1
 
 -- ---------------------------------------------------------------- saved settings
 
@@ -61,16 +65,13 @@ local function load()
     if data ~= nil then
         return
     end
-    data = { enabled = true, outline = true, range = DEFAULT_RANGE, ignored = {} }
+    data = { enabled = true, range = DEFAULT_RANGE, ignored = {} }
     local ok, saved = pcall(function() return PersistentDB:GetStructuredData(DB_KEY) end)
     if not ok or type(saved) ~= "table" then
         return
     end
     if saved.enabled == false then
         data.enabled = false
-    end
-    if saved.outline == false then
-        data.outline = false
     end
     if type(saved.range) == "number" then
         data.range = math.max(MIN_RANGE, math.min(MAX_RANGE, math.floor(saved.range)))
@@ -125,7 +126,7 @@ local function buildCarded()
     end
 end
 
--- True if this NPC has a card (or is not worth a card: no name).
+-- True if this NPC has a card.
 local function hasCard(npc, name)
     if carded.ids[npc.configID] or carded.ids[npc.parentConfigID] then
         return true
@@ -159,7 +160,6 @@ local function look()
             if data.ignored[key] == nil and not hasCard(npc, name) then
                 tracked[#tracked + 1] = { npc = npc, name = name }
                 if seen[key] == nil then
-                    seenCounter = seenCounter + 1
                     local okCfg, configName = pcall(function() return tostring(npc.config.configName) end)
                     seen[key] = { name = name, configName = okCfg and configName or "?", order = 0 }
                 end
@@ -170,69 +170,7 @@ local function look()
     end
 end
 
--- ---------------------------------------------------------------- the labels
-
-local function makeMarker()
-    local back = ui.Rectangle.new(parentLayer)
-    back.fill = true
-    back.colour = BACK_COLOUR
-    back:SetSize(LABEL_W, LABEL_H)
-    pcall(function() back.clickthrough = true end)
-    local text = Kit.text(parentLayer, 0, 0, LABEL_W, LABEL_H, "", LABEL_COLOUR)
-    pcall(function() text.clickthrough = true end)
-    return { back = back, text = text }
-end
-
-local function hideMarker(marker)
-    pcall(function()
-        marker.back.hidden = true
-        marker.text.hidden = true
-    end)
-end
-
-local function destroyMarkers()
-    for _, marker in ipairs(markers) do
-        pcall(function() marker.back:Destroy() end)
-        pcall(function() marker.text:Destroy() end)
-    end
-    markers = {}
-end
-
--- Puts the labels over the tracked NPCs, once every frame so they follow the NPCs as they move.
-local function placeMarkers()
-    local shown = 0
-    if data.enabled and parentLayer ~= nil then
-        for _, entry in ipairs(tracked) do
-            if shown >= MAX_MARKERS then
-                break
-            end
-            local okPos, screen = pcall(function()
-                if not entry.npc.isValid then
-                    return nil
-                end
-                return ScreenConvert.CoordFineToScreen(entry.npc.position, LABEL_HEIGHT)
-            end)
-            if okPos and screen ~= nil then
-                shown = shown + 1
-                if markers[shown] == nil then
-                    markers[shown] = makeMarker()
-                end
-                local marker = markers[shown]
-                local x, y = math.floor(screen.x - LABEL_W / 2), math.floor(screen.y - LABEL_H)
-                pcall(function()
-                    marker.back:SetPos(x, y)
-                    marker.text:SetPos(x, y)
-                    marker.text.content = "No card: " .. entry.name
-                    marker.back.hidden = false
-                    marker.text.hidden = false
-                end)
-            end
-        end
-    end
-    for i = shown + 1, #markers do
-        hideMarker(markers[i])
-    end
-end
+-- ---------------------------------------------------------------- the boxes
 
 -- The 12 edges of a box, as pairs of corners numbered by their bits: 1 = x, 2 = y, 4 = z (0 = the
 -- minimum side, 1 = the maximum).
@@ -245,11 +183,14 @@ for corner = 0, 7 do
     end
 end
 
-local outlineFailed = false  -- set when drawing lines does not work here, so it is not tried every frame
+local drawFailed = false     -- set when drawing lines does not work here, so it is not tried every frame
 
 -- Draws a box round the NPC's hull in the world (visible through walls), so it stands out at a glance.
-local function drawOutline(npc)
+local function drawBox(npc)
     local box = npc.aabb
+    if box == nil then
+        return       -- an NPC with no hull to draw: skip it, the others are fine
+    end
     local lo, hi = box.minimum, box.maximum
     -- If the box is given relative to the NPC rather than in the world, move it to the NPC.
     local centre = box.centre
@@ -271,22 +212,22 @@ local function drawOutline(npc)
     end
 end
 
-local function placeOutlines()
-    if outlineFailed or not data.enabled or not data.outline or ShapeList == nil then
+local function drawBoxes()
+    if drawFailed or not data.enabled or ShapeList == nil then
         return
     end
     for i, entry in ipairs(tracked) do
-        if i > MAX_MARKERS then
+        if i > MAX_BOXES then
             break
         end
         local ok, err = pcall(function()
             if entry.npc.isValid then
-                drawOutline(entry.npc)
+                drawBox(entry.npc)
             end
         end)
         if not ok then
-            outlineFailed = true
-            log("uncarded: outline failed, turned off until reload:", err)
+            drawFailed = true
+            log("uncarded: drawing the boxes failed, turned off until reload:", err)
             return
         end
     end
@@ -303,11 +244,7 @@ local function onDraw()
             log("uncarded: look failed:", err)
         end
     end
-    local ok, err = pcall(placeMarkers)
-    if not ok then
-        log("uncarded: labels failed:", err)
-    end
-    placeOutlines()
+    drawBoxes()
 end
 
 -- Starts looking for uncarded NPCs. Safe to call again.
@@ -316,26 +253,16 @@ function Uncarded.start()
     if active then
         return
     end
-    local okLayer, layer = pcall(function()
-        return ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    end)
-    if not okLayer or layer == nil then
-        log("uncarded: no game layer to draw on")
-        return
-    end
-    parentLayer = layer
     active = true
     frame = 0
     Event.Draw.Subscribe(SUBSCRIBER, onDraw)
 end
 
--- Stops, and takes the labels away.
+-- Stops, and takes the boxes away.
 function Uncarded.stop()
     active = false
     pcall(function() Event.Draw.Unsubscribe(SUBSCRIBER) end)
-    destroyMarkers()
     tracked = {}
-    parentLayer = nil
 end
 
 -- ---------------------------------------------------------------- the window
@@ -386,25 +313,36 @@ refresh = function()
     end
     clearRows()
     load()
-    toggleButton.label = data.enabled and "Labels: ON" or "Labels: OFF"
-    outlineButton.label = data.outline and "Outline: ON" or "Outline: OFF"
+    boxButton.label = data.enabled and "Boxes: ON" or "Boxes: OFF"
+    modeButton.label = showIgnored and "Show seen" or "Show ignored"
     rangeText.content = "Look within " .. data.range .. " tiles"
+
     local list = listed()
+    local pages = math.max(1, math.ceil(#list / ROWS))
+    page = math.max(1, math.min(page, pages))
     local ignoredCount = 0
     for _ in pairs(data.ignored) do ignoredCount = ignoredCount + 1 end
     if showIgnored then
-        statusText.content = ignoredCount .. " ignored" .. (#list > MAX_ROWS and (" (showing " .. MAX_ROWS .. ")") or "")
+        statusText.content = "Ignored NPCs: " .. #list
     else
-        statusText.content = #list .. " uncarded seen" .. (#list > MAX_ROWS and (" (showing " .. MAX_ROWS .. ")") or "")
-            .. ", " .. ignoredCount .. " ignored"
+        statusText.content = "Uncarded NPCs seen: " .. #list .. "   (" .. ignoredCount .. " ignored)"
     end
-    for i = 1, math.min(#list, MAX_ROWS) do
+    pageText.content = "Page " .. page .. " of " .. pages
+
+    local first = (page - 1) * ROWS + 1
+    for i = first, math.min(#list, first + ROWS - 1) do
         local entry = list[i]
-        local y = LIST_TOP + (i - 1) * ROW_H
-        local label = entry.name .. (entry.configName ~= "" and ("   " .. entry.configName) or "")
-        rows[#rows + 1] = Kit.text(content, 10, y, WIDTH - 140, 30, label, WHITE, ui.AlignMode.TOPLEFT)
-        rows[#rows + 1] = Kit.buttonAt(content, showIgnored and "Restore" or "Ignore", WIDTH - 120, y, 110, 30,
-            function() setIgnored(entry, not showIgnored) end)
+        local y = ROWS_TOP + (i - first) * ROW_H
+        rows[#rows + 1] = Kit.text(content, 10, y, NAME_W, BUTTON_H, entry.name, WHITE, ui.AlignMode.TOPLEFT)
+        rows[#rows + 1] = Kit.text(content, 10 + NAME_W, y, RIGHT - ACTION_W - NAME_W - 20, BUTTON_H,
+            entry.configName, GREY, ui.AlignMode.TOPLEFT)
+        rows[#rows + 1] = Kit.buttonAt(content, showIgnored and "Restore" or "Ignore", RIGHT - ACTION_W, y,
+            ACTION_W, BUTTON_H, function() setIgnored(entry, not showIgnored) end)
+    end
+    if #list == 0 then
+        rows[#rows + 1] = Kit.text(content, 10, ROWS_TOP, RIGHT - 10, BUTTON_H,
+            showIgnored and "Nothing is ignored." or "No uncarded NPCs seen yet. Walk around.", GREY,
+            ui.AlignMode.TOPLEFT)
     end
 end
 
@@ -414,34 +352,38 @@ function Uncarded.show()
     end
     load()
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window, content = Kit.window(gameWindow, "Uncarded NPCs", WIDTH, LIST_TOP + MAX_ROWS * ROW_H + 10 + Kit.titleBarHeight(),
+    local height = ROWS_TOP + ROWS * ROW_H + 10 + Kit.titleBarHeight()
+    window, content = Kit.window(gameWindow, "Uncarded NPCs", WIDTH, height,
         function() Uncarded.hide() end, 0.8, 0.05)
-    toggleButton = Kit.buttonAt(content, "Labels", 10, 2, 140, 30, function()
+
+    -- Top row: the switch, and which list is shown.
+    boxButton = Kit.buttonAt(content, "Boxes", 10, 2, 150, BUTTON_H, function()
         data.enabled = not data.enabled
         save()
         refresh()
     end, "positive")
-    outlineButton = Kit.buttonAt(content, "Outline", 160, 2, 150, 30, function()
-        data.outline = not data.outline
-        save()
+    modeButton = Kit.buttonAt(content, "Show ignored", RIGHT - 170, 2, 170, BUTTON_H, function()
+        showIgnored = not showIgnored
+        page = 1
         refresh()
-    end, "positive")
-    Kit.buttonAt(content, "Refresh", 320, 2, 110, 30, refresh)
-    -- How far to look: changing it takes effect straight away.
-    rangeText = Kit.text(content, 10, 40, 250, 30, "", WHITE, ui.AlignMode.TOPLEFT)
+    end)
+
+    -- Second row: how far to look. Changing it takes effect straight away.
+    rangeText = Kit.text(content, 10, 40, 260, BUTTON_H, "", WHITE, ui.AlignMode.TOPLEFT)
     local function changeRange(by)
         data.range = math.max(MIN_RANGE, math.min(MAX_RANGE, data.range + by))
         save()
         pcall(look)
         refresh()
     end
-    Kit.buttonAt(content, "- " .. RANGE_STEP, 270, 38, 90, 30, function() changeRange(-RANGE_STEP) end)
-    Kit.buttonAt(content, "+ " .. RANGE_STEP, 370, 38, 90, 30, function() changeRange(RANGE_STEP) end)
-    Kit.buttonAt(content, "Seen / Ignored", WIDTH - 170, 2, 160, 30, function()
-        showIgnored = not showIgnored
-        refresh()
-    end)
-    statusText = Kit.text(content, 10, 76, WIDTH - 20, 24, "", WHITE, ui.AlignMode.TOPLEFT)
+    Kit.buttonAt(content, "- " .. RANGE_STEP, RIGHT - 190, 40, 90, BUTTON_H, function() changeRange(-RANGE_STEP) end)
+    Kit.buttonAt(content, "+ " .. RANGE_STEP, RIGHT - 90, 40, 90, BUTTON_H, function() changeRange(RANGE_STEP) end)
+
+    -- Third row: what the list holds, and the pages.
+    statusText = Kit.text(content, 10, 78, 340, 24, "", WHITE, ui.AlignMode.TOPLEFT)
+    Kit.buttonAt(content, "<", RIGHT - 190, 76, 50, 28, function() page = page - 1 refresh() end)
+    pageText = Kit.text(content, RIGHT - 135, 78, 80, 24, "", WHITE)
+    Kit.buttonAt(content, ">", RIGHT - 50, 76, 50, 28, function() page = page + 1 refresh() end)
     refresh()
 end
 
@@ -450,8 +392,7 @@ function Uncarded.hide()
     if window ~= nil then
         pcall(function() window:Destroy() end)
     end
-    window, content, statusText, toggleButton = nil, nil, nil, nil
-    outlineButton, rangeText = nil, nil
+    window, content, statusText, pageText, boxButton, modeButton, rangeText = nil, nil, nil, nil, nil, nil, nil
 end
 
 function Uncarded.isOpen()

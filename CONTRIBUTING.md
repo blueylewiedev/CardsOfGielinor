@@ -80,10 +80,10 @@ a contact so the wiki's admins can reach you if anything goes wrong (see
 contact file are not committed.
 
 To find NPCs that still need a card, open **Uncarded NPCs** on the Home window. While the developer tools
-are in use, NPCs near you that have no card get a yellow **No card** label and a yellow outline round them in the
-game world (both can be switched off, and the window sets how many tiles to look). Use **Ignore**
-in that window for NPCs that will not get a card, or that have one with a different model (it ignores every
-version of that name, and is remembered).
+are in use, NPCs near you that have no card get a yellow box round them in the game world (the window
+switches the boxes off and sets how many tiles to look). Use **Ignore** in that window for NPCs that will
+not get a card, or that have one with a different model (it ignores every version of that name, and is
+remembered).
 
 1. **Choose the NPC.**
    - Stand near the NPC in the game and press the **Nearby NPCs** button (the eye icon beside the NPC box), then **Scan**, then **Use** on the
