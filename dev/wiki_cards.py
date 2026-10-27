@@ -250,6 +250,17 @@ def find_template(text, names):
     return None, None
 
 
+def find_templates(text, names):
+    """Every {{...}} template with one of these names, as a list of inside texts."""
+    found, start = [], 0
+    while True:
+        _, inside = find_template(text[start:], names)
+        if inside is None:
+            return found
+        found.append(inside)
+        start += text[start:].find(inside) + len(inside)
+
+
 def template_fields(inside):
     """The named fields of a template's inside text: { name: value }."""
     fields, depth, part = {}, 0, []
@@ -553,6 +564,33 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
     return RARITIES[best], [f"{why} ({rarity})" for rarity, why in given]
 
 
+def recipe_requirements(text, titles, skill_words):
+    """What making an item takes, from the Infobox Recipe templates on its page: (skills, level).
+    Only recipes with the item among their outputs count (not the ones that use it). `skills` are
+    the allowed skill words of those recipes, in order; `level` is the level of the easiest recipe
+    (the highest skill level it asks for), or None if the page has none."""
+    wanted = {t.lower() for t in titles if t}
+    skills, levels = [], []
+    for inside in find_templates(text or "", ["Infobox Recipe"]):
+        fields = template_fields(inside)
+        outputs = {plain(v).lower() for k, v in fields.items() if re.fullmatch(r"output\d*", k)}
+        if not outputs & wanted:
+            continue
+        needed = []
+        for key, value in fields.items():
+            number = re.fullmatch(r"skill(\d+)", key)
+            word = plain(value).lower()
+            if number and word in skill_words:
+                if word not in skills:
+                    skills.append(word)
+                level = re.search(r"\d+", plain(fields.get("skill" + number.group(1) + "lvl", "")))
+                if level:
+                    needed.append(int(level.group()))
+        if needed:
+            levels.append(max(needed))
+    return skills, (min(levels) if levels else None)
+
+
 def exchange_price(text):
     """The Grand Exchange price in an item's Module:Exchange page, or None."""
     found = re.search(r"\bprice\s*=\s*([\d,]+)", text or "")
@@ -595,8 +633,17 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
     if not category:
         notes.append("no category found: choose what kind of item it is")
 
-    skills = [s for s in words["skills"]
-              if any(c.lower() in (s, s + " items") for c in page.get("categories", []))]
+    # Skills: from the recipes that make the item (the most reliable), then from its categories.
+    made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)],
+                                           set(words["skills"]))
+    skills = list(made_with)
+    for s in words["skills"]:
+        if s not in skills and any(c.lower() in (s, s + " items") for c in page.get("categories", [])):
+            skills.append(s)
+    if made_with:
+        notes.append("made with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
+    else:
+        notes.append("no recipe found on the page: check which skills make it")
     if skills:
         tags["skills"] = skills
     membership = membership_tag(fields, notes)
@@ -606,14 +653,15 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
     categories = [c.lower() for c in page.get("categories", [])]
     price = exchange_price((exchange or {}).get("text"))
     rarity, why = item_rarity(
-        price=price,
+        level=level, price=price,
         pet=any(PET_CATEGORY.search(c) for c in categories),
         discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
     notes.append("rarity is a guess: " + ", ".join(why))
     if price is None:
         notes.append("no Grand Exchange price found (not tradeable?)")
     if rarity != "legendary":
-        notes.append("check the level needed and the drop rate: the rarity is the highest of them")
+        notes.append("check the drop rate"
+                     + ("" if level else " and the level needed") + ": the rarity is the highest of them")
 
     return {"page": page["title"], "kind": "item", "ids": ids[:6], "name": name, "desc": desc,
             "rarity": rarity, "tags": tags, "notes": notes}, None
