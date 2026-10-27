@@ -5,7 +5,7 @@
 -- It is passive: from the moment the developer tools are in use it looks at the NPCs around the
 -- player every half second or so and keeps a box round each one that has no card. Nothing has to
 -- be opened or scanned. The "Uncarded NPCs" window (Home window button) turns the boxes on or off,
--- sets how far to look, and lists the NPCs seen, each with an Ignore button, for the ones that will
+-- sets how far to look, and lists the NPCs nearby, each with an Ignore button, for the ones that will
 -- never get a card or that have a card with another model. Ignoring is by NPC name, so every
 -- variant of that NPC goes quiet, and it is remembered between sessions (PersistentDB).
 --
@@ -30,14 +30,14 @@ local OUTLINE_WIDTH = 2
 
 -- The window. The visible width of its contents is a little less than WIDTH, so things lined up on
 -- the right edge use RIGHT.
-local WIDTH, ROW_H = 640, 52
+local WIDTH, ROW_H = 640, 54
 local RIGHT = WIDTH - 80
 local ROWS = 7               -- rows on a page
-local ROWS_TOP = 118
+local ROWS_TOP = 124
 local BUTTON_H = 30
 local LINE_H = 17            -- each row has three lines of text: name, config name, animation set
-local ACTION_W = 100         -- width of the Ignore / Restore buttons
-local CARD_W = 100           -- width of the Card button
+local CARD_W = 110           -- width of the Card button
+local ICON_X = RIGHT - 32    -- where the Ignore / Restore picture button sits
 local WHITE = Vector4.new(1, 1, 1, 1)
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1)
 
@@ -45,8 +45,9 @@ local data = nil             -- { enabled = true/false, range = tiles, ignored =
 local active = false         -- true while the Draw handler is running
 local frame = 0
 local tracked = {}           -- the uncarded NPCs found by the last look: { npc, name }, nearest first
-local seen = {}              -- [lower case name] = { name, configName, order } for the window
-local seenCounter = 0
+local nearby = {}            -- the same NPCs, one for each name, nearest first: { key, name, configName, bas }
+local onNearbyChanged = nil  -- set below: redraws the window when the NPCs in it have changed
+local lastSignature = ""    -- what the window last showed
 
 local carded = nil           -- { ids = { [config id] = true }, names = { [lower case name] = true } }
 local cardedCount = -1       -- how many cards the sets above were built for
@@ -142,6 +143,8 @@ end
 local function look()
     buildCarded()
     tracked = {}
+    nearby = {}
+    local listedKeys = {}
     local okPlayer, player = pcall(Player.GetEntity)
     if not okPlayer or player == nil then
         return
@@ -161,15 +164,14 @@ local function look()
             local key = keyOf(name)
             if data.ignored[key] == nil and not hasCard(npc, name) then
                 tracked[#tracked + 1] = { npc = npc, name = name }
-                if seen[key] == nil then
+                if not listedKeys[key] then
+                    listedKeys[key] = true
                     local okCfg, configName = pcall(function() return tostring(npc.config.configName) end)
                     -- The animation set is a clue to which animations suit the NPC.
                     local okBas, bas = pcall(function() return tostring(npc.config.bas.configName) end)
-                    seen[key] = { name = name, configName = okCfg and configName or "?",
-                        bas = okBas and bas or "none", order = 0 }
+                    nearby[#nearby + 1] = { key = key, name = name, configName = okCfg and configName or "?",
+                        bas = okBas and bas or "none" }
                 end
-                seenCounter = seenCounter + 1
-                seen[key].order = seenCounter
             end
         end
     end
@@ -248,6 +250,9 @@ local function onDraw()
         if not ok then
             log("uncarded: look failed:", err)
         end
+        if onNearbyChanged ~= nil then
+            pcall(onNearbyChanged)
+        end
     end
     drawBoxes()
 end
@@ -268,6 +273,7 @@ function Uncarded.stop()
     active = false
     pcall(function() Event.Draw.Unsubscribe(SUBSCRIBER) end)
     tracked = {}
+    nearby = {}
 end
 
 -- ---------------------------------------------------------------- the window
@@ -279,7 +285,7 @@ local function clearRows()
     rows = {}
 end
 
--- The NPCs to list: the ones seen and not ignored (latest first), or the ignored ones (A to Z).
+-- The NPCs to list: the uncarded ones within range now (nearest first), or the ignored ones (A to Z).
 local function listed()
     local list = {}
     if showIgnored then
@@ -288,13 +294,9 @@ local function listed()
         end
         table.sort(list, function(a, b) return a.key < b.key end)
     else
-        for key, entry in pairs(seen) do
-            if data.ignored[key] == nil then
-                list[#list + 1] = { key = key, name = entry.name, configName = entry.configName, bas = entry.bas,
-                    order = entry.order }
-            end
+        for _, entry in ipairs(nearby) do
+            list[#list + 1] = entry
         end
-        table.sort(list, function(a, b) return a.order > b.order end)
     end
     return list
 end
@@ -313,6 +315,16 @@ local function setIgnored(entry, ignore)
     refresh()
 end
 
+-- What the window shows, as one string: when it differs from the last one, the rows are drawn again.
+local function signature()
+    local keys = { showIgnored and "ignored" or "nearby", tostring(page), tostring(data.range),
+        data.enabled and "on" or "off" }
+    for _, entry in ipairs(listed()) do
+        keys[#keys + 1] = entry.key
+    end
+    return table.concat(keys, "|")
+end
+
 refresh = function()
     if window == nil then
         return
@@ -320,7 +332,7 @@ refresh = function()
     clearRows()
     load()
     boxButton.label = data.enabled and "Boxes: ON" or "Boxes: OFF"
-    modeButton.label = showIgnored and "Show seen" or "Show ignored"
+    modeButton.label = showIgnored and "Show nearby" or "Show ignored"
     rangeText.content = "Look within " .. data.range .. " tiles"
 
     local list = listed()
@@ -331,7 +343,7 @@ refresh = function()
     if showIgnored then
         statusText.content = "Ignored NPCs: " .. #list
     else
-        statusText.content = "Uncarded NPCs seen: " .. #list .. "   (" .. ignoredCount .. " ignored)"
+        statusText.content = "Uncarded NPCs nearby: " .. #list .. "  (" .. ignoredCount .. " ignored)"
     end
     pageText.content = "Page " .. page .. " of " .. pages
 
@@ -339,7 +351,7 @@ refresh = function()
     for i = first, math.min(#list, first + ROWS - 1) do
         local entry = list[i]
         local y = ROWS_TOP + (i - first) * ROW_H
-        local textW = RIGHT - ACTION_W - (showIgnored and 0 or CARD_W) - 30
+        local textW = RIGHT - CARD_W - 40
         rows[#rows + 1] = Kit.text(content, 10, y, textW, LINE_H, entry.name, WHITE, ui.AlignMode.TOPLEFT)
         if not showIgnored then
             rows[#rows + 1] = Kit.text(content, 10, y + LINE_H, textW, LINE_H, entry.configName, GREY,
@@ -347,16 +359,28 @@ refresh = function()
             rows[#rows + 1] = Kit.text(content, 10, y + 2 * LINE_H, textW, LINE_H, "Animation set: " .. entry.bas,
                 GREY, ui.AlignMode.TOPLEFT)
             -- Starts a card for this NPC in the Card Builder.
-            rows[#rows + 1] = Kit.buttonAt(content, "Card", RIGHT - ACTION_W - CARD_W - 10, y + 8, CARD_W, BUTTON_H,
+            rows[#rows + 1] = Kit.buttonAt(content, "Card", RIGHT - CARD_W - 44, y + 8, CARD_W, BUTTON_H,
                 function() Builder.loadNpc(entry) end, "positive", "Start a card for this NPC in the Card Builder")
+            rows[#rows + 1] = Kit.iconButton(content, "CROSS", ICON_X, y + 9, function() setIgnored(entry, true) end,
+                "Ignore this NPC (every version of the name)", "Ignore", 80)
+        else
+            rows[#rows + 1] = Kit.iconButton(content, "UNDO", ICON_X, y + 9, function() setIgnored(entry, false) end,
+                "Stop ignoring this NPC", "Restore", 80)
         end
-        rows[#rows + 1] = Kit.buttonAt(content, showIgnored and "Restore" or "Ignore", RIGHT - ACTION_W, y + 8,
-            ACTION_W, BUTTON_H, function() setIgnored(entry, not showIgnored) end)
     end
     if #list == 0 then
         rows[#rows + 1] = Kit.text(content, 10, ROWS_TOP, RIGHT - 10, BUTTON_H,
-            showIgnored and "Nothing is ignored." or "No uncarded NPCs seen yet. Walk around.", GREY,
+            showIgnored and "Nothing is ignored." or ("No uncarded NPCs within " .. data.range .. " tiles."), GREY,
             ui.AlignMode.TOPLEFT)
+    end
+    lastSignature = signature()
+end
+
+-- Called after every look: redraws the window if the NPCs in it have changed, so the list follows
+-- the player around.
+onNearbyChanged = function()
+    if window ~= nil and signature() ~= lastSignature then
+        refresh()
     end
 end
 
@@ -376,28 +400,32 @@ function Uncarded.show()
         save()
         refresh()
     end, "positive")
-    modeButton = Kit.buttonAt(content, "Show ignored", RIGHT - 170, 2, 170, BUTTON_H, function()
+    modeButton = Kit.buttonAt(content, "Show ignored", RIGHT - 180, 2, 180, BUTTON_H, function()
         showIgnored = not showIgnored
         page = 1
         refresh()
     end)
 
     -- Second row: how far to look. Changing it takes effect straight away.
-    rangeText = Kit.text(content, 10, 40, 260, BUTTON_H, "", WHITE, ui.AlignMode.TOPLEFT)
+    rangeText = Kit.text(content, 10, 42, 260, BUTTON_H, "", WHITE, ui.AlignMode.TOPLEFT)
     local function changeRange(by)
         data.range = math.max(MIN_RANGE, math.min(MAX_RANGE, data.range + by))
         save()
         pcall(look)
         refresh()
     end
-    Kit.buttonAt(content, "- " .. RANGE_STEP, RIGHT - 190, 40, 90, BUTTON_H, function() changeRange(-RANGE_STEP) end)
-    Kit.buttonAt(content, "+ " .. RANGE_STEP, RIGHT - 90, 40, 90, BUTTON_H, function() changeRange(RANGE_STEP) end)
+    Kit.smallButton(content, "-", RIGHT - 88, 42, 40, BUTTON_H, function() changeRange(-RANGE_STEP) end,
+        "Look " .. RANGE_STEP .. " tiles less far")
+    Kit.smallButton(content, "+", RIGHT - 40, 42, 40, BUTTON_H, function() changeRange(RANGE_STEP) end,
+        "Look " .. RANGE_STEP .. " tiles further")
 
     -- Third row: what the list holds, and the pages.
-    statusText = Kit.text(content, 10, 78, 320, 24, "", WHITE, ui.AlignMode.TOPLEFT)
-    Kit.buttonAt(content, "Prev", RIGHT - 300, 76, 80, 28, function() page = page - 1 refresh() end)
-    pageText = Kit.text(content, RIGHT - 210, 78, 120, 24, "", WHITE)
-    Kit.buttonAt(content, "Next", RIGHT - 80, 76, 80, 28, function() page = page + 1 refresh() end)
+    statusText = Kit.text(content, 10, 82, RIGHT - 220, 24, "", WHITE, ui.AlignMode.TOPLEFT)
+    Kit.iconButton(content, "ARROW_LEFT", RIGHT - 176, 80, function() page = page - 1 refresh() end,
+        "The previous page", "Prev", 70)
+    pageText = Kit.text(content, RIGHT - 140, 82, 100, 24, "", WHITE)
+    Kit.iconButton(content, "ARROW_RIGHT", RIGHT - 32, 80, function() page = page + 1 refresh() end,
+        "The next page", "Next", 70)
     refresh()
 end
 
