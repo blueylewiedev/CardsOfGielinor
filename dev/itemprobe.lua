@@ -205,7 +205,11 @@ local function valueText(value, depth)
         end
         return "{" .. table.concat(items, ", ") .. (count > 8 and ", ..." or "") .. "}"
     end
-    return "<" .. kind .. ">"
+    -- (No angle brackets: they vanish when the Output window is copied.)
+    if kind == "table" or kind == "userdata" then
+        return "(empty " .. kind .. ")"
+    end
+    return "(" .. kind .. ")"
 end
 
 -- Writes everything the game's item config holds that could say what an item is (its parameters,
