@@ -321,6 +321,9 @@ discontinued items, and lists what it used in the notes.
   `--drops "Kree'arra"`. It keeps the rarest rate it has read for each item (`dev/wiki_cache/drops.json`)
   and uses it for any item that drops there. An item that drops from a page you have not given it has
   no drop rate, so check those by hand.
+  `--all-bosses` does this for every boss linked on the wiki's Bosses page before its Quest bosses
+  section (`--drops-from "Bosses" --until "Quest bosses"` does the same, and works for other list pages).
+  It fetches many pages (25 a request, cached), so raise `--max-requests` if it stops early and run it again.
 The thresholds are at the top of the rarity section in `dev/wiki_cards.py`.
 
 ### Tags

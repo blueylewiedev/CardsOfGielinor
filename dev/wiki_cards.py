@@ -21,6 +21,11 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     rates in it are kept (dev/wiki_cache/drops.json), and an item that drops there
                     gets a rarity from its rarest drop rate. Only items from the pages asked for
                     are known, so give it the bosses and monsters whose drops you are carding
+  --drops-from TITLE
+                    the same for every page linked from a list page, e.g. "Bosses" (see --until)
+  --until HEADING   with --drops-from: stop at this heading, leaving out it and everything after
+  --all-bosses      short for --drops-from Bosses --until "Quest bosses": the drop rates of every
+                    boss on the wiki's Bosses page before its Quest bosses section
   --subcategories NAME
                     list the subcategories of a wiki category with how many pages each has, to find
                     category names to use with --category (one request, cached). Makes no candidates
@@ -647,6 +652,23 @@ def remember_drops(pages):
     return known
 
 
+def linked_pages(text, until=None):
+    """The titles of the wiki pages linked in `text`, in order and without repeats. With `until`,
+    only the text before the heading of that name counts. Raises ValueError if that heading is not
+    in the text. Links to files, categories and other namespaces are left out."""
+    if until:
+        heading = re.search(r"^(=+)[ \t]*" + re.escape(until) + r"[ \t]*\1[ \t]*$", text, re.M | re.I)
+        if heading is None:
+            raise ValueError(f'no "{until}" heading found')
+        text = text[:heading.start()]
+    titles = []
+    for target in re.findall(r"\[\[([^\[\]|]+)", text):
+        title = target.split("#")[0].replace("_", " ").strip()
+        if title and ":" not in title and title not in titles:
+            titles.append(title)
+    return titles
+
+
 GEP_BATCH = 25       # prices asked for in one request
 GEP_MARK = "@@"      # put round each answer so they can be told apart
 
@@ -1123,15 +1145,21 @@ def main():
     parser.add_argument("--only", action="store_true")
     parser.add_argument("--forget", action="store_true")
     parser.add_argument("--drops", action="append", default=[])
+    parser.add_argument("--drops-from", action="append", default=[])
+    parser.add_argument("--until", default="")
+    parser.add_argument("--all-bosses", action="store_true")
     parser.add_argument("--subcategories", action="append", default=[])
     args = parser.parse_args()
     if args.subcategories:
         return show_subcategories(args)
-    if not args.category and not args.page and not args.drops and not SOURCES.exists():
+    if args.all_bosses:
+        args.drops_from.append("Bosses")
+        args.until = args.until or "Quest bosses"
+    if not args.category and not args.page and not args.drops and not args.drops_from and not SOURCES.exists():
         print(__doc__)
         return 1
     categories, page_titles = remembered_sources(args)
-    if not categories and not page_titles and not args.drops:
+    if not categories and not page_titles and not args.drops and not args.drops_from:
         print("Nothing to fetch: give --category or --page.")
         return 1
 
@@ -1155,9 +1183,22 @@ def main():
         for title in category_pages(wiki, category, args.refresh and category in args.category):
             add(title, category)
     pages = fetch_pages(wiki, titles, args.refresh)
-    drop_pages = fetch_pages(wiki, args.drops, args.refresh) if args.drops else {}
+    drop_titles = list(args.drops)
+    for list_title in args.drops_from:
+        listed = fetch_pages(wiki, [list_title], args.refresh).get(list_title)
+        if listed is None or listed.get("missing"):
+            print(f'The page "{list_title}" could not be read: no drop rates asked for from it')
+            continue
+        try:
+            linked = linked_pages(listed.get("text", ""), args.until)
+        except ValueError as problem:
+            print(f'"{list_title}": {problem}, so nothing was taken from it')
+            continue
+        print(f'"{list_title}" links {len(linked)} pages' + (f' before "{args.until}"' if args.until else ""))
+        drop_titles += [t for t in linked if t not in drop_titles]
+    drop_pages = fetch_pages(wiki, drop_titles, args.refresh) if drop_titles else {}
     drops = remember_drops(drop_pages)
-    if args.drops:
+    if drop_titles:
         print(f"Drop rates for {len(drops)} items are kept in {DROPS.relative_to(ROOT)}")
     # The Grand Exchange price of each item page, by asking the wiki for {{GEP|name}}.
     price_names = {title: price_name(template_fields(find_template(pages[title]["text"], ["Infobox Item"])[1] or ""),
