@@ -248,6 +248,66 @@ Set.cards = {
         art = { item = "YEW_LOGS_PYRE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
         tags = { regions = { "morytania" }, skills = { "prayer", "firemaking" }, category = { "raw_material" }, membership = { "p2p" } },
     },
+    {
+        id = "blood_spindle_branches", name = "Blood spindle branches", kind = "item", rarity = "common",
+        desc = "There's enough wood here to be of use.",
+        art = { item = "RAND_LOGS_3", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "f2p" } },
+    },
+    {
+        id = "bovistrangler_branches", name = "Bovistrangler branches", kind = "item", rarity = "rare",
+        desc = "There's enough wood here to be of use. Used in Firemaking.",
+        art = { item = "RAND_LOGS_6", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "construction", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "f2p" } },
+    },
+    {
+        id = "corpsethorn_branches", name = "Corpsethorn branches", kind = "item", rarity = "epic",
+        desc = "There's enough wood here to be of use. Used in Firemaking.",
+        art = { item = "RAND_LOGS_8", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "entgallow_branches", name = "Entgallow branches", kind = "item", rarity = "epic",
+        desc = "There's enough wood here to be of use.",
+        art = { item = "RAND_LOGS_9", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "grave_creeper_branches", name = "Grave creeper branches", kind = "item", rarity = "legendary",
+        desc = "There's enough wood here to be of use. Used in Firemaking.",
+        art = { item = "RAND_LOGS_10", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "seeping_elm_branches", name = "Seeping elm branches", kind = "item", rarity = "common",
+        desc = "There's enough wood here to be of use. Used in Firemaking.",
+        art = { item = "RAND_LOGS_2", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "summoning", "fletching" }, category = { "raw_material", "log" }, membership = { "f2p" } },
+    },
+    {
+        id = "spinebeam_branches", name = "Spinebeam branches", kind = "item", rarity = "uncommon",
+        desc = "There's enough wood here to be of use.",
+        art = { item = "RAND_LOGS_5", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "f2p" } },
+    },
+    {
+        id = "tangle_gum_branches", name = "Tangle gum branches", kind = "item", rarity = "common",
+        desc = "There's enough wood here to be of use. Used in Firemaking.",
+        art = { item = "RAND_LOGS_1", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "f2p" } },
+    },
+    {
+        id = "thigat_branches", name = "Thigat branches", kind = "item", rarity = "rare",
+        desc = "There's enough wood here to be of use. Used in Firemaking.",
+        art = { item = "RAND_LOGS_7", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "summoning" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "utuku_branches", name = "Utuku branches", kind = "item", rarity = "uncommon",
+        desc = "There's enough wood here to be of use.",
+        art = { item = "RAND_LOGS_4", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
+        tags = { regions = { "daemonheim" }, skills = { "firemaking", "dungeoneering", "fletching", "construction", "summoning" }, category = { "raw_material", "log" }, membership = { "f2p" } },
+    },
 }
 
 return Set
