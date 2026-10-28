@@ -311,12 +311,17 @@ Examples: clean lantadyme costs about 3k (common) but needs level 73 (epic), so 
 chestplate drops at 1 in 384 (rare) and costs about 4.8M (rare), so it is **rare**. A godsword shard drops at
 1 in 768 (rare) and costs about 118k (uncommon), so it is **rare**.
 
-The wiki tool suggests a rarity from the level needed, the Grand Exchange price, pets and discontinued
-items, and lists what it used in the notes. The level and the `skills` tag come from the page's Recipe
-infobox (only recipes that make the item; if there are several, the easiest one). It does not read the
-level for items that are not made (gear, say) or the drop rate yet, so check those on the wiki page and
-raise the rarity if they give a higher one. The thresholds are at the top of the rarity section in
-`dev/wiki_cards.py`.
+The wiki tool suggests a rarity from the level needed, the Grand Exchange price, the drop rate, pets and
+discontinued items, and lists what it used in the notes.
+- **Level:** from the Recipe infobox (only recipes that make the item; the easiest one if there are
+  several) and, for gear, from the Bonuses box's wear requirement. The highest wins. The skills they
+  name go in the `skills` tag.
+- **Price:** the wiki's own Grand Exchange price (`{{GEP}}`).
+- **Drop rate:** the wiki's item pages do not list it, so give the tool the monster pages with
+  `--drops "Kree'arra"`. It keeps the rarest rate it has read for each item (`dev/wiki_cache/drops.json`)
+  and uses it for any item that drops there. An item that drops from a page you have not given it has
+  no drop rate, so check those by hand.
+The thresholds are at the top of the rarity section in `dev/wiki_cards.py`.
 
 ### Tags
 
@@ -393,6 +398,16 @@ word above it, so a rune scimitar is `{ "weapon", "scimitar" }`. Throwing knives
 are `fashion` and are not given `weapon`, `armour` or a slot, so a pack of helmets or weapons never
 contains them. An item can have several words, for example `{ "raw_material" }` for logs.
 
+Some words have more to say about the kind, and open their own choice once the word above is on the card:
+- `weapon`, `armour`, `jewellery` or `ammunition` open the **combat style**: `melee_gear`, `ranged_gear`,
+  `magic_gear`, `necromancy_gear` or `hybrid_gear` (the wiki's "class" of the item). The words end in
+  `_gear` so they are not mistaken for the skills of the same names.
+- `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `herb`, `log`, `ore`, `bone`,
+  `hide` and `gem`; `processed_material` opens `bar` and `plank`.
+- `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
+  (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
+  `requires = { "raw_material", "food" }`.)
+
 **Choosing regions for an item.** A region tag says that an item belongs to a region's story or
 loot. It does not say that the item can be found there. Anything that can be had almost anywhere is
 left without a region, and is still given out by the Gielinor pack, which has every card. Work down
@@ -424,7 +439,7 @@ to guess.
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
 - `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
-- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`, `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 

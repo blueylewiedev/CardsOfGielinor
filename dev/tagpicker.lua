@@ -84,10 +84,24 @@ function TagPicker.matchesFilter(word, filterText)
     return wanted == "" or string.find(simplify(word), wanted, 1, true) ~= nil
 end
 
--- True if a group is shown: it has no `requires`, or the word it requires is in `selected`
+-- True if a group is shown: it has no `requires`, or a word it requires is in `selected`
 -- (a set of the words now on the card).
 local function groupOpen(group, selected)
-    return group.requires == nil or (selected ~= nil and selected[group.requires] == true)
+    if group.requires == nil then
+        return true
+    end
+    if selected == nil then
+        return false
+    end
+    if type(group.requires) == "table" then       -- any one of several words will do
+        for _, word in ipairs(group.requires) do
+            if selected[word] == true then
+                return true
+            end
+        end
+        return false
+    end
+    return selected[group.requires] == true
 end
 
 -- Which of a kind's groups are open, as a string like "10", to tell when a page needs rebuilding.

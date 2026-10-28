@@ -17,6 +17,10 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
   --refresh         fetch again even what is in the cache (only for pages changed on the wiki)
   --only            candidates from this run's categories and pages only (see below)
   --forget          forget the categories and pages asked for before (see below)
+  --drops TITLE     a page with a drop table, e.g. "Kree'arra" (more than once is fine): the drop
+                    rates in it are kept (dev/wiki_cache/drops.json), and an item that drops there
+                    gets a rarity from its rarest drop rate. Only items from the pages asked for
+                    are known, so give it the bosses and monsters whose drops you are carding
   --subcategories NAME
                     list the subcategories of a wiki category with how many pages each has, to find
                     category names to use with --category (one request, cached). Makes no candidates
@@ -337,7 +341,7 @@ def npc_names():
 def allowed_words():
     """The words cards may use, from core/cards.lua: regions, location, skills, the NPC category
     words (category), the item category words (item_category) and, for the item words that need
-    another, that word (item_requires: scimitar -> weapon)."""
+    another, a list of the words one of which it needs (item_requires: scimitar -> [weapon])."""
     text = CARDS.read_text(encoding="utf-8")
 
     def quoted(block):
@@ -351,8 +355,11 @@ def allowed_words():
     words["category"] = quoted(groups.group(1)) if groups else []
     words["item_category"], words["item_requires"] = [], {}
     item_groups = re.search(r"Cards\.itemTagGroups\s*=\s*\{(.*?)\n\}", text, re.S)
-    for requires, block in re.findall(r'\{\s*title\s*=\s*"[^"]*",\s*(?:requires\s*=\s*"(\w+)",\s*)?'
-                                      r'words\s*=\s*\{([^}]*)\}', item_groups.group(1) if item_groups else ""):
+    # (`requires` is one word, or a list of words of which any one will do)
+    for single, several, block in re.findall(
+            r'\{\s*title\s*=\s*"[^"]*",\s*(?:requires\s*=\s*(?:"(\w+)"|\{([^}]*)\}),\s*)?'
+            r'words\s*=\s*\{([^}]*)\}', item_groups.group(1) if item_groups else ""):
+        requires = [single] if single else quoted(several)
         for word in quoted(block):
             words["item_category"].append(word)
             if requires:
@@ -397,9 +404,11 @@ SLOT_WORDS = {
 # (the "Disassemble category/..." ones name the kind of item well). Words that need another
 # (scimitar needs weapon) get it added.
 ITEM_CATEGORY_WORDS = {
-    "logs": ["raw_material"], "ores": ["raw_material"], "ore": ["raw_material"], "hides": ["raw_material"],
-    "bars": ["processed_material"], "bar": ["processed_material"], "planks": ["processed_material"],
-    "runes": ["rune"], "food": ["food"], "fish": ["food"], "drinks": ["drink"], "potions": ["potion"],
+    "logs": ["raw_material", "log"], "ores": ["raw_material", "ore"], "ore": ["raw_material", "ore"],
+    "hides": ["raw_material", "hide"], "bones": ["raw_material", "bone"],
+    "bars": ["processed_material", "bar"], "bar": ["processed_material", "bar"],
+    "planks": ["processed_material", "plank"],
+    "runes": ["rune"], "food": ["food"], "fish": ["food", "fish"], "meat": ["food", "meat"], "drinks": ["drink"], "potions": ["potion"],
     "potion": ["potion"], "seeds": ["seed"], "jewellery": ["jewellery"], "quest items": ["quest_item"],
     "arrows": ["ammunition", "arrow"], "bolts": ["ammunition", "bolt"], "dagger": ["dagger"], "daggers": ["dagger"],
     "scimitar": ["scimitar"], "scimitars": ["scimitar"], "longsword": ["sword"], "sword": ["sword"],
@@ -410,7 +419,8 @@ ITEM_CATEGORY_WORDS = {
     "thrown": ["thrown"], "staff": ["staff"], "staves": ["staff"], "wand": ["wand"], "wands": ["wand"],
     "lantern": ["lantern"], "siphon": ["siphon"],
     # Herbs, gems and tools.
-    "herbs": ["raw_material"], "herb": ["raw_material"], "gems": ["raw_material"], "gem": ["raw_material"],
+    "herbs": ["raw_material", "herb"], "herb": ["raw_material", "herb"],
+    "gems": ["raw_material", "gem"], "gem": ["raw_material", "gem"],
     "tools": ["tool"], "pickaxes": ["tool"], "hatchets": ["tool"],
     # Equipment categories by slot (the names are a best guess: check them with --subcategories).
     # The slot in the page's Infobox Bonuses gives the same words; these help when it is missing.
@@ -451,9 +461,9 @@ def only_in_cutscenes(page, fields):
     return all("cutscene" in v.lower() for v in locations)
 
 
-def candidate(page, names, words, exchange=None):
+def candidate(page, names, words, price=None, drop=None):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
-    `exchange` is the item's Module:Exchange page (its Grand Exchange price), if fetched."""
+    `price` is the item's Grand Exchange price, if it was fetched."""
     if REMOVED_CATEGORIES & set(page.get("categories", [])):
         return None, "removed from the game"
     text = page.get("text", "")
@@ -466,7 +476,7 @@ def candidate(page, names, words, exchange=None):
     _, inside = find_template(text, ["Infobox Item"])
     if inside is not None:
         _, bonuses = find_template(text, ["Infobox Bonuses"])
-        return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words, exchange)
+        return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words, price, drop)
     return None, "no NPC or item infobox"
 
 
@@ -593,13 +603,116 @@ def recipe_requirements(text, titles, skill_words):
     return skills, (min(levels) if levels else None)
 
 
-def exchange_price(text):
-    """The Grand Exchange price in an item's Module:Exchange page, or None."""
-    found = re.search(r"\bprice\s*=\s*([\d,]+)", text or "")
-    return int(found.group(1).replace(",", "")) if found else None
+DROPS = CACHE / "drops.json"
 
 
-def item_candidate(page, fields, bonuses, words, exchange=None):
+def drop_n(value):
+    """The N of a drop rate "1 in N" from a DropsLine `rarity` ("1/384", "8/128", "44.5/128",
+    "5%"), or None for "Always", "Unknown" and anything else that is not a number."""
+    value = plain(value).replace(",", "").lstrip("~≈ ")
+    found = re.fullmatch(r"([\d.]+)\s*/\s*([\d.]+)", value)
+    try:
+        if found:
+            n = float(found.group(2)) / float(found.group(1))
+        else:
+            found = re.fullmatch(r"([\d.]+)\s*%", value)
+            n = 100 / float(found.group(1)) if found else None
+    except (ValueError, ZeroDivisionError):
+        return None
+    return n if n else None
+
+
+def drop_rates(text):
+    """{ item name (lower case): N } from the DropsLine templates of a page, N the rarest (largest)
+    of its rates there. Quantities, notes and the lines with no rate are ignored."""
+    rates = {}
+    for match in re.finditer(r"\{\{\s*DropsLine\s*\|", text or ""):
+        _, inside = find_template(text[match.start():], ["DropsLine"])
+        fields = template_fields(inside or "")
+        name, n = plain(fields.get("name", "")).lower(), drop_n(fields.get("rarity", ""))
+        if name and n:
+            rates[name] = max(rates.get(name, 0), n)
+    return rates
+
+
+def remember_drops(pages):
+    """Adds the drop rates of these pages to dev/wiki_cache/drops.json (keeping the rarest rate of
+    each item over everything read) and returns all of it, { name: N }."""
+    known = json.loads(DROPS.read_text(encoding="utf-8")) if DROPS.exists() else {}
+    for page in pages.values():
+        for name, n in drop_rates(page.get("text", "")).items():
+            known[name] = max(known.get(name, 0), round(n, 1))
+    DROPS.parent.mkdir(parents=True, exist_ok=True)
+    DROPS.write_text(json.dumps(known, indent=1, sort_keys=True), encoding="utf-8")
+    return known
+
+
+GEP_BATCH = 25       # prices asked for in one request
+GEP_MARK = "@@"      # put round each answer so they can be told apart
+
+
+def price_name(fields, title):
+    """The name to ask the Grand Exchange price of: the infobox's default version, else its first
+    name, else the page title. None if the name can't go in a template call."""
+    default = plain(fields.get("defver", ""))
+    name = (plain(fields.get("name" + default, "")) if default else "") or plain(first_version(fields, "name")) or title
+    return None if re.search(r"[|={}]", name) else name
+
+
+def read_price(text):
+    """A price from the wiki's {{GEP|item}} answer ("390", "1,234"), or None if it is not a plain
+    number (an item that is not on the Grand Exchange gives words or nothing)."""
+    text = (text or "").strip()
+    return int(text.replace(",", "")) if re.fullmatch(r"\d[\d,]*", text) else None
+
+
+def fetch_prices(wiki, names, refresh):
+    """The Grand Exchange price of each item name, as { name: price or None }, by asking the wiki
+    to expand {{GEP|name}}. Answers are kept in dev/wiki_cache; names not asked yet when the
+    run's request limit is used up are left out."""
+    prices, wanted = {}, []
+    for name in dict.fromkeys(names):
+        cached = None if refresh else read_cache("prices", name)
+        if cached is not None:
+            prices[name] = cached["price"]
+        else:
+            wanted.append(name)
+    for start in range(0, len(wanted), GEP_BATCH):
+        batch = wanted[start:start + GEP_BATCH]
+        text = "".join(f"{GEP_MARK}{{{{GEP|{n}}}}}{GEP_MARK}" for n in batch)
+        answer = wiki.get({"action": "expandtemplates", "prop": "wikitext", "text": text})
+        if answer is None:
+            print(f"  request limit reached; {len(wanted) - start} prices left for next time")
+            break
+        found = re.findall(re.escape(GEP_MARK) + "(.*?)" + re.escape(GEP_MARK),
+                           answer.get("expandtemplates", {}).get("wikitext", ""), re.S)
+        if len(found) != len(batch):
+            print(f"  asked for {len(batch)} prices and got {len(found)} answers; skipping this batch")
+            continue
+        for name, value in zip(batch, found):
+            prices[name] = read_price(value)
+            write_cache("prices", name, {"price": prices[name], "fetched": time.strftime("%Y-%m-%d")})
+    return prices
+
+
+# The combat style of gear, from the "class" of its Infobox Bonuses.
+COMBAT_STYLE_WORDS = {"melee": "melee_gear", "ranged": "ranged_gear", "magic": "magic_gear",
+                      "necromancy": "necromancy_gear", "hybrid": "hybrid_gear"}
+
+
+def gear_requirements(bonuses, skill_words):
+    """What wearing an item takes, from its Infobox Bonuses `requirements` ({{sc|attack|70}}):
+    (skills, level). The level is the highest one asked for, None if there is none."""
+    skills, levels = [], []
+    for skill, level in re.findall(r"\{\{\s*sc\s*\|\s*([A-Za-z]+)\s*\|\s*(\d+)", bonuses.get("requirements", "")):
+        if skill.lower() in skill_words:
+            if skill.lower() not in skills:
+                skills.append(skill.lower())
+            levels.append(int(level))
+    return skills, (max(levels) if levels else None)
+
+
+def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     """A candidate from an item page. The ids go to the plugin, which knows the items' config
     names. Tags: the item category words from its equipment slot and its wiki categories, and the
     skills whose categories it is in."""
@@ -615,20 +728,33 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
     style = plain(bonuses.get("style", "")).lower()
     if "ammunition" in found:
         found += ["arrow"] if "arrow" in style else ["bolt"] if "bolt" in style else []
+    combat = COMBAT_STYLE_WORDS.get(re.split(r"\W+", plain(bonuses.get("class", "")).lower())[0])
+    if combat and combat in words["item_category"]:
+        found.append(combat)
+    if plain(fields.get("edible", "")).lower().startswith("yes"):
+        found.append("food")
     cosmetic = [c for c in page.get("categories", []) if COSMETIC_CATEGORY.search(c.lower())]
     if cosmetic:
         found = ["fashion"]
         notes.append(f"looks like a cosmetic ({cosmetic[0]}): tagged fashion only")
     else:
-        for category in page.get("categories", []):
+        # (the kind of item the page's Disassembly box says it is, "Potions" or "food", counts like a category)
+        _, disassembly = find_template(page.get("text", ""), ["Disassembly"])
+        kinds = [plain(template_fields(disassembly or "").get("category", ""))]
+        for category in page.get("categories", []) + [k for k in kinds if k]:
             name_part = category.lower().removeprefix("disassemble category/")
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
     category = []
     for word in found:
-        parent = words["item_requires"].get(word)
-        for needed in ([parent] if parent else []) + [word]:
+        parents = words["item_requires"].get(word, [])
+        # (a word that needs one of several gets one already found, else the first)
+        if parents and not any(p in category or p in found for p in parents):
+            parents = parents[:1]
+        else:
+            parents = []
+        for needed in parents + [word]:
             if needed in words["item_category"] and needed not in category:
                 category.append(needed)
     tags = {"category": category} if category else {}
@@ -640,14 +766,19 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
     item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
-    skills = list(made_with)
+    worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
+    skills = list(made_with) + [w for w in worn_with if w not in made_with]
     for s in words["skills"]:
         if s not in skills and any(c.lower() in (s, s + " items") for c in page.get("categories", [])):
             skills.append(s)
     if made_with:
         notes.append("made with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
-    else:
-        notes.append("no recipe found on the page: check which skills make it")
+    elif not worn_with:
+        notes.append("no recipe or wear requirement found on the page: check which skills it needs")
+    if worn_with:
+        notes.append("needs " + ", ".join(f"{w}" for w in worn_with) + f" level {worn_level} to wear")
+    levels = [x for x in (level, worn_level) if x is not None]
+    level = max(levels) if levels else None
     if skills:
         tags["skills"] = skills
     membership = membership_tag(fields, notes)
@@ -655,17 +786,17 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
         tags["membership"] = membership
 
     categories = [c.lower() for c in page.get("categories", [])]
-    price = exchange_price((exchange or {}).get("text"))
     rarity, why = item_rarity(
-        level=level, price=price,
+        level=level, price=price, drop=round(drop) if drop else None,
         pet=any(PET_CATEGORY.search(c) for c in categories),
         discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
     notes.append("rarity is a guess: " + ", ".join(why))
     if price is None:
         notes.append("no Grand Exchange price found (not tradeable?)")
     if rarity != "legendary":
-        notes.append("check the drop rate"
-                     + ("" if level else " and the level needed") + ": the rarity is the highest of them")
+        missing = [x for x, known in (("the drop rate", drop), ("the level needed", level)) if not known]
+        if missing:
+            notes.append("check " + " and ".join(missing) + ": the rarity is the highest of them")
 
     return {"page": page["title"], "kind": "item", "ids": ids[:6], "name": name, "desc": desc,
             "rarity": rarity, "tags": tags, "notes": notes}, None
@@ -991,15 +1122,16 @@ def main():
     parser.add_argument("--refresh", action="store_true")
     parser.add_argument("--only", action="store_true")
     parser.add_argument("--forget", action="store_true")
+    parser.add_argument("--drops", action="append", default=[])
     parser.add_argument("--subcategories", action="append", default=[])
     args = parser.parse_args()
     if args.subcategories:
         return show_subcategories(args)
-    if not args.category and not args.page and not SOURCES.exists():
+    if not args.category and not args.page and not args.drops and not SOURCES.exists():
         print(__doc__)
         return 1
     categories, page_titles = remembered_sources(args)
-    if not categories and not page_titles:
+    if not categories and not page_titles and not args.drops:
         print("Nothing to fetch: give --category or --page.")
         return 1
 
@@ -1023,10 +1155,15 @@ def main():
         for title in category_pages(wiki, category, args.refresh and category in args.category):
             add(title, category)
     pages = fetch_pages(wiki, titles, args.refresh)
-    # The Grand Exchange price of each item page is on its own Module:Exchange page.
-    exchange_titles = {title: "Module:Exchange/" + title for title in titles
-                       if title in pages and "Infobox Item" in pages[title].get("text", "")}
-    exchange = fetch_pages(wiki, list(exchange_titles.values()), args.refresh) if exchange_titles else {}
+    drop_pages = fetch_pages(wiki, args.drops, args.refresh) if args.drops else {}
+    drops = remember_drops(drop_pages)
+    if args.drops:
+        print(f"Drop rates for {len(drops)} items are kept in {DROPS.relative_to(ROOT)}")
+    # The Grand Exchange price of each item page, by asking the wiki for {{GEP|name}}.
+    price_names = {title: price_name(template_fields(find_template(pages[title]["text"], ["Infobox Item"])[1] or ""),
+                                     title)
+                   for title in titles if title in pages and "Infobox Item" in pages[title].get("text", "")}
+    prices = fetch_prices(wiki, [n for n in price_names.values() if n], args.refresh) if price_names else {}
 
     names, words = npc_names(), allowed_words()
     found, skipped = [], {}
@@ -1034,7 +1171,8 @@ def main():
         page = pages.get(title)
         if page is None:
             continue
-        made, reason = candidate(page, names, words, exchange.get(exchange_titles.get(title)))
+        made, reason = candidate(page, names, words, prices.get(price_names.get(title)),
+                                drops.get((pages[title].get('title') or title).lower()))
         if made is not None:
             made["sources"] = sources[title]
             found.append(made)
