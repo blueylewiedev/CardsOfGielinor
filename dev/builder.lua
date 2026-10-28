@@ -300,18 +300,23 @@ function Builder.readyAnim(configName, humanoid, text, gender)
     return fallback
 end
 
+-- Animation set names already looked up (config name -> name, or false if it has none), as the
+-- framing asks for every card's each time a candidate is loaded.
+local animSets = {}
+
 -- The name of the animation set an NPC uses (its config's `bas`), or nil if it is not known. Its
 -- name is the best clue to which animations suit the NPC.
 function Builder.animSetOf(configName)
+    if animSets[configName] ~= nil then
+        return animSets[configName] or nil
+    end
     local npcId = Builder.lookupNpc(configName)
     if npcId == nil then
-        return nil
+        return nil          -- (not remembered: the NPC may be found once its name is fixed)
     end
     local ok, name = pcall(function() return tostring(config.NPC.FromID(npcId).bas.configName) end)
-    if ok and name ~= "nil" then
-        return name
-    end
-    return nil
+    animSets[configName] = ok and name ~= "nil" and name or false
+    return animSets[configName] or nil
 end
 
 local function animSetLine(configName)
@@ -1230,8 +1235,9 @@ end
 -- "person" (a person framed whole, like a guard), "flying" (see Builder.isFlying) or "creature".
 -- For a candidate, closeUp is whether it is a named person rather than a role (dev/wiki_cards.py
 -- works that out); for a card, whether its camera is a close-up (PORTRAIT_FOV, and
--- SHORT_CLOSE_DIST for short cards).
-function Builder.framingGroup(categoryWords, closeUp, short, flying)
+-- SHORT_CLOSE_DIST for short cards). `isFlying` is a function, only asked when the answer is
+-- between those two last groups (it can look up the NPC's animation set).
+function Builder.framingGroup(categoryWords, closeUp, short, isFlying)
     local person = false
     for _, word in ipairs(categoryWords or {}) do
         if word == "dragon" or word == "boss" then
@@ -1246,7 +1252,7 @@ function Builder.framingGroup(categoryWords, closeUp, short, flying)
     if person then
         return closeUp and "character" or "person"
     end
-    return flying and "flying" or "creature"
+    return isFlying() and "flying" or "creature"
 end
 
 -- Words in a name that say how big it is, so "Giant frog" is not framed like "Swamp frog".
@@ -1290,7 +1296,9 @@ function Builder.typicalCamera(group, name)
             end
             local short = Builder.isShort(card.name, card.desc, art.npc)
             local closeUp = cam.fov <= PORTRAIT_FOV or (short and cam.dist <= SHORT_CLOSE_DIST)
-            local flying = Builder.isFlying(card.name, card.desc, art.npc and Builder.animSetOf(art.npc))
+            local function flying()
+                return Builder.isFlying(card.name, card.desc, art.npc and Builder.animSetOf(art.npc))
+            end
             if Builder.framingGroup((card.tags or {}).category, closeUp, short, flying) == group then
                 members[#members + 1] = { card = card, cam = cam }
             end
@@ -1304,14 +1312,16 @@ function Builder.typicalCamera(group, name)
         return total
     end
     local family = nameFamily(name)
-    local kin = {}
-    for _, member in ipairs(members) do
-        if family ~= nil and nameFamily(member.card.name) == family then
-            kin[#kin + 1] = member
+    if family ~= nil then
+        local kin = {}
+        for _, member in ipairs(members) do
+            if nameFamily(member.card.name) == family then
+                kin[#kin + 1] = member
+            end
         end
-    end
-    if #kin >= FAMILY_CARDS then
-        members = kin
+        if #kin >= FAMILY_CARDS then
+            members = kin
+        end
     end
     local best, bestTotal = nil, math.huge
     for _, member in ipairs(members) do
@@ -1464,7 +1474,9 @@ function Builder.loadCandidate(candidate, configName)
         else
             short = Builder.isShort(candidate.name, candidate.desc, fresh.npc)
         end
-        local flying = Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
+        local function flying()
+            return Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
+        end
         local group = Builder.framingGroup(tags.category, candidate.named == true, short, flying)
         local cam, like = Builder.typicalCamera(group, candidate.name)
         if cam ~= nil then

@@ -304,7 +304,7 @@ Set.cards = {
         tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper" } },
     },
     {
-        id = "sigmund", name = "Sigmund", rarity = "epic",
+        id = "sigmund", name = "Sigmund", rarity = "rare",
         desc = "Advisor to the Duke of Lumbridge.",
         art = { npc = "LOST_TRIBE_SIGMUND_THERE", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
         tags = { skills = { "thieving" }, location = { "lumbridge" }, category = { "humanoid", "boss" } },
