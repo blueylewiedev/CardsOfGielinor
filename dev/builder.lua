@@ -32,6 +32,7 @@ local NpcSearch = require("dev/npcsearch")
 local AnimSearch = require("dev/animsearch")
 local TagPicker = require("dev/tagpicker")
 local ItemProbe = require("dev/itemprobe")
+local ItemFacts = require("dev/itemfacts")
 
 local Builder = {}
 
@@ -571,6 +572,9 @@ function Builder.checks()
                         end
                     end
                 end
+                for _, text in ipairs(draft.factNotes or {}) do
+                    add("note", text)
+                end
             end
         end
     end
@@ -864,6 +868,47 @@ local function followName()
     end
 end
 
+-- Shows the draft's membership on the F2P and P2P buttons.
+local function showMembership()
+    if widgets.f2pToggle ~= nil then
+        widgets.f2pToggle.setActive(draft.membership == "f2p")
+        widgets.p2pToggle.setActive(draft.membership == "p2p")
+    end
+end
+
+-- Fills in what the game's item config says (membership, skills, kind of item, a rarity from the
+-- level) for the boxes that are still empty, and keeps its notes for the checks.
+local function applyItemFacts(objId)
+    draft.factNotes = nil
+    local ok, facts = pcall(ItemFacts.read, objId)
+    if not ok or facts == nil then
+        return
+    end
+    draft.factNotes = facts.notes
+    if draft.membership == "" and facts.members ~= nil then
+        draft.membership = facts.members
+        showMembership()
+    end
+    if #tagWords("skills") == 0 and #facts.skills > 0 then
+        draft.skills = table.concat(facts.skills, ", ")
+        setField(widgets.skillsField, draft.skills)
+    end
+    if #tagWords("category") == 0 then
+        local words = ItemFacts.validCategory(facts.category)
+        if #words > 0 then
+            draft.category = table.concat(words, ", ")
+            setField(widgets.categoryField, draft.category)
+        end
+    end
+    if draft.rarity == "common" and facts.rarity ~= nil then
+        draft.rarity = facts.rarity
+        if widgets.rarityRefresh ~= nil then
+            widgets.rarityRefresh()
+        end
+    end
+    TagPicker.refresh()
+end
+
 -- Chooses the NPC (or, for an item card, the item). A new one starts again with the default
 -- camera and no animation, and fills in the name from the in-game name if the name has not been typed.
 local function setSubject(configName)
@@ -887,6 +932,9 @@ local function setSubject(configName)
         draft.name = displayName
         setField(widgets.nameField, displayName)
         followName()
+    end
+    if subjectId ~= nil and isItem() then
+        applyItemFacts(subjectId)
     end
     soon()
 end
@@ -1001,14 +1049,6 @@ local function hasWork()
         end
     end
     return draft.anim ~= nil or draft.cam ~= nil
-end
-
--- Shows the draft's membership on the F2P and P2P buttons.
-local function showMembership()
-    if widgets.f2pToggle ~= nil then
-        widgets.f2pToggle.setActive(draft.membership == "f2p")
-        widgets.p2pToggle.setActive(draft.membership == "p2p")
-    end
 end
 
 -- Writes the draft into the open window's boxes and redraws the card (after Reset, or when a
