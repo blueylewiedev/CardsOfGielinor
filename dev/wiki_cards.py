@@ -573,7 +573,9 @@ def recipe_requirements(text, titles, skill_words):
     skills, levels = [], []
     for inside in find_templates(text or "", ["Infobox Recipe"]):
         fields = template_fields(inside)
-        outputs = {plain(v).lower() for k, v in fields.items() if re.fullmatch(r"output\d*", k)}
+        # (also without a bracket: a recipe making "Prayer potion (3)" is for the "Prayer potion" page)
+        made = [plain(v) for k, v in fields.items() if re.fullmatch(r"output\d*", k)]
+        outputs = {m.lower() for m in made} | {strip_bracket(m).lower() for m in made}
         if not outputs & wanted:
             continue
         needed = []
@@ -634,7 +636,9 @@ def item_candidate(page, fields, bonuses, words, exchange=None):
         notes.append("no category found: choose what kind of item it is")
 
     # Skills: from the recipes that make the item (the most reliable), then from its categories.
-    made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)],
+    # (an item with versions, like a potion's doses, has a name for each: name1, name2...)
+    item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
+    made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
     skills = list(made_with)
     for s in words["skills"]:
