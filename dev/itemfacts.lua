@@ -37,13 +37,14 @@ function ItemFacts.levelRarity(level)
     return "common"
 end
 
--- The kind of weapon by the end of its WEAPON_CATEGORY (COMBATV2_WEAPON_<this>). The first seven
--- were seen in the game; the rest are guesses at the same naming.
+-- The kind of weapon by the end of its WEAPON_CATEGORY (COMBATV2_WEAPON_<this>). The first group
+-- was seen in the game (a rune sword is SHORTSWORD); the rest are guesses at the same naming.
 local WEAPON_KINDS = {
     WHIP = "whip", ["2HSWORD"] = "two_handed_sword", MACE = "mace", SPEAR = "spear", HALBERD = "halberd",
-    CLAW = "claw", THROWNDART = "thrown",
-    DAGGER = "dagger", SCIMITAR = "scimitar", SWORD = "sword", LONGSWORD = "sword", BATTLEAXE = "axe", AXE = "axe",
-    CROSSBOW = "crossbow", STAFF = "staff", WAND = "wand", THROWNKNIFE = "thrown", THROWNAXE = "thrown",
+    CLAW = "claw", THROWNDART = "thrown", DAGGER = "dagger", SCIMITAR = "scimitar", SHORTSWORD = "sword",
+    BATTLEAXE = "axe",
+    LONGSWORD = "sword", AXE = "axe", CROSSBOW = "crossbow", STAFF = "staff", WAND = "wand",
+    THROWNKNIFE = "thrown", THROWNAXE = "thrown",
 }
 local TOOL_WEAPONS = { PICKAXE = true, HATCHET = true }
 
