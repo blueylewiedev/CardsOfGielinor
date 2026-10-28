@@ -21,7 +21,8 @@ local WikiFetch = require("dev/wikifetch")
 local WikiReview = {}
 
 local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
-local WIDTH, HEIGHT = 420, 376
+local WIDTH, HEIGHT = 480, 376
+local INNER = WIDTH - 44     -- the width there is room for inside the window
 local NOTE_ROWS = 8
 local NOTE_CHARS = 54       -- about how many letters of a note fit on a row
 local ALL = "*all"                       -- the drop-down's "every source" choice
@@ -317,9 +318,9 @@ function WikiReview.show()
     Kit.iconButton(content, "ARROW_LEFT", 10, 6, function() step(-1) end, "Previous candidate", "Back", 60)
     Kit.iconButton(content, "ARROW_RIGHT", 40, 6, function() step(1) end, "Next candidate", "Next", 60)
     widgets.status = Kit.text(content, 74, 4, 220, 28, "", WHITE, ui.AlignMode.TOPLEFT)
-    Kit.iconButton(content, "SEARCH", WIDTH - 74, 6, WikiFetch.toggle, "Fetch more candidates from the wiki",
+    Kit.iconButton(content, "SEARCH", INNER - 54, 6, WikiFetch.toggle, "Fetch more candidates from the wiki",
         "Fetch", 70)
-    Kit.iconButton(content, "UNDO", WIDTH - 44, 6, function()
+    Kit.iconButton(content, "UNDO", INNER - 24, 6, function()
         Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done or Skip comes back.", "Review again", function()
             pcall(function() PersistentDB:SetStructuredData(DB_KEY, {}) end)
             reload()
@@ -328,29 +329,29 @@ function WikiReview.show()
 
     -- (The drop-down that chooses the source goes between the header and these; it is made last.)
     local top = 76
-    widgets.name = Kit.text(content, 10, top, WIDTH - 20, 22, "", GOLD, ui.AlignMode.TOPLEFT)
-    widgets.subject = Kit.text(content, 10, top + 24, WIDTH - 54, 20, "", GREY, ui.AlignMode.TOPLEFT)
-    Kit.iconButton(content, "REFRESH", WIDTH - 40, top + 22, nextModel, "Next model", "Next model", 100)
+    widgets.name = Kit.text(content, 10, top, INNER, 22, "", GOLD, ui.AlignMode.TOPLEFT)
+    widgets.subject = Kit.text(content, 10, top + 24, INNER - 34, 20, "", GREY, ui.AlignMode.TOPLEFT)
+    Kit.iconButton(content, "REFRESH", INNER - 20, top + 22, nextModel, "Next model", "Next model", 100)
     for i = 1, NOTE_ROWS do
-        widgets.notes[i] = Kit.text(content, 10, top + 48 + (i - 1) * 20, WIDTH - 20, 20, "", AMBER, ui.AlignMode.TOPLEFT)
+        widgets.notes[i] = Kit.text(content, 10, top + 48 + (i - 1) * 20, INNER, 20, "", AMBER, ui.AlignMode.TOPLEFT)
     end
 
     local buttonsY = top + 56 + NOTE_ROWS * 20
-    Kit.buttonAt(content, "Load into Card Builder", 10, buttonsY, WIDTH - 20, 32, function()
+    Kit.buttonAt(content, "Load into Card Builder", 10, buttonsY, INNER, 32, function()
         local candidate = queue[index]
         if candidate ~= nil and currentModel(candidate) ~= nil then
             Builder.loadCandidate(candidate, currentModel(candidate))
             widgets.loaded = candidate
         end
     end, "positive", "Fill the Card Builder in from this candidate, to check, frame and copy it")
-    local half = (WIDTH - 26) // 2
+    local half = (INNER - 6) // 2
     Kit.buttonAt(content, "Done", 10, buttonsY + 40, half, 30, function() finish("done") end, "neutral",
         "The card is made: take it off the list")
     Kit.buttonAt(content, "Skip", 16 + half, buttonsY + 40, half, 30, function() finish("skipped") end, "negative",
         "Not a card: take it off the list")
 
     -- Which category or page to review the candidates of (made last so its list opens on top).
-    widgets.filter = Kit.dropdown(content, 10, 38, WIDTH - 20, 28, { { label = "All", value = ALL } }, ALL,
+    widgets.filter = Kit.dropdown(content, 10, 38, INNER, 28, { { label = "All", value = ALL } }, ALL,
         function(source)
             filter = source
             index = 1

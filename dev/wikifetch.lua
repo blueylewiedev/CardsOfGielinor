@@ -1,16 +1,27 @@
 -- dev/wikifetch.lua
--- The Wiki Fetch window: choose wiki categories (places for NPC cards, kinds of item for item
--- cards) and pages, and it writes the command that fetches them from the RuneScape Wiki
--- (dev/wiki_cards.py), to copy and run in the plugin's folder. The plugin can't reach the web
--- itself. Opened from the Wiki Review window, which shows the candidates after a prf.
+-- The Wiki Fetch window: choose what to fetch from the RuneScape Wiki (league regions and places
+-- for NPC cards, kinds of item for item cards, single pages), and how to narrow them (a race,
+-- free to play only), and it writes the command that fetches them (dev/wiki_cards.py), to copy
+-- and run in the plugin's folder. The narrowing is done by the wiki before anything is fetched,
+-- so only the matching pages are; it belongs to this fetch's places and regions only, and what
+-- was fetched before is kept as it was. The plugin can't reach the web itself. Opened from the Wiki Review window, which shows the candidates
+-- after a prf.
 -- Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
 
 local WikiFetch = {}
 
--- The categories offered, with about how many pages each had on the wiki (October 2026), so the
+-- What can be chosen, with about how many pages each had on the wiki (October 2026), so the
 -- window can say how many requests a choice might take. Any other category can be typed in.
+-- League regions, as the wiki writes them (Module:LeagueRegion; its name for the desert is
+-- Desert). Global: found all over the world, like rats. Multiple (not a wiki region): found in
+-- several regions, like imps; general cards too.
+local REGIONS = {
+    { "Global", 130 }, { "Multiple", 305 }, { "Misthalin", 600 }, { "Asgarnia", 600 }, { "Kandarin", 600 }, { "Desert", 600 },
+    { "Fremennik", 400 }, { "Karamja", 300 }, { "Morytania", 400 }, { "Wilderness", 300 }, { "Tirannwn", 400 },
+    { "Havenhythe", 200 }, { "Anachronia", 200 },
+}
 local PLACES = {
     { "Lumbridge", 162 }, { "Varrock", 328 }, { "Falador", 164 }, { "Draynor Village", 72 },
     { "Al Kharid", 92 }, { "Burthorpe", 104 }, { "Taverley", 91 }, { "Catherby", 26 },
@@ -18,34 +29,70 @@ local PLACES = {
     { "Canifis", 49 }, { "Musa Point", 31 }, { "Brimhaven", 59 }, { "Seers' Village", 31 },
     { "Shilo Village", 55 }, { "Menaphos", 351 }, { "Prifddinas", 527 },
 }
-local ITEMS = {
-    { "Logs", 75 }, { "Herbs", 96 }, { "Runes", 58 }, { "Fish", 142 }, { "Food", 351 }, { "Potions", 293 },
-    { "Seeds", 155 }, { "Ores", 72 }, { "Gems", 58 }, { "Scimitars", 8 }, { "Daggers", 19 },
-    { "Two-handed swords", 6 }, { "Battleaxes", 2 }, { "Maces", 2 }, { "Spears", 64 },
-    { "Halberds", 42 }, { "Crossbows", 183 }, { "Longbows", 31 }, { "Staves", 232 },
-    { "Wands", 94 }, { "Capes", 159 }, { "Rings", 184 }, { "Shields", 299 },
+-- Races as the wiki's infoboxes write them. The wiki keeps no list of these values, so any other
+-- can be typed into the drop-down's box.
+local RACES = {
+    "Aviansie", "Bat", "Bear", "Bird", "Cat", "Centaur", "Chicken", "Cow", "Crab", "Cyclops", "Dagannoth",
+    "Demon", "Dog", "Dorgeshuun", "Dragon", "Dwarf", "Elemental", "Elf", "Fairy", "Frog", "Ghost", "Ghoul",
+    "Giant", "Gnome", "Goat", "Goblin", "Golem", "Hobgoblin", "Human", "Icyene", "Kalphite", "Mahjarrat",
+    "Mole", "Monkey", "Ogre", "Ork", "Penguin", "Rat", "Scorpion", "Sheep", "Skeleton", "Snake", "Spider",
+    "Spirit", "Troll", "TzHaar", "Unicorn", "Vampyre", "Werewolf", "Wolf", "Yeti", "Zombie",
+}
+-- Kinds of item, as the wiki's categories (under Melee weapons, Ranged weapons, Magic weapons
+-- and Armour types, October 2026).
+local ITEM_GROUPS = {
+    { title = "Melee", list = {
+        { "Battleaxes", 2 }, { "Blackjacks", 11 }, { "Ceremonial swords", 57 }, { "Daggers", 19 },
+        { "Halberds", 42 }, { "Hastae", 7 }, { "Hatchets", 39 }, { "Longswords", 1 }, { "Maces", 2 },
+        { "Mauls", 5 }, { "Pickaxes", 71 }, { "Rapiers", 25 }, { "Scimitars", 8 }, { "Shortswords", 1 },
+        { "Spears", 64 }, { "Two-handed swords", 6 }, { "Warhammers", 1 } } },
+    { title = "Ranged", list = {
+        { "Bows", 128 }, { "Longbows", 31 }, { "Shieldbows", 3 }, { "Crossbows", 183 }, { "Darts", 28 },
+        { "Javelins", 17 }, { "Throwing knives", 47 }, { "Ammunition", 189 } } },
+    { title = "Magic", list = { { "Staves", 232 }, { "Wands", 94 }, { "Necromancy weapons", 95 } } },
+    { title = "Armour", list = {
+        { "Platebodies", 116 }, { "Chainbodies", 27 }, { "Platelegs", 215 }, { "Plateskirts", 60 },
+        { "Shields", 299 }, { "Cloaks", 39 }, { "Capes", 159 }, { "Rings", 184 }, { "God armour", 43 },
+        { "Fremennik armour", 74 } } },
+    { title = "Resources", list = {
+        { "Logs", 75 }, { "Ores", 72 }, { "Gems", 58 }, { "Herbs", 96 }, { "Seeds", 155 }, { "Fish", 142 },
+        { "Runes", 58 } } },
+    { title = "Consumables", list = { { "Food", 351 }, { "Potions", 293 } } },
 }
 local PAGES_PER_REQUEST = 25        -- as dev/wiki_cards.py asks for them
 local REQUESTS_PER_RUN = 30         -- its limit per run
 local TYPED_PAGES = 100             -- the guess for a typed-in category's size
 
-local PAGE_COUNTS = {}              -- category -> about how many pages, from the lists above
-for _, group in ipairs({ PLACES, ITEMS }) do
+local PAGE_COUNTS = {}              -- category or region -> about how many pages, from the lists above
+for _, group in ipairs({ REGIONS, PLACES }) do
     for _, entry in ipairs(group) do
+        PAGE_COUNTS[entry[1]] = entry[2]
+    end
+end
+for _, group in ipairs(ITEM_GROUPS) do
+    for _, entry in ipairs(group.list) do
         PAGE_COUNTS[entry[1]] = entry[2]
     end
 end
 
 local WIDTH = 572
-local COLUMNS, COL_W, ROW_H = 3, 180, 32
+local FULL = WIDTH - 44                 -- the width there is room for inside the window
+local HALF = (FULL - 10) // 2           -- a column: a label and its drop-down
+local LABEL_W = 104
 local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1)
+local WHITE = Vector4.new(1, 1, 1, 1)
 local BLUE = Vector4.new(0.55, 0.78, 0.95, 1)
 
 local window, content = nil, nil
-local chosen = {}           -- category -> true (kept while the plugin runs)
+-- What is chosen (kept while the plugin runs): each drop-down's choice (region, place, and one
+-- for each group of items), and how to narrow them.
+local picks = {}            -- drop-down -> the region or category chosen in it
+local race = nil
+local f2pOnly = false
 local typed = { categories = "", pages = "" }
 local widgets = {}
+local dropdowns = {}        -- destroyed with the window (PrettyUI keeps their lists outside it)
 
 -- Splits "A, B ,C" into { "A", "B", "C" }.
 local function list(text)
@@ -59,31 +106,43 @@ local function list(text)
     return out
 end
 
--- The command for what is chosen, and at most how many requests it takes (nothing cached).
+-- The command for what is chosen, and at most how many requests it takes (nothing cached). Its
+-- preview is the same with --count.
 local function command()
     local parts, requests = { "python dev/wiki_cards.py" }, 0
-    local categories = {}
-    for _, group in ipairs({ PLACES, ITEMS }) do
-        for _, entry in ipairs(group) do
-            if chosen[entry[1]] then
-                categories[#categories + 1] = entry[1]
-            end
-        end
+    local regions, categories = { picks.region }, { picks.place }
+    for _, group in ipairs(ITEM_GROUPS) do
+        categories[#categories + 1] = picks[group.title]
     end
     for _, name in ipairs(list(typed.categories)) do
         categories[#categories + 1] = name
     end
+    -- A race leaves about a tenth of the pages to fetch, free to play about half (a guess); each
+    -- costs two searches (for a category; a region's membership is in its own query).
+    local share = (race ~= nil and 0.1 or 1) * (f2pOnly and 0.5 or 1)
     for _, name in ipairs(categories) do
         parts[#parts + 1] = '--category "' .. name .. '"'
-        requests = requests + 1 + math.ceil((PAGE_COUNTS[name] or TYPED_PAGES) / PAGES_PER_REQUEST)
+        requests = requests + 1 + (race ~= nil and 2 or 0) + (f2pOnly and 2 or 0)
+            + math.ceil((PAGE_COUNTS[name] or TYPED_PAGES) * share / PAGES_PER_REQUEST)
+    end
+    for _, name in ipairs(regions) do
+        parts[#parts + 1] = '--region "' .. name .. '"'
+        requests = requests + 2 + (race ~= nil and 2 or 0)
+            + math.ceil(PAGE_COUNTS[name] * share / PAGES_PER_REQUEST)
     end
     local pages = list(typed.pages)
     for _, name in ipairs(pages) do
         parts[#parts + 1] = '--page "' .. name .. '"'
     end
     requests = requests + math.ceil(#pages / PAGES_PER_REQUEST)
-    if #categories == 0 and #pages == 0 then
+    if #categories == 0 and #regions == 0 and #pages == 0 then
         return nil, 0
+    end
+    if race ~= nil then
+        parts[#parts + 1] = '--race "' .. race .. '"'
+    end
+    if f2pOnly then
+        parts[#parts + 1] = "--members f2p"
     end
     return table.concat(parts, " "), requests
 end
@@ -93,7 +152,8 @@ local function refresh()
         return
     end
     local line, requests = command()
-    widgets.command.content = line or "(choose categories or type pages above)"
+    widgets.command.content = line or "(choose something above, or type categories or pages)"
+    widgets.preview.content = line ~= nil and (line .. " --count") or ""
     if line == nil then
         widgets.estimate.content = ""
     else
@@ -103,26 +163,39 @@ local function refresh()
     end
 end
 
--- A grid of toggles, one per category, from `y`. Returns the y below it.
-local function toggles(group, y)
-    for i, entry in ipairs(group) do
-        local name = entry[1]
-        local column, row = (i - 1) % COLUMNS, (i - 1) // COLUMNS
-        Kit.toggleButton(content, name, 10 + column * COL_W, y + row * ROW_H, COL_W - 8, 28, chosen[name], function(on)
-            chosen[name] = on or nil
-            refresh()
-        end, "About " .. entry[2] .. " pages on the wiki")
-    end
-    return y + math.ceil(#group / COLUMNS) * ROW_H
+local function caption(text, x, y, w, colour)
+    return Kit.text(content, x, y, w, 20, text, colour or GREY, ui.AlignMode.TOPLEFT)
 end
 
-local function caption(text, y, colour)
-    return Kit.text(content, 10, y, WIDTH - 20, 20, text, colour or GREY, ui.AlignMode.TOPLEFT)
+-- A label and a drop-down in column `column` (0 or 1) at `y`. `entries` are { label, value };
+-- the first entry is shown at first. onChoose(value) when one is picked.
+local function labelledDropdown(column, y, label, entries, onChoose)
+    local x = 10 + column * (HALF + 10)
+    caption(label, x, y + 5, LABEL_W, WHITE)
+    local dropdown
+    dropdown = Kit.dropdown(content, x + LABEL_W, y, HALF - LABEL_W, 28, entries, entries[1].value, function(value)
+        onChoose(value, dropdown)
+    end)
+    dropdowns[#dropdowns + 1] = dropdown
+    return dropdown
+end
+
+-- A drop-down choosing one of `group` (or None) as picks[key]. Its text box filters the list as
+-- you type.
+local function picker(column, y, label, group, key)
+    local entries = { { label = "None", value = false } }
+    for _, entry in ipairs(group) do
+        entries[#entries + 1] = { label = entry[1], value = entry[1] }
+    end
+    labelledDropdown(column, y, label, entries, function(name)
+        picks[key] = name or nil
+        refresh()
+    end).select(picks[key] or false)
 end
 
 -- A text box; onChange(text) as it is typed in.
 local function box(y, value, onChange)
-    local field = Kit.inputField(content, 10, y, WIDTH - 20, 28, 300, false)
+    local field = Kit.inputField(content, 10, y, FULL, 28, 300, false)
     field.content = value
     field:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
         onChange(field.content or "")
@@ -134,46 +207,76 @@ function WikiFetch.show()
     if window ~= nil then
         return
     end
-    widgets = {}
+    widgets, dropdowns = {}, {}
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window, content = Kit.window(gameWindow, "Wiki Fetch", WIDTH, 864 + Kit.titleBarHeight(),
+    window, content = Kit.window(gameWindow, "Wiki Fetch", WIDTH, 600 + Kit.titleBarHeight(),
         function() WikiFetch.hide() end, 0.5, 0.05)
+    local full = FULL
 
-    caption("NPCs from a place", 4, GOLD)
-    local y = toggles(PLACES, 26) + 8
-    caption("Items of a kind", y, GOLD)
-    y = toggles(ITEMS, y + 22) + 8
-    caption("Other wiki categories, separated by commas (as the wiki names them, without Category:)", y)
+    caption("NPCs", 10, 4, full, GOLD)
+    Kit.buttonAt(content, "Clear", 10 + full - 100, 0, 100, 24, function()
+        picks, race, f2pOnly = {}, nil, false
+        WikiFetch.hide()            -- (made again, so every drop-down shows None)
+        WikiFetch.show()
+    end, "negative", "Set every drop-down back to None")
+    picker(0, 26, "Region", REGIONS, "region")
+    picker(1, 26, "Place", PLACES, "place")
+    local raceEntries = { { label = "Any race", value = false } }
+    for _, name in ipairs(RACES) do
+        raceEntries[#raceEntries + 1] = { label = name, value = name }
+    end
+    labelledDropdown(0, 60, "Race", raceEntries, function(value)
+        race = value or nil
+        refresh()
+    end).select(race or false)
+    Kit.toggleButton(content, "Free to play only", 20 + HALF, 60, HALF - 6, 28, f2pOnly, function(on)
+        f2pOnly = on
+        refresh()
+    end, "Only fetch the free to play pages")
+    caption("These narrow what this fetch asks the wiki for; earlier fetches are kept.", 10, 94, full)
+
+    caption("Items", 10, 122, full, GOLD)
+    for i, group in ipairs(ITEM_GROUPS) do
+        local column, row = (i - 1) % 2, (i - 1) // 2
+        picker(column, 144 + row * 34, group.title, group.list, group.title)
+    end
+
+    local y = 144 + math.ceil(#ITEM_GROUPS / 2) * 34 + 8
+    caption("More categories (comma separated)", 10, y, full)
     box(y + 20, typed.categories, function(text)
         typed.categories = text
         refresh()
     end)
-    caption("Single pages, separated by commas (e.g. Duke Horacio, Rune scimitar)", y + 54)
+    caption("Pages (comma separated)", 10, y + 54, full)
     box(y + 74, typed.pages, function(text)
         typed.pages = text
         refresh()
     end)
+    caption("Unsure of a name? Run wiki_cards.py with --subcategories NAME", 10, y + 106, full)
 
-    y = y + 112
-    -- Not sure of a category's name? Ask the wiki for the subcategories of a bigger one.
-    caption("To find category names, run: python dev/wiki_cards.py --subcategories \"Equipment Slots\"", y)
-    caption("(equipment kinds by slot: Head, Body, Legs, Hands, Feet, Cape, Neck, Ring, Shield... slot items)", y + 18)
-    y = y + 44
-    caption("The command", y, GOLD)
-    widgets.command = Kit.inputField(content, 10, y + 22, WIDTH - 20, 28, 1000, false)
-    widgets.estimate = caption("", y + 54)
+    y = y + 134
+    caption("Preview: how many pages it would fetch (fetches none)", 10, y, full, GOLD)
+    widgets.preview = Kit.inputField(content, 10, y + 22, full, 28, 1000, false)
+    y = y + 58
+    caption("The command", 10, y, full, GOLD)
+    widgets.command = Kit.inputField(content, 10, y + 22, full, 28, 1000, false)
+    widgets.estimate = caption("", 10, y + 54, full)
     local steps = {
-        "1. Click the box above, press Ctrl+A, then Ctrl+C.",
-        "2. Paste it into a terminal in the plugin's folder (CardsOfGielinor) and run it.",
-        "3. In the game, prf, then open Wiki Review. What was asked for before stays on the list.",
+        "1. Click a box, press Ctrl+A, then Ctrl+C.",
+        "2. Run it in a terminal in the plugin's folder (CardsOfGielinor).",
+        "3. After the command, prf in the game, then open Wiki Review.",
     }
     for i, text in ipairs(steps) do
-        caption(text, y + 78 + (i - 1) * 20, BLUE)
+        caption(text, 10, y + 78 + (i - 1) * 20, full, BLUE)
     end
     refresh()
 end
 
 function WikiFetch.hide()
+    for _, dropdown in ipairs(dropdowns) do
+        pcall(dropdown.destroy)
+    end
+    dropdowns = {}
     if window ~= nil then
         pcall(function() window:Destroy() end)
     end

@@ -1194,12 +1194,17 @@ local SHORT_CLOSE_DIST = 700
 -- dwarves or gnomes: they are humanoids).
 local SHORT_WORDS = { dwarf = true, gnome = true, goblin = true, halfling = true }
 
--- True if any of the texts (a race, a name, a description: Aksel is "An excited dwarf.") names a
--- short people.
-function Builder.isShort(...)
-    for _, text in pairs({ ... }) do
+-- Creatures that hover off the ground, framed with the camera aimed higher than a creature's
+-- (a fruit bat flies at about the height of a person's head). Not "bird": most of them perch, and
+-- one that flies says so in its animation set (the crimson swift's BIRD_FLYING_UPDATE_READY).
+local FLYING_WORDS = { bat = true, butterfly = true, moth = true, mosquito = true, impling = true, fairy = true,
+    wisp = true, firefly = true, flying = true }
+
+-- True if any of the texts names one of `words` (a set of lowercase words).
+local function namesAny(words, texts)
+    for _, text in pairs(texts) do
         for word in string.gmatch(string.lower(tostring(text)), "%a+") do
-            if SHORT_WORDS[word] then
+            if words[word] then
                 return true
             end
         end
@@ -1207,13 +1212,26 @@ function Builder.isShort(...)
     return false
 end
 
+-- True if any of the texts (a race, a name, a description: Aksel is "An excited dwarf.") names a
+-- short people.
+function Builder.isShort(...)
+    return namesAny(SHORT_WORDS, { ... })
+end
+
+-- True if any of the texts (a race, a name, a description: Immenizz is "An impling"; an animation
+-- set) names a flying creature. (Not the NPC's config name: the Fairy Tale quest's FAIRY2_STAG walks.)
+function Builder.isFlying(...)
+    return namesAny(FLYING_WORDS, { ... })
+end
+
 -- The group an NPC card or candidate is framed with, from its category tags: "large" (dragons,
 -- bosses), "short character" or "short" (goblins, and anything `short`: see Builder.isShort;
 -- framed close like Aksel, or whole like a goblin), "character" (a person framed close, like Bob),
--- "person" (a person framed whole, like a guard) or "creature". For a candidate, closeUp is
--- whether it is a named person rather than a role (dev/wiki_cards.py works that out); for a card,
--- whether its camera is a close-up (PORTRAIT_FOV, and SHORT_CLOSE_DIST for short cards).
-function Builder.framingGroup(categoryWords, closeUp, short)
+-- "person" (a person framed whole, like a guard), "flying" (see Builder.isFlying) or "creature".
+-- For a candidate, closeUp is whether it is a named person rather than a role (dev/wiki_cards.py
+-- works that out); for a card, whether its camera is a close-up (PORTRAIT_FOV, and
+-- SHORT_CLOSE_DIST for short cards).
+function Builder.framingGroup(categoryWords, closeUp, short, flying)
     local person = false
     for _, word in ipairs(categoryWords or {}) do
         if word == "dragon" or word == "boss" then
@@ -1228,12 +1246,39 @@ function Builder.framingGroup(categoryWords, closeUp, short)
     if person then
         return closeUp and "character" or "person"
     end
-    return "creature"
+    return flying and "flying" or "creature"
+end
+
+-- Words in a name that say how big it is, so "Giant frog" is not framed like "Swamp frog".
+local SIZE_WORDS = { giant = true, big = true, baby = true, young = true, greater = true, lesser = true,
+    small = true, huge = true, king = true, queen = true, elder = true }
+-- How many cards of a family (see nameFamily) it takes to frame by them rather than the group.
+local FAMILY_CARDS = 2
+
+-- A name's family: its last word, without a plural s ("Steel titan" -> "titan", "Meerkats" ->
+-- "meerkat"), and its size words, as one key ("giant frog"), or nil. Bracketed parts are left out.
+local function nameFamily(name)
+    local last, sizes = nil, {}
+    local plain = string.gsub(string.lower(name or ""), "%b()", "")
+    for word in string.gmatch(plain, "%a+") do
+        last = word
+        if SIZE_WORDS[word] then
+            sizes[#sizes + 1] = word
+        end
+    end
+    if last == nil then
+        return nil
+    end
+    table.sort(sizes)
+    sizes[#sizes + 1] = (string.gsub(last, "s$", ""))
+    return table.concat(sizes, " ")
 end
 
 -- The camera of the most typical NPC card framed with the body model in `group`, as a copy, and
--- that card; or nil if no card is in the group yet.
-function Builder.typicalCamera(group)
+-- that card; or nil if no card is in the group yet. Given a `name`, the cards of its family (the
+-- titans, the minotaurs: see nameFamily) are used instead when there are FAMILY_CARDS of them, as
+-- a creature's size is much more like its family's than its group's.
+function Builder.typicalCamera(group, name)
     local defaults = CardView.defaultsFor({ body = true })
     local members = {}
     for _, card in ipairs(Cards.list) do
@@ -1245,7 +1290,8 @@ function Builder.typicalCamera(group)
             end
             local short = Builder.isShort(card.name, card.desc, art.npc)
             local closeUp = cam.fov <= PORTRAIT_FOV or (short and cam.dist <= SHORT_CLOSE_DIST)
-            if Builder.framingGroup((card.tags or {}).category, closeUp, short) == group then
+            local flying = Builder.isFlying(card.name, card.desc, art.npc and Builder.animSetOf(art.npc))
+            if Builder.framingGroup((card.tags or {}).category, closeUp, short, flying) == group then
                 members[#members + 1] = { card = card, cam = cam }
             end
         end
@@ -1256,6 +1302,16 @@ function Builder.typicalCamera(group)
             total = total + math.abs(a[field] - b[field]) / CAMERA_SCALE[field]
         end
         return total
+    end
+    local family = nameFamily(name)
+    local kin = {}
+    for _, member in ipairs(members) do
+        if family ~= nil and nameFamily(member.card.name) == family then
+            kin[#kin + 1] = member
+        end
+    end
+    if #kin >= FAMILY_CARDS then
+        members = kin
     end
     local best, bestTotal = nil, math.huge
     for _, member in ipairs(members) do
@@ -1400,15 +1456,17 @@ function Builder.loadCandidate(candidate, configName)
     else
         fresh.npc = configName or candidate.npc
         fresh.anim = Builder.readyAnimFor(fresh.npc, candidate)
-        -- Short by the wiki's race if it gives one, otherwise by what the name and description say.
+        -- Short by the wiki's race if it gives one, otherwise by what the name and description
+        -- say; flying by either.
         local short
         if candidate.race ~= nil then
             short = Builder.isShort(candidate.race)
         else
             short = Builder.isShort(candidate.name, candidate.desc, fresh.npc)
         end
-        local group = Builder.framingGroup(tags.category, candidate.named == true, short)
-        local cam, like = Builder.typicalCamera(group)
+        local flying = Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
+        local group = Builder.framingGroup(tags.category, candidate.named == true, short, flying)
+        local cam, like = Builder.typicalCamera(group, candidate.name)
         if cam ~= nil then
             fresh.cam = cam
             log("builder: framing", candidate.name, "as a " .. group .. ", like", like.name)
