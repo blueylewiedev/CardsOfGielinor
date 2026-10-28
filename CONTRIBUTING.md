@@ -252,17 +252,54 @@ wanted. Looking at where similar NPCs sit in the existing files is the best guid
 These describe where the existing NPC cards sit, and the Wiki Review's suggested rarities follow
 them. Go down the list and stop at the first one that fits:
 
+A few NPCs are set by hand where the rules can't see what makes them matter: Sliske is
+**legendary** for his weight in the story, and Nomad for his Memory of Nomad fight (combat level 1001) (the other Mahjarrat are epic, and those who became gods,
+like Zamorak and Azzanadra, legendary as gods).
+
 | # | The NPC is... | Rarity | For example |
 |---|---|---|---|
-| 1 | A boss | **Epic**, or **legendary** from combat level 200 | Elvarg, King Black Dragon |
-| 2 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
-| 3 | A named character, skill master or Slayer master | See the next table | |
-| 4 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
-| 5 | A Slayer monster from Slayer level 5 | **Uncommon** | Cave crawler, Cave bug |
-| 6 | Found almost everywhere (60 or more spawns), whatever its level | **Common** | Goblin, Giant rat, Chicken |
-| 7 | Combat level 100 or more | **Rare** | |
-| 8 | Combat level 30 or more | **Uncommon** | |
-| 9 | Anyone else | **Common** | Man, animals |
+| 1 | A god (filed under the wiki's Gods, such as Zamorak, Saradomin or Azzanadra) | **Legendary** | Zamorak, Saradomin |
+| 2 | A boss or skilling pet (pets are legendary, like pet items) | **Legendary** | Rocky, Bubbles |
+| 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
+| 4 | A Guthixian Cache automaton | **Common** to **epic**, by the Divination level to subdue it, on the familiars' bands (see below) | Confused automaton |
+| 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat boss is never below epic | Elvarg, Evil Chicken (rare); King Black Dragon (epic) |
+| 6 | A Mahjarrat | **Epic** | Lucien, Hazeel, Zemouregal |
+| 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
+| 8 | A named character, skill master or Slayer master | See the next table | |
+| 9 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
+| 10 | A Slayer monster from Slayer level 5 | **Uncommon** | Cave crawler, Cave bug |
+| 11 | Found almost everywhere (60 or more spawns), whatever its level | **Common** | Goblin, Giant rat, Chicken |
+| 12 | A Hunter creature or an NPC to pickpocket, with no combat level | **Common** to **epic**, by the Hunter or Thieving level it needs, on the familiars' bands (see below) | Crimson swift, Kingly impling, Man |
+| 13 | Combat level 100 or more | **Rare** | |
+| 14 | Combat level 30 or more | **Uncommon** | |
+| 15 | Anyone else | **Common** | Man, animals |
+
+Summoning familiars: add a bonus for what the pouch takes to the familiar's Summoning level,
+then read the rarity off the total. Familiars never go above epic.
+
+| The pouch takes... | Bonus |
+|---|---|
+| A gold charm | +0 |
+| A green charm | +5 |
+| A crimson charm | +10 |
+| An elder charm | +12 |
+| A blue charm, or it is a binding contract | +15 |
+
+| Level + bonus | Rarity | For example |
+|---|---|---|
+| Under 35 | **Common** | Spirit wolf, Granite crab |
+| 35 to 64 | **Uncommon** | Albino rat, Bull ant |
+| 65 to 89 | **Rare** | Arctic bear, Smoke devil |
+| 90 or more | **Epic** | Fire titan, Steel titan |
+
+Two are set by hand: Meerkats are **rare** (they only come from Treasure Trails) and the Ghast
+is **epic**.
+
+Hunter creatures and NPCs to pickpocket read it too, with the level they need (no bonus): an
+impling caught at level 17 is **common**, at 91 **epic**.
+
+Automatons read the same table with the Divination level needed to subdue them (no bonus): the
+ancient automaton (none needed) is **common**, the confused (45) **uncommon**, the enraged (85) **rare**.
 
 Named characters, skill masters and Slayer masters (again, the first that fits):
 

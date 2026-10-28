@@ -100,7 +100,10 @@ Cards.tagWords = {
                 "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe", "daemonheim",
                 "the_arc" },
     location = { "lumbridge", "falador", "ardougne", "draynor", "varrock", "ranch_out_of_time", "lumbridge_swamp",
-                 "dorgesh_kaan", "burthorpe", "chaos_tunnels", "fremennik_slayer_dungeon", "catherby" },
+                 "dorgesh_kaan", "burthorpe", "chaos_tunnels", "fremennik_slayer_dungeon", "catherby",
+                 "vinesweeper", "enchanted_valley", "artisans_workshop", "white_knights_castle", "mining_guild",
+                 "puro_puro", "guthixian_cache", "feldip_hunter_area", "taverley", "tree_gnome_stronghold",
+                 "fishing_guild", "fisher_realm", "river_lum","uzer_hunter_area","makeover_mage" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
@@ -117,7 +120,8 @@ Cards.tagWords = {
 Cards.tagGroups = {
     category = {
         { title = "What it is", words = { "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin",
-            "troll", "spirit", "elemental", "insect", "construct" } },
+            "troll", "spirit", "elemental", "insect", "construct", "titan", "minotaur", "impling", "fairy",
+            "dagannoth", "kalphite", "pet" } },
         { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
             "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief" } },
         { title = "Whether it can be fought", words = { "monster", "boss" } },

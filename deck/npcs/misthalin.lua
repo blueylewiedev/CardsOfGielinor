@@ -31,7 +31,7 @@ Set.cards = {
         id = "hans", name = "Hans", rarity = "uncommon",
         desc = "Has walked Lumbridge Castle forever.",
         art = { anim = 916, cam = { yaw = 0.20, dist = 1309, fov = 20, ty = 620 } },
-        tags = { location = { "lumbridge" }, category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper" } },
     },
     {
         id = "lumbridge_guide", name = "Lumbridge Guide", rarity = "uncommon",
@@ -49,7 +49,7 @@ Set.cards = {
         id = "bob", name = "Bob", rarity = "uncommon",
         desc = "Sells axes and strong opinions.",
         art = { anim = 23790, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
-        tags = { location = { "lumbridge" }, skills = { "woodcutting" }, category = { "shopkeeper" } },
+        tags = { skills = { "woodcutting" }, location = { "lumbridge" }, category = { "shopkeeper", "humanoid" } },
     },
     {
         id = "fred", name = "Fred the Farmer", rarity = "uncommon",
@@ -61,31 +61,31 @@ Set.cards = {
         id = "aereck", name = "Father Aereck", rarity = "uncommon",
         desc = "Keeps the chapel quiet and tidy.",
         art = { npc = "FATHER_AERECK", anim = 13773, cam = { yaw = -0.40, fov = 20, ty = 580, tx = 10 } },
-        tags = { location = { "lumbridge" }, skills = { "prayer" }, category = { "humanoid" } },
+        tags = { skills = { "prayer" }, location = { "lumbridge" }, category = { "humanoid", "shopkeeper", "priest" } },
     },
     {
         id = "duke_horacio", name = "Duke Horacio", rarity = "rare",
         desc = "Rules Lumbridge from the castle.",
         art = { npc = "DUKE_OF_LUMBRIDGE", anim = 9870, cam = { yaw = 0.20, fov = 20, ty = 600 } },
-        tags = { location = { "lumbridge" }, category = { "royalty" } },
+        tags = { location = { "lumbridge" }, category = { "royalty", "humanoid" } },
     },
     {
         id = "gertrude", name = "Gertrude", rarity = "rare",
         desc = "Lives with a great many cats.",
         art = { anim = 3, cam = { yaw = -0.40, fov = 20, ty = 600, tx = 10 } },
-        tags = { location = { "varrock" }, category = { "humanoid" } },
+        tags = { location = { "varrock" }, category = { "humanoid", "shopkeeper" } },
     },
     {
         id = "aggie", name = "Aggie", rarity = "rare",
         desc = "Mixes dyes and asks for coins.",
         art = { anim = 5363, cam = { yaw = 0.60, pitch = -0.30, fov = 20, ty = 600, tx = 20 } },
-        tags = { location = { "draynor" }, skills = { "herblore" }, category = { "humanoid" } },
+        tags = { skills = { "herblore" }, location = { "draynor" }, category = { "humanoid", "shopkeeper" } },
     },
     {
         id = "WOM_CUTSCENE_4", name = "Wise Old Man", rarity = "epic",
         desc = "Claims to know a great deal about everything.",
         art = { anim = 813, cam = { yaw = 0.40, fov = 20, ty = 580, tx = 20 } },
-        tags = { location = { "draynor" }, category = { "humanoid" } },
+        tags = { location = { "draynor" }, category = { "humanoid", "shopkeeper", "wizard" } },
     },
     {
         id = "doomsayer", name = "Doomsayer", rarity = "uncommon",
@@ -97,7 +97,7 @@ Set.cards = {
         id = "wizard_ilona", name = "Wizard Ilona", rarity = "uncommon",
         desc = "Almost sacrificed, now a dinosaur collector.",
         art = { npc = "ARIANE1_ILONA_APPEARANCE", anim = 18911, cam = { dist = 749, fov = 35, ty = 560 } },
-        tags = { location = { "lumbridge", "ranch_out_of_time" }, skills = { "farming" }, category = { "humanoid" } },
+        tags = { skills = { "farming" }, location = { "lumbridge", "ranch_out_of_time" }, category = { "humanoid", "wizard" } },
     },
     {
         id = "swamp_frog", name = "Swamp frog", rarity = "common",
@@ -157,7 +157,7 @@ Set.cards = {
         id = "captain_harlan", name = "Captain Harlan", rarity = "rare",
         desc = "Harlan, captain of the Lumbridge Guard and master of defence",
         art = { npc = "AIDE_TUTOR_MELEE", anim = 18130, cam = { pitch = 0.15, dist = 859, ty = 460 } },
-        tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper" } },
+        tags = { skills = { "defence" }, location = { "lumbridge" }, category = { "humanoid", "shopkeeper" } },
     },
     {
         id = "donie", name = "Donie", rarity = "common",
@@ -223,7 +223,7 @@ Set.cards = {
         id = "ham_agent_william", name = "H.A.M. agent William", rarity = "uncommon",
         desc = "A member of Sigmund's H.A.M. splinter group.",
         art = { npc = "CHOSEN_HAM_INTERROGATOR_2", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
-        tags = { category = { "humanoid" } },
+        tags = { skills = { "thieving" }, location = { "lumbridge" }, category = { "humanoid" } },
     },
     {
         id = "hank", name = "Hank", rarity = "common",
@@ -259,7 +259,7 @@ Set.cards = {
         id = "millie_miller", name = "Millie Miller", rarity = "uncommon",
         desc = "Miss Millicent Miller the Miller of Mill Lane Mill.",
         art = { npc = "MILLIE_THE_MILLER", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
-        tags = { category = { "humanoid" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
     {
         id = "musician_lumbridge", name = "Musician (Lumbridge)", rarity = "common",
@@ -304,10 +304,10 @@ Set.cards = {
         tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper" } },
     },
     {
-        id = "sigmund", name = "Sigmund", rarity = "uncommon",
+        id = "sigmund", name = "Sigmund", rarity = "epic",
         desc = "Advisor to the Duke of Lumbridge.",
         art = { npc = "LOST_TRIBE_SIGMUND_THERE", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
-        tags = { location = { "lumbridge" }, category = { "humanoid" } },
+        tags = { skills = { "thieving" }, location = { "lumbridge" }, category = { "humanoid", "boss" } },
     },
     {
         id = "vasquen", name = "Vasquen", rarity = "common",
@@ -321,6 +321,9 @@ Set.cards = {
         art = { npc = "FAI_LUMBRIDGE_VICTORIA", anim = 9870, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
         tags = { location = { "lumbridge" }, category = { "humanoid" } },
     },
+    { id = "fairy_very_wise", name = "Fairy Very Wise", rarity = "uncommon", desc = "No question is so difficult to answer than when answer is obvious", art = { npc = "FAIRY2_ADVISOR", anim = 793, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 600 } }, tags = { category = { "fairy" }, membership = { "p2p" } } },
+    { id = "evil_chicken", name = "Evil Chicken", rarity = "rare", desc = "A fowl beast.", art = { npc = "CHICKENQUEST_EVIL_CHICKEN", anim = 16430, cam = { yaw = 0.40, dist = 1988, fov = 20, ty = 280, tx = 10 } }, tags = { category = { "animal", "boss", "monster" }, membership = { "p2p" } } },
+    
 }
 
 return Set
