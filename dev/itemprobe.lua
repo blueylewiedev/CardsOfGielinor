@@ -11,6 +11,8 @@
 --   * "Show as a card" (the grid button under the model): draws the item as an item card, the way
 --     the plugin does, in its own window with buttons to move the camera. Each change logs a
 --     `cam = { ... }` line to the Output window that can be pasted into a card's `art`.
+--   * Show also writes the item's parameters (and quests, options) to the Output window, to see
+--     whether the game stores what the wiki calls the level needed or the skill used.
 --   * Results are paged (arrows at the bottom of the list), so a search is not limited to a few rows.
 -- When a function is set with setPicker (the Card Builder does this), each row also has a Use
 -- button that hands that item { id, configName, name } to the function.
@@ -184,6 +186,65 @@ end
 -- ---------------------------------------------------------------------------------------------
 -- The preview: icon, model and data for one item.
 
+-- One value as text for the Output window: a number, text or true/false as it is, a config with
+-- its config name, a list as its items, anything else by its type.
+local function valueText(value, depth)
+    local kind = type(value)
+    if kind == "string" or kind == "number" or kind == "boolean" or kind == "nil" then
+        return tostring(value)
+    end
+    local named = prop(value, "configName")
+    if type(named) == "string" then
+        return named
+    end
+    local count = (depth or 0) < 1 and select(2, pcall(function() return #value end)) or nil
+    if type(count) == "number" and count > 0 then
+        local items = {}
+        for i = 1, math.min(count, 8) do
+            items[#items + 1] = valueText(prop(value, i), 1)
+        end
+        return "{" .. table.concat(items, ", ") .. (count > 8 and ", ..." or "") .. "}"
+    end
+    -- (No angle brackets: they vanish when the Output window is copied.)
+    if kind == "table" or kind == "userdata" then
+        return "(empty " .. kind .. ")"
+    end
+    return "(" .. kind .. ")"
+end
+
+-- Writes everything the game's item config holds that could say what an item is (its parameters,
+-- quests, options) to the Output window, one line each, so it can be copied. The wiki says an
+-- item needs a level or skill; this shows whether the game stores that too, and under what name.
+-- Returns how many parameters it found.
+function ItemProbe.dumpParams(objId)
+    local cfg = configOf(objId)
+    if cfg == nil then
+        say("params", objId .. ": no config")
+        return 0
+    end
+    local label = "params " .. objId .. " " .. tostring(prop(cfg, "configName")) .. ":"
+    local list = prop(cfg, "params")
+    local count = 0
+    if list ~= nil then
+        local size = select(2, pcall(function() return #list end))
+        for i = 1, type(size) == "number" and size or 0 do
+            local param = prop(list, i)
+            local okValue, value = pcall(function() return cfg:GetParamValue(param) end)
+            say(label, "param " .. tostring(prop(param, "id")) .. " " .. tostring(prop(param, "configName"))
+                .. " (" .. tostring(prop(param, "valueType")) .. ") = "
+                .. (okValue and valueText(value) or "unreadable: " .. tostring(value)))
+            count = count + 1
+        end
+    else
+        say(label, "the config has no params list")
+    end
+    for _, name in ipairs({ "typeName", "category", "teamID", "cost", "isMembers", "isTradeable", "quests",
+                            "groundOpNames", "interfaceOpNames" }) do
+        say(label, name .. " = " .. valueText(prop(cfg, name)))
+    end
+    return count
+end
+
 local function showItem(objId)
     destroyAll(previewParts)
     shownId = objId
@@ -234,6 +295,12 @@ local function showItem(objId)
     end
     text(RIGHT_X, MODEL_Y + MODEL_H + 2, 160, "Model, distance " .. distance, GREY)
     say("show", objId .. " " .. configName .. " = " .. name)
+    local okDump, found = pcall(ItemProbe.dumpParams, objId)
+    if okDump then
+        setStatus(name .. ": " .. found .. " parameters (see the Output window)")
+    else
+        say("params failed", tostring(found))
+    end
 end
 
 local function zoom(factor)
