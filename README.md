@@ -44,6 +44,7 @@ each region's set has its own version.
 | | Fruit and vegetables | Not started | |
 | | Drinks | Not started | |
 | **Potions** | | Not started | |
+| **Flasks** | | Not started | |
 | **Raw materials** | Fish | In progress | |
 | | Meat | Not started | |
 | | Herbs | In progress | |

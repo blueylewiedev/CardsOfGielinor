@@ -298,6 +298,17 @@ local function finish(verdict)
     refresh()
 end
 
+-- Takes the marks of `verdict` ("skipped") off the candidates, leaving the others as they are.
+local function unmark(verdict)
+    local saved = reviewed()
+    for page, mark in pairs(saved) do
+        if mark == verdict then
+            saved[page] = nil
+        end
+    end
+    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+end
+
 -- Reads the candidates again (all of them, or after Reset).
 local function reload()
     remaining = loadRemaining() or {}
@@ -320,6 +331,13 @@ function WikiReview.show()
     widgets.status = Kit.text(content, 74, 4, 220, 28, "", WHITE, ui.AlignMode.TOPLEFT)
     Kit.iconButton(content, "SEARCH", INNER - 54, 6, WikiFetch.toggle, "Fetch more candidates from the wiki",
         "Fetch", 70)
+    Kit.iconButton(content, "REFRESH", INNER - 84, 6, function()
+        Kit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done stay off the list.",
+            "Bring back skipped", function()
+                unmark("skipped")
+                reload()
+            end)
+    end, "Bring back only the candidates marked Skip", "Skipped", 70)
     Kit.iconButton(content, "UNDO", INNER - 24, 6, function()
         Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done or Skip comes back.", "Review again", function()
             pcall(function() PersistentDB:SetStructuredData(DB_KEY, {}) end)
