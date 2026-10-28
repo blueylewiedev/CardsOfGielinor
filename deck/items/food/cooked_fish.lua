@@ -265,6 +265,12 @@ Set.cards = {
         art = { item = "TUNA", cam = { yaw = -0.40, pitch = 1.55, fov = 60, ty = -20 } },
         tags = { skills = { "cooking" }, category = { "food" }, membership = { "f2p" } },
     },
+    {
+        id = "claret_crab", name = "Claret crab", kind = "item", rarity = "rare",
+        desc = "Has a not so delicate ferrous tang.",
+        art = { item = "CLARET_CRAB", cam = { pitch = 1.25, fov = 70, ty = -20, tx = 40 } },
+        tags = { regions = { "havenhythe" }, skills = { "cooking" }, category = { "food", "fish" }, membership = { "p2p" } },
+    },
 }
 
 return Set
