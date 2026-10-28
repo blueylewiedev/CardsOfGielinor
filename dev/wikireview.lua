@@ -21,8 +21,9 @@ local WikiFetch = require("dev/wikifetch")
 local WikiReview = {}
 
 local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
-local WIDTH, HEIGHT = 420, 336
-local NOTE_ROWS = 6
+local WIDTH, HEIGHT = 420, 376
+local NOTE_ROWS = 8
+local NOTE_CHARS = 54       -- about how many letters of a note fit on a row
 local ALL = "*all"                       -- the drop-down's "every source" choice
 
 local WHITE = Vector4.new(1, 1, 1, 1)
@@ -204,6 +205,23 @@ local function setText(widget, text, colour)
     end
 end
 
+-- Breaks a note into lines of at most `limit` letters, at spaces (a longer word has its own line).
+local function wrapLines(text, limit)
+    local lines, line = {}, ""
+    for word in string.gmatch(text, "%S+") do
+        if line ~= "" and #line + 1 + #word > limit then
+            lines[#lines + 1] = line
+            line = word
+        else
+            line = line == "" and word or (line .. " " .. word)
+        end
+    end
+    if line ~= "" then
+        lines[#lines + 1] = line
+    end
+    return lines
+end
+
 -- Shows the current candidate (or what to do if there is none).
 local function refresh()
     if window == nil then
@@ -229,9 +247,13 @@ local function refresh()
         setText(widgets.subject, noun .. currentModel(candidate)
             .. (count > 1 and ("  (model " .. (candidate.model or 1) .. " of " .. count .. ")") or ""), GREY)
     end
-    for i, note in ipairs(candidate.notes or {}) do
-        if i <= NOTE_ROWS then
-            setText(widgets.notes[i], note, AMBER)
+    local row = 0
+    for _, note in ipairs(candidate.notes or {}) do
+        for _, line in ipairs(wrapLines(note, NOTE_CHARS)) do
+            row = row + 1
+            if row <= NOTE_ROWS then
+                setText(widgets.notes[row], line, AMBER)
+            end
         end
     end
 end

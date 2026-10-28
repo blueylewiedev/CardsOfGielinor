@@ -129,7 +129,8 @@ for _, group in ipairs(Cards.tagGroups.category) do
     end
 end
 
--- The category words for item cards, in groups the same way. A card's category tag only takes
+-- The category words for item cards, in groups the same way (`requires` is the word a group needs on
+-- the card, or a list of words of which any one will do). A card's category tag only takes
 -- words for its own kind (an item cannot be a "dragon", an NPC cannot be "food"), but a pack
 -- filter can use any of them, so Cards.tagWords.category holds both lists. A new word goes in the
 -- group that fits it best, and must not already be an NPC category word.
@@ -147,6 +148,16 @@ Cards.itemTagGroups = {
             words = { "ring", "neck" } },
         { title = "What type of ammo", requires = "ammunition",
             words = { "arrow", "bolt", "spike" } },
+        { title = "Combat style", requires = { "weapon", "armour", "jewellery", "ammunition" },
+            words = { "melee_gear", "ranged_gear", "magic_gear", "necromancy_gear", "hybrid_gear" } },
+        { title = "What kind of food", requires = "food",
+            words = { "meal", "baked_goods", "fruit_veg" } },
+        { title = "What kind of raw material", requires = "raw_material",
+            words = { "herb", "log", "ore", "bone", "hide", "gem" } },
+        { title = "What kind of processed material", requires = "processed_material",
+            words = { "bar", "plank" } },
+        { title = "Fish and meat", requires = { "raw_material", "food" },
+            words = { "fish", "meat" } },
     },
 }
 local npcCategoryWords = {}
@@ -195,14 +206,27 @@ function Cards.wordsFor(cardKind, tagKind)
     return words
 end
 
--- The word a tag word needs on the same card, from the `requires` of the group it is in (a
--- scimitar needs a weapon), or nil if it needs nothing.
-function Cards.requiredWord(cardKind, tagKind, word)
+-- A group's `requires` as a list of words: it is one word ("weapon") or a list of words, any one
+-- of which will do ({ "raw_material", "food" }), or nil if the group needs nothing.
+local function requiredList(group)
+    if group.requires == nil then
+        return nil
+    end
+    if type(group.requires) == "table" then
+        return group.requires
+    end
+    return { group.requires }
+end
+
+-- The words a tag word needs one of on the same card, from the `requires` of the group it is in
+-- (a scimitar needs a weapon), as a list, or nil if it needs nothing.
+function Cards.requiredWords(cardKind, tagKind, word)
     for _, group in ipairs(Cards.tagGroupsFor(cardKind, tagKind) or {}) do
-        if group.requires ~= nil then
+        local list = requiredList(group)
+        if list ~= nil then
             for _, groupWord in ipairs(group.words) do
                 if groupWord == word then
-                    return group.requires
+                    return list
                 end
             end
         end
@@ -210,7 +234,14 @@ function Cards.requiredWord(cardKind, tagKind, word)
     return nil
 end
 
--- The words in a list whose required word is not in the list too, as { word = w, needs = n }.
+-- The first word a tag word needs, or nil if it needs nothing (see Cards.requiredWords).
+function Cards.requiredWord(cardKind, tagKind, word)
+    local list = Cards.requiredWords(cardKind, tagKind, word)
+    return list and list[1] or nil
+end
+
+-- The words in a list whose required words are not in the list too, as { word = w, needs = n }
+-- (n is the word, or the words with "or" between them when any of several will do).
 -- A chain is checked a link at a time: a word is reported if its own parent is missing, and a
 -- parent that is there but is missing its own parent is reported in the same way.
 function Cards.missingRequired(cardKind, tagKind, words)
@@ -220,9 +251,15 @@ function Cards.missingRequired(cardKind, tagKind, words)
     end
     local missing = {}
     for _, word in ipairs(words) do
-        local needs = Cards.requiredWord(cardKind, tagKind, word)
-        if needs ~= nil and not have[needs] then
-            missing[#missing + 1] = { word = word, needs = needs }
+        local needs = Cards.requiredWords(cardKind, tagKind, word)
+        if needs ~= nil then
+            local found = false
+            for _, parent in ipairs(needs) do
+                found = found or have[parent] == true
+            end
+            if not found then
+                missing[#missing + 1] = { word = word, needs = table.concat(needs, " or ") }
+            end
         end
     end
     return missing
