@@ -653,16 +653,27 @@ def remember_drops(pages):
 
 
 def linked_pages(text, until=None):
-    """The titles of the wiki pages linked in `text`, in order and without repeats. With `until`,
-    only the text before the heading of that name counts. Raises ValueError if that heading is not
-    in the text. Links to files, categories and other namespaces are left out."""
+    """The titles of the pages a list page names, in order and without repeats. With `until`, only
+    the text before the heading of that name counts (ValueError if there is no such heading).
+    On a page of tables (like Bosses), a row's name is its second cell, after the picture, so the
+    pages linked from descriptions, drops and the like are not taken. Without tables, every
+    link counts. Links to files, categories and other namespaces are left out."""
     if until:
         heading = re.search(r"^(=+)[ \t]*" + re.escape(until) + r"[ \t]*\1[ \t]*$", text, re.M | re.I)
         if heading is None:
             raise ValueError(f'no "{until}" heading found')
         text = text[:heading.start()]
+    targets = []
+    if re.search(r"^\{\|", text, re.M):
+        for row in re.split(r"^\|-.*$", text, flags=re.M)[1:]:
+            cells = [line[1:].strip() for line in row.splitlines() if re.match(r"\|(?![-}+])", line)]
+            link = re.fullmatch(r"\[\[([^\[\]|]+)(?:\|[^\[\]]*)?\]\]", cells[1]) if len(cells) > 1 else None
+            if link:
+                targets.append(link.group(1))
+    else:
+        targets = re.findall(r"\[\[([^\[\]|]+)", text)
     titles = []
-    for target in re.findall(r"\[\[([^\[\]|]+)", text):
+    for target in targets:
         title = target.split("#")[0].replace("_", " ").strip()
         if title and ":" not in title and title not in titles:
             titles.append(title)
