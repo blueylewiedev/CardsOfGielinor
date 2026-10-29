@@ -24,7 +24,9 @@ local filterField, statusText = nil, nil
 local rows = {}               -- the parts of the rows, rebuilt on every page change
 local picker = nil
 local index = nil             -- every sequence: { id, name, lower }, read once
-local matches = {}            -- the sequences matching the last search
+local nameById = {}           -- the same, by id (id.Seq[number] isn't read in the game)
+local matches = {}            -- the sequences matching the last search (or the list shown)
+local listTitle = nil         -- what the list is, when it is one handed over rather than searched
 local page = 0                -- which page of `matches` is shown (0 is the first)
 
 -- Lets the Card Builder receive the sequence the player picks. Pass nil to remove it.
@@ -53,6 +55,9 @@ local function loadIndex()
         if a.name ~= b.name then return a.name < b.name end
         return a.id < b.id
     end)
+    for _, entry in ipairs(list) do
+        nameById[entry.id] = entry.name
+    end
     index = list
     return index
 end
@@ -61,6 +66,12 @@ end
 -- not list them (the Card Builder uses it to guess standing animations).
 function AnimSearch.all()
     return loadIndex()
+end
+
+-- A sequence's name, or nil if it has none (or the client would not list them).
+function AnimSearch.nameOf(seqId)
+    loadIndex()
+    return nameById[seqId]
 end
 
 -- The sequences whose name contains `text` (any case), as a list of { id, name }, at most
@@ -125,7 +136,9 @@ local function showRows()
         end
     end
     if statusText ~= nil then
-        if #matches == 0 then
+        if listTitle ~= nil then
+            statusText.content = listTitle .. (pageCount() > 1 and (", page " .. (page + 1) .. " of " .. pageCount()) or "")
+        elseif #matches == 0 then
             statusText.content = "No matches"
         else
             statusText.content = #matches .. (#matches >= MAX_MATCHES and "+" or "") .. " found, page "
@@ -136,6 +149,7 @@ end
 
 -- Searches for `text` and shows the first page.
 function AnimSearch.search(text)
+    listTitle = nil
     local found = AnimSearch.find(text)
     if found == nil then
         matches = {}
@@ -182,6 +196,16 @@ function AnimSearch.show()
     Kit.buttonAt(content, "Next", 160, bottom, 140, 30, function() turnPage(1) end)
     matches = {}
     page = 0
+end
+
+-- Shows `entries` (a list of { id, name }, the name as it should read: "stand: HUMAN_READY")
+-- instead of a search, under `title`, opening the window if it is closed.
+function AnimSearch.showList(title, entries)
+    if window == nil then
+        AnimSearch.show()
+    end
+    matches, page, listTitle = entries, 0, title
+    showRows()
 end
 
 function AnimSearch.hide()

@@ -201,6 +201,14 @@ The cards are in `deck/npcs/`, one file for each region (`misthalin.lua`, `asgar
 in the file for the region where the NPC is found. Every card in a region's
 file gets that region's tag automatically.
 
+As with items, an NPC found in **two** regions goes in the first region's file and lists the
+second in its own `regions` tag (`regions = { "asgarnia" }` on a card in `kandarin.lua`), so both
+regional packs give it; the Card Builder's **also in** box is for that second region. An NPC found
+in **three or more** regions, or all over the world (Global), goes in `general.lua` with no
+region. A region that is only listed because of somewhere the NPC is fought again (the Dominion
+Tower in the desert, Rush of Blood in Tirannwn) or reached through (the player-owned port's
+portals) does not count; the Wiki Review leaves those out for you.
+
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
 
@@ -267,8 +275,8 @@ them. Go down the list and stop at the first one that fits:
 | 2 | A boss or skilling pet (pets are legendary, like pet items) | **Legendary** | Rocky, Bubbles |
 | 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
 | 4 | A Guthixian Cache automaton | **Common** to **epic**, by the Divination level to subdue it, on the familiars' bands (see below) | Confused automaton |
-| 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
-| 6 | A Mahjarrat | **Epic** | Lucien, Hazeel, Zemouregal |
+| 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat or dragonkin boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
+| 6 | A Mahjarrat, or a dragonkin with a name or fought as a boss (not their Nodon soldiers) | **Epic** | Lucien, Hazeel, Kerapac, Strisath |
 | 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
 | 8 | A named character, skill master or Slayer master | See the next table | |
 | 9 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
@@ -504,6 +512,11 @@ For reference, the regions (set by the deck file for an NPC, chosen by hand for 
   does not work, for example for an NPC with no useful body.
 - The camera settings are saved in the card's `art` entry. You do not need to write them by hand.
 - Do not use an animation that is distracting or very fast; the card is small, and zoomed in.
+- To find an NPC's own standing animation, look up its animation set (the Card Builder shows its
+  name; `config.NPC.FromID(id).bas.id` is its number) in `dev/anim_sets.lua`. That file lists
+  every set's stand, walk, run and turns, and the idles it plays now and then, read from the
+  game's cache by `python dev/anim_sets.py` (run it again after a game update). An NPC with an
+  older model can still clip with its own standing animation; frame the clipping out.
 
 ### Duplicates
 

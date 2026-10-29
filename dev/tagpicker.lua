@@ -168,9 +168,6 @@ local function layoutSignature(kind, filterText, cardKind, selected)
     if cardKind == "item" and kind == "location" then
         return "no location"
     end
-    if cardKind ~= "item" and kind == "regions" then
-        return "no regions"
-    end
     local entries, hidden = TagPicker.layout(kind, filterText, cardKind, selected)
     local parts = { hidden }
     for _, entry in ipairs(entries) do
@@ -199,12 +196,6 @@ local function buildPage(index, parent, originX, originY)
     if cardKind == "item" and kind == "location" then
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
             "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
-        builtTotal = builtTotal + #parts
-        return parts, ROW_H
-    end
-    if cardKind ~= "item" and kind == "regions" then
-        parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
-            "An NPC's region comes from its deck file.", GREY, ui.AlignMode.TOPLEFT)
         builtTotal = builtTotal + #parts
         return parts, ROW_H
     end

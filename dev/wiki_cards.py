@@ -202,8 +202,9 @@ MULTIPLE = "Multiple"   # the --region for pages found in several regions ("Kara
 def league_regions(value):
     """The places a league region value lists, as slugs ("Misthalin, Asgarnia" -> misthalin,
     asgarnia). One that needs both ("Kandarin&Desert") is a single place, in the first; values that
-    are not places (league relics and perks, "Golden touch") are left out."""
-    return [r for r in (slug(part.split("&")[0]) for part in (value or "").split(",")) if r in LEAGUE_REGIONS]
+    are not places (league relics and perks, "Golden touch") are left out, and so is one named twice."""
+    places = (slug(part.split("&")[0]) for part in (value or "").split(","))
+    return list(dict.fromkeys(r for r in places if r in LEAGUE_REGIONS))
 
 
 def several_regions(value):
@@ -497,6 +498,34 @@ LEAGUE_REGIONS = {"global", "anachronia", "asgarnia", "desert", "fremennik", "ha
 REGION_ALIASES = {"desert": "kharidian_desert", "kharidian_desert": "kharidian_desert",
                   "fremennik": "fremennik_province", "fremennik_provinces": "fremennik_province"}
 
+# Minigames that bring back monsters from elsewhere, and the region they are in, which those
+# monsters' league regions then name too: the Dominion Tower in the desert (the Evil Chicken,
+# "Misthalin&Kandarin,Desert"; its fighters are filed in Category:Dominion Tower) and Rush of Blood
+# in Prifddinas (the Dagannoth guardian, "Fremennik,Tirannwn"; its fighters are RUSH_OF_BLOOD).
+REFOUGHT_IN = {"Dominion Tower": "kharidian_desert", "Rush of Blood": "tirannwn"}
+# The monsters of Rush of Blood's waves (the monster pages its wiki page links, October 2026).
+RUSH_OF_BLOOD = {
+    "Aviansie", "Tormented demon", "Ice strykewyrm", "Airut", "Steel titan", "Kal'gerion demon", "Automaton Guardian",
+    "Dagannoth", "Vyrewatch", "Abyssal demon", "Baby black dragon", "Dagannoth (Lighthouse)", "Exiled kalphite paragon",
+    "Exiled kalphite soldier", "Exiled kalphite worker", "Greater demon", "Grotworm", "Ket-Zek", "Rorarius", "Tok-Xil",
+    "TzHaar-Hur", "TzHaar-Ket", "TzHaar-Mej", "TzHaar-Xil", "Yt-MejKot", "Aquanite", "Black demon", "Capsarius",
+    "Gladius", "Dagannoth sentinel", "Death spawn", "Nechryael", "Exiled kalphite guardian", "Exiled kalphite marauder",
+    "Iron dragon", "Mutated jadinko baby", "Vyrelady", "Vyrelord", "Black dragon", "Dagannoth guardian", "Dark beast",
+    "Desert strykewyrm", "Mature grotworm", "Mithril dragon", "Mutated jadinko guard", "Steel dragon", "TokHaar-Hur",
+    "TokHaar-Ket", "TokHaar-Mej", "TokHaar-Xil", "TokHaar-Ket Champion", "TokHaar-Ket-Zek", "TokHaar-Tok-Xil",
+    "TokHaar-Yt-MejKot", "Waterfiend", "Adamant dragon", "Bladed muspah", "Force muspah", "Throwing muspah",
+    "Celestial dragon", "Ganodermic beast", "Ganodermic runt", "Mutated jadinko male", "Glacor",
+}
+
+# The most regions an NPC card is in (Cards.MAX_NPC_REGIONS in core/cards.lua: its deck file's and
+# one more): one found in more is a general card.
+MAX_NPC_REGIONS = 2
+
+# Places whose NPCs belong to one region, although the wiki lists more (the regions the place's
+# portals reach): a page filed under the place gets that region only. The player-owned port is in
+# Port Sarim, though its NPCs are "Desert,Asgarnia,Tirannwn".
+HOME_REGIONS = {"Player-owned port": "asgarnia"}
+
 # Category words suggested by the infobox's race.
 RACE_WORDS = {
     "human": "humanoid", "dwarf": "humanoid", "elf": "humanoid", "gnome": "humanoid", "halfling": "humanoid",
@@ -589,7 +618,10 @@ def slug(text):
 
 # Wiki categories of pages about things no longer in the game (the Saradominist priests of the
 # Battle of Lumbridge camp, the old attackable Lumbridge guard). Those make no candidates.
-REMOVED_CATEGORIES = {"Removed content", "Historical article"}
+# Categories whose pages never become cards, and why (the Sinkholes D&D's own versions of monsters
+# and familiars, "Giant rat (Sinkholes)").
+SKIPPED_CATEGORIES = {"Removed content": "removed from the game", "Historical article": "removed from the game",
+                      "Sinkholes": "only in the Sinkholes"}
 
 
 def only_in_cutscenes(page, fields):
@@ -605,8 +637,9 @@ def only_in_cutscenes(page, fields):
 def candidate(page, names, words, price=None, drop=None):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
     `price` is the item's Grand Exchange price, if it was fetched."""
-    if REMOVED_CATEGORIES & set(page.get("categories", [])):
-        return None, "removed from the game"
+    for category in page.get("categories", []):
+        if category in SKIPPED_CATEGORIES:
+            return None, SKIPPED_CATEGORIES[category]
     text = page.get("text", "")
     kind, inside = find_template(text, ["Infobox NPC", "Infobox Monster"])
     if inside is not None:
@@ -993,12 +1026,27 @@ SAME_CARD = {
 }
 
 
-def merge_versions(found):
+def region_tag(regions, words):
+    """An NPC's regions tag and a note about it, from its league regions: one region, or two (like
+    an item from two regions: the card goes in the first's deck file and is tagged with the second
+    too, so both regional packs give it); Global or three or more is a general card (no tag)."""
+    if 1 <= len(regions) <= MAX_NPC_REGIONS and all(r in words["regions"] for r in regions):
+        return regions, (None if len(regions) == 1
+                         else f"in 2 league regions: goes in the {regions[0]} deck file, tagged {regions[1]} too")
+    if regions == ["global"]:
+        return None, "league region Global: a general card"
+    if len(regions) > 1:
+        return None, f"in {len(regions)} league regions: a general card"
+    return None, "region unknown: choose the deck file"
+
+
+def merge_versions(found, words):
     """One NPC candidate per card. The wiki often has a page for each version of an NPC ("Lumbridge
     guard (attackable)", "Lumbridge guardsman (bridge)"): candidates with the same card name (see
     name_and_desc and SAME_CARD) become one, with every page's models to choose from (in order,
     without repeats, everyday looks first: see everyday_first). Its other details come from the
-    page named like the card if there is one, otherwise the first; a note lists the pages."""
+    page named like the card if there is one, otherwise the first; a note lists the pages. Its
+    regions are every page's together (see region_tag)."""
     merged, order = {}, []
     for c in found:
         if c["kind"] != "npc":
@@ -1023,11 +1071,24 @@ def merge_versions(found):
         places = list(dict.fromkeys(p for c in group for p in c["tags"].get("location", [])))
         if places:
             first["tags"] = dict(first["tags"], location=places)
+        # The regions of every page (the seagull is Asgarnia and Morytania on one page, and the
+        # Wilderness, Desert and Havenhythe on its decorative one: a general card). A page found
+        # all over the world doesn't make the others' regions general.
+        regions = list(dict.fromkeys(r for c in group for r in c["league_regions"]))
+        if len(group) > 1 and "global" in regions and len(regions) > 1:
+            regions.remove("global")
+        tag, note = region_tag(regions, words)
+        if tag:
+            first["tags"] = {"regions": tag, **first["tags"]}
+        if note:
+            first["notes"] = first["notes"] + [note]
         if len(group) > 1:
             first["notes"] = [f"{len(group)} wiki pages: " + ", ".join(c["page"] for c in group)] + first["notes"]
         if len(models) > 1:
             first["notes"] = [f"{len(models)} models (Next model); first is {models[0]}"] + first["notes"]
         out.append(first)
+    for c in out:
+        c.pop("league_regions", None)       # (only for the merge)
     return out
 
 
@@ -1119,7 +1180,10 @@ def skill_level_rarity(page):
         _, inside = find_template(page.get("text", ""), [template])
         if inside is None:
             continue
-        found = re.search(r"\d+", plain(first_version(template_fields(inside), "level")))
+        # (the level of its first version; a box with versions for several skills, the black
+        # warlock's net and barehanded, gives it as skill1lvl1)
+        fields = template_fields(inside)
+        found = re.search(r"\d+", plain(first_version(fields, "level") or first_version(fields, "skill1lvl")))
         if found:
             level = int(found.group())
             return band(level, SKILL_BANDS), f"{verb} at {skill} level {level}"
@@ -1153,6 +1217,12 @@ LEGENDARY_BOSS_LEVEL = 1000
 RARE_BOSS_LEVEL = 100
 
 
+def boss_named(categories):
+    """True if the wiki files the page as a boss ("Bosses", "Free-to-play bosses"); not "Boss
+    minions", the monsters fought alongside a boss, rated like any other."""
+    return any("boss" in c.lower() and "minion" not in c.lower() for c in categories)
+
+
 def npc_rarity(page, fields, character, named):
     """A guess at an NPC's rarity, and why: the "Guidelines for NPCs" in CONTRIBUTING.md, which
     follow the deck's own cards (keep the two the same). `character` is whether the wiki files it
@@ -1173,11 +1243,14 @@ def npc_rarity(page, fields, character, named):
     royalty = any(c in ("Monarchs", "Royalty") for c in categories)
     skill_master = "Skill masters" in categories
     slayer_master = "Slayer Master" in categories
-    mahjarrat = "Mahjarrat" in categories
-    # (the Dominion Tower holds the quests' bosses, the Evil Chicken and Sigmund among them; "Boss
-    # minions" are the monsters fought alongside a boss, rated like any other)
+    # The great races of the story, epic like a boss: the Mahjarrat, and the dragonkin who have a
+    # name or are fought as bosses (Kerapac, Strisath; not their Nodon soldiers, dragonkin too).
+    race = slug(plain(first_version(fields, "race")))
+    lore_race = ("a Mahjarrat" if "Mahjarrat" in categories
+                 else "a dragonkin" if race == "dragonkin" and (named or boss_named(categories)) else None)
+    # (the Dominion Tower holds the quests' bosses, the Evil Chicken and Sigmund among them)
     quest_boss = "Dominion Tower" in categories
-    boss = quest_boss or any("boss" in c.lower() and "minion" not in c.lower() for c in categories)
+    boss = quest_boss or boss_named(categories)
 
     hand_set = NPC_RARITY.get(page["title"]) or NPC_RARITY.get(strip_bracket(page["title"]))
     if hand_set:
@@ -1199,13 +1272,14 @@ def npc_rarity(page, fields, character, named):
         what = "a quest boss (Dominion Tower)" if quest_boss else "a boss"
         if level >= LEGENDARY_BOSS_LEVEL:
             return "legendary", f"{what} of combat level {level}"
-        # (a Mahjarrat boss stays epic however low its level, and 0 is a level the wiki doesn't give)
-        if 0 < level < RARE_BOSS_LEVEL and not mahjarrat:
+        # (a Mahjarrat or dragonkin boss stays epic however low its level, and 0 is a level the wiki
+        # doesn't give)
+        if 0 < level < RARE_BOSS_LEVEL and not lore_race:
             return "rare", f"{what} of combat level {level}"
         return "epic", what
-    # The Mahjarrat are epic (after the bosses, so one fought at an end-game level stays legendary).
-    if mahjarrat:
-        return "epic", "a Mahjarrat"
+    # (after the bosses, so one fought at an end-game level stays legendary)
+    if lore_race:
+        return "epic", lore_race
     if slayer >= 10 and spawns < 20:
         return "rare", f"a Slayer monster of level {slayer} with {spawns} spawns"
     if named or skill_master or slayer_master:
@@ -1258,18 +1332,28 @@ def npc_candidate(page, kind, fields, names, words):
     # (The field also takes league relics and perks, "Golden touch", which are not places, and
     # "Kandarin&Desert" for somewhere that needs both: one place, in the first.)
     regions = [REGION_ALIASES.get(r, r) for r in league_regions(plain(first_version(fields, "leagueregion")))]
-    # The Dominion Tower (in the desert) puts the bosses fought again there in the desert too, which
-    # is not where they are from (the Evil Chicken: "Misthalin&Kandarin,Desert").
-    if "Dominion Tower" in page.get("categories", []) and len(regions) > 1:
-        regions = [r for r in regions if r != "kharidian_desert"]
-    region = regions[0] if len(regions) == 1 else None
-    if region in words["regions"]:
-        tags["regions"] = [region]
-    elif region == "global" or len(regions) > 1:
-        notes.append(("league region Global" if region == "global" else f"in {len(regions)} league regions")
-                     + ": a general card")
-    else:
-        notes.append("region unknown: choose the deck file")
+    # A minigame that brings back monsters from elsewhere puts them in its own region too, which is
+    # not where they are from (see REFOUGHT_IN): left out when they have another.
+    categories = page.get("categories", [])
+    refought = set()
+    if "Dominion Tower" in categories:
+        refought.add(REFOUGHT_IN["Dominion Tower"])
+    if page["title"] in RUSH_OF_BLOOD:
+        refought.add(REFOUGHT_IN["Rush of Blood"])
+    if len(regions) > 1:
+        regions = [r for r in regions if r not in refought] or regions
+    home = next((HOME_REGIONS[c] for c in categories if c in HOME_REGIONS), None)
+    if home in regions:
+        regions = [home]
+    # A page named for one of its places ("Firefly (The Lost Grove)", found in the Lost Grove and the
+    # Piscatoris Hunter area) gets that place's region: the wiki lists the regions in the order of
+    # the places ("Tirannwn,Kandarin"), so when there are as many of each, the place's is the one in
+    # its position.
+    places_listed = links(first_version(fields, "location"))
+    bracket = title_bracket(page["title"])
+    if len(regions) > 1 and bracket in places_listed and len(places_listed) == len(regions):
+        regions = [regions[places_listed.index(bracket)]]
+    # (the regions tag is decided in merge_versions, with any other pages of the same card)
 
     # The location words for the place in the page title's brackets ("Guard (Catherby)",
     # "Lumbridge guardsman (Lumbridge Market)") and the places the infobox links to (Lumbridge
@@ -1370,6 +1454,7 @@ def npc_candidate(page, kind, fields, names, words):
     # (gender: the Card Builder picks a trade's male or female pose by it, such as
     # MALE_FARMER_INTERFACE_ANIM; race whether to frame it as short, like a dwarf.)
     return {"page": page["title"], "kind": "npc", "npc": configs[0], "others": configs[1:6], "name": name,
+            "league_regions": regions,
             "named": named, "gender": gender, "race": race or None, "desc": desc, "rarity": rarity, "tags": tags,
             "notes": notes}, None
 
@@ -1438,11 +1523,12 @@ GENERAL_REGIONS = ("Global", MULTIPLE)
 WIKI_REGION_NAMES = {word: name.title() for name, word in REGION_ALIASES.items() if name in LEAGUE_REGIONS}
 
 
-def passes(candidate, entry):
+def passes(candidate, entry, own):
     """True if a candidate passes the filters of a category or region (a race filter is only for
-    NPCs; items pass it). A general region's (GENERAL_REGIONS) must also be a general card."""
+    NPCs; items pass it). A general region's (GENERAL_REGIONS) must also be a general card: one
+    with no regions of its own (`own`)."""
     name, races, members = source_parts(entry)
-    if name in GENERAL_REGIONS and candidate["tags"].get("regions"):
+    if name in GENERAL_REGIONS and own:
         return False
     if races and candidate["kind"] == "npc" and candidate.get("race") not in races:
         return False
@@ -1471,13 +1557,13 @@ def remembered_sources(args):
     return chosen["categories"], chosen["regions"], chosen["pages"]
 
 
-def candidate_sources(made, listed_in, filters):
+def candidate_sources(made, listed_in, filters, words):
     """The sources a candidate is shown under in the Wiki Review: those it was listed in whose
     filters it passes (a page asked for by name has none). One a general region listed that turns
     out to belong to one region (Fairy Very Wise, Global only in a later version) is filed under
-    that region instead."""
-    kept = [s for s in listed_in if s not in filters or passes(made, filters[s])]
-    own = made["tags"].get("regions")
+    that region instead. (An NPC page's regions are its own here; merge_versions joins a card's.)"""
+    own = made["tags"].get("regions") or region_tag(made.get("league_regions", []), words)[0]
+    kept = [s for s in listed_in if s not in filters or passes(made, filters[s], own)]
     if not kept and own and any(source_parts(filters[s])[0] in GENERAL_REGIONS for s in listed_in if s in filters):
         kept = [source_label(WIKI_REGION_NAMES.get(own[0], own[0].replace("_", " ").title()), True)]
     return kept
@@ -1644,14 +1730,14 @@ def main():
         made, reason = candidate(page, names, words, prices.get(price_names.get(title)),
                                 drops.get((pages[title].get('title') or title).lower()))
         if made is not None:
-            made["sources"] = candidate_sources(made, sources[title], filters)
+            made["sources"] = candidate_sources(made, sources[title], filters, words)
             if not made["sources"]:
                 made, reason = None, "not the race or membership asked for"
         if made is not None:
             found.append(made)
         else:
             skipped[reason] = skipped.get(reason, 0) + 1
-    found = merge_versions(found)
+    found = merge_versions(found, words)
     found.sort(key=lambda c: (c["kind"], (c["tags"].get("regions") or c["tags"].get("category") or ["~"])[0], c["name"]))
     write_candidates(found)
 
