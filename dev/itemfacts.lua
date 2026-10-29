@@ -5,8 +5,11 @@
 --
 -- What is read (found with the Item probe's parameter list, so the names are the game's own):
 --   isMembers                    -> membership
---   WEAR_REQUIRES_STAT<n> / _LEVEL<n>   what wearing or wielding it needs
---   USE_REQUIRES_STAT<n> / _LEVEL<n>    what using it needs (a pickaxe, an ore, a seed...)
+--   WEAR_REQUIRES_STAT<n> / _LEVEL<n>   what wearing or wielding it needs: its skill and level
+--   USE_REQUIRES_STAT<n> / _LEVEL<n>    what using it needs: its skill and level for a tool (a pickaxe),
+--     but not for anything else (iron ore needs smithing to use, and is tagged mining, the skill that
+--     gets it, which the game does not say). Bones and herbs get prayer and herblore, the one skill
+--     they exist for.
 --     (the stat is the number of a skill, in the order of SkillType in the client API)
 --   COMBATV2_<MELEE|RANGED|MAGIC|NECROMANCY>_<WEAPON|ITEM> and <STYLE>_STRENGTH -> combat style
 --   WEAPON_CATEGORY             -> the kind of weapon (whip, mace...)
@@ -110,29 +113,40 @@ function ItemFacts.interpret(raw)
         note("This is the noted version of an item, with no data of its own: use the normal item")
     end
 
-    -- Levels and skills.
+    -- Levels and skills. The skill that gets or makes an item, or lets you wear it, is its skill. What
+    -- you use it for is not (iron ore is mining, not smithing), except for a tool, whose use is its skill.
+    local weapon = type(params.WEAPON_CATEGORY) == "string" and string.match(params.WEAPON_CATEGORY, "^COMBATV2_WEAPON_(.+)$")
+    local isTool = (weapon and TOOL_WEAPONS[weapon]) or params.MINING_PICKAXE_STAT_DATA ~= nil or params.WOODCUTTING_AXE ~= nil
     local wearSkills, wearLevel = requirements(params, "WEAR_REQUIRES_STAT")
     local useSkills, useLevel = requirements(params, "USE_REQUIRES_STAT")
-    for _, list in ipairs({ wearSkills, useSkills }) do
-        for _, skill in ipairs(list) do
-            local have = false
-            for _, other in ipairs(result.skills) do
-                have = have or other == skill
+    local function addSkill(skill)
+        for _, other in ipairs(result.skills) do
+            if other == skill then
+                return
             end
-            if not have then
-                result.skills[#result.skills + 1] = skill
-            end
+        end
+        result.skills[#result.skills + 1] = skill
+    end
+    for _, skill in ipairs(wearSkills) do
+        addSkill(skill)
+    end
+    if isTool then
+        for _, skill in ipairs(useSkills) do
+            addSkill(skill)
         end
     end
-    if wearLevel ~= nil or useLevel ~= nil then
-        result.level = math.max(wearLevel or 0, useLevel or 0)
-        result.rarity = ItemFacts.levelRarity(result.level)
-        local parts = {}
-        for _, skill in ipairs(result.skills) do
-            parts[#parts + 1] = skill
-        end
-        note("Needs " .. table.concat(parts, " and ") .. " level " .. result.level .. " (" .. result.rarity
+    local level = wearLevel
+    if isTool and useLevel ~= nil then
+        level = math.max(level or 0, useLevel)
+    end
+    if level ~= nil then
+        result.level = level
+        result.rarity = ItemFacts.levelRarity(level)
+        note("Needs " .. table.concat(result.skills, " and ") .. " level " .. level .. " (" .. result.rarity
             .. " by level); check the price and drop rate on the wiki, the rarity is the highest of them")
+    elseif useLevel ~= nil and #useSkills > 0 then
+        note("Used with " .. table.concat(useSkills, " and ") .. " level " .. useLevel
+            .. ": a use is not tagged as a skill (the skill that gets or makes the item is)")
     end
 
     -- What kind of item.
@@ -142,10 +156,9 @@ function ItemFacts.interpret(raw)
             category[#category + 1] = word
         end
     end
-    local weapon = type(params.WEAPON_CATEGORY) == "string" and string.match(params.WEAPON_CATEGORY, "^COMBATV2_WEAPON_(.+)$")
     local ops = raw.ops or {}
     local gear = nil                    -- weapon, armour, jewellery or ammunition: it can have a combat style
-    if (weapon and TOOL_WEAPONS[weapon]) or params.MINING_PICKAXE_STAT_DATA ~= nil or params.WOODCUTTING_AXE ~= nil then
+    if isTool then
         add("tool")
     elseif weapon then
         gear = "weapon"
@@ -187,8 +200,14 @@ function ItemFacts.interpret(raw)
         add(params.POTION_TYPE ~= nil and "potion" or "drink")
     elseif hasOp(ops, "Bury") then
         add("raw_material", "bone")
+        addSkill("prayer")          -- bones exist for Prayer (the one use that defines them)
     elseif GE_KINDS[numberOf(params.GE_CATEGORY)] then
         add(table.unpack(GE_KINDS[numberOf(params.GE_CATEGORY)]))
+        if numberOf(params.GE_CATEGORY) == 13 then
+            addSkill("herblore")        -- herbs exist for Herblore
+        elseif numberOf(params.GE_CATEGORY) == 28 then
+            addSkill("prayer")
+        end
     end
 
     -- Combat style, for gear.
