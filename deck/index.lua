@@ -47,4 +47,7 @@ return {
     "deck/items/food/cooked_fish",
     "deck/items/decoration",
     "deck/items/raw_materials/ores",
+    "deck/items/raw_materials/gems",
+    "deck/items/processed_materials/gems",
+    "deck/items/consumable",
 }

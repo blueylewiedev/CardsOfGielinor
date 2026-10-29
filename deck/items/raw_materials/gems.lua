@@ -56,7 +56,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "uncut_moonstone", name = "Uncut moonstone", kind = "item", rarity = "legendary",
+        id = "uncut_moonstone", name = "Uncut moonstone", kind = "item", rarity = "epic",
         desc = "An uncut moonstone. Used in Crafting.",
         art = { item = "UNCUT_MOONSTONE", cam = { yaw = -0.80, pitch = 1.15, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "p2p" } },
@@ -83,7 +83,7 @@ Set.cards = {
         id = "uncut_ruby", name = "Uncut ruby", kind = "item", rarity = "uncommon",
         desc = "An uncut ruby. Used in Crafting.",
         art = { item = "UNCUT_RUBY", cam = { yaw = 0.80, pitch = -1.55, dist = 525, fov = 20 } },
-        tags = { skills = { "divination", "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
+        tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
     },
     {
         id = "uncut_sapphire", name = "Uncut sapphire", kind = "item", rarity = "common",

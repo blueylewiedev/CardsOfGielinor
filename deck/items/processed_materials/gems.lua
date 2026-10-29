@@ -56,7 +56,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "moonstone", name = "Moonstone", kind = "item", rarity = "rare",
+        id = "moonstone", name = "Moonstone", kind = "item", rarity = "epic",
         desc = "I don't think gold is gonna cut it with this one.",
         art = { item = "MOONSTONE", cam = { yaw = 0.20, pitch = 1.20, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "p2p" } },
