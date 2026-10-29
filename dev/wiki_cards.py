@@ -13,12 +13,19 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     world: rats) or Misthalin: every NPC or monster page whose infobox gives it,
                     from the wiki's structured data (two requests). Big regions have hundreds of
                     pages, fetched over several runs. "Multiple" is every NPC or monster found
-                    in two or more regions (Imp, Chicken): general cards, like Global's
+                    in two or more regions (Imp, Chicken): general cards, like Global's. "None"
+                    is every one the wiki gives no region (Lucien): each takes its places'
+                    regions where it can, and is filed under them
   --race NAME       only NPCs of this race (as the wiki's infobox names it, e.g. Dog, Dwarf, Demon)
                     from this run's categories and regions; more than once for several
   --members f2p|p2p only the free to play (f2p) or members (p2p) pages of this run's categories
                     and regions
-                    These two narrow what is fetched: the wiki is asked which pages of the
+  --npcs            only the NPCs of this run's categories and regions, no items (the wiki files
+                    a place's items under it too: Varrock armour in Varrock)
+  --within REGION   only the NPCs of this run's categories whose own league region is this one
+                    (Varrock within Misthalin: not Chancy, filed under Varrock for a quest but
+                    living in Rimmington, Asgarnia)
+                    --race and --members narrow what is fetched: the wiki is asked which pages of the
                     category or region match (a search, or for a region's membership its
                     structured data), and only those are fetched. They belong to the categories and
                     regions they are given with, which are remembered with them ("Lumbridge
@@ -82,6 +89,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -97,7 +105,6 @@ MIN_GAP = 2.0           # seconds between requests
 MAXLAG = 5              # seconds of database lag at which the wiki asks us to wait
 BATCH = 25              # pages per request (their categories fit in one answer at this size)
 RETRIES = 3             # times to wait and try again when the wiki asks us to wait
-MAX_DESC = 65           # the longest description that fits on a card (as in the Card Builder)
 
 # ---------------------------------------------------------------------------------------------
 # The wiki, politely
@@ -197,6 +204,7 @@ def category_pages(wiki, category, refresh):
 NPC_BUCKETS = ("infobox_npc", "infobox_monster")
 BUCKET_LIMIT = 5000     # rows per request
 MULTIPLE = "Multiple"   # the --region for pages found in several regions ("Karamja,Misthalin,...")
+NO_REGION = "None"      # the --region for pages that give no league region (Lucien)
 
 
 def league_regions(value):
@@ -205,6 +213,25 @@ def league_regions(value):
     are not places (league relics and perks, "Golden touch") are left out, and so is one named twice."""
     places = (slug(part.split("&")[0]) for part in (value or "").split(","))
     return list(dict.fromkeys(r for r in places if r in LEAGUE_REGIONS))
+
+
+def version_regions(fields, n):
+    """The regions an NPC infobox's version n gives (0: the plain fields), as region words. The
+    field also takes league relics and perks ("Golden touch"), which are not places, and
+    "Kandarin&Desert" for somewhere that needs both: one place, in the one its location is in
+    (PLACE_REGIONS: the rogue in Varrock, "Wilderness & Misthalin", is in Misthalin), else the first."""
+    suffix = str(n) if n else ""
+    value = plain(fields.get("leagueregion" + suffix) or fields.get("leagueregion", ""))
+    places = links(fields.get("location" + suffix) or fields.get("location", ""))
+    homes = {PLACE_REGIONS.get(place.lower()) for place in places}
+    regions = []
+    for part in value.split(","):
+        options = [REGION_ALIASES.get(slug(o), slug(o)) for o in part.split("&")]
+        options = [o for o in options if o in LEAGUE_REGIONS or o in REGION_ALIASES.values()]
+        region = next((o for o in options if o in homes), options[0] if options else None)
+        if region and region not in regions:
+            regions.append(region)
+    return regions
 
 
 def several_regions(value):
@@ -217,14 +244,15 @@ def region_pages(wiki, region, refresh, members=None):
     to play or members ones if `members` is f2p or p2p: one query of the wiki's buckets for each
     kind of infobox (more for a very big region). The region MULTIPLE has no value of its own to
     ask for, so every infobox's region is read and the pages kept whose every version that gives
-    one lists several (Imp; not Wise Old Man, in Misthalin but for one quest's version).
+    one lists several (Imp; not Wise Old Man, in Misthalin but for one quest's version);
+    NO_REGION's are the pages none of whose versions gives one.
     Returns None if the request limit ran out before the region was listed (it is asked for again
     next run: a part of it would be wrong for MULTIPLE, which needs every row)."""
     key = region + ("|" + members if members else "")
     cached = None if refresh else read_cache("regions", key)
     if cached is not None:
         return cached
-    where = "" if region == MULTIPLE else f".where('league_region', {json.dumps(region)})"
+    where = "" if region in (MULTIPLE, NO_REGION) else f".where('league_region', {json.dumps(region)})"
     if members:
         where += f".where('is_members_only', {'true' if members == 'p2p' else 'false'})"
     titles, values = [], {}
@@ -249,6 +277,8 @@ def region_pages(wiki, region, refresh, members=None):
     titles = list(dict.fromkeys(titles))      # (a row for each version of a page)
     if region == MULTIPLE:
         titles = [t for t in titles if values.get(t) and all(several_regions(v) for v in values[t])]
+    if region == NO_REGION:
+        titles = [t for t in titles if not values.get(t)]
     write_cache("regions", key, titles)
     return titles
 
@@ -378,14 +408,34 @@ def find_template(text, names):
     return None, None
 
 
-def find_templates(text, names):
-    """Every {{...}} template with one of these names, as a list of inside texts."""
+def npc_infobox(page):
+    """A page's NPC or monster infobox, as (kind, fields), or (None, None). A page with several
+    whose first is named for something else uses the one named as the page, with the first one's
+    fields for what it leaves out: Leon d'Cour sits watching as a "Mystery figure", then is fought
+    (his location is the first's); the Cat page starts with the Kitten. (A boss talked to, then
+    fought, keeps its first: both have its name, or the first has none.)"""
+    title = page.get("title", "").lower()
+    named = lambda fields: plain(first_version(fields, "name")).lower() in ("", title)
+    found = [(kind, template_fields(inside))
+             for kind, inside in find_templates(page.get("text", ""), ["Infobox NPC", "Infobox Monster"], kinds=True)]
+    if not found:
+        return None, None
+    kind, fields = found[0]
+    for other_kind, other in found[1:]:
+        if not named(fields) and plain(first_version(other, "name")).lower() == title:
+            return other_kind, {**fields, **other}
+    return kind, fields
+
+
+def find_templates(text, names, kinds=False):
+    """Every {{...}} template with one of these names, as a list of inside texts (with kinds, of
+    (name, inside text) pairs)."""
     found, start = [], 0
     while True:
-        _, inside = find_template(text[start:], names)
+        kind, inside = find_template(text[start:], names)
         if inside is None:
             return found
-        found.append(inside)
+        found.append((kind, inside) if kinds else inside)
         start += text[start:].find(inside) + len(inside)
 
 
@@ -498,11 +548,17 @@ LEAGUE_REGIONS = {"global", "anachronia", "asgarnia", "desert", "fremennik", "ha
 REGION_ALIASES = {"desert": "kharidian_desert", "kharidian_desert": "kharidian_desert",
                   "fremennik": "fremennik_province", "fremennik_provinces": "fremennik_province"}
 
-# Minigames that bring back monsters from elsewhere, and the region they are in, which those
-# monsters' league regions then name too: the Dominion Tower in the desert (the Evil Chicken,
-# "Misthalin&Kandarin,Desert"; its fighters are filed in Category:Dominion Tower) and Rush of Blood
-# in Prifddinas (the Dagannoth guardian, "Fremennik,Tirannwn"; its fighters are RUSH_OF_BLOOD).
-REFOUGHT_IN = {"Dominion Tower": "kharidian_desert", "Rush of Blood": "tirannwn"}
+# Places that don't count among an NPC's when it has another (as its location tags, its versions'
+# regions, or a region its league regions name for them), and the region each is in:
+# - minigames that bring back monsters from elsewhere: the Dominion Tower in the desert (the Evil
+#   Chicken, "Misthalin&Kandarin,Desert"; its fighters are filed under it) and Rush of Blood in
+#   Prifddinas (the Dagannoth guardian, "Fremennik,Tirannwn"; its fighters are RUSH_OF_BLOOD), and
+#   the Dominion Tower's Rumble Mode (a version of its fighters, Damis's);
+# - New Varrock, met in another time (Sigmund lives in Lumbridge; the Stone face, only in the
+#   Dominion Tower, keeps it);
+# - Manor Farm, which the Artisans' Workshop dwarves only visit with farming requests.
+SECONDARY_PLACES = {"Dominion Tower": "kharidian_desert", "Rumble Mode": "kharidian_desert", "Rush of Blood": "tirannwn",
+                    "New Varrock": None, "New Varrock Museum": None, "Manor Farm": None}
 # The monsters of Rush of Blood's waves (the monster pages its wiki page links, October 2026).
 RUSH_OF_BLOOD = {
     "Aviansie", "Tormented demon", "Ice strykewyrm", "Airut", "Steel titan", "Kal'gerion demon", "Automaton Guardian",
@@ -517,9 +573,22 @@ RUSH_OF_BLOOD = {
     "Celestial dragon", "Ganodermic beast", "Ganodermic runt", "Mutated jadinko male", "Glacor",
 }
 
-# The most regions an NPC card is in (Cards.MAX_NPC_REGIONS in core/cards.lua: its deck file's and
-# one more): one found in more is a general card.
-MAX_NPC_REGIONS = 2
+# The longest description that fits on a card, and the most regions an NPC card is in (its deck
+# file's and one more: one found in more is a general card), as core/cards.lua sets them.
+MAX_DESC = int(re.search(r"Cards\.MAX_DESC\s*=\s*(\d+)", CARDS.read_text(encoding="utf-8")).group(1))
+MAX_NPC_REGIONS = int(re.search(r"Cards\.MAX_NPC_REGIONS\s*=\s*(\d+)", CARDS.read_text(encoding="utf-8")).group(1))
+
+# NPC configs that show nothing: stand-ins a cutscene or quest uses.
+BLANK_CONFIG = re.compile(r"BLANK|INVISIBLE|DUMMY")
+
+# The most places an NPC's versions may name together for them all to become its location tags.
+VERSION_PLACES = 4
+# A link that is a date or a year ("21 May", "2017"), not a place.
+DATE_LINK = re.compile(r"^\d+( (January|February|March|April|May|June|July|August|September|October|November|December))?$"
+                       r"|^(January|February|March|April|May|June|July|August|September|October|November|December) \d+$")
+
+# The most places a monster's location table may name for them to become its location tags.
+LOCATION_TABLE_PLACES = 3
 
 # Places whose NPCs belong to one region, although the wiki lists more (the regions the place's
 # portals reach): a page filed under the place gets that region only. The player-owned port is in
@@ -538,7 +607,7 @@ RACE_WORDS = {
     "penguin": "animal", "frog": "animal", "bat": "animal", "duck": "animal", "owl": "animal", "rabbit": "animal",
     "squirrel": "animal", "raccoon": "animal", "deer": "animal", "snake": "animal", "tortoise": "animal",
     "beaver": "animal", "mole": "animal", "polar_bear": "animal", "chinchompa": "animal", "meerkats": "animal",
-    "crab": "animal", "rock_crab": "animal", "lobster": "animal", "leech": "animal", "monkey": "animal",
+    "crab": "animal", "rock_crab": "animal", "lobster": "animal", "leech": "animal", "monkey": "animal", "fish": "animal",
     "ant": "insect", "butterfly": "insect", "soporith_moth": "insect", "firefly": "insect",
     "automaton": "construct", "dorgeshuun": "goblin", "mummy": "undead",
 }
@@ -557,7 +626,7 @@ CATEGORY_WORDS = {
     "royalty": "royalty", "bankers": "banker", "guards": "guard", "knights": "knight", "wizards": "wizard",
     "priests": "priest", "monks": "priest", "pirates": "pirate", "farmers": "farmer", "thieves": "thief",
     "bosses": "boss", "dominion tower": "boss", "adventurers": "adventurer",
-    "skilling pets": "pet", "boss pets": "pet",
+    "pets": "pet",                      # (every pet category: skilling, boss, companion pets...)
 }
 
 
@@ -616,12 +685,31 @@ def slug(text):
 # ---------------------------------------------------------------------------------------------
 
 
-# Wiki categories of pages about things no longer in the game (the Saradominist priests of the
-# Battle of Lumbridge camp, the old attackable Lumbridge guard). Those make no candidates.
 # Categories whose pages never become cards, and why (the Sinkholes D&D's own versions of monsters
 # and familiars, "Giant rat (Sinkholes)").
 SKIPPED_CATEGORIES = {"Removed content": "removed from the game", "Historical article": "removed from the game",
                       "Sinkholes": "only in the Sinkholes"}
+
+# Pages that never become cards, by title without its bracket, and why.
+SKIPPED_PAGES = {"Mystery figure": "the disguised champions: Leon d'Cour and Glophren have their own pages"}
+
+
+def secondary_places(page, fields):
+    """The SECONDARY_PLACES an NPC is in: filed under, named as a location, or (Rush of Blood) one
+    of the monsters of its waves."""
+    locations = links(" ".join(numbered_fields(fields, "location")))
+    found = {place for place in SECONDARY_PLACES if place in page.get("categories", []) or place in locations}
+    if page["title"] in RUSH_OF_BLOOD:
+        found.add("Rush of Blood")
+    return found
+
+
+def configs_named(name, names):
+    """The NPC configs with a name (without its bracket) as a whole word, ending with it first:
+    "Eek" is HW09_EEK, then POH_HW09_EEK_THE_SPIDER."""
+    word = slug(strip_bracket(name)).upper()
+    found = [n for n in names.values() if f"_{word}_" in f"_{n}_"]
+    return sorted(found, key=lambda n: not (n == word or n.endswith("_" + word)))
 
 
 def only_in_cutscenes(page, fields):
@@ -640,18 +728,59 @@ def candidate(page, names, words, price=None, drop=None):
     for category in page.get("categories", []):
         if category in SKIPPED_CATEGORIES:
             return None, SKIPPED_CATEGORIES[category]
+    skipped = SKIPPED_PAGES.get(strip_bracket(page.get("title", "")))
+    if skipped:
+        return None, skipped
     text = page.get("text", "")
-    kind, inside = find_template(text, ["Infobox NPC", "Infobox Monster"])
-    if inside is not None:
-        fields = template_fields(inside)
+    # An NPC's infobox; a pet with only a pet infobox (the terrier, the Golden gnome) has that one;
+    # an object pet whose page only has an item infobox (Eek) is the NPC named like it, with that
+    # one (one with none, a pet rock, has no card).
+    kind, fields = npc_infobox(page)
+    pet_kind, pet = find_template(text, ["Infobox Pet"])
+    _, inside = find_template(text, ["Infobox Item"])
+    if fields is None and pet is not None:
+        kind, fields = pet_kind, template_fields(pet)
+    if fields is None and "Object pets" in page.get("categories", []):
+        ids = [i for config in configs_named(page["title"], names) for i, n in names.items() if n == config]
+        if not ids or inside is None:
+            return None, "an object pet with no NPC model"
+        kind, fields = "Infobox Pet", dict(template_fields(inside), id=", ".join(str(i) for i in ids))
+    if fields is not None:
+        if PET_CATEGORIES & set(page.get("categories", [])):
+            fields = grown_up(page, fields)
+        # (a pet's NPC infobox can be empty, with the ids in its pet infobox: Baby Troll)
+        if pet is not None and not all_ids(fields):
+            fields["id"] = template_fields(pet).get("npcid", "")
         if only_in_cutscenes(page, fields):
             return None, "only seen in cutscenes"
         return npc_candidate(page, kind, fields, names, words)
-    _, inside = find_template(text, ["Infobox Item"])
     if inside is not None:
         _, bonuses = find_template(text, ["Infobox Bonuses"])
         return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words, price, drop)
     return None, "no NPC or item infobox"
+
+
+def grown_up(page, fields):
+    """A pet's infobox with its first adult version first (the card shows the grown pet, with its
+    examine text): a version named "Adult..." ("Baby, Adolescent, Adult"; "Puppy (black), Adult
+    (black)"; "Kitten, Adult, Overgrown"). A pet without one is left as it is. A legendary pet
+    keeps the pet's own name from its pet infobox ("Blazehound", not "Blazehound adult")."""
+    versions = {int(k[len("version"):]): plain(v) for k, v in fields.items() if re.fullmatch(r"version\d+", k)}
+    adult = min((n for n, name in versions.items() if name.lower().startswith("adult")), default=None)
+    if adult is None or adult == 1:
+        return fields
+    swapped = {}
+    for key, value in fields.items():
+        found = re.fullmatch(r"(.+?)(\d+)", key)
+        if found and int(found.group(2)) in (1, adult):
+            key = found.group(1) + str(adult if int(found.group(2)) == 1 else 1)
+        swapped[key] = value
+    _, details = find_template(page.get("text", ""), ["Infobox Pet details"])
+    pet_name = plain(template_fields(details or "").get("name", "")).strip()
+    if pet_name and "Legendary pets" in page.get("categories", []):
+        swapped = {k: v for k, v in swapped.items() if not re.fullmatch(r"name\d*", k)}
+        swapped["name"] = pet_name
+    return swapped
 
 
 def membership_tag(fields, notes):
@@ -685,11 +814,19 @@ def place_in_brackets(page, fields):
     None for other brackets, which only say which version it is ("(attackable)") or what it is
     part of ("(Treasure Trails)", a quest)."""
     bracket = title_bracket(page["title"])
-    if bracket is None or bracket not in page.get("categories", []):
+    if bracket is None:
         return None
     spawn_rows = re.findall(r"\|\s*loc\s*=\s*([^\n|]*)", page.get("text", ""))
-    locations = " ".join(numbered_fields(fields, "location") + spawn_rows).lower()
-    return bracket if bracket.lower() in locations else None
+    locations = " ".join(numbered_fields(fields, "location") + spawn_rows)
+    # (a place with no category of its own, an inn, counts when the location links to it by name:
+    # "Bartender (Dancing Donkey Inn)" at [[Dancing Donkey Inn]]; so does the NPC's shop:
+    # "Shopkeeper (Varrock Sword Shop)" runs [[Varrock Sword Shop]])
+    shops = " ".join(numbered_fields(fields, "shop"))
+    if bracket.lower() in (place.lower() for place in links(locations) + links(shops)):
+        return bracket
+    if bracket not in page.get("categories", []):
+        return None
+    return bracket if bracket.lower() in locations.lower() else None
 
 
 def name_and_desc(page, fields, notes, versions_merge=False):
@@ -1069,6 +1206,51 @@ SAME_CARD = {
 }
 
 
+PLACE_REGIONS = {}          # place (a link target, lower case) -> its region, see place_regions
+
+
+def place_regions(pages):
+    """{ place: region } from NPC pages whose versions each give one region: a place (a link in a
+    version's location) is in the region most of the NPCs found there give, if they agree (at least
+    three in four). For the NPCs the wiki gives no region."""
+    votes = defaultdict(Counter)
+    for page in pages:
+        _, fields = npc_infobox(page)
+        if fields is None:
+            continue
+        numbers = sorted({int(k[len("location"):]) for k in fields if re.fullmatch(r"location\d+", k)}) or [0]
+        for n in numbers:
+            suffix = str(n) if n else ""
+            regions = league_regions(plain(fields.get("leagueregion" + suffix) or fields.get("leagueregion", "")))
+            if len(regions) != 1 or regions == ["global"]:
+                continue
+            region = REGION_ALIASES.get(regions[0], regions[0])
+            for place in links(fields.get("location" + suffix, "")):
+                votes[place.lower()][region] += 1
+    found = {}
+    for place, counts in votes.items():
+        region, top = counts.most_common(1)[0]
+        if top * 4 >= sum(counts.values()) * 3:
+            found[place] = region
+    return found
+
+
+def places_without_region(pages):
+    """The places (link targets) of the NPC pages that give no league region, whose region isn't
+    known yet (PLACE_REGIONS): their own pages are read for it."""
+    wanted = []
+    for page in pages:
+        _, fields = npc_infobox(page)
+        if fields is None:
+            continue
+        if any(plain(v).strip() for v in numbered_fields(fields, "leagueregion")):
+            continue
+        for place in links(" ".join(numbered_fields(fields, "location"))):
+            if place.lower() not in PLACE_REGIONS and place not in wanted:
+                wanted.append(place)
+    return wanted
+
+
 def region_tag(regions, words):
     """An NPC's regions tag and a note about it, from its league regions: one region, or two (like
     an item from two regions: the card goes in the first's deck file and is tagged with the second
@@ -1233,6 +1415,102 @@ def skill_level_rarity(page):
     return None
 
 
+# A quest's official difficulty, and the rarity of a pet that needs it.
+QUEST_TIERS = {"Novice": "common", "Intermediate": "uncommon", "Experienced": "rare", "Master": "epic",
+               "Grandmaster": "epic"}
+
+
+def quest_tier(quest):
+    """The rarity of a pet that needs this quest (by its difficulty), or None if it isn't one."""
+    return QUEST_TIERS.get(QUEST_DIFFICULTY.get(quest))
+QUEST_DIFFICULTY = {}       # quest -> its official difficulty, read in main (see quest_difficulties)
+PET_CATEGORIES = {"Pets", "Boss pets", "Skilling pets", "Companion pets", "Follower pets", "Object pets",
+                  "Legendary pets", "Discontinued pets"}
+
+
+# Items a pet is unlocked with that are rare finds (its page names the item, not a drop).
+PET_RARE_ITEMS = {"Corrupted egg", "Mossy rock", "Golden compass", "Parasitic orb", "Lucky dragonkin coin"}
+# Words in a pet's source that mean an event or a promotion.
+PET_EVENT_WORDS = ("event", "runefest", "advent", "christmas", "halloween", "easter", "novtumberfest",
+                   "winter chill", "field of screams", "gielinorian giving", "expedition to the wilderness",
+                   "marketplace", "premier", "hero pass", "bundle", "steam", "code", "mobile", "treasure hunter",
+                   "membership", "prime gaming", "golden gnome awards")
+
+
+def pet_rarity(page):
+    """A pet's rarity and why, or None if the page is not a pet's. Skilling and boss pets are
+    legendary, the wiki's "Legendary pets" epic. Others by what it takes to get one: a skill level
+    (on the skill bands: a terrier needs 4 Summoning, common) or a quest (by its difficulty), the
+    higher of the two; else rare if it comes from a token, uncommon if a shop sells it, and common
+    (a cat). Its details are in its pet infobox (Infobox Pet, or Infobox Pet details)."""
+    categories = page.get("categories", [])
+    _, inside = find_template(page.get("text", ""), ["Infobox Pet", "Infobox Pet details"])
+    if inside is None and not PET_CATEGORIES & set(categories):
+        return None
+    if "Boss pets" in categories or "Skilling pets" in categories:
+        return "legendary", "a skilling or boss pet"
+    if "Legendary pets" in categories:
+        return "epic", "one of the wiki's legendary pets"
+    fields = template_fields(inside or "")
+    found = []
+    # (the highest level it needs: a gecko, "10 Summoning, 27 Hunter", is 27)
+    skills = plain(first_version(fields, "skillrequired"))
+    level = max((int(n) for n in re.findall(r"\d+", skills)), default=0)
+    if level:
+        found.append((band(level, SKILL_BANDS), f"a pet needing level {level} ({skills})"))
+    # (each quest it needs, the highest counting; not one marked for another form of it, the cat's
+    # "Rat Catchers for wily")
+    entries = [e for e in re.split(r"[*\n]", first_version(fields, "questrequired")) if e.strip()]
+    for entry in entries:
+        if re.search(r"\]\]\s+for\b", entry):
+            continue
+        for quest in links(entry) or [plain(q).strip() for q in entry.split(",")]:
+            if quest_tier(quest):
+                found.append((quest_tier(quest), f"a pet needing {quest} ({QUEST_DIFFICULTY[quest]})"))
+    if found:
+        return max(found, key=lambda f: RARITIES.index(f[0]))
+    location = plain(first_version(fields, "location")).strip()
+    where = location.lower()
+    if "token" in where:
+        return "rare", "a pet from a token"
+    if where in ("pet shop", "pet store"):
+        return "common", "an everyday pet from the pet shop"
+    if "Items sold by shops" in categories or "shop" in where or "store" in where:
+        return "uncommon", "a pet sold in a shop"
+    # Else by where it comes from: a drop or a rare item is epic, a quest by its difficulty, a league
+    # rare, an event or a promotion uncommon, a gift from an NPC common (as is one with no source),
+    # and any other place or activity rare.
+    text = page.get("text", "")
+    lead = text[text.find("'''"):][:500].lower()
+    if re.search(r"\bdrop", lead) or location in PET_RARE_ITEMS:
+        return "epic", f"a pet from a drop or a rare item ({location or 'a drop'})"
+    if quest_tier(location):
+        return quest_tier(location), f"a pet from {location} ({QUEST_DIFFICULTY[location]})"
+    if "league" in where:
+        return "rare", f"a pet from a league ({location})"
+    if "Discontinued pets" in categories or any(w in where for w in PET_EVENT_WORDS):
+        return "uncommon", f"a pet from an event or promotion ({location or 'discontinued'})"
+    if "(npc)" in where:
+        return "common", f"a pet given by an NPC ({location})"
+    if location and where not in ("n/a", "none"):
+        return "rare", f"a pet from {location}"
+    return "common", "a pet"
+
+
+def quest_difficulties(wiki, refresh):
+    """{ quest: official difficulty } from the wiki's quest infoboxes (one request; cached)."""
+    cached = None if refresh else read_cache("buckets", "quest difficulty")
+    if cached is not None:
+        return cached
+    answer = wiki.get({"action": "bucket", "query":
+                       "bucket('infobox_quest').select('page_name','official_difficulty').limit(5000).run()"})
+    if answer is None:
+        return {}
+    found = {r["page_name"]: r["official_difficulty"] for r in answer.get("bucket", []) if r.get("official_difficulty")}
+    write_cache("buckets", "quest difficulty", found)
+    return found
+
+
 # NPCs set by hand, where the rules can't see what makes them matter (by page title, or the title
 # without its bracket, so "Sliske (Desperate Times)" is Sliske too).
 NPC_RARITY = {
@@ -1241,6 +1519,14 @@ NPC_RARITY = {
     "Nomad": ("legendary", "Nomad, whose Memory of Nomad fight is combat level 1001"),
     "Meerkats": ("rare", "a familiar only from Treasure Trails"),
     "Ghast (familiar)": ("epic", "the Ghast familiar"),
+    # Sellers of the capes above a skillcape (a skillcape's seller, a skill master, is rare): none
+    # is filed as a skill master. (The 120 master skillcapes are sold by the skill masters; the
+    # completionist cape by a museum guard, who only guards it.)
+    "Max": ("epic", "sells the max cape"),
+    "Elen Anterth": ("epic", "sells the max cape, in the Max Guild"),
+    "Curator Haig Halen": ("epic", "sells the master quest cape"),
+    "Minerva": ("epic", "sells the master max cape"),
+    "Golden Gnome": ("legendary", "the Golden Gnome, awarded at RuneFest"),
 }
 # The gods (the wiki's Category:Gods, October 2026), for a god whose NPC page is a bracketed one
 # that is not filed there itself ("Azzanadra (Children of Mah)"). Not Gielinor or the Kendal, whose
@@ -1277,7 +1563,10 @@ def npc_rarity(page, fields, character, named):
 
     level = number(first_version(fields, "level") or first_version(fields, "combat"))
     slayer = number(fields.get("slaylvl"))
-    quests = set(links(" ".join(numbered_fields(fields, "quest"))))
+    # (linked, or written out: "A Clockwork Syringe, Pieces of Hate"; "No" and "None" are none)
+    quest_text = " ".join(numbered_fields(fields, "quest"))
+    quests = set(links(quest_text)) or {q.strip() for q in plain(quest_text).split(",")
+                                         if q.strip() and q.strip().lower() not in ("no", "none", "n/a")}
     quests |= {c[len("Characters in "):] for c in categories if c.startswith("Characters in ")}
     # Each location row (LocLine) and each map lists its spawn points as x:..,y:.. (or x=..).
     location_rows = " ".join(re.findall(r"\{\{\s*LocLine.*?\}\}", text, re.S))
@@ -1304,10 +1593,10 @@ def npc_rarity(page, fields, character, named):
     # without the bracket is looked for among the gods too)
     if "Gods" in categories or strip_bracket(page["title"]) in GODS:
         return "legendary", "a god"
-    # Pets first (a boss pet's category has "boss" in it, but it is not a boss). Legendary, as pet
-    # items are: "Pets are legendary, however they are obtained" (CONTRIBUTING.md).
-    if "Boss pets" in categories or "Skilling pets" in categories:
-        return "legendary", "a pet"
+    # Pets first (a boss pet's category has "boss" in it, but it is not a boss): see pet_rarity.
+    pet = pet_rarity(page)
+    if pet is not None:
+        return pet
     by_skill = familiar_rarity(page) or automaton_rarity(page)
     if by_skill is not None:
         return by_skill
@@ -1334,10 +1623,13 @@ def npc_rarity(page, fields, character, named):
             return "rare", "royalty" if royalty else f"a character in {len(quests)} quests"
         if slayer_master and not quests:
             return "uncommon", "a Slayer master"
-        if not quests:
+        if quests:
+            return "uncommon", f"a named character in {len(quests)} quests"
+        # (one in no quests that is fought at level 30 or more goes by its combat level, below:
+        # Glophren, the Champion of Champions, at 119)
+        if level < 30:
             return "common", "a named character in no quests"
-        return "uncommon", f"a named character in {len(quests)} quests"
-    if character and len(quests) >= 3:
+    if character and len(quests) >= 2:
         return "uncommon", f"a role in {len(quests)} quests"
     if slayer >= 5:
         return "uncommon", f"a Slayer monster of level {slayer}" + (f" with {spawns} spawns" if slayer >= 10 else "")
@@ -1363,26 +1655,54 @@ def npc_candidate(page, kind, fields, names, words):
         return None, "unreleased"
     ids = all_ids(fields)
     configs = [names[i] for i in ids if i in names]
+    # (a copy in the player-owned house looks the same: POH_GROWNCAT is GROWNCAT)
+    configs = [c for c in configs if not (c.startswith("POH_") and c[len("POH_"):] in configs)]
     if not configs:
         return None, "no NPC id the plugin knows" if ids else "no NPC id on the page"
     name, desc = name_and_desc(page, fields, notes, versions_merge=True)
     name = SAME_CARD.get(name, name)
+    # A version the wiki gives no id is often the NPC as it usually is (Aris's "Human"): the game's
+    # configs named for the NPC (DEMON_SLAYER_QIP_ARIS) come first then. And a blank stand-in a
+    # cutscene uses (DEMON_SLAYER_QIP_BLANK_NPC) shows nothing, so it goes last.
+    versions = [k for k in fields if re.fullmatch(r"version\d+", k)]
+    if BLANK_CONFIG.search(configs[0]) and len(versions) > len([k for k in fields if re.fullmatch(r"id\d+", k)]):
+        configs = [n for n in configs_named(name, names) if n not in configs][:3] + configs
+    configs = sorted(configs, key=lambda c: bool(BLANK_CONFIG.search(c)))
+    is_pet = bool(PET_CATEGORIES & set(page.get("categories", [])))
+    # A pet named for its kind in its infobox ("Cat") but more fully in its title ("Purple cat")
+    # takes the title, so it isn't taken for the plain one.
+    if is_pet and page["title"].lower().endswith(" " + name.lower()):
+        name = page["title"]
+    # A pet's young models (a puppy, a kitten, a baby) come after its grown ones, for a
+    # page that lists its NPCs without naming its stages (the terrier's).
+    if is_pet:
+        configs = sorted(configs, key=lambda c: bool(re.search(r"PUPPY|KITTEN|BABY|JUVI", c)))
 
     tags = {}
-    # The league region of the first version ("Misthalin"). Found all over the world (Global, like
-    # Rat) or in several regions (Imp, Chicken: "Misthalin, Asgarnia, Kandarin"), it is a general
-    # card, which has no region (the Card Builder puts a candidate without one in the general deck).
-    # (The field also takes league relics and perks, "Golden touch", which are not places, and
-    # "Kandarin&Desert" for somewhere that needs both: one place, in the first.)
-    regions = [REGION_ALIASES.get(r, r) for r in league_regions(plain(first_version(fields, "leagueregion")))]
+    # The league regions of the NPC's versions: the first, and every other but one named for a quest
+    # it only appears in (Reldo is in Falador for Succession) or for a place that doesn't count
+    # (SECONDARY_PLACES: Manor Farm, the Dominion Tower). Chancy is in Rimmington and Varrock; the
+    # Mage of Zamorak in the Wilderness and Varrock. Found all over the world (Global, like Rat) or
+    # in several regions (Imp, Chicken: "Misthalin, Asgarnia, Kandarin"), it is a general card, which
+    # has no region (the Card Builder puts a candidate without one in the general deck).
+    numbers = sorted(int(k[len("version"):]) for k in fields if re.fullmatch(r"version\d+", k)) or [0]
+    regions = []
+    for n in numbers:
+        # (without its bracket or part number: "Ritual of the Mahjarrat (dying)", "Swan Song, 1")
+        version = re.sub(r",\s*\d+$", "", strip_bracket(plain(fields.get(f"version{n}", "")).strip()))
+        if n != numbers[0] and (version in QUEST_DIFFICULTY or version in SECONDARY_PLACES):
+            continue
+        for region in version_regions(fields, n):
+            if region not in regions:
+                regions.append(region)
+    # (another version's Global, somewhere outside the regions, doesn't make one that has a region a
+    # general card: Fairy Very Wise's in the Sparse Plane)
+    if "global" in regions and len(regions) > 1 and "global" not in version_regions(fields, numbers[0]):
+        regions.remove("global")
     # A minigame that brings back monsters from elsewhere puts them in its own region too, which is
-    # not where they are from (see REFOUGHT_IN): left out when they have another.
+    # not where they are from (see SECONDARY_PLACES): left out when they have another.
     categories = page.get("categories", [])
-    refought = set()
-    if "Dominion Tower" in categories:
-        refought.add(REFOUGHT_IN["Dominion Tower"])
-    if page["title"] in RUSH_OF_BLOOD:
-        refought.add(REFOUGHT_IN["Rush of Blood"])
+    refought = {SECONDARY_PLACES[place] for place in secondary_places(page, fields)}
     if len(regions) > 1:
         regions = [r for r in regions if r not in refought] or regions
     home = next((HOME_REGIONS[c] for c in categories if c in HOME_REGIONS), None)
@@ -1396,6 +1716,14 @@ def npc_candidate(page, kind, fields, names, words):
     bracket = title_bracket(page["title"])
     if len(regions) > 1 and bracket in places_listed and len(places_listed) == len(regions):
         regions = [regions[places_listed.index(bracket)]]
+    # The wiki gives some NPCs no region (Lucien): they take the regions of their places, as the
+    # NPCs that have one place them (PLACE_REGIONS).
+    if not regions:
+        implied = list(dict.fromkeys(PLACE_REGIONS[place.lower()] for place in links(" ".join(numbered_fields(fields, "location")))
+                                     if place.lower() in PLACE_REGIONS))
+        if implied:
+            regions = implied
+            notes.append("no league region on the wiki: " + ", ".join(implied) + " from its places")
     # (the regions tag is decided in merge_versions, with any other pages of the same card)
 
     # The location words for the place in the page title's brackets ("Guard (Catherby)",
@@ -1407,7 +1735,19 @@ def npc_candidate(page, kind, fields, names, words):
         return place if place in words["location"] else max(
             (w for w in words["location"] if place.startswith(w + "_")), key=len, default=None)
 
-    location_text = first_version(fields, "location")
+    # (every version's, Lucien's Ritual Site and the Flying Horse Inn he hides in disguised, when
+    # they come to at most VERSION_PLACES; more is a role found all over, the trader crewmember's
+    # twelve ports, and only the first version's are used)
+    location_text = " ".join(numbered_fields(fields, "location"))
+    if len({p.lower() for p in links(location_text) if not DATE_LINK.search(p)}) > VERSION_PLACES:
+        location_text = first_version(fields, "location")
+    # A monster's places are often only in its location table, as LocLine rows ("|loc=[[Mazcab]]"):
+    # those are used when the infobox gives none, and there are at most LOCATION_TABLE_PLACES of
+    # them (the airut's three; a giant spider's nine say it is found all over).
+    if not location_text.strip():
+        rows = [template_fields(row).get("loc", "") for row in find_templates(page.get("text", ""), ["LocLine"])]
+        if len(set(links(" ".join(rows)))) <= LOCATION_TABLE_PLACES:
+            location_text = " ".join(rows)
     places, new_words = [], []
 
     def add_place(place, new_ok):
@@ -1425,7 +1765,7 @@ def npc_candidate(page, kind, fields, names, words):
     # the whole world, which are what the deck files and general cards are for.
     for target in links(location_text):
         place = slug(target)
-        if place not in LEAGUE_REGIONS and place not in REGION_ALIASES and place != "gielinor":
+        if place not in LEAGUE_REGIONS and place not in REGION_ALIASES and place != "gielinor" and not DATE_LINK.search(target):
             add_place(place, True)
     # A known place the page is filed under (Aggie: Draynor Village -> draynor). The category must
     # be the place itself, give or take "village", "town" or "city": "Lumbridge quests" or
@@ -1434,6 +1774,11 @@ def npc_candidate(page, kind, fields, names, words):
         place = re.sub(r"_(village|town|city)$", "", slug(wiki_category))
         if place in words["location"] and place not in places:
             places.append(place)
+    # (a place it is only fought again in, or met in the future, is left out when it has another:
+    # Sigmund's Dominion Tower; the Stone face, only in the Dominion Tower, keeps it)
+    secondary = {slug(place) for place in SECONDARY_PLACES}
+    if any(p not in secondary for p in places):
+        places = [p for p in places if p not in secondary]
     # (an NPC found all over, like Woman or Imp, has no location on the wiki, so a general card
     # only gets the places of something that lives in a few, like the crimson swift)
     if places:
@@ -1534,13 +1879,29 @@ def write_candidates(found):
 SOURCES = CACHE / "sources.json"
 
 
-def source(name, races=(), members=None):
+def source(name, races=(), members=None, npcs=False, within=None):
     """A category or region to fetch, with the filters asked for with it (saved as just the name
-    when it has none)."""
+    when it has none). `npcs`: only its NPCs (see --npcs); `within`: only its NPCs of that league
+    region (see --within)."""
     races = sorted({slug(r) for r in races})
-    if not races and not members:
+    if not races and not members and not npcs and not within:
         return name
-    return {"name": name, "races": races, "members": members}
+    entry = {"name": name, "races": races, "members": members}
+    if npcs:
+        entry["npcs"] = True
+    if within:
+        entry["within"] = within
+    return entry
+
+
+def within_region(entry):
+    """The league region (as the wiki names it) a saved category is narrowed to, or None."""
+    return entry.get("within") if isinstance(entry, dict) else None
+
+
+def npcs_only(entry):
+    """True if a saved category or region is fetched for its NPCs only (--npcs)."""
+    return isinstance(entry, dict) and entry.get("npcs", False)
 
 
 def source_parts(entry):
@@ -1554,14 +1915,16 @@ def source_label(entry, region=False):
     """How a category or region is named in the candidates' sources (and the Wiki Review's list):
     "Lumbridge", "Misthalin (region)", "Lumbridge (dog)", "Global (region; rat, f2p)"."""
     name, races, members = source_parts(entry)
-    filters = ", ".join(races + ([members] if members else []))
+    within = within_region(entry)
+    filters = ", ".join((["in " + within] if within else []) + races
+                        + ([members] if members else []) + (["NPCs"] if npcs_only(entry) else []))
     if region:
         return f"{name} (region" + (f"; {filters})" if filters else ")")
     return f"{name} ({filters})" if filters else name
 
 
 # The regions whose NPCs are general cards: found all over the world, or in several regions.
-GENERAL_REGIONS = ("Global", MULTIPLE)
+GENERAL_REGIONS = ("Global", MULTIPLE, NO_REGION)
 # The other way: the wiki's names for those region words (the others are the word, capitalised).
 WIKI_REGION_NAMES = {word: name.title() for name, word in REGION_ALIASES.items() if name in LEAGUE_REGIONS}
 
@@ -1571,6 +1934,11 @@ def passes(candidate, entry, own):
     NPCs; items pass it). A general region's (GENERAL_REGIONS) must also be a general card: one
     with no regions of its own (`own`)."""
     name, races, members = source_parts(entry)
+    if npcs_only(entry) and candidate["kind"] == "item":
+        return False
+    within = within_region(entry)
+    if within and REGION_ALIASES.get(slug(within), slug(within)) not in (own or []):
+        return False
     if name in GENERAL_REGIONS and own:
         return False
     if races and candidate["kind"] == "npc" and candidate.get("race") not in races:
@@ -1585,8 +1953,8 @@ def remembered_sources(args):
     saved = {}
     if SOURCES.exists() and not args.forget:
         saved = json.loads(SOURCES.read_text(encoding="utf-8"))
-    this_run = {"categories": [source(c, args.race, args.members) for c in args.category],
-                "regions": [source(r, args.race, args.members) for r in args.region],
+    this_run = {"categories": [source(c, args.race, args.members, args.npcs, args.within) for c in args.category],
+                "regions": [source(r, args.race, args.members, args.npcs) for r in args.region],
                 "pages": list(args.page)}
     for key, new in this_run.items():
         saved.setdefault(key, [])
@@ -1661,6 +2029,8 @@ def main():
     parser.add_argument("--region", action="append", default=[])
     parser.add_argument("--race", action="append", default=[])
     parser.add_argument("--members", choices=["f2p", "p2p"])
+    parser.add_argument("--npcs", action="store_true")
+    parser.add_argument("--within")
     parser.add_argument("--count", action="store_true")
     parser.add_argument("--contact", default="")
     parser.add_argument("--max-requests", type=int, default=30)
@@ -1713,6 +2083,16 @@ def main():
         # (--refresh only re-asks for this run's categories, not every remembered one)
         refresh = args.refresh and name in args.category
         listed = category_pages(wiki, name, refresh)
+        # (narrowed to the pages the region's structured data lists, before they are fetched: each
+        # is checked by its own region once it is)
+        within = within_region(entry)
+        if within:
+            in_region = region_pages(wiki, within, refresh)
+            if in_region is None:
+                print(f"  request limit reached before {label} was narrowed; it is fetched next run")
+                continue
+            in_region = set(in_region)
+            listed = [t for t in listed if t in in_region]
         if races or members:
             listed = narrowed(wiki, listed, f'incategory:"{name}"', races, members, refresh)
             if listed is None:
@@ -1731,7 +2111,7 @@ def main():
         if races:
             # (MULTIPLE's pages have no one value to search within, so the race is searched for
             # everywhere and matched against them)
-            scope = "" if name == MULTIPLE else f'insource:"leagueRegion = {name}"'
+            scope = "" if name in (MULTIPLE, NO_REGION) else f'insource:"leagueRegion = {name}"'
             listed = narrowed(wiki, listed, scope, races, None, refresh)
             if listed is None:
                 print(f"  request limit reached before {label} was narrowed; it is fetched next run")
@@ -1765,6 +2145,15 @@ def main():
     prices = fetch_prices(wiki, [n for n in price_names.values() if n], args.refresh) if price_names else {}
 
     names, words = npc_names(), allowed_words()
+    QUEST_DIFFICULTY.update(quest_difficulties(wiki, args.refresh))
+    PLACE_REGIONS.update(place_regions(json.loads(f.read_text(encoding="utf-8")) for f in (CACHE / "pages").glob("*.json")))
+    # The other places of NPCs the wiki gives no region: their own pages give theirs (fetched once).
+    unplaced = places_without_region(pages.values())
+    for place, place_page in (fetch_pages(wiki, unplaced, False) if unplaced else {}).items():
+        found = re.search(r"\|\s*leagueRegion\d*\s*=\s*([^\n|]+)", place_page.get("text", ""), re.I)
+        regions = league_regions(plain(found.group(1))) if found else []
+        if regions and regions != ["global"]:
+            PLACE_REGIONS[place.lower()] = REGION_ALIASES.get(regions[0], regions[0])
     found, skipped = [], {}
     for title in titles:
         page = pages.get(title)
@@ -1775,7 +2164,7 @@ def main():
         if made is not None:
             made["sources"] = candidate_sources(made, sources[title], filters, words)
             if not made["sources"]:
-                made, reason = None, "not the race or membership asked for"
+                made, reason = None, "not what its sources ask for (a race, free to play, NPCs only, or a region)"
         if made is not None:
             found.append(made)
         else:

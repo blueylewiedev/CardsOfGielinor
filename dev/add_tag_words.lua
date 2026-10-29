@@ -78,7 +78,10 @@ for _, setName in ipairs(require("deck/index")) do
             for tagKind, words in pairs(tags) do
                 for _, word in ipairs(words) do
                     if tagKind == "category" then
-                        if not (item and known.itemCategory or known.npcCategory)[word] then
+                        if not item and known.itemCategory[word] then
+                            -- (a word can't be both: the Fishbowl's "fish" is an item word; use animal)
+                            note("other", word, label .. ": an item category word, which an NPC can't use")
+                        elseif not (item and known.itemCategory or known.npcCategory)[word] then
                             note(item and "other" or "npcCategory", word, label .. (item and ": item category" or ""))
                         end
                     elseif tagKind == "location" then

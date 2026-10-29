@@ -16,9 +16,10 @@ local WikiFetch = {}
 -- window can say how many requests a choice might take. Any other category can be typed in.
 -- League regions, as the wiki writes them (Module:LeagueRegion; its name for the desert is
 -- Desert). Global: found all over the world, like rats. Multiple (not a wiki region): found in
--- several regions, like imps; general cards too.
+-- several regions, like imps; general cards too. None (not a wiki region either): given no region
+-- on the wiki, like Lucien; each is filed by its places' regions where it can be.
 local REGIONS = {
-    { "Global", 130 }, { "Multiple", 305 }, { "Misthalin", 600 }, { "Asgarnia", 600 }, { "Kandarin", 600 }, { "Desert", 600 },
+    { "Global", 130 }, { "Multiple", 305 }, { "None", 2668 }, { "Misthalin", 600 }, { "Asgarnia", 600 }, { "Kandarin", 600 }, { "Desert", 600 },
     { "Fremennik", 400 }, { "Karamja", 300 }, { "Morytania", 400 }, { "Wilderness", 300 }, { "Tirannwn", 400 },
     { "Havenhythe", 200 }, { "Anachronia", 200 },
 }
@@ -89,6 +90,7 @@ local window, content = nil, nil
 local picks = {}            -- drop-down -> the region or category chosen in it
 local race = nil
 local f2pOnly = false
+local npcsOnly = false        -- no items from the categories and regions (a place's items too)
 local typed = { categories = "", pages = "" }
 local widgets = {}
 local dropdowns = {}        -- destroyed with the window (PrettyUI keeps their lists outside it)
@@ -110,7 +112,10 @@ end
 local function command()
     local parts, requests = { "python dev/wiki_cards.py" }, 0
     local regions, categories = {}, {}
-    regions[#regions + 1] = picks.region            -- (none if nothing is picked)
+    -- (a place with a region is the place within it: --within; a region alone is fetched whole)
+    if picks.place == nil then
+        regions[#regions + 1] = picks.region        -- (none if nothing is picked)
+    end
     categories[#categories + 1] = picks.place
     for _, group in ipairs(ITEM_GROUPS) do
         categories[#categories + 1] = picks[group.title]
@@ -141,6 +146,12 @@ local function command()
     end
     if race ~= nil then
         parts[#parts + 1] = '--race "' .. race .. '"'
+    end
+    if npcsOnly then
+        parts[#parts + 1] = "--npcs"
+    end
+    if picks.place ~= nil and picks.region ~= nil then
+        parts[#parts + 1] = '--within "' .. picks.region .. '"'
     end
     if f2pOnly then
         parts[#parts + 1] = "--members f2p"
@@ -220,17 +231,22 @@ function WikiFetch.show()
 
     caption("NPCs", 10, 4, FULL, GOLD)
     Kit.buttonAt(content, "Clear", 10 + FULL - 100, 0, 100, 24, function()
-        picks, race, f2pOnly = {}, nil, false
+        picks, race, f2pOnly, npcsOnly = {}, nil, false, false
         WikiFetch.hide()            -- (made again, so every drop-down shows None)
         WikiFetch.show()
     end, "negative", "Set every drop-down back to None")
     pickFor(0, 26, "Region", REGIONS, "region")
     pickFor(1, 26, "Place", PLACES, "place")
     picker(0, 60, "Race", RACES, race, function(name) race = name end, "Any race")
-    Kit.toggleButton(content, "Free to play only", 20 + HALF, 60, HALF - 6, 28, f2pOnly, function(on)
+    local toggleW = (HALF - 12) // 2
+    Kit.toggleButton(content, "F2P only", 20 + HALF, 60, toggleW, 28, f2pOnly, function(on)
         f2pOnly = on
         refresh()
     end, "Only fetch the free to play pages")
+    Kit.toggleButton(content, "NPCs only", 26 + HALF + toggleW, 60, toggleW, 28, npcsOnly, function(on)
+        npcsOnly = on
+        refresh()
+    end, "Only fetch NPCs, no items (a place's category lists its items too)")
     caption("These narrow what this fetch asks the wiki for; earlier fetches are kept.", 10, 94, FULL)
 
     caption("Items", 10, 122, FULL, GOLD)

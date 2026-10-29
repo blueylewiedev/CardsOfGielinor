@@ -210,7 +210,9 @@ regional packs give it; the Card Builder's **also in** box is for that second re
 in **three or more** regions, or all over the world (Global), goes in `general.lua` with no
 region. A region that is only listed because of somewhere the NPC is fought again (the Dominion
 Tower in the desert, Rush of Blood in Tirannwn) or reached through (the player-owned port's
-portals) does not count; the Wiki Review leaves those out for you.
+portals) does not count; the Wiki Review leaves those out for you. Every version of the NPC on its
+wiki page counts (the Mage of Zamorak in the Wilderness and in Varrock), except a version that is
+only its part in a quest (Reldo in Falador for Succession).
 
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
@@ -275,14 +277,14 @@ them. Go down the list and stop at the first one that fits:
 | # | The NPC is... | Rarity | For example |
 |---|---|---|---|
 | 1 | A god (filed under the wiki's Gods, such as Zamorak, Saradomin or Azzanadra) | **Legendary** | Zamorak, Saradomin |
-| 2 | A boss or skilling pet (pets are legendary, like pet items) | **Legendary** | Rocky, Bubbles |
+| 2 | A pet | **Common** to **legendary**, by how it is got (see below) | Rocky, Trevor, terrier |
 | 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
 | 4 | A Guthixian Cache automaton | **Common** to **epic**, by the Divination level to subdue it, on the familiars' bands (see below) | Confused automaton |
 | 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat or dragonkin boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
 | 6 | A Mahjarrat, or a dragonkin with a name or fought as a boss (not their Nodon soldiers) | **Epic** | Lucien, Hazeel, Kerapac, Strisath |
 | 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
 | 8 | A named character, skill master or Slayer master | See the next table | |
-| 9 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
+| 9 | A role (a cook, a guardsman) in 2 or more quests | **Uncommon** | Cook (Lumbridge) |
 | 10 | A Slayer monster from Slayer level 5 | **Uncommon** | Cave crawler, Cave bug |
 | 11 | Found almost everywhere (60 or more spawns), whatever its level | **Common** | Goblin, Giant rat, Chicken |
 | 12 | A Hunter creature or an NPC to pickpocket, with no combat level | **Common** to **epic**, by the Hunter or Thieving level it needs, on the familiars' bands (see below) | Crimson swift, Kingly impling, Man |
@@ -293,7 +295,9 @@ them. Go down the list and stop at the first one that fits:
 A few NPCs are set by hand, where the rules can't see what makes them matter: Sliske is
 **legendary** for his weight in the story, and Nomad for his Memory of Nomad fight (combat level
 1001). The other Mahjarrat are epic, and those who became gods, like Zamorak and Azzanadra, are
-legendary as gods.
+legendary as gods. A skill master, who sells a skillcape, is at least rare, so the sellers of the
+capes above it are **epic**: Max and Elen Anterth (max cape), Curator Haig Halen (master quest
+cape) and Minerva (master max cape).
 
 Summoning familiars: add a bonus for what the pouch takes to the familiar's Summoning level,
 then read the rarity off the total. Familiars never go above epic.
@@ -322,6 +326,23 @@ impling caught at level 17 is **common**, at 91 **epic**.
 Automatons read the same table with the Divination level needed to subdue them (no bonus): the
 ancient automaton (none needed) is **common**, the confused (45) **uncommon**, the enraged (85) **rare**.
 
+Pets (the first that fits):
+
+| The pet is... | Rarity | For example |
+|---|---|---|
+| The Golden Gnome (awarded at RuneFest) | **Legendary** | |
+| A skilling or boss pet | **Legendary** | Rocky, Bubbles |
+| One of the wiki's "Legendary pets" | **Epic** | |
+| Got with a skill level or after a quest | The familiars' bands for the level (the highest it needs), or the quest's difficulty: Novice **common**, Intermediate **uncommon**, Experienced **rare**, Master or Grandmaster **epic** (the higher of the two) | Terrier (4 Summoning, common), Baby pavosaurus rex (Osseous Rex, rare) |
+| Unlocked with a token | **Rare** | Arthur, Boulder |
+| Sold in a shop | **Uncommon** | Trevor |
+| A drop, or unlocked with a rare item | **Epic** | Mimic, Ishhara (corrupted egg) |
+| From a league | **Rare** | Bria, Hexi |
+| From an event or a promotion (or no longer available) | **Uncommon** | Marketplace and RuneFest pets |
+| Given by an NPC | **Common** | Mune, Richie |
+| From another place or activity | **Rare** | Chomper (Oasis Restoration), Perdita (The Lost Grove) |
+| Anything else | **Common** | Cats |
+
 Named characters, skill masters and Slayer masters (again, the first that fits):
 
 | The character is... | Rarity | For example |
@@ -330,8 +351,10 @@ Named characters, skill masters and Slayer masters (again, the first that fits):
 | A skill master (sells a skillcape) | **Rare** | Captain Harlan |
 | In 5 or more quests, or royalty | **Rare** | Duke Horacio, Aggie |
 | A Slayer master in no quests | **Uncommon** | Jacquelyn |
-| In no quests (a local) | **Common** | Donie, Barfy Bill |
 | In 1 to 4 quests | **Uncommon** | Gillie Groats |
+| In no quests (a local) and under combat level 30 | **Common** | Donie, Barfy Bill |
+
+A named character in no quests who is fought at combat level 30 or more goes by the combat level rows of the first table instead (Glophren, 119, is rare).
 
 What the words mean:
 

@@ -120,6 +120,31 @@ local function showList()
     end
 end
 
+-- Logs the scenery (locs) nearest the player: id, config name, name and distance, the nearest
+-- first. For a card whose look is scenery rather than an NPC (Aris sits at a table that is one
+-- scenery object; her NPC is an invisible stand-in): its id finds its models in the game's cache.
+local SCENERY_LOGGED = 15
+function Nearby.logScenery()
+    local player = Player.GetEntity()
+    local ok, list = pcall(function() return LocList.ByDistance(player.coordGrid, 4, false) end)
+    if not ok or list == nil then
+        log("nearby: can't list scenery:", tostring(list))
+        return
+    end
+    for i, loc in ipairs(list) do
+        if i > SCENERY_LOGGED then
+            break
+        end
+        local okInfo, info = pcall(function()
+            local dx, dz = loc.coordGrid.x - player.coordGrid.x, loc.coordGrid.z - player.coordGrid.z
+            return string.format("id %s  %s  '%s'  %d,%d from you", tostring(loc.configID), tostring(loc.config.configName),
+                tostring(loc.config.name), dx, dz)
+        end)
+        log("nearby: scenery", okInfo and info or ("(can't read: " .. tostring(info) .. ")"))
+    end
+    statusText.content = "Logged the " .. math.min(#list, SCENERY_LOGGED) .. " nearest scenery objects (see the log)"
+end
+
 function Nearby.show()
     if window ~= nil then
         return
@@ -131,6 +156,8 @@ function Nearby.show()
     Kit.text(content, 10, 4, 100, 26, "Name filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 115, 4, 250, 26, 30, false)
     Kit.buttonAt(content, "Scan", WIDTH - 130, 2, 120, 30, showList, "positive")
+    Kit.buttonAt(content, "Log scenery", WIDTH - 280, 2, 140, 30, Nearby.logScenery, nil,
+        "Log the scenery objects next to you, with their ids")
     statusText = Kit.text(content, 10, 42, WIDTH - 20, 24, "Press Scan to list the NPCs around you.", WHITE,
         ui.AlignMode.TOPLEFT)
 end

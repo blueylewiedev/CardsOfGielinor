@@ -54,6 +54,7 @@ local function freshDraft()
         body = true,           -- body model (true) or head model (false)
         cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
         anim = nil,            -- animation (sequence) id, or nil
+        model = nil,           -- a raw model id shown instead of the NPC's (scenery: see core/cards.lua), or nil
     }
 end
 
@@ -64,8 +65,6 @@ local draft = freshDraft()
 -- Text rules
 -- ---------------------------------------------------------------------------------------------
 
--- The longest description that fits on a card. (The longest one in the deck is 45.)
-local MAX_DESC = 65
 
 -- The card id rule: lower case, spaces become underscores, anything else that is not a letter or
 -- digit is dropped. "Sir Amik Varze" becomes sir_amik_varze.
@@ -337,11 +336,16 @@ function Builder.readyAnim(configName, humanoid, text, gender)
         runs[#runs + 1] = run
     end
     -- (not the plain human one, which "HUMAN" from HUMAN_2 would give before the NPC's own name
-    -- is tried; it comes last)
+    -- is tried; it comes last. And when the game stands the NPC with that one, only a name of two
+    -- words or more: one word is too loose, "SWAN" from George Laxmeister's SWAN_COLONIST_2 is the
+    -- bird's SWAN_READY.)
+    local function usable(run)
+        return stand == nil or run:find("_", 1, true) ~= nil
+    end
     local namedHuman = false        -- (whether a name gave the plain human one: a last resort)
     for _, run in ipairs(runs) do
         for _, ending in ipairs(READY_ENDINGS) do
-            local id = seqId(run .. ending)
+            local id = usable(run) and seqId(run .. ending) or nil
             namedHuman = namedHuman or (id ~= nil and id == plainHuman)
             if id ~= nil and id ~= plainHuman then
                 return found(run .. ending, id)
@@ -351,7 +355,7 @@ function Builder.readyAnim(configName, humanoid, text, gender)
     -- No exact name: one spelt a letter differently.
     local stems = standingSequences()
     for _, run in ipairs(runs) do
-        if #run >= NEAR_MATCH_LETTERS then
+        if #run >= NEAR_MATCH_LETTERS and usable(run) then
             for _, ending in ipairs(READY_ENDINGS) do
                 for length = #run - 1, #run + 1 do
                     for _, entry in ipairs(stems[length] or {}) do
@@ -582,6 +586,11 @@ local function animText()
     return draft.anim ~= nil and string.format("%.0f", draft.anim) or ""
 end
 
+-- The model box's text for the draft's raw model.
+local function modelText()
+    return draft.model ~= nil and string.format("%.0f", draft.model) or ""
+end
+
 local function quote(text)
     local escaped = string.gsub(text, "\\", "\\\\")
     escaped = string.gsub(escaped, '"', '\\"')
@@ -591,10 +600,13 @@ end
 -- The `art = { ... }` text, as the deck files write it: the NPC or item `subjectName` (if there is
 -- one), body = false for a head, the animation, and the camera values that differ from
 -- `defaults`. An item has no body/head choice and no animation. (The Preview writes it too.)
-function Builder.artText(itemArt, subjectName, body, anim, cam, defaults)
+function Builder.artText(itemArt, subjectName, body, anim, cam, defaults, model)
     local parts = {}
     if subjectName ~= nil and subjectName ~= "" then
         parts[#parts + 1] = (itemArt and "item = " or "npc = ") .. quote(subjectName)
+    end
+    if not itemArt and model ~= nil then
+        parts[#parts + 1] = "model = " .. string.format("%.0f", model)     -- (a raw model: see core/cards.lua)
     end
     if not itemArt and not body then
         parts[#parts + 1] = "body = false"
@@ -624,7 +636,7 @@ end
 -- The draft's `art = { ... }` text.
 local function artLine()
     return Builder.artText(isItem(), subject(), draft.body, draft.anim, currentCam(),
-        CardView.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil }))
+        CardView.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil }), draft.model)
 end
 
 -- The card block on ONE line (the text boxes in the client cannot hold line breaks, and Lua does
@@ -744,8 +756,8 @@ function Builder.checks()
     -- Description.
     if draft.desc == "" then
         add("fix", "Write a short description")
-    elseif #draft.desc > MAX_DESC then
-        add("fix", "The description is " .. #draft.desc .. " letters; keep it to " .. MAX_DESC)
+    elseif #draft.desc > Cards.MAX_DESC then
+        add("fix", "The description is " .. #draft.desc .. " letters; keep it to " .. Cards.MAX_DESC)
     else
         add("ok", "The description fits the card")
     end
@@ -863,9 +875,9 @@ local function caption(text, x, y, w)
     Kit.text(content, x, y, w, 18, text, GREY, ui.AlignMode.TOPLEFT)
 end
 
--- A box to type in. `onChange(text)` is called as the player types.
-local function field(x, y, w, maxLength, value, onChange)
-    local box = Kit.inputField(content, x, y, w, 28, maxLength, false)
+-- A box to type in (`numeric`: digits only). `onChange(text)` is called as the player types.
+local function field(x, y, w, maxLength, value, onChange, numeric)
+    local box = Kit.inputField(content, x, y, w, 28, maxLength, numeric == true)
     settingField = true
     box.content = value or ""
     settingField = false
@@ -959,7 +971,7 @@ local function showCard()
     -- The card is given its own id, so saved tuning for a real card never applies to it.
     local card = {
         id = "builder_draft", name = draft.name, rarity = rarity, desc = draft.desc,
-        art = { npc = draft.npc, body = draft.body, anim = draft.anim, cam = draft.cam },
+        art = { npc = draft.npc, model = draft.model, body = draft.body, anim = draft.anim, cam = draft.cam },
     }
     if isItem() then
         card.kind = "item"
@@ -1235,6 +1247,7 @@ local function fillWindow()
     end
     showMembership()
     setField(widgets.animField, animText())
+    setField(widgets.modelField, modelText())
     if widgets.npcStatus ~= nil then
         widgets.npcStatus.content = subject() == "" and ""
             or (lookupSubject(subject()) ~= nil and "Found" or "Not found")
@@ -1301,6 +1314,7 @@ local function setKind(cardKind)
     draft.category = ""
     if cardKind == "item" then
         draft.location = ""
+        draft.model = nil
     else
         draft.regions = ""          -- (an item's regions don't carry over; an NPC's "also in" starts empty)
     end
@@ -1762,7 +1776,7 @@ function Builder.show()
         soon()
     end)
 
-    caption("Description (up to " .. MAX_DESC .. " letters)", LEFT_X, 200, LEFT_W)
+    caption("Description (up to " .. Cards.MAX_DESC .. " letters)", LEFT_X, 200, LEFT_W)
     widgets.descField = field(LEFT_X, 218, LEFT_W - 10, 120, draft.desc, function(text)
         local stripped = Builder.stripLevel(text)
         draft.desc = stripped
@@ -1948,6 +1962,13 @@ function Builder.show()
         -- the idles it plays now and then) in the Animation Search window, each with Use.
         widgets.animSet = Kit.text(content, RIGHT_X, y + 2 * STEP + 4, RIGHT_W, 20, animSetLine(subject()), GREY,
             ui.AlignMode.TOPLEFT)
+        -- A raw model to show instead of the NPC's: for an NPC whose look is scenery (Aris at her
+        -- card table; the Nearby window's "Log scenery" finds the scenery, its config the model).
+        Kit.text(content, RIGHT_X + 130, y + 2 * STEP + 32, 70, 22, "Model id", GREY, ui.AlignMode.TOPLEFT)
+        widgets.modelField = field(RIGHT_X + 200, y + 2 * STEP + 28, RIGHT_W - 204, 7, modelText(), function(text)
+            draft.model = tonumber(text)
+            soon()
+        end, true)
         Kit.smallButton(content, "Browse set", RIGHT_X, y + 2 * STEP + 28, 120, 28, function()
             local list, setName = Builder.setAnimList(subject())
             if list == nil then

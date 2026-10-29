@@ -45,8 +45,8 @@ Cards.odds = {
 --            "abyssal_whip" shows id.Obj.ABYSSAL_WHIP.
 --   name   : name shown on the card
 --   rarity : a key of Cards.rarities
---   desc   : short flavour text. Keep it to about 40 characters: the frame's text panel
---            shows three lines and cuts off anything longer.
+--   desc   : short flavour text, at most Cards.MAX_DESC letters: the frame's text panel
+--            shows three lines and cuts off anything longer (dev/check_cards.lua lists them).
 --   kind   : optional, what the card shows: "npc" (the default) or "item" (an object in the
 --            game's data, called an Obj by the API).
 --   tags   : optional. Groups the card for themed packs. Each key is a kind of tag and holds
@@ -63,6 +63,11 @@ Cards.odds = {
 --                     the id (item cards). Item cards show the item's 3D model; they have no
 --                     body/head choice and no animation. Use `cam` to frame the model, as the
 --                     items differ a lot in size.
+--              model: a raw model id to show instead of the NPC's (NPC cards), for an NPC whose
+--                     look in the game is scenery: Aris sits at a card table that is one scenery
+--                     model (143915, animated by 33004), and her NPC is an invisible stand-in.
+--                     The scenery's model and animation are in its config in the game's cache
+--                     (the Card Builder's "Model id" box sets it).
 --              body : NPC cards show the NPC's whole body model by default. `body = false`
 --                     shows its head (chathead) instead; an NPC with no chathead shows an
 --                     empty box (the NPC browser helps find them)
@@ -72,6 +77,9 @@ Cards.odds = {
 --                     preview window, then paste the line it logs.
 -- The cards themselves are in the deck folder (see below and deck/index.lua).
 Cards.list = {}
+
+-- The longest description that fits on a card (see desc above).
+Cards.MAX_DESC = 65
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
@@ -109,7 +117,21 @@ Cards.tagWords = {
                  "exam_centre", "canifis", "gu_tanoth", "black_knights_catacombs", "kal_gerion_dungeon", "east_ardougne", "rimmington", "seers_village", "brimhaven", "oo_glog", "port_tyras", "yanille", "air_rune_temple", "fire_rune_temple", "nature_rune_temple",
                  "piscatoris_hunter_area", "herblore_habitat", "trouble_brewing", "big_chinchompa",
                  "rellekka", "chamber_of_guthix", "empyrean_citadel", "zemouregal_s_fort", "zamorak_s_hide",
-                 "daemonheim", "garden_of_kharid", "sunlight_sands", "wendlewick", "pawya_portal" },
+                 "daemonheim", "garden_of_kharid", "sunlight_sands", "wendlewick", "pawya_portal",
+                 "party_room", "runefest_treasure_island", "thalmund_s_forge",
+                 "player_owned_port", "piscatoris_fishing_colony", "goebie_camp",
+                 "ape_atoll", "crash_island", "life_altar", "monastery_of_ascension", "kuradal_s_dungeon", "piscatoris_peninsula", "mazcab", "al_kharid", "exiled_kalphite_hive", "jaldraocht_pyramid", "mammoth_iceberg", "frozen_waste_plateau", "pollnivneach_slayer_dungeon", "lighthouse_dungeon", "dagannoth_guardian_dungeon", "jhallan_s_resting_place", "here_be_penguins", "smoke_dungeon", "highweald_forest", "amberfell", "deserted_mine",
+                 "handelmort_mansion", "mcgrubor_s_wood", "temple_of_ikov_dungeon", "ice_queen_s_lair", "ancient_cavern", "shadow_dungeon", "waterfall_dungeon", "white_wolf_mountain", "dragonkin_lair", "adamant_dragon_dungeon", "gemstone_cavern", "deep_wilderness_dungeon", "wilderness_level_47_lava_maze_mine", "crandor", "dwarven_mines", "jadinko_lair", "red_dragon_isle",
+                 "tzhaar_city",
+                 "abandoned_mine", "barrows", "haunted_woods", "slayer_tower", "darkmeyer",
+                 "harpoon_joe_s_house_of_rum", "tai_bwo_wannai", "arandar", "the_lost_grove", "evil_chicken_s_lair", "magic_axe_hut", "stalker_dungeon",
+                 "marketplace", "solomon_s_general_store",
+                 "nung", "baby_squirrel_hunter", "unconscious_broav", "hunting_expert", "crafting_table_3", "2013_christmas_event", "char_s_training_cave", "calling_beads",
+                 "baby_platypus_hunter", "golden_gnome_awards", "slayer_points", "tooth_fairy",
+                 "guthixian_ruins", "the_north",
+                 "dancing_donkey_inn", "grand_exchange", "paterdomus", "blue_moon_inn", "tunnel_of_chaos",
+                 "champions_guild", "fort_forinthry", "the_raptor", "jolly_boar_inn", "cooks_guild", "rat_pits",
+                 "combat_academy", "behind_the_scenes_location", "chaos_temple_dungeon", "southern_wilderness_mining_site", "temple_of_zamorak", "rogues_castle" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
@@ -132,7 +154,16 @@ Cards.tagGroups = {
             "dragonkin", "gorajo", "grenwall", "hellhound",
             "jadinko",
             "jelly", "mahjarrat",
-            "pawya", "tzhaar", "volcanic_creature", "wolpertinger" } },
+            "pawya", "tzhaar", "volcanic_creature", "wolpertinger",
+            "chameleon",
+            "virius", "siren",
+            "phoenix", "kebbit",
+            "tokhaar",
+            "behemoth", "blazehound", "bloodpouncer", "dragon_wolf", "drake", "gorilla",
+            "broav", "clockwork", "fire_creature", "imp",
+            "platypus", "rune_guardian", "sprout", "statue", "strykewyrm", "tooth_creature", "vulture",
+            "yak",
+            "humans" } },
         { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
             "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief" } },
         { title = "Whether it can be fought", words = { "monster", "boss" } },
