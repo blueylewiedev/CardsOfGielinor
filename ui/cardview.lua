@@ -257,6 +257,9 @@ local function addArt(parent, card, box, bodyOverride)
             return nil
         end
         modelId, modelType = objId, ui.ModelType.OBJECT
+    elseif art.model ~= nil then
+        -- (a raw model the card names: scenery the NPC is shown as, see core/cards.lua)
+        modelId, modelType, body = art.model, ui.ModelType.MODEL, true
     else
         local ok, npcID = pcall(function() return id.NPC[art.npc] end)
         if not ok or not Cards.isValidNpcId(npcID) then

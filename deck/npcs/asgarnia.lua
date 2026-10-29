@@ -36,76 +36,11 @@ Set.cards = {
     { id = "aksel", name = "Aksel", rarity = "common", desc = "* An excited dwarf. * A worried looking dwarf.", art = { npc = "ARTISAN_AKSEL", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid" } } },
     { id = "ambassador_spanfipple", name = "Ambassador Spanfipple", rarity = "uncommon", desc = "Peaceful man!", art = { npc = "ALUFT_GNOME_DIPLOMAT_FALADOR", anim = 37961, cam = { yaw = -0.20, dist = 566, ty = 320 } }, tags = { location = { "white_knights_castle", "falador" }, category = { "humanoid" } } },
     { id = "apprentice_workman", name = "Apprentice workman", rarity = "common", desc = "He's learning a trade.", art = { npc = "FALADOR_WORKMAN_YOUNG", anim = 808, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { location = { "falador" }, category = { "humanoid" } } },
-    { id = "drunken_man", name = "Drunken man", rarity = "common", desc = "One of Gielinor's many citizens, currently incapacitated by alcohol.", art = { npc = "FALADOR_MAN1", anim = 2770, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { skills = { "thieving" }, location = { "falador" }, category = { "humanoid", "monster" } } },
+    { id = "drunken_man", name = "Drunken man", rarity = "common", desc = "One of Gielinor's many citizens, incapacitated by alcohol.", art = { npc = "FALADOR_MAN1", anim = 2770, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { skills = { "thieving" }, location = { "falador" }, category = { "humanoid", "monster" } } },
     { id = "dwarf", name = "Dwarf", rarity = "uncommon", desc = "A dwarf who looks after the mining guild.", art = { npc = "GUILDDWARF", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "mining_guild", "falador" }, category = { "humanoid" } } },
     { id = "egil", name = "Egil", rarity = "uncommon", desc = "A particularly neat dwarf.", art = { npc = "ARTISAN_EGIL_SCORER", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid", "shopkeeper" } } },
-    { id = "elof", name = "Elof", rarity = "common", desc = "A pen-pushing sort of fellow.", art = { npc = "ARTISAN_ELOF", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid", "shopkeeper" } } },
+    { id = "elof", name = "Elof", rarity = "common", desc = "A pen-pushing sort of fellow.", art = { npc = "ARTISAN_ELOF", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } }, tags = { regions = { "kandarin" }, location = { "artisans_workshop", "falador" }, category = { "humanoid", "shopkeeper" } } },
     { id = "emily", name = "Emily", rarity = "uncommon", desc = "Works in the Rising Sun.", art = { npc = "RISINGSUN_BARMAID", anim = 809, cam = { yaw = 0.20, pitch = 0.15, dist = 324, fov = 80, ty = 560 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
-    
-    -- Drafts (waiting for an NPC name)
-
-    {
-        id = "sir_amik_varze", name = "Sir Amik Varze", rarity = "rare",
-        desc = "Leads the White Knights proudly.",
-        art = { npc = "" },
-        tags = { location = { "falador", "white_knights_castle" }, category = { "knight", "humanoid" } },
-    },
-
-    {
-        id = "sir_vyvin", name = "Sir Vyvin", rarity = "rare",
-        desc = "Guards the castle and a secret.",
-        art = { npc = "" },
-        tags = { location = { "falador", "white_knights_castle" }, category = { "knight", "humanoid", "shopkeeper" } },
-    },
-
-    {
-        id = "sir_tiffy", name = "Sir Tiffy Cashien", rarity = "uncommon",
-        desc = "Recruits new knights in the park.",
-        art = { npc = "" },
-        tags = { location = { "falador" }, category = { "knight", "humanoid", "shopkeeper" } },
-    },
-
-    {
-        id = "wayne", name = "Wayne", rarity = "uncommon",
-        desc = "Chainmail for every budget.",
-        art = { npc = "" },
-        tags = { skills = { "smithing" }, location = { "falador" }, category = { "shopkeeper", "humanoid" } },
-    },
-
-    {
-        id = "flynn", name = "Flynn", rarity = "uncommon",
-        desc = "Sells maces with a smile.",
-        art = { npc = "" },
-        tags = { location = { "falador" }, category = { "shopkeeper", "humanoid" } },
-    },
-
-    {
-        id = "cassie", name = "Cassie", rarity = "uncommon",
-        desc = "Sells shields to the knights.",
-        art = { npc = "" },
-        tags = { location = { "falador" }, category = { "shopkeeper", "humanoid" } },
-    },
-
-    {
-        id = "herquin", name = "Herquin", rarity = "uncommon",
-        desc = "Buys and sells gems.",
-        art = { npc = "" },
-        tags = { location = { "falador" }, category = { "shopkeeper", "humanoid" } },
-    },
-
-    {
-        id = "hairdresser", name = "Hairdresser", rarity = "common",
-        desc = "Offers a fresh new look.",
-        art = { npc = "" },
-        tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" } },
-    },
-
-    {
-        id = "white_knight", name = "White Knight", rarity = "common",
-        desc = "Sworn to defend Falador.",
-        art = { npc = "" },
-        tags = { location = { "falador" }, category = { "knight", "humanoid", "monster" } },
-    },
     {
         id = "labrador_puppy", name = "Labrador puppy", rarity = "common",
         desc = "Soft but strong...and cute.",
@@ -123,6 +58,69 @@ Set.cards = {
     { id = "death_lotus_rogue", name = "Death Lotus rogue", rarity = "rare", desc = "An ex-assassin yet to receive their \"severance\" package.", art = { npc = "DUNGEON_AMINISHI_DEATH_LOTUS_FEMALE", anim = 31922, cam = { yaw = 0.40, pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "wilderness" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
     { id = "mugger", name = "Mugger", rarity = "common", desc = "He jumps out and attacks people.", art = { npc = "MUGGER", anim = 13809, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "misthalin" }, category = { "humanoid", "monster" }, membership = { "f2p" } } },
     { id = "elite_black_knight", name = "Elite Black Knight", rarity = "rare", desc = "A Black Knight with lots of combat experience.", art = { npc = "LUC2_ELITE_BLACK_KNIGHT_PRAY_NONE", anim = 10857, cam = { yaw = -0.20, pitch = 0.15, dist = 1136, ty = 540 } }, tags = { category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "aviansie", name = "Aviansie", rarity = "uncommon", desc = "* Graceful, bird-like creature. * A proud warrior.", art = { npc = "GODWARS_ARMADYL_MALE_ARMOR01_BLUE", anim = 17442, cam = { pitch = 0.30, dist = 1137, fov = 55, ty = 1100 } }, tags = { category = { "monster" }, membership = { "p2p" } } },
+    { id = "big_wolf", name = "Big Wolf", rarity = "common", desc = "Must be the pack leader.", art = { npc = "WOLFPACK_LEADER_WHITER", anim = 23577, cam = { yaw = 0.80, pitch = 0.30, dist = 1137, ty = 320, tx = -20 } }, tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "p2p" } } },
+    { id = "cassie", name = "Cassie", rarity = "uncommon", desc = "Nice eyes.", art = { npc = "CASSIE", anim = 23786, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "flynn", name = "Flynn", rarity = "common", desc = "The mace salesman.", art = { npc = "FLYNN", anim = 23790, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "gadrin", name = "Gadrin", rarity = "rare", desc = "A dwarf who looks after the mining guild.", art = { npc = "GUILDDWARF3", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 300 } }, tags = { location = { "mining_guild", "falador" }, skills = { "mining" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "garden_supplier", name = "Garden supplier", rarity = "common", desc = "She has green fingers. (Not literally.)", art = { npc = "POH_GARDEN_SUPPLIER", anim = 23786, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "gardener", name = "Gardener", rarity = "common", desc = "An old gardener.", art = { npc = "FALADOR_GARDENER2", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 35, ty = 420 } }, tags = { location = { "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "giant_mole", name = "Giant mole", rarity = "epic", desc = "Holy mole-y!", art = { npc = "MOLE2_GIANT", anim = 22605, cam = { yaw = 0.40, dist = 1988, fov = 40, ty = 380, tx = -70 } }, tags = { location = { "falador" }, category = { "animal", "boss", "monster" }, membership = { "f2p" } } },
+    { id = "guard_falador", name = "Guard (Falador)", rarity = "common", desc = "He tries to keep order around here.", art = { npc = "GUARD1", anim = 18055, cam = { yaw = 0.40, pitch = 0.15, dist = 859, ty = 480 } }, tags = { location = { "falador" }, skills = { "thieving" }, category = { "humanoid", "guard", "monster" }, membership = { "f2p" } } },
+    { id = "hairdresser", name = "Hairdresser", rarity = "uncommon", desc = "Anyone fancy a trim?", art = { npc = "HAIRDRESSER", anim = 27615, cam = { pitch = 0.15, dist = 651, fov = 60, ty = 500 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "herald_of_falador", name = "Herald of Falador", rarity = "uncommon", desc = "He clearly loves his job.", art = { npc = "HCAPE_HERALD_FALADOR", anim = 8827, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "herquin", name = "Herquin", rarity = "common", desc = "Seems very well-off.", art = { npc = "HERQUIN", anim = 23781, cam = { yaw = -0.20, dist = 566, fov = 40, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "heskel", name = "Heskel", rarity = "uncommon", desc = "Perhaps this gardener might look after your crops for you.", art = { npc = "FARMING_GARDENER_TREE_2", anim = 18038, cam = { yaw = 0.20, dist = 493, ty = 600 } }, tags = { location = { "falador" }, skills = { "farming" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "ikis_krum", name = "Ikis Krum", rarity = "common", desc = "One of RuneScape's many citizens. ", art = { npc = "CSI_PARTYPETE_NEIGHBOR_COURT", anim = 808, cam = { yaw = 0.20, dist = 493, ty = 600 } }, tags = { location = { "falador" }, skills = { "thieving" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "julienne", name = "Julienne", rarity = "common", desc = "The emissary of Saradomin.", art = { npc = "GODEM_SARADOMIN_EMISSARY", anim = 20213, cam = { yaw = 0.20, dist = 324, fov = 80, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "karma_the_chameleon", name = "Karma the chameleon", rarity = "common", desc = "Party Pete's pet.", art = { npc = "PARTYROOM_CHAMELEON_GRASS", anim = 8363, cam = { yaw = 0.80, pitch = 0.30, dist = 861, fov = 20, ty = 40 } }, tags = { location = { "falador", "party_room" }, category = { "chameleon" }, membership = { "f2p" } } },
+    { id = "kaylee", name = "Kaylee", rarity = "uncommon", desc = "Works in the Rising Sun.", art = { npc = "RISINGSUN_BARMAID2", anim = 808, cam = { yaw = 0.20, dist = 324, fov = 65, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "knight", name = "Knight (Party Room)", rarity = "common", desc = "You'd need a tin opener to get him out.", art = { npc = "PARTYROOM_KNIGHT", anim = 784, cam = { yaw = 0.40, pitch = 0.15, dist = 374, fov = 120, ty = 420 } }, tags = { location = { "party_room", "falador" }, category = { "humanoid", "knight" }, membership = { "f2p" } } },
+    { id = "lige_tonweight", name = "Lige Tonweight", rarity = "common", desc = "Egil's equally handsome identical twin cousin.", art = { npc = "ARTISAN_SWORD_PLANS_GIVER", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "lucy", name = "Lucy", rarity = "common", desc = "Pretty barmaid.", art = { npc = "PARTYROOM_BARMAID2", anim = 808, cam = { yaw = 0.20, dist = 373, fov = 65, ty = 600 } }, tags = { location = { "party_room", "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "megan", name = "Megan", rarity = "common", desc = "Pretty barmaid.", art = { npc = "PARTYROOM_BARMAID", anim = 808, cam = { yaw = -0.20, dist = 373, fov = 65, ty = 600 } }, tags = { location = { "party_room", "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "mime", name = "Mime", rarity = "common", desc = "A mute performer.", art = { npc = "CSI_MIME", anim = 1129, cam = { yaw = 0.20, pitch = 0.15, dist = 430, fov = 95, ty = 520, tx = -90 } }, tags = { location = { "party_room", "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "minerva", name = "Minerva", rarity = "epic", desc = "Her ancestors were the first to master all of Gielinor's skills.", art = { npc = "SKILLCAPE_120_ALL_CAPE_NPC", anim = 18015, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } } },
+    { id = "party_pete", name = "Party Pete", rarity = "common", desc = " He likes to paaaarty! ", art = { npc = "PARTYROOM_PETE", anim = 27592, cam = { yaw = 0.20, dist = 989, fov = 40, ty = 600 } }, tags = { regions = { "misthalin" }, location = { "party_room", "runefest_treasure_island", "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "shop_assistant_falador", name = "Shop assistant (Falador)", rarity = "common", desc = "Likes you more, the more you spend.", art = { npc = "GENERALASSISTANT4", anim = 23785, cam = { yaw = -0.20, pitch = 0.15, dist = 492, fov = 75, ty = 480 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "shopkeeper_falador", name = "Shopkeeper (Falador)", rarity = "common", desc = "A product of consumerist society.", art = { npc = "GENERALSHOPKEEPER4", anim = 23780, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "sir_amik_varze", name = "Sir Amik Varze", rarity = "epic", desc = "Leader of the White Knights.", art = { npc = "SIR_AMIK_VARZE", anim = 808, cam = { yaw = 0.20, pitch = 0.15, dist = 863, fov = 30, ty = 580 } }, tags = { location = { "white_knights_castle", "falador" }, skills = { "farming" }, category = { "humanoid", "knight" }, membership = { "f2p" } } },
+    { id = "sir_renitee", name = "Sir Renitee", rarity = "common", desc = "Chief Herald of Falador.", art = { npc = "POH_HERALD_OF_FALADOR", anim = 27599, cam = { yaw = -1.80, dist = 651, fov = 40, ty = 600 } }, tags = { location = { "white_knights_castle", "falador" }, category = { "humanoid", "shopkeeper", "knight" }, membership = { "p2p" } } },
+    { id = "sir_tiffy_cashien", name = "Sir Tiffy Cashien", rarity = "epic", desc = "Head of recruitment for the Temple Knights.", art = { npc = "RD_TELEPORTER_GUY", anim = 4160, cam = { yaw = 3.60, dist = 1306, fov = 20, ty = 520, tx = -30 } }, tags = { regions = { "misthalin" }, location = { "falador" }, category = { "humanoid", "shopkeeper", "knight" }, membership = { "f2p" } } },
+    { id = "sir_vyvin", name = "Sir Vyvin", rarity = "uncommon", desc = "A White Knight officer with an injured eye.", art = { npc = "SIR_VYVIN", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "white_knights_castle", "falador" }, category = { "humanoid", "shopkeeper", "knight" }, membership = { "f2p" } } },
+    { id = "squire_cerlyn", name = "Squire Cerlyn", rarity = "uncommon", desc = "Sir Amik's loyal squire.", art = { npc = "PNR_SQUIRE", anim = 15812, cam = { dist = 566, ty = 600 } }, tags = { location = { "white_knights_castle", "falador" }, category = { "humanoid", "knight" }, membership = { "p2p" } } },
+    { id = "sten", name = "Sten", rarity = "common", desc = "A tired-looking dwarf.", art = { npc = "ARTISAN_STEN", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "suak", name = "Suak", rarity = "common", desc = "A dwarf of some substance.", art = { npc = "ARTISAN_SUAK", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "swan", name = "Swan", rarity = "common", desc = "A graceful bird.", art = { npc = "SWAN", anim = 3242, cam = { yaw = 1.00, pitch = 0.30, dist = 1137, fov = 35, ty = 160 } }, tags = { location = { "falador" }, category = { "animal" }, membership = { "f2p" } } },
+    { id = "tina", name = "Tina", rarity = "uncommon", desc = "Works in the Rising Sun.", art = { npc = "RISINGSUN_BARMAID3", anim = 808, cam = { yaw = -0.20, dist = 373, fov = 60, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "wayne", name = "Wayne", rarity = "common", desc = "An armourer.", art = { npc = "WAYNE", anim = 23790, cam = { yaw = 0.20, dist = 748, fov = 35, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "white_knight", name = "White Knight", rarity = "uncommon", desc = "A White Knight initiate.", art = { npc = "WHITE_KNIGHT_MALE", anim = 17996, cam = { yaw = -0.20, pitch = 0.15, dist = 1136, ty = 420 } }, tags = { location = { "falador" }, category = { "humanoid", "knight", "monster" }, membership = { "f2p" } } },
+    { id = "workman", name = "Workman", rarity = "common", desc = "A busy workman", art = { npc = "FALADOR_WORKMAN_FAT", anim = 808, cam = { yaw = -0.20, dist = 748, fov = 35, ty = 580 } }, tags = { location = { "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "wyson_the_gardener", name = "Wyson the gardener", rarity = "uncommon", desc = "The head gardener.", art = { npc = "WYSON", anim = 808, cam = { yaw = -0.20, pitch = 0.15, dist = 566, ty = 560 } }, tags = { location = { "falador" }, skills = { "farming" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "sir_vant", name = "Sir Vant", rarity = "uncommon", desc = "A White Knight of Falador.", art = { npc = "TUTORIAL3_KNIGHT_BATTLE", anim = 12234, cam = { yaw = -0.40, dist = 748, fov = 40, ty = 600, tx = 40 } }, tags = { location = { "lumbridge", "falador" }, category = { "humanoid", "knight" }, membership = { "f2p" } } },
+    { id = "abel", name = "Abel", rarity = "common", desc = "A particularly neat dwarf.", art = { npc = "ARTISAN_ABEL_SCORER", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } }, tags = { location = { "thalmund_s_forge", "falador" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "blood_reaver", name = "Blood reaver", rarity = "rare", desc = "A strange and twisted creature.", art = { npc = "LORE_ANCIENT_BLOOD_REAVER", anim = 7008, cam = { yaw = 0.60, pitch = 0.30, dist = 1729, fov = 35, ty = 260 } }, tags = { regions = { "kharidian_desert" }, skills = { "summoning" }, category = { "virius", "monster" }, membership = { "p2p" } } },
+    { id = "crassian_scout", name = "Crassian scout", rarity = "uncommon", desc = "A hideous crab-like creature.", art = { npc = "QUEST_ELITEDUNGEONS_GOSHIMA_CRASSIAN_SCOUT", anim = 23340, cam = { yaw = -0.40, pitch = 0.30, dist = 1137, fov = 55, ty = 300 } }, tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "p2p" } } },
+    { id = "crassian_warrior", name = "Crassian warrior", rarity = "uncommon", desc = "A powerful crab-like creature.", art = { npc = "QUEST_ELITEDUNGEONS_GOSHIMA_CRASSIAN_WARRIOR", anim = 23327, cam = { pitch = 0.30, dist = 651, fov = 85, ty = 380 } }, tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "p2p" } } },
+    { id = "crawling_hand", name = "Crawling hand", rarity = "uncommon", desc = "Gimme five. Actually, don't.", art = { npc = "SLAYER_CRAWLING_HAND_1", anim = 9128, cam = { yaw = 0.60, pitch = 0.30, dist = 1137, fov = 25, ty = 120 } }, tags = { regions = { "morytania" }, skills = { "slayer" }, category = { "monster" }, membership = { "f2p" } } },
+    { id = "grotworm", name = "Grotworm", rarity = "uncommon", desc = "A huge, disgusting worm.", art = { npc = "QBD2_WORM2", anim = 16786, cam = { yaw = -0.60, pitch = 0.30, dist = 1137, fov = 35, ty = 140, tx = 170 } }, tags = { category = { "monster" }, membership = { "p2p" } } },
+    { id = "ice_giant", name = "Ice giant", rarity = "uncommon", desc = "He's got icicles in his beard.", art = { npc = "ICEGIANT_LOW_WANDERRANGE", anim = 4670, cam = { pitch = 0.30, dist = 989, fov = 85, ty = 760 } }, tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "f2p" } } },
+    { id = "ice_warrior", name = "Ice warrior", rarity = "uncommon", desc = "A cold-hearted elemental warrior.", art = { npc = "ICEWARRIOR", anim = 842, cam = { yaw = 0.40, pitch = 0.30, dist = 567, fov = 85, ty = 420, tx = -30 } }, tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "f2p" } } },
+    { id = "mature_grotworm", name = "Mature grotworm", rarity = "uncommon", desc = "The final stage of a grotworm before its metamorphosis.", art = { npc = "QBD2_WORM3", anim = 16791, cam = { yaw = 0.60, pitch = 0.30, dist = 1989, ty = 320, tx = -400 } }, tags = { category = { "monster" }, membership = { "p2p" } } },
+    { id = "mountain_troll", name = "Mountain troll", rarity = "uncommon", desc = "Small for a troll, but mean and ugly.", art = { npc = "DEATH_TROLL_MELEE3", anim = 13795, cam = { pitch = 0.30, dist = 1137, fov = 55, ty = 420 } }, tags = { regions = { "fremennik_province" }, category = { "monster" }, membership = { "f2p" } } },
+    { id = "poison_scorpion", name = "Poison Scorpion", rarity = "uncommon", desc = "It has a very vicious-looking tail.", art = { npc = "POISON_SCORPION", anim = 33938, cam = { yaw = 0.40, pitch = 0.30, dist = 990, fov = 60, ty = 120, tx = -60 } }, tags = { regions = { "karamja" }, category = { "monster" }, membership = { "p2p" } } },
+    { id = "seasinger_umi", name = "Seasinger Umi", rarity = "uncommon", desc = "A novice seasinger siren from the Eastern Lands.", art = { npc = "POP_SEASINGER", anim = 22523, cam = { yaw = -0.20, pitch = 0.30, dist = 749, fov = 35, ty = 580 } }, tags = { location = { "player_owned_port" }, category = { "siren" }, membership = { "f2p" } } },
+    { id = "the_black_marketeer", name = "The Black Marketeer", rarity = "common", desc = "Felix can get you anything. For a price, of course.", art = { npc = "POP_BLACK_MARKETEER", anim = 813, cam = { yaw = 0.20, pitch = 0.15, dist = 748, fov = 30, ty = 540 } }, tags = { location = { "player_owned_port" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } } },
+    { id = "the_convict", name = "The Convict", rarity = "common", desc = "Dashing rogue and gentleman adventurer.", art = { npc = "POP_CONVICT", anim = 19157, cam = { yaw = 0.20, dist = 214, fov = 90, ty = 500, tx = -70 } }, tags = { location = { "player_owned_port" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "the_navigator", name = "The Navigator", rarity = "common", desc = "Duncan knows everything there is to know about maps.", art = { npc = "POP_NAVIGATOR", anim = 19159, cam = { yaw = 0.20, dist = 748, fov = 30, ty = 540 } }, tags = { location = { "player_owned_port" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "the_partner", name = "The Partner", rarity = "common", desc = "Mr John Strum, veteran portmaster.", art = { npc = "POP_PARTNER", anim = 808, cam = { yaw = 0.20, dist = 748, fov = 35, ty = 600 } }, tags = { location = { "player_owned_port" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "training_dummy", name = "Training dummy", rarity = "common", desc = "Weak against nothing.", art = { npc = "CBTV2CA_TRAINING_DUMMY_PUNCHBAG", anim = 15798, cam = { pitch = 0.30, dist = 861, fov = 65, ty = 480 } }, tags = { regions = { "misthalin" }, category = { "monster" }, membership = { "f2p" } } },
+    { id = "chancy", name = "Chancy", rarity = "uncommon", desc = "He's ready for a bet.", art = { npc = "GAMBLER1", anim = 2713, cam = { yaw = 0.20, dist = 1307, fov = 25, ty = 200, tx = -20 } }, tags = { regions = { "misthalin" }, location = { "rimmington", "varrock" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "da_vinci", name = "Da Vinci", rarity = "uncommon", desc = "He has a colourful personality.", art = { npc = "ARTIST1", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { regions = { "misthalin" }, location = { "rimmington", "varrock" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "hops", name = "Hops", rarity = "uncommon", desc = "He's drunk.", art = { npc = "DRUNK1", anim = 2712, cam = { yaw = 0.40, dist = 651, fov = 45, ty = 600 } }, tags = { regions = { "misthalin" }, location = { "rimmington", "varrock" }, category = { "humanoid" }, membership = { "f2p" } } },
+
+
+
 }
 
 return Set

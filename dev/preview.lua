@@ -43,7 +43,7 @@ local function artLine(card, cam)
     local art = (card and card.art) or {}
     local itemArt = cam.kind == "item"
     return Builder.artText(itemArt, itemArt and art.item or art.npc, cam.body, cam.anim, cam,
-        CardView.defaultsFor(cam)) .. ","
+        CardView.defaultsFor(cam), art.model) .. ","
 end
 
 -- The deck file a card is written in (as listed in deck/index.lua), or nil.
