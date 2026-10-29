@@ -117,3 +117,8 @@ The artwork in `resources/images/` is not covered by that licence. It is used wi
 the creator. See [resources/images/CREDITS.md](resources/images/CREDITS.md).
 
 RuneScape and its characters, names and models belong to Jagex.
+
+Three developer files hold data taken from the RuneScape client: `dev/anim_sets.lua` (animation sets,
+read from the game's cache by `dev/anim_sets.py`), `dev/seq.txt` (animation names) and `dev/npc.txt`
+(NPC names). That data belongs to Jagex and is not covered by the licence above. The files are only
+used by the developer tools in `dev/`, which are left out of the released plugin.
