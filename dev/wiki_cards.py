@@ -754,6 +754,19 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
     return RARITIES[best], [f"{why} ({rarity})" for rarity, why in given]
 
 
+def seed_requirements(text, skill_words):
+    """What planting a seed takes, from the Infobox Seed on its page: (skills, level). The skill is
+    the one in brackets after what it grows ("Arbuck (Farming)"), Farming if there is none."""
+    _, inside = find_template(text or "", ["Infobox Seed"])
+    if not inside:
+        return [], None
+    fields = template_fields(inside)
+    found = re.search(r"\d+", plain(fields.get("level", "")))
+    skill = re.search(r"\(([A-Za-z]+)\)", plain(fields.get("grown", "")))
+    word = (skill.group(1) if skill else "farming").lower()
+    return ([word] if word in skill_words else []), (int(found.group()) if found else None)
+
+
 def recipe_requirements(text, titles, skill_words):
     """What making an item takes, from the Infobox Recipe templates on its page: (skills, level).
     Only recipes with the item among their outputs count (not the ones that use it). `skills` are
@@ -975,11 +988,16 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
     worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
+    grown_with, grown_level = seed_requirements(page.get("text", ""), set(words["skills"]))
+    if grown_with and not made_with:
+        made_with, level = grown_with, grown_level
     skills = list(made_with) + [w for w in worn_with if w not in made_with]
     for s in words["skills"]:
         if s not in skills and any(c.lower() in (s, s + " items") for c in page.get("categories", [])):
             skills.append(s)
-    if made_with:
+    if grown_with and made_with == grown_with:
+        notes.append("planted with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
+    elif made_with:
         notes.append("made with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
     elif not worn_with:
         notes.append("no recipe or wear requirement found on the page: check which skills it needs")
