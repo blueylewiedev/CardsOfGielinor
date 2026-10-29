@@ -754,6 +754,28 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
     return RARITIES[best], [f"{why} ({rarity})" for rarity, why in given]
 
 
+# The patch an Infobox Seed names -> the seed word for it (anything else is "special").
+SEED_PATCH_WORDS = {
+    "allotment": "allotment", "flower": "flower", "herb": "herb_patch", "hop": "hop", "hops": "hop",
+    "bush": "bush", "tree": "tree", "fruit tree": "fruit_tree", "cactus": "cacti", "cacti": "cacti",
+    "mushroom": "mushroom", "special": "special", "vine flower": "vine_flower", "vine herb": "vine_herb",
+    "vine bush": "vine_bush", "fertile soil": "fertile_soil", "farming patch": "dungeoneering_patch",
+    "dungeoneering": "dungeoneering_patch", "farming patch (dungeoneering)": "dungeoneering_patch",
+    "berry planter": "berry_planter",
+}
+
+
+def seed_patch(text, allowed):
+    """The seed word for the patch in the page's Infobox Seed ("herb" -> herb_patch), "special" if
+    it is none of the known patches, or None if the page has no Infobox Seed."""
+    _, inside = find_template(text or "", ["Infobox Seed"])
+    if not inside:
+        return None
+    patch = re.sub(r"\s+", " ", plain(template_fields(inside).get("patch", "")).lower().replace("_", " ")).strip()
+    word = SEED_PATCH_WORDS.get(patch, "special")
+    return word if word in allowed else None
+
+
 def seed_requirements(text, skill_words):
     """What planting a seed takes, from the Infobox Seed on its page: (skills, level). The skill is
     the one in brackets after what it grows ("Arbuck (Farming)"), Farming if there is none."""
@@ -954,6 +976,9 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         found.append(combat)
     if plain(fields.get("edible", "")).lower().startswith("yes"):
         found.append("food")
+    patch = seed_patch(page.get("text", ""), set(words["item_category"]))
+    if patch:
+        found += ["seed", patch]
     cosmetic = [c for c in page.get("categories", []) if COSMETIC_CATEGORY.search(c.lower())]
     if cosmetic:
         found = ["fashion"]
