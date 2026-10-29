@@ -84,6 +84,13 @@ function Builder.validTagWord(word)
     return string.match(word, "^[a-z][a-z0-9_]*$") ~= nil
 end
 
+-- A description without a level requirement on the end: "A sturdy pickaxe. (60)" becomes
+-- "A sturdy pickaxe." (The wiki and the game put the level in brackets after the text.)
+function Builder.stripLevel(desc)
+    local text = string.gsub(desc or "", "%s*%(%d+%)%s*$", "")
+    return text
+end
+
 -- Splits "prayer, thieving" into { "prayer", "thieving" }, lower case, without repeats. Commas
 -- and spaces both separate words.
 function Builder.parseWords(text)
@@ -1013,6 +1020,29 @@ end
 
 -- Fills in what the game's item config says (membership, skills, kind of item, a rarity from the
 -- level) for the boxes that are still empty, and keeps its notes for the checks.
+-- Dungeoneering items are all from Daemonheim: adds that region to an item card's regions box
+-- when the skills include dungeoneering (room permitting).
+local function addDaemonheim()
+    if not isItem() then
+        return
+    end
+    local has = false
+    for _, word in ipairs(tagWords("skills")) do
+        has = has or word == "dungeoneering"
+    end
+    local regions = tagWords("regions")
+    for _, word in ipairs(regions) do
+        if word == "daemonheim" then
+            return
+        end
+    end
+    if has and #regions < Cards.MAX_ITEM_REGIONS then
+        regions[#regions + 1] = "daemonheim"
+        draft.regions = table.concat(regions, ", ")
+        setField(widgets.regionsField, draft.regions)
+    end
+end
+
 local function applyItemFacts(objId)
     draft.factNotes = nil
     local ok, facts = pcall(ItemFacts.read, objId)
@@ -1027,6 +1057,7 @@ local function applyItemFacts(objId)
     if #tagWords("skills") == 0 and #facts.skills > 0 then
         draft.skills = table.concat(facts.skills, ", ")
         setField(widgets.skillsField, draft.skills)
+        addDaemonheim()
     end
     if #tagWords("category") == 0 then
         local words = ItemFacts.validCategory(facts.category)
@@ -1618,7 +1649,7 @@ function Builder.loadCandidate(candidate, configName)
     end
     fresh.name, fresh.nameTouched = candidate.name, true
     fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
-    fresh.desc = candidate.desc or ""
+    fresh.desc = Builder.stripLevel(candidate.desc)
     fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
     for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category", "membership" }
         or { "skills", "location", "category", "membership" }) do
@@ -1728,7 +1759,11 @@ function Builder.show()
 
     caption("Description (up to " .. MAX_DESC .. " letters)", LEFT_X, 200, LEFT_W)
     widgets.descField = field(LEFT_X, 218, LEFT_W - 10, 120, draft.desc, function(text)
-        draft.desc = text
+        local stripped = Builder.stripLevel(text)
+        draft.desc = stripped
+        if stripped ~= text then
+            setField(widgets.descField, stripped)
+        end
         soon()
     end)
 
