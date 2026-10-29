@@ -50,4 +50,5 @@ return {
     "deck/items/raw_materials/gems",
     "deck/items/processed_materials/gems",
     "deck/items/consumable",
+    "deck/items/seeds",
 }
