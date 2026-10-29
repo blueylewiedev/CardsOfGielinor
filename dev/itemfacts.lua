@@ -8,8 +8,8 @@
 --   WEAR_REQUIRES_STAT<n> / _LEVEL<n>   what wearing or wielding it needs: its skill and level
 --   USE_REQUIRES_STAT<n> / _LEVEL<n>    what using it needs: its skill and level for a tool (a pickaxe),
 --     but not for anything else (iron ore needs smithing to use, and is tagged mining, the skill that
---     gets it, which the game does not say). Bones and herbs get prayer and herblore, the one skill
---     they exist for.
+--     gets it, which the game does not say). Bones, herbs and seeds get prayer, herblore and farming,
+--     the one skill they exist for.
 --     (the stat is the number of a skill, in the order of SkillType in the client API)
 --   COMBATV2_<MELEE|RANGED|MAGIC|NECROMANCY>_<WEAPON|ITEM> and <STYLE>_STRENGTH -> combat style
 --   WEAPON_CATEGORY             -> the kind of weapon (whip, mace...)
@@ -207,6 +207,8 @@ function ItemFacts.interpret(raw)
             addSkill("herblore")        -- herbs exist for Herblore
         elseif numberOf(params.GE_CATEGORY) == 28 then
             addSkill("prayer")
+        elseif numberOf(params.GE_CATEGORY) == 33 then
+            addSkill("farming")         -- seeds exist for Farming
         end
     end
 
