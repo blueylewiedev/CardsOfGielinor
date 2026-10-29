@@ -53,10 +53,13 @@ It makes NPC cards. For an item card, press **Item** at the top of the window: t
 replaced by an item search (and a list of your Grand Exchange offers), and the animation and
 location boxes go away, because items have neither. Item cards go in `deck/items/`.
 When you pick an item, the builder reads the game's own item data and fills in the boxes that are still
-empty: free to play or members, the skill and level it needs (to wear it or use it), what kind of item it is
-(weapon and its kind, armour, jewellery, ammunition, tool, food, potion, logs, gems...), its combat style, and a
-rarity from the level. The game does not give the Grand Exchange price, a drop rate, or an armour or jewellery slot,
-so the notes under the checks say to look those up. Choose the normal item, not its noted version.
+empty: free to play or members, the skill and level it needs to wear it (for a tool, to use it), what kind of
+item it is (weapon and its kind, armour, jewellery, ammunition, tool, food, potion, logs, gems...), its combat
+style, and a rarity from the level. The skill tag is the skill that gets or makes the item, not what it is used
+with, so ore is not tagged smithing; the game does not say which skill gets an item, so for materials that is
+yours to add (bones and herbs are the exception: they get prayer and herblore). The game does not give the
+Grand Exchange price, a drop rate, or an armour or jewellery slot, so the notes under the checks say to look
+those up. Choose the normal item, not its noted version.
 
 <img width="1351" height="990" alt="image" src="https://github.com/user-attachments/assets/d5a79373-37b0-4ad4-8a0e-435572f1eebe" />
 
