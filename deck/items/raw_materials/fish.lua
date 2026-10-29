@@ -41,7 +41,7 @@ Set.cards = {
         id = "raw_bass", name = "Raw bass", kind = "item", rarity = "uncommon",
         desc = "I should try cooking this.",
         art = { item = "RAW_BASS", cam = { yaw = -0.40, pitch = 1.55, fov = 60, ty = -20 } },
-        tags = { skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_beltfish", name = "Raw beltfish", kind = "item", rarity = "epic",
@@ -71,7 +71,7 @@ Set.cards = {
         id = "raw_cavefish", name = "Raw cavefish", kind = "item", rarity = "epic",
         desc = "I should try cooking this.",
         art = { item = "LRC_CAVEFISH_RAW", cam = { yaw = -0.40, pitch = 1.55, fov = 60, ty = -20 } },
-        tags = { regions = { "asgarnia" }, skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "asgarnia" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_cod", name = "Raw cod", kind = "item", rarity = "common",
@@ -167,7 +167,7 @@ Set.cards = {
         id = "raw_manta_ray", name = "Raw manta ray", kind = "item", rarity = "legendary",
         desc = "Tastier when cooked.",
         art = { item = "RAW_MANTARAY", cam = { yaw = -0.60, pitch = 0.65, dist = 525, fov = 60, ty = -60, tx = -30 } },
-        tags = { regions = { "kandarin" }, skills = { "divination", "fishing" }, category = { "raw_material", "minigame" }, membership = { "p2p" } },
+        tags = { regions = { "kandarin" }, skills = { "fishing" }, category = { "raw_material", "minigame" }, membership = { "p2p" } },
     },
     {
         id = "raw_minnow", name = "Raw minnow", kind = "item", rarity = "common",
@@ -179,7 +179,7 @@ Set.cards = {
         id = "raw_monkfish", name = "Raw monkfish", kind = "item", rarity = "rare",
         desc = "I should try cooking this.",
         art = { item = "RAW_MONKFISH", cam = { pitch = 0.80, dist = 1605, fov = 15, ty = -20 } },
-        tags = { regions = { "kandarin" }, skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "kandarin" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_pike", name = "Raw pike", kind = "item", rarity = "uncommon",
@@ -197,7 +197,7 @@ Set.cards = {
         id = "raw_rocktail", name = "Raw rocktail", kind = "item", rarity = "legendary",
         desc = "I should try cooking this.",
         art = { item = "LRC_ROCKTAIL_RAW", cam = { pitch = 1.55, dist = 603, fov = 30, ty = -20, tx = 20 } },
-        tags = { regions = { "asgarnia" }, skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "asgarnia" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_sailfish", name = "Raw sailfish", kind = "item", rarity = "legendary",
@@ -221,19 +221,19 @@ Set.cards = {
         id = "raw_sea_turtle", name = "Raw sea turtle", kind = "item", rarity = "epic",
         desc = "Looks wrinkly.",
         art = { item = "RAW_SEATURTLE", cam = { yaw = 0.60, pitch = 0.80, dist = 1848, fov = 10, ty = 20, tx = 20 } },
-        tags = { regions = { "kandarin" }, skills = { "divination", "fishing" }, category = { "raw_material", "minigame" }, membership = { "p2p" } },
+        tags = { regions = { "kandarin" }, skills = { "fishing" }, category = { "raw_material", "minigame" }, membership = { "p2p" } },
     },
     {
         id = "raw_seerfish", name = "Raw seerfish", kind = "item", rarity = "legendary",
         desc = "I can cook this to make fish oil.",
         art = { item = "ELR1_RAW_FISH_HIGH", cam = { yaw = -0.40, pitch = 1.55, dist = 397, fov = 60, ty = -20 } },
-        tags = { regions = { "the_arc" }, skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "the_arc" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_shark", name = "Raw shark", kind = "item", rarity = "epic",
         desc = "I should try cooking this.",
         art = { item = "RAW_SHARK", cam = { yaw = 0.40, pitch = 1.55, dist = 920, fov = 40, ty = -20 } },
-        tags = { skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_shrimps", name = "Raw shrimps", kind = "item", rarity = "common",
@@ -245,7 +245,7 @@ Set.cards = {
         id = "raw_sillago", name = "Raw sillago", kind = "item", rarity = "legendary",
         desc = "I can cook this to make fish oil.",
         art = { item = "ELR1_RAW_FISH_RARE", cam = { yaw = -0.40, pitch = 1.55, dist = 397, fov = 60, ty = -20 } },
-        tags = { regions = { "the_arc" }, skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "the_arc" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_swordfish", name = "Raw swordfish", kind = "item", rarity = "rare",
@@ -257,7 +257,7 @@ Set.cards = {
         id = "raw_tarpon", name = "Raw tarpon", kind = "item", rarity = "legendary",
         desc = "I can cook this to make fish oil.",
         art = { item = "ELR1_RAW_FISH_LOW", cam = { yaw = -0.40, pitch = 1.55, dist = 345, fov = 60, ty = -20 } },
-        tags = { regions = { "the_arc" }, skills = { "fishing", "divination" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "the_arc" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
     },
     {
         id = "raw_tiger_shark", name = "Raw tiger shark", kind = "item", rarity = "legendary",
@@ -269,19 +269,25 @@ Set.cards = {
         id = "raw_trout", name = "Raw trout", kind = "item", rarity = "common",
         desc = "I should try cooking this. Used in Cooking (15).",
         art = { item = "RAW_TROUT", cam = { yaw = -0.40, pitch = 1.55, fov = 60, ty = -20 } },
-        tags = { skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "f2p" } },
+        tags = { skills = { "fishing" }, category = { "raw_material" }, membership = { "f2p" } },
     },
     {
         id = "raw_tuna", name = "Raw tuna", kind = "item", rarity = "uncommon",
         desc = "I should try cooking this.",
         art = { item = "RAW_TUNA", cam = { yaw = -0.40, pitch = 1.55, fov = 60, ty = -20 } },
-        tags = { skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "f2p" } },
+        tags = { skills = { "fishing" }, category = { "raw_material" }, membership = { "f2p" } },
     },
     {
         id = "raw_wobbegong", name = "Raw wobbegong", kind = "item", rarity = "legendary",
         desc = "A shallow-water shark with a small beard. I can cook this to make fish oil.",
         art = { item = "ELR1_RAW_SHARK", cam = { yaw = -0.40, pitch = 1.55, dist = 1401, fov = 30, ty = -100, tx = 60 } },
-        tags = { regions = { "the_arc" }, skills = { "divination", "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+        tags = { regions = { "the_arc" }, skills = { "fishing" }, category = { "raw_material" }, membership = { "p2p" } },
+    },
+    {
+        id = "slimy_eel", name = "Slimy eel", kind = "item", rarity = "uncommon",
+        desc = "A slime covered eel - yuck!",
+        art = { item = "MORT_SLIMEY_EEL", cam = { yaw = -0.40, pitch = 1.55, fov = 70, ty = -20 } },
+        tags = { regions = { "misthalin", "morytania" }, skills = { "fishing" }, category = { "food" }, membership = { "p2p" } },
     },
 }
 

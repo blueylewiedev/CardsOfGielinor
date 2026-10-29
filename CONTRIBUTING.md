@@ -449,11 +449,11 @@ need it.
 
 **Choosing a category for an item.** Say what it is used for: `raw_material` for something that is
 gathered and then made into something else (logs, a herb), `processed_material` for something made
-from that (planks, bars), `craftable` for something that can be made, and `food`, `drink`, `potion`,
-`tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. Something that is worn, wielded or
-fired is tagged with what it is: `weapon`, `armour`, `jewellery`, `pocket` (the pocket slot) or
-`ammunition`. Each of those opens a last choice in the tag picker: the kind of weapon (`sword`,
-`longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
+from that (planks, bars), `craftable` for weapons and armour that can be crafted and are not only dropped, 
+and `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. 
+Something that is worn, wielded or fired is tagged with what it is: `weapon`, `armour`, `jewellery`,
+`pocket` (the pocket slot) or `ammunition`. Each of those opens a last choice in the tag picker: the kind 
+of weapon (`sword`, `longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
 the type of ammunition (`arrow`, `bolt` or `spike`). These only show once the word above them is on
 the card, and taking that word off takes them off too. A card that has one of them also needs the
 word above it, so a rune scimitar is `{ "weapon", "scimitar" }`. Throwing knives and darts are
