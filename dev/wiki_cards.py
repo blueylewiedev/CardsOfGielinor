@@ -898,7 +898,7 @@ SEED_PATCH_WORDS = {
     "mushroom": "mushroom", "special": "special", "vine flower": "vine_flower", "vine herb": "vine_herb",
     "vine bush": "vine_bush", "fertile soil": "fertile_soil", "farming patch": "dungeoneering_patch",
     "dungeoneering": "dungeoneering_patch", "farming patch (dungeoneering)": "dungeoneering_patch",
-    "berry planter": "berry_planter",
+    "berry planter": "berry_planter", "arc": "berry_planter",
 }
 
 
@@ -1169,6 +1169,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     level = max(levels) if levels else None
     if skills:
         tags["skills"] = skills
+    if "berry_planter" in category and "the_arc" in words["regions"]:
+        tags["regions"] = ["the_arc"]       # (berry planters are on the Arc)
     membership = membership_tag(fields, notes)
     if membership:
         tags["membership"] = membership

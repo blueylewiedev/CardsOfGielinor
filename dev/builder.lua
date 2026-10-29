@@ -1670,7 +1670,7 @@ function Builder.loadCandidate(candidate, configName)
     fresh.cardId = Builder.freeId(Builder.slug(candidate.name))
     fresh.desc = Builder.stripLevel(candidate.desc)
     fresh.rarity = Cards.rarities[candidate.rarity] and candidate.rarity or "common"
-    for _, tagKind in ipairs(fresh.kind == "item" and { "skills", "category", "membership" }
+    for _, tagKind in ipairs(fresh.kind == "item" and { "regions", "skills", "category", "membership" }
         or { "skills", "location", "category", "membership" }) do
         fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
     end
