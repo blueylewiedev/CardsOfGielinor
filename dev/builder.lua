@@ -84,11 +84,16 @@ function Builder.validTagWord(word)
     return string.match(word, "^[a-z][a-z0-9_]*$") ~= nil
 end
 
--- A description without a level requirement on the end: "A sturdy pickaxe. (60)" becomes
+-- A description without a level requirement on the end: "A sturdy pickaxe. (60)" or "A sturdy pickaxe (60)." becomes
 -- "A sturdy pickaxe." (The wiki and the game put the level in brackets after the text.)
 function Builder.stripLevel(desc)
-    local text = string.gsub(desc or "", "%s*%(%d+%)%s*$", "")
-    return text
+    local text = desc or ""
+    -- "A sturdy pickaxe (60)." keeps its full stop; "A sturdy pickaxe. (60)" and "... (60)" lose the level.
+    local stop = string.match(text, "%s*%(%d+%)%s*([%.!?])%s*$")
+    if stop ~= nil then
+        return (string.gsub(text, "%s*%(%d+%)%s*[%.!?]%s*$", stop))
+    end
+    return (string.gsub(text, "%s*%(%d+%)%s*$", ""))
 end
 
 -- Splits "prayer, thieving" into { "prayer", "thieving" }, lower case, without repeats. Commas
