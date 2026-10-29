@@ -613,6 +613,8 @@ noncommercial purposes, but not distributed or modified, except as set out below
 computer, only to prepare a contribution to this project and to send it as a pull request. This
 is the only change to the code the licence allows.
 
+**Game data.** `dev/anim_sets.lua`, `dev/seq.txt` and `dev/npc.txt` hold data from the RuneScape client (animation sets, animation names and NPC names), which belongs to Jagex and is not covered by the licence above. The developer tools read them, and they are left out of the released plugin.
+
 **Cards.** By sending a card (its id, name, description, tags and art settings) you confirm that
 the text is your own writing, and you give the project owner a non-exclusive, perpetual,
 worldwide, royalty-free right to use, change and distribute it as part of Card Collector.

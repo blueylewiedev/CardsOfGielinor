@@ -198,6 +198,8 @@ def main():
                 names[int(seq_id)] = name
     lines = ["-- dev/anim_sets.lua",
              "-- Made by dev/anim_sets.py from the RuneScape client's cache. Do not edit; run it again.",
+             "-- Data from the RuneScape client, which belongs to Jagex: not covered by this repository's licence.",
+             "-- Used only by the developer tools (dev/), which are left out of the released plugin.",
              "-- Every animation set (an NPC's `bas`: config.NPC.FromID(id).bas.id) and its animations:",
              "-- stand, walk, run and their directions and turns, and `idles`, the animations it plays",
              "-- now and then, as { id, weight }. The comment is the standing animation's name.",
