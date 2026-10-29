@@ -902,6 +902,10 @@ SEED_PATCH_WORDS = {
 }
 
 
+# The region a kind of seed grows in, when that is the only place for it.
+SEED_REGIONS = {"berry_planter": "the_arc", "vine_flower": "karamja", "vine_bush": "karamja", "vine_herb": "karamja"}
+
+
 def seed_patch(text, allowed):
     """The seed word for the patch in the page's Infobox Seed ("herb" -> herb_patch), "special" if
     it is none of the known patches, or None if the page has no Infobox Seed."""
@@ -909,7 +913,11 @@ def seed_patch(text, allowed):
     if not inside:
         return None
     patch = re.sub(r"\s+", " ", plain(template_fields(inside).get("patch", "")).lower().replace("_", " ")).strip()
-    word = SEED_PATCH_WORDS.get(patch, "special")
+    word = SEED_PATCH_WORDS.get(patch)
+    if word is None:
+        # (a vine patch worded another way: "flower vine", "vine (herb)")
+        kind = next((k for k in ("flower", "herb", "bush") if k in patch), None) if "vine" in patch else None
+        word = f"vine_{kind}" if kind else "special"
     return word if word in allowed else None
 
 
@@ -1169,8 +1177,9 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     level = max(levels) if levels else None
     if skills:
         tags["skills"] = skills
-    if "berry_planter" in category and "the_arc" in words["regions"]:
-        tags["regions"] = ["the_arc"]       # (berry planters are on the Arc)
+    seed_region = next((SEED_REGIONS[w] for w in category if w in SEED_REGIONS), None)
+    if seed_region in words["regions"]:
+        tags["regions"] = [seed_region]     # (berry planters are on the Arc, vine patches in Karamja)
     membership = membership_tag(fields, notes)
     if membership:
         tags["membership"] = membership
