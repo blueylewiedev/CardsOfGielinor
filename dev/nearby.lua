@@ -27,34 +27,7 @@ local rows = {}             -- the components of the listed rows, rebuilt on eve
 local statusText = nil
 local picker = nil             -- set by the Card Builder: called with the NPC chosen with "Use"
 
--- The animation an NPC in the world is playing, as "NAME (id)", or nil. The API docs don't say
--- how to read it, so these names are tried on each NPC listed (each one that gives a value is
--- logged, to find out which one works; the first number is shown). Once it is known, keep only
--- that one.
-local ANIM_FIELDS = { "animation", "animationID", "animationId", "anim", "animID", "animId", "currentAnimation",
-    "seq", "seqID", "seqId", "sequence", "sequenceID", "readyAnim", "readyAnimation", "standAnim", "idleAnim" }
-
-local function playingAnim(npc)
-    local shown = nil
-    for _, field in ipairs(ANIM_FIELDS) do
-        local ok, value = pcall(function() return npc[field] end)
-        if ok and value ~= nil then
-            local number = tonumber(value)
-            if number == nil then     -- (an object for the animation, with its id on it)
-                local okId, valueId = pcall(function() return value.id end)
-                number = okId and tonumber(valueId) or nil
-            end
-            log("nearby: probe", tostring(npc.config and npc.config.configName), field, "=", tostring(value))
-            if number ~= nil and number >= 0 and shown == nil then
-                local okName, name = pcall(function() return id.Seq[number] end)
-                shown = ((okName and type(name) == "string") and name .. " " or "") .. "(" .. number .. ") via " .. field
-            end
-        end
-    end
-    return shown
-end
-
--- Finds the NPCs near the player. Returns a list of { id, configName, name, bas, entity, distance },
+-- Finds the NPCs near the player. Returns a list of { id, configName, name, bas, distance },
 -- one for each different config (the nearest NPC of each), nearest first, narrowed by `filter`
 -- (a piece of the display or config name, any case) when it is not empty.
 function Nearby.scan(filter)
@@ -85,7 +58,6 @@ function Nearby.scan(filter)
                     configName = configName,
                     name = name,
                     bas = bas and tostring(bas.configName) or "none",
-                    entity = npc,
                     distance = okDist and tiles or 0,
                 }
             end
@@ -124,13 +96,13 @@ local function showList()
     for i = 1, math.min(#found, MAX_ROWS) do
         local npc = found[i]
         local y = LIST_TOP + (i - 1) * ROW_H
-        -- Name and config on the first line of a row; on the second, the NPC's config id, its animation
-        -- set (a name for its set of animations, not one of them) and the animation it is playing.
+        -- Name and config on the first line of a row; on the second, the NPC's config id and its
+        -- animation set (a name for its set of animations, not one of them). The animation it is
+        -- playing can't be shown: the game gives plugins no field for it, on the NPC or on the set.
         rows[#rows + 1] = Kit.text(content, 10, y, WIDTH - 250, 16, npc.name .. "  " .. npc.configName, WHITE,
             ui.AlignMode.TOPLEFT)
         rows[#rows + 1] = Kit.text(content, 10, y + 15, WIDTH - 250, 16,
-            "npc id " .. npc.id .. "   animation set " .. npc.bas .. "   " .. npc.distance .. " tiles   playing "
-                .. (playingAnim(npc.entity) or "? (can't read it)"), WHITE,
+            "npc id " .. npc.id .. "   animation set " .. npc.bas .. "   " .. npc.distance .. " tiles", WHITE,
             ui.AlignMode.TOPLEFT)
         if picker ~= nil then
             rows[#rows + 1] = Kit.buttonAt(content, "Use", WIDTH - 220, y + 1, 100, 30, function()

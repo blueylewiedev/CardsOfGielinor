@@ -248,8 +248,55 @@ local function tradePose(text, gender)
     return nil
 end
 
+-- Every animation set's animations, read from the game's cache by dev/anim_sets.py (loaded the
+-- first time they are needed; nil if that file hasn't been made).
+local setFile = nil
+local function setsFromCache()
+    if setFile == nil then
+        local ok, data = pcall(require, "dev/anim_sets")
+        setFile = ok and type(data) == "table" and data or false
+    end
+    return setFile or nil
+end
+
+-- The NPC's animation set: its number and its animations from dev/anim_sets.lua (nil if either
+-- isn't known).
+function Builder.setAnimsOf(npcId)
+    local ok, setId = pcall(function() return config.NPC.FromID(npcId).bas.id end)
+    if not ok or setId == nil then
+        return nil, nil
+    end
+    local sets = setsFromCache()
+    return setId, sets and sets[setId]
+end
+
+-- The animation an NPC stands with in the game: its set's standing one, or the idle it plays
+-- most often if the set has none (from dev/anim_sets.lua); nil if not known.
+local function setStand(anims)
+    if anims == nil then
+        return nil
+    end
+    if anims.stand ~= nil and anims.stand >= 0 then
+        return anims.stand
+    end
+    local best = nil
+    for _, idle in ipairs(anims.idles or {}) do
+        if best == nil or idle[2] > best[2] then
+            best = idle
+        end
+    end
+    return best and best[1]
+end
+
+-- The NPC's standing animation, the first of:
+--   1. the one the game stands it with (see setStand; needs dev/anim_sets.lua), unless that is the
+--      plain human one (HUMAN_READY, 808), which only comes last;
+--   2. for a humanoid, a pose for a trade its description names (a farmer);
+--   3. one named like the NPC or its animation set (Advisor Roddeck's ADVISOR_RODDICK_READY), or
+--      spelt a letter differently;
+--   4. the plain human one, if the game stands it with that, it is a humanoid, or a name gave it.
 -- `text` and `gender` are optional: the card's name and description, and the wiki's gender, for
--- a humanoid's trade pose (see tradePose).
+-- the trade pose (see tradePose).
 function Builder.readyAnim(configName, humanoid, text, gender)
     local npcId = Builder.lookupNpc(configName)
     if npcId == nil then
@@ -261,14 +308,30 @@ function Builder.readyAnim(configName, humanoid, text, gender)
         log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):", name, "=", id)
         return id
     end
+    local plainHuman = seqId(HUMAN_READY)
+    local _, anims = Builder.setAnimsOf(npcId)
+    local stand = setStand(anims)
+    if stand ~= nil and stand ~= plainHuman then
+        return found("its animation set's", stand)
+    end
+    if humanoid then
+        local name, id = tradePose(text, gender)
+        if id ~= nil then
+            return found(name .. " (a trade in its description)", id)
+        end
+    end
     local runs = wordRuns(basName)
     for _, run in ipairs(wordRuns(configName)) do
         runs[#runs + 1] = run
     end
+    -- (not the plain human one, which "HUMAN" from HUMAN_2 would give before the NPC's own name
+    -- is tried; it comes last)
+    local namedHuman = false        -- (whether a name gave the plain human one: a last resort)
     for _, run in ipairs(runs) do
         for _, ending in ipairs(READY_ENDINGS) do
             local id = seqId(run .. ending)
-            if id ~= nil then
+            namedHuman = namedHuman or (id ~= nil and id == plainHuman)
+            if id ~= nil and id ~= plainHuman then
                 return found(run .. ending, id)
             end
         end
@@ -280,7 +343,7 @@ function Builder.readyAnim(configName, humanoid, text, gender)
             for _, ending in ipairs(READY_ENDINGS) do
                 for length = #run - 1, #run + 1 do
                     for _, entry in ipairs(stems[length] or {}) do
-                        if entry.ending == ending and oneLetterApart(run, entry.stem) then
+                        if entry.ending == ending and entry.id ~= plainHuman and oneLetterApart(run, entry.stem) then
                             return found(entry.stem .. ending .. " (spelt " .. run .. " here)", entry.id)
                         end
                     end
@@ -288,35 +351,94 @@ function Builder.readyAnim(configName, humanoid, text, gender)
             end
         end
     end
-    if humanoid then
-        local name, id = tradePose(text, gender)
-        if id ~= nil then
-            return found(name .. " (a trade in its description)", id)
-        end
+    if stand ~= nil then         -- (the plain human one, from its animation set)
+        return found("its animation set's", stand)
     end
-    local fallback = humanoid and seqId(HUMAN_READY) or nil
+    local fallback = (humanoid or namedHuman) and plainHuman or nil
     log("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
         .. (fallback and "; using " .. HUMAN_READY or ""))
     return fallback
 end
 
+-- Animation set names already looked up (config name -> name, or false if it has none), as the
+-- framing asks for every card's each time a candidate is loaded.
+local animSets = {}
+
 -- The name of the animation set an NPC uses (its config's `bas`), or nil if it is not known. Its
 -- name is the best clue to which animations suit the NPC.
 function Builder.animSetOf(configName)
+    if animSets[configName] ~= nil then
+        return animSets[configName] or nil
+    end
     local npcId = Builder.lookupNpc(configName)
     if npcId == nil then
-        return nil
+        return nil          -- (not remembered: the NPC may be found once its name is fixed)
     end
     local ok, name = pcall(function() return tostring(config.NPC.FromID(npcId).bas.configName) end)
-    if ok and name ~= "nil" then
-        return name
-    end
-    return nil
+    animSets[configName] = ok and name ~= "nil" and name or false
+    return animSets[configName] or nil
 end
 
+-- The order a set's animations are listed in (as dev/anim_sets.lua names them).
+local SET_ROLES = { "stand", "walk", "run", "walkBack", "walkLeft", "walkRight", "turnLeft", "turnRight",
+    "walkTurnLeft", "walkTurnRight", "runBack", "runLeft", "runRight", "runTurnLeft", "runTurnRight", "crawl",
+    "crawlBack", "crawlLeft", "crawlRight", "crawlTurnLeft", "crawlTurnRight" }
+
+-- Every animation in the NPC's set, for the Animation Search window: a list of { id, name }, the
+-- name saying what it is for ("stand, turnLeft: HUMAN_READY"; "idle, 60%: ..."), an animation
+-- used for several things listed once; and the set's name. nil if the set isn't known.
+function Builder.setAnimList(configName)
+    local npcId = Builder.lookupNpc(configName)
+    local setId, anims = Builder.setAnimsOf(npcId)
+    if anims == nil then
+        return nil
+    end
+    local list, byId = {}, {}
+    local function add(animId, role)
+        if animId == nil or animId < 0 then
+            return
+        end
+        if byId[animId] ~= nil then
+            byId[animId].roles[#byId[animId].roles + 1] = role
+            return
+        end
+        local entry = { id = animId, roles = { role }, seqName = AnimSearch.nameOf(animId) or "?" }
+        byId[animId] = entry
+        list[#list + 1] = entry
+    end
+    for _, role in ipairs(SET_ROLES) do
+        add(anims[role], role)
+    end
+    local total = 0
+    for _, idle in ipairs(anims.idles or {}) do
+        total = total + idle[2]
+    end
+    for _, idle in ipairs(anims.idles or {}) do
+        add(idle[1], string.format("idle, %.0f%%", total > 0 and idle[2] * 100 / total or 0))
+    end
+    for _, entry in ipairs(list) do
+        entry.name = table.concat(entry.roles, ", ") .. ": " .. entry.seqName
+    end
+    return list, (Builder.animSetOf(configName) or "?") .. " (" .. tostring(setId) .. ")"
+end
+
+-- The animation set line: its name, its number, and the animation it stands with in the game
+-- (see setStand).
 local function animSetLine(configName)
     local name = Builder.animSetOf(configName)
-    return name ~= nil and ("Animation set: " .. name) or ""
+    if name == nil then
+        return ""
+    end
+    local setId, anims = Builder.setAnimsOf(Builder.lookupNpc(configName))
+    local line = "Animation set: " .. name
+    if setId ~= nil then
+        line = line .. " (" .. tostring(setId) .. ")"
+        local stand = setStand(anims)
+        if stand ~= nil then
+            line = line .. "  stands " .. stand
+        end
+    end
+    return line
 end
 
 -- Looks up an item by config name. Returns its numeric id and in-game name, or nil if the client
@@ -385,6 +507,15 @@ end
 -- The tag kinds the card has, in the order they are written in.
 local function tagKinds()
     return Cards.tagKindsFor(draft.kind)
+end
+
+-- The tag boxes in the window, and their labels: an NPC's `regions` box is for a second region
+-- (its deck file gives the first), so it is labelled "also in".
+local function tagRows()
+    return isItem() and { "regions", "skills", "category" } or { "skills", "location", "category", "regions" }
+end
+local function tagLabel(tagKind)
+    return (tagKind == "regions" and not isItem()) and "also in" or tagKind
 end
 
 -- The words typed for a tag kind, split apart.
@@ -635,6 +766,10 @@ function Builder.checks()
     end
     if #tagWords("membership") > 1 then
         tagProblem = tagProblem or "Choose f2p or p2p, not both"
+    end
+    if not isItem() and #tagWords("regions") > Cards.MAX_NPC_REGIONS - 1 then
+        tagProblem = tagProblem or ("An NPC is in one region besides its deck file's; one found in three or more"
+            .. " regions goes in the general deck file with none")
     end
     if isItem() and #tagWords("regions") > Cards.MAX_ITEM_REGIONS then
         tagProblem = tagProblem or ("An item takes at most " .. Cards.MAX_ITEM_REGIONS
@@ -1059,7 +1194,7 @@ local function fillWindow()
     setField(widgets.nameField, draft.name)
     setField(widgets.idField, draft.cardId)
     setField(widgets.descField, draft.desc)
-    for _, tagKind in ipairs(isItem() and { "regions", "skills", "category" } or { "skills", "location", "category" }) do
+    for _, tagKind in ipairs(tagRows()) do
         setField(widgets[tagKind .. "Field"], draft[tagKind] or "")
     end
     showMembership()
@@ -1131,7 +1266,7 @@ local function setKind(cardKind)
     if cardKind == "item" then
         draft.location = ""
     else
-        draft.regions = ""          -- an NPC's region comes from its deck file
+        draft.regions = ""          -- (an item's regions don't carry over; an NPC's "also in" starts empty)
     end
     -- A name or id that only followed the old NPC or item is cleared; one that was typed stays.
     if not draft.nameTouched then
@@ -1230,8 +1365,9 @@ end
 -- "person" (a person framed whole, like a guard), "flying" (see Builder.isFlying) or "creature".
 -- For a candidate, closeUp is whether it is a named person rather than a role (dev/wiki_cards.py
 -- works that out); for a card, whether its camera is a close-up (PORTRAIT_FOV, and
--- SHORT_CLOSE_DIST for short cards).
-function Builder.framingGroup(categoryWords, closeUp, short, flying)
+-- SHORT_CLOSE_DIST for short cards). `isFlying` is a function, only asked when the answer is
+-- between those two last groups (it can look up the NPC's animation set).
+function Builder.framingGroup(categoryWords, closeUp, short, isFlying)
     local person = false
     for _, word in ipairs(categoryWords or {}) do
         if word == "dragon" or word == "boss" then
@@ -1246,7 +1382,7 @@ function Builder.framingGroup(categoryWords, closeUp, short, flying)
     if person then
         return closeUp and "character" or "person"
     end
-    return flying and "flying" or "creature"
+    return isFlying() and "flying" or "creature"
 end
 
 -- Words in a name that say how big it is, so "Giant frog" is not framed like "Swamp frog".
@@ -1290,7 +1426,9 @@ function Builder.typicalCamera(group, name)
             end
             local short = Builder.isShort(card.name, card.desc, art.npc)
             local closeUp = cam.fov <= PORTRAIT_FOV or (short and cam.dist <= SHORT_CLOSE_DIST)
-            local flying = Builder.isFlying(card.name, card.desc, art.npc and Builder.animSetOf(art.npc))
+            local function flying()
+                return Builder.isFlying(card.name, card.desc, art.npc and Builder.animSetOf(art.npc))
+            end
             if Builder.framingGroup((card.tags or {}).category, closeUp, short, flying) == group then
                 members[#members + 1] = { card = card, cam = cam }
             end
@@ -1304,14 +1442,16 @@ function Builder.typicalCamera(group, name)
         return total
     end
     local family = nameFamily(name)
-    local kin = {}
-    for _, member in ipairs(members) do
-        if family ~= nil and nameFamily(member.card.name) == family then
-            kin[#kin + 1] = member
+    if family ~= nil then
+        local kin = {}
+        for _, member in ipairs(members) do
+            if nameFamily(member.card.name) == family then
+                kin[#kin + 1] = member
+            end
         end
-    end
-    if #kin >= FAMILY_CARDS then
-        members = kin
+        if #kin >= FAMILY_CARDS then
+            members = kin
+        end
     end
     local best, bestTotal = nil, math.huge
     for _, member in ipairs(members) do
@@ -1464,7 +1604,9 @@ function Builder.loadCandidate(candidate, configName)
         else
             short = Builder.isShort(candidate.name, candidate.desc, fresh.npc)
         end
-        local flying = Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
+        local function flying()
+            return Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
+        end
         local group = Builder.framingGroup(tags.category, candidate.named == true, short, flying)
         local cam, like = Builder.typicalCamera(group, candidate.name)
         if cam ~= nil then
@@ -1484,6 +1626,9 @@ function Builder.loadCandidate(candidate, configName)
     end
     if fresh.kind == "item" then
         fresh.cam = categoryCamera(Builder.categoryKey(Builder.parseWords(fresh.category)))
+    else
+        -- (an NPC found in two regions: its deck file is the first's, and it is tagged with the second)
+        fresh.regions = table.concat({ table.unpack(tags.regions or {}, 2) }, ", ")
     end
     local sameKind = draft.kind == fresh.kind
     for key in pairs(draft) do
@@ -1616,18 +1761,18 @@ function Builder.show()
         TagPicker.show()
         TagPicker.refresh()
     end, "Choose tags from the words that are allowed")
-    local tagY = 334
-    for _, tagKind in ipairs(isItem() and { "regions", "skills", "category" } or { "skills", "location", "category" }) do
-        Kit.text(content, LEFT_X, tagY, 74, 28, tagKind, GREY, ui.AlignMode.TOPLEFT)
+    local tagY = 336
+    for _, tagKind in ipairs(tagRows()) do
+        Kit.text(content, LEFT_X, tagY, 74, 28, tagLabel(tagKind), GREY, ui.AlignMode.TOPLEFT)
         widgets[tagKind .. "Field"] = field(LEFT_X + 78, tagY, LEFT_W - 88, 80, draft[tagKind], function(text)
             draft[tagKind] = text
             TagPicker.refresh()
             soon()
         end)
-        tagY = tagY + 34
+        tagY = tagY + 28
     end
 
-    caption("Which deck file does it go in?", LEFT_X, 442, LEFT_W)
+    caption("Which deck file does it go in?", LEFT_X, 448, LEFT_W)
 
     -- 2. Live preview -----------------------------------------------------------------------
     section("2. Live preview", MID_X, 4, MID_W)
@@ -1746,11 +1891,12 @@ function Builder.show()
             end
         end)
         -- Search animations by name ("Use" on a result plays it on the card), or switch the animation off.
+        local function useAnim(seq)
+            setAnim(seq.id)
+            setField(widgets.animField, string.format("%.0f", seq.id))
+        end
         Kit.iconButton(content, "SEARCH", RIGHT_X + RIGHT_W - 84, y + 2, function()
-            AnimSearch.setPicker(function(seq)
-                setAnim(seq.id)
-                setField(widgets.animField, string.format("%.0f", seq.id))
-            end)
+            AnimSearch.setPicker(useAnim)
             AnimSearch.show()
         end, "Find an animation by name and try it on the card", "Search anims", 110)
         Kit.iconButton(content, "CROSS", RIGHT_X + RIGHT_W - 44, y + 2, function()
@@ -1758,9 +1904,19 @@ function Builder.show()
             setField(widgets.animField, "")
         end, "Show the card without an animation", "Anim off", 80)
         y = y + 36
-        -- The NPC's animation set: its name is a clue for what to search for.
+        -- The NPC's animation set, and a button listing its animations (its stand, walk, turns, and
+        -- the idles it plays now and then) in the Animation Search window, each with Use.
         widgets.animSet = Kit.text(content, RIGHT_X, y + 2 * STEP + 4, RIGHT_W, 20, animSetLine(subject()), GREY,
             ui.AlignMode.TOPLEFT)
+        Kit.smallButton(content, "Browse set", RIGHT_X, y + 2 * STEP + 28, 120, 28, function()
+            local list, setName = Builder.setAnimList(subject())
+            if list == nil then
+                log("builder: no animation set known for", subject(), "(is dev/anim_sets.lua made? python dev/anim_sets.py)")
+                return
+            end
+            AnimSearch.setPicker(useAnim)
+            AnimSearch.showList("Animation set " .. setName .. ": " .. #list .. " animations", list)
+        end)
         -- Two rows of three (the "+100" label does not fit in a button six across).
         local steps = { -100, -10, -1, 1, 10, 100 }
         for i, amount in ipairs(steps) do
@@ -1804,7 +1960,7 @@ function Builder.show()
         draft.rarity = Cards.rarityOrder[i]
         showCard()
     end)
-    widgets.deckRefresh = choiceDropdown(LEFT_X, 460, LEFT_W - 10, function()
+    widgets.deckRefresh = choiceDropdown(LEFT_X, 466, LEFT_W - 10, function()
         local list = {}
         for _, deck in ipairs(decksFor(draft.kind)) do
             list[#list + 1] = { label = Builder.deckLabel(deck.setName) }

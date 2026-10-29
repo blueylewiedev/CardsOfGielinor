@@ -4,8 +4,8 @@
 -- free to play only), and it writes the command that fetches them (dev/wiki_cards.py), to copy
 -- and run in the plugin's folder. The narrowing is done by the wiki before anything is fetched,
 -- so only the matching pages are; it belongs to this fetch's places and regions only, and what
--- was fetched before is kept as it was. The plugin can't reach the web itself. Opened from the Wiki Review window, which shows the candidates
--- after a prf.
+-- was fetched before is kept as it was. The plugin can't reach the web itself. Opened from the
+-- Wiki Review window, which shows the candidates after a prf.
 -- Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
@@ -64,19 +64,18 @@ local REQUESTS_PER_RUN = 30         -- its limit per run
 local TYPED_PAGES = 100             -- the guess for a typed-in category's size
 
 local PAGE_COUNTS = {}              -- category or region -> about how many pages, from the lists above
-for _, group in ipairs({ REGIONS, PLACES }) do
-    for _, entry in ipairs(group) do
-        PAGE_COUNTS[entry[1]] = entry[2]
-    end
-end
+local counted = { REGIONS, PLACES }
 for _, group in ipairs(ITEM_GROUPS) do
-    for _, entry in ipairs(group.list) do
+    counted[#counted + 1] = group.list
+end
+for _, list in ipairs(counted) do
+    for _, entry in ipairs(list) do
         PAGE_COUNTS[entry[1]] = entry[2]
     end
 end
 
 local WIDTH = 572
-local FULL = WIDTH - 44                 -- the width there is room for inside the window
+local FULL = Kit.contentWidth(WIDTH)
 local HALF = (FULL - 10) // 2           -- a column: a label and its drop-down
 local LABEL_W = 104
 local GOLD = Vector4.new(0.94, 0.81, 0.48, 1)
@@ -110,7 +109,9 @@ end
 -- preview is the same with --count.
 local function command()
     local parts, requests = { "python dev/wiki_cards.py" }, 0
-    local regions, categories = { picks.region }, { picks.place }
+    local regions, categories = {}, {}
+    regions[#regions + 1] = picks.region            -- (none if nothing is picked)
+    categories[#categories + 1] = picks.place
     for _, group in ipairs(ITEM_GROUPS) do
         categories[#categories + 1] = picks[group.title]
     end
@@ -148,7 +149,8 @@ local function command()
 end
 
 local function refresh()
-    if window == nil then
+    -- (the drop-downs are made, and their choices restored, before the command boxes)
+    if window == nil or widgets.command == nil then
         return
     end
     local line, requests = command()
@@ -172,25 +174,29 @@ end
 local function labelledDropdown(column, y, label, entries, onChoose)
     local x = 10 + column * (HALF + 10)
     caption(label, x, y + 5, LABEL_W, WHITE)
-    local dropdown
-    dropdown = Kit.dropdown(content, x + LABEL_W, y, HALF - LABEL_W, 28, entries, entries[1].value, function(value)
-        onChoose(value, dropdown)
-    end)
+    local dropdown = Kit.dropdown(content, x + LABEL_W, y, HALF - LABEL_W, 28, entries, entries[1].value, onChoose)
     dropdowns[#dropdowns + 1] = dropdown
     return dropdown
 end
 
--- A drop-down choosing one of `group` (or None) as picks[key]. Its text box filters the list as
--- you type.
-local function picker(column, y, label, group, key)
-    local entries = { { label = "None", value = false } }
+-- A drop-down choosing one name of `group` (entries are names, or { name, pages }), or nothing
+-- (`noneLabel`, "None" if not given): set(name or nil) when one is picked, showing `current` at
+-- first. Its text box filters the list as you type.
+local function picker(column, y, label, group, current, set, noneLabel)
+    local entries = { { label = noneLabel or "None", value = false } }
     for _, entry in ipairs(group) do
-        entries[#entries + 1] = { label = entry[1], value = entry[1] }
+        local name = type(entry) == "table" and entry[1] or entry
+        entries[#entries + 1] = { label = name, value = name }
     end
     labelledDropdown(column, y, label, entries, function(name)
-        picks[key] = name or nil
+        set(name or nil)
         refresh()
-    end).select(picks[key] or false)
+    end).select(current or false)
+end
+
+-- A picker for picks[key].
+local function pickFor(column, y, label, group, key)
+    picker(column, y, label, group, picks[key], function(name) picks[key] = name end)
 end
 
 -- A text box; onChange(text) as it is typed in.
@@ -211,63 +217,55 @@ function WikiFetch.show()
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Wiki Fetch", WIDTH, 600 + Kit.titleBarHeight(),
         function() WikiFetch.hide() end, 0.5, 0.05)
-    local full = FULL
 
-    caption("NPCs", 10, 4, full, GOLD)
-    Kit.buttonAt(content, "Clear", 10 + full - 100, 0, 100, 24, function()
+    caption("NPCs", 10, 4, FULL, GOLD)
+    Kit.buttonAt(content, "Clear", 10 + FULL - 100, 0, 100, 24, function()
         picks, race, f2pOnly = {}, nil, false
         WikiFetch.hide()            -- (made again, so every drop-down shows None)
         WikiFetch.show()
     end, "negative", "Set every drop-down back to None")
-    picker(0, 26, "Region", REGIONS, "region")
-    picker(1, 26, "Place", PLACES, "place")
-    local raceEntries = { { label = "Any race", value = false } }
-    for _, name in ipairs(RACES) do
-        raceEntries[#raceEntries + 1] = { label = name, value = name }
-    end
-    labelledDropdown(0, 60, "Race", raceEntries, function(value)
-        race = value or nil
-        refresh()
-    end).select(race or false)
+    pickFor(0, 26, "Region", REGIONS, "region")
+    pickFor(1, 26, "Place", PLACES, "place")
+    picker(0, 60, "Race", RACES, race, function(name) race = name end, "Any race")
     Kit.toggleButton(content, "Free to play only", 20 + HALF, 60, HALF - 6, 28, f2pOnly, function(on)
         f2pOnly = on
         refresh()
     end, "Only fetch the free to play pages")
-    caption("These narrow what this fetch asks the wiki for; earlier fetches are kept.", 10, 94, full)
+    caption("These narrow what this fetch asks the wiki for; earlier fetches are kept.", 10, 94, FULL)
 
-    caption("Items", 10, 122, full, GOLD)
+    caption("Items", 10, 122, FULL, GOLD)
     for i, group in ipairs(ITEM_GROUPS) do
         local column, row = (i - 1) % 2, (i - 1) // 2
-        picker(column, 144 + row * 34, group.title, group.list, group.title)
+        pickFor(column, 144 + row * 34, group.title, group.list, group.title)
     end
 
     local y = 144 + math.ceil(#ITEM_GROUPS / 2) * 34 + 8
-    caption("More categories (comma separated)", 10, y, full)
+    caption("More categories (comma separated)", 10, y, FULL)
     box(y + 20, typed.categories, function(text)
         typed.categories = text
         refresh()
     end)
-    caption("Pages (comma separated)", 10, y + 54, full)
+    caption("Pages (comma separated)", 10, y + 54, FULL)
     box(y + 74, typed.pages, function(text)
         typed.pages = text
         refresh()
     end)
-    caption("Unsure of a name? Run wiki_cards.py with --subcategories NAME", 10, y + 106, full)
+    caption("Unsure of a name? Run wiki_cards.py with --subcategories NAME", 10, y + 106, FULL)
 
     y = y + 134
-    caption("Preview: how many pages it would fetch (fetches none)", 10, y, full, GOLD)
-    widgets.preview = Kit.inputField(content, 10, y + 22, full, 28, 1000, false)
+    caption("Preview: how many pages it would fetch (fetches none)", 10, y, FULL, GOLD)
+    widgets.preview = Kit.inputField(content, 10, y + 22, FULL, 28, 1000, false)
     y = y + 58
-    caption("The command", 10, y, full, GOLD)
-    widgets.command = Kit.inputField(content, 10, y + 22, full, 28, 1000, false)
-    widgets.estimate = caption("", 10, y + 54, full)
+    caption("The command", 10, y, FULL, GOLD)
+    widgets.command = Kit.inputField(content, 10, y + 22, FULL, 28, 1000, false)
+    widgets.estimate = caption("", 10, y + 54, FULL)
     local steps = {
         "1. Click a box, press Ctrl+A, then Ctrl+C.",
         "2. Run it in a terminal in the plugin's folder (CardsOfGielinor).",
         "3. After the command, prf in the game, then open Wiki Review.",
     }
     for i, text in ipairs(steps) do
-        caption(text, 10, y + 78 + (i - 1) * 20, full, BLUE)
+        caption(text, 10, y + 78 + (i - 1) * 20, FULL, BLUE)
     end
     refresh()
 end

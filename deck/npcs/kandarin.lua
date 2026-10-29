@@ -124,6 +124,20 @@ Set.cards = {
         tags = { location = { "catherby" }, category = { "humanoid", "guard", "monster" } },
     },
     
+    {
+        id = "crimson_swift", name = "Crimson swift", rarity = "common",
+        desc = "This bird obviously doesn't believe in subtlety.",
+        art = { npc = "HUNTING_BIRD_JUNGLE", anim = 6773, cam = { yaw = -0.40, pitch = 0.30, dist = 989, fov = 35, ty = 920 } },
+        tags = { regions = { "asgarnia" }, location = { "feldip_hunter_area", "taverley" }, skills = { "hunter" }, category = { "animal" }, membership = { "f2p" } },
+    },
+    { id = "monkey", name = "Monkey", rarity = "common", desc = "Perhaps our oldest relatives?", art = { npc = "MONKEY", anim = 219, cam = { yaw = -0.60, dist = 989, fov = 35, ty = 220, tx = 50 } }, tags = { regions = { "karamja" }, category = { "animal", "monster" }, membership = { "f2p" } } },
+    { id = "snake", name = "Snake", rarity = "common", desc = "A slithering serpent.", art = { npc = "SNAKE", anim = 277, cam = { pitch = 0.30, dist = 749, fov = 35, ty = 100 } }, tags = { regions = { "karamja" }, category = { "animal", "monster" }, membership = { "f2p" } } },
+    { id = "barbarian", name = "Barbarian", rarity = "common", desc = "Alberich, a fierce barbarian warrior.", art = { npc = "FAI_BARBARIAN_1", anim = 2561, cam = { yaw = -0.20, pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "misthalin" }, category = { "humanoid", "monster" }, membership = { "f2p" } } },
+    { id = "highwayman", name = "Highwayman", rarity = "common", desc = "They hold up passers by.", art = { npc = "HIGHWAYMAN", anim = 18015, cam = { yaw = 0.20, pitch = 0.30, dist = 428, fov = 105, ty = 480 } }, tags = { regions = { "asgarnia" }, category = { "humanoid", "monster" }, membership = { "f2p" } } },
+    { id = "zamorak_mage", name = "Zamorak mage", rarity = "uncommon", desc = "A mage of Zamorak.", art = { npc = "RC_ZMI_MAGE", anim = 20211, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "wilderness" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "zamorak_warrior", name = "Zamorak warrior", rarity = "uncommon", desc = "A warrior of Zamorak.", art = { npc = "RC_ZMI_MELEE2", anim = 14730, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "wilderness" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "black_warlock", name = "Black warlock", rarity = "uncommon", desc = "A black warlock. The air seems to distort wherever it passes.", art = { npc = "BUTTERFLY_WARLOCK", anim = 362, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 800 } }, tags = { regions = { "anachronia" }, location = { "feldip_hunter_area" }, skills = { "agility", "hunter" }, category = { "insect" }, membership = { "p2p" } } },
+    { id = "ruby_harvest", name = "Ruby harvest", rarity = "common", desc = "It's a ruby harvest butterfly.", art = { npc = "BUTTERFLY_RUBY", anim = 362, cam = { pitch = 0.30, dist = 1137, ty = 720 } }, tags = { regions = { "anachronia" }, location = { "piscatoris_hunter_area" }, skills = { "agility", "hunter" }, category = { "insect" }, membership = { "p2p" } } },
 }
 
 return Set

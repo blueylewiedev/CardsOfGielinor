@@ -40,8 +40,8 @@ Set.cards = {
     { id = "dwarf", name = "Dwarf", rarity = "uncommon", desc = "A dwarf who looks after the mining guild.", art = { npc = "GUILDDWARF", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "mining_guild", "falador" }, category = { "humanoid" } } },
     { id = "egil", name = "Egil", rarity = "uncommon", desc = "A particularly neat dwarf.", art = { npc = "ARTISAN_EGIL_SCORER", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid", "shopkeeper" } } },
     { id = "elof", name = "Elof", rarity = "common", desc = "A pen-pushing sort of fellow.", art = { npc = "ARTISAN_ELOF", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } }, tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid", "shopkeeper" } } },
-    { id = "emily", name = "Emily", rarity = "uncommon", desc = "Works in the Rising Sun.", art = { npc = "QUEST_DAUGHTER2_MUSICAL_EMILY", anim = 12456, cam = { yaw = 6.40, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" } } },
-
+    { id = "emily", name = "Emily", rarity = "uncommon", desc = "Works in the Rising Sun.", art = { npc = "RISINGSUN_BARMAID", anim = 809, cam = { yaw = 0.20, pitch = 0.15, dist = 324, fov = 80, ty = 560 } }, tags = { location = { "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    
     -- Drafts (waiting for an NPC name)
 
     {
@@ -106,6 +106,23 @@ Set.cards = {
         art = { npc = "" },
         tags = { location = { "falador" }, category = { "knight", "humanoid", "monster" } },
     },
+    {
+        id = "labrador_puppy", name = "Labrador puppy", rarity = "common",
+        desc = "Soft but strong...and cute.",
+        art = { npc = "LORE_DOG_LABRADOR_PUPPY_1", anim = 8339, cam = { yaw = -0.40, pitch = 0.30, dist = 493, fov = 35, ty = 40, tx = 30 } },
+        tags = { regions = { "kandarin" }, category = { "animal" }, membership = { "f2p" } },
+    },
+    {
+        id = "mega_duck", name = "Mega Duck", rarity = "rare",
+        desc = "Has been dangerously overfed!",
+        art = { npc = "MM14_MEGA_DUCK", anim = 36759, cam = { yaw = -0.40, pitch = 0.30, dist = 1733, fov = 35, ty = 600 } },
+        tags = { regions = { "kandarin" }, category = { "animal", "monster" }, membership = { "f2p" } },
+    },
+    { id = "tarshak", name = "Tarshak", rarity = "epic", desc = "You won't like them when they're angry.", art = { npc = "DOV_TARSHAK", anim = 26710, cam = { pitch = 0.15, dist = 992, fov = 45, ty = 780 } }, tags = { regions = { "fremennik_province" }, location = { "v_s_island" }, category = { "dragonkin" }, membership = { "p2p" } } },
+    { id = "black_knight", name = "Black Knight", rarity = "common", desc = "A dark-hearted knight.", art = { npc = "BLACK_KNIGHT", anim = 20972, cam = { yaw = 0.40, pitch = 0.15, dist = 1136, ty = 420 } }, tags = { regions = { "misthalin" }, category = { "humanoid", "knight", "monster" }, membership = { "f2p" } } },
+    { id = "death_lotus_rogue", name = "Death Lotus rogue", rarity = "rare", desc = "An ex-assassin yet to receive their \"severance\" package.", art = { npc = "DUNGEON_AMINISHI_DEATH_LOTUS_FEMALE", anim = 31922, cam = { yaw = 0.40, pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "wilderness" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "mugger", name = "Mugger", rarity = "common", desc = "He jumps out and attacks people.", art = { npc = "MUGGER", anim = 13809, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "misthalin" }, category = { "humanoid", "monster" }, membership = { "f2p" } } },
+    { id = "elite_black_knight", name = "Elite Black Knight", rarity = "rare", desc = "A Black Knight with lots of combat experience.", art = { npc = "LUC2_ELITE_BLACK_KNIGHT_PRAY_NONE", anim = 10857, cam = { yaw = -0.20, pitch = 0.15, dist = 1136, ty = 540 } }, tags = { category = { "humanoid", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

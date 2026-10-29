@@ -22,7 +22,7 @@ local WikiReview = {}
 
 local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
 local WIDTH, HEIGHT = 480, 376
-local INNER = WIDTH - 44     -- the width there is room for inside the window
+local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
 local NOTE_CHARS = 54       -- about how many letters of a note fit on a row
 local ALL = "*all"                       -- the drop-down's "every source" choice

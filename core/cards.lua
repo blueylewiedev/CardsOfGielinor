@@ -103,7 +103,13 @@ Cards.tagWords = {
                  "dorgesh_kaan", "burthorpe", "chaos_tunnels", "fremennik_slayer_dungeon", "catherby",
                  "vinesweeper", "enchanted_valley", "artisans_workshop", "white_knights_castle", "mining_guild",
                  "puro_puro", "guthixian_cache", "feldip_hunter_area", "taverley", "tree_gnome_stronghold",
-                 "fishing_guild", "fisher_realm", "river_lum","uzer_hunter_area","makeover_mage" },
+                 "fishing_guild", "fisher_realm", "river_lum","uzer_hunter_area","makeover_mage",
+                 "soul_rune_temple", "prifddinas",
+                 "v_s_island", "balthazar_beauregard_s_big_top_bonanza", "sinkholes", "gorajo_hoardstalker_dungeon", "grenwall_portal", "hollow_hill", "isafdar", "castle_drakan", "river_of_blood",
+                 "exam_centre", "canifis", "gu_tanoth", "black_knights_catacombs", "kal_gerion_dungeon", "east_ardougne", "rimmington", "seers_village", "brimhaven", "oo_glog", "port_tyras", "yanille", "air_rune_temple", "fire_rune_temple", "nature_rune_temple",
+                 "piscatoris_hunter_area", "herblore_habitat", "trouble_brewing", "big_chinchompa",
+                 "rellekka", "chamber_of_guthix", "empyrean_citadel", "zemouregal_s_fort", "zamorak_s_hide",
+                 "daemonheim", "garden_of_kharid", "sunlight_sands", "wendlewick", "pawya_portal" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
@@ -121,7 +127,12 @@ Cards.tagGroups = {
     category = {
         { title = "What it is", words = { "humanoid", "animal", "dragon", "undead", "demon", "giant", "goblin",
             "troll", "spirit", "elemental", "insect", "construct", "titan", "minotaur", "impling", "fairy",
-            "dagannoth", "kalphite", "pet" } },
+            "dagannoth", "kalphite", "pet",
+            "chthonian",
+            "dragonkin", "gorajo", "grenwall", "hellhound",
+            "jadinko",
+            "jelly", "mahjarrat",
+            "pawya", "tzhaar", "volcanic_creature", "wolpertinger" } },
         { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
             "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief" } },
         { title = "Whether it can be fought", words = { "monster", "boss" } },
@@ -176,15 +187,18 @@ for _, group in ipairs(Cards.itemTagGroups.category) do
 end
 
 -- The tag kinds that cards of this kind ("npc" or "item") use, in the order they are written.
--- Items are not tagged with a location. An NPC's region comes from its deck file; an item's is
--- chosen by hand (at most Cards.MAX_ITEM_REGIONS, see "Choosing regions for an item" in
--- CONTRIBUTING.md). Both kinds of card may say whether they are free to play or members only.
+-- Items are not tagged with a location. An item's regions are chosen by hand (at most
+-- Cards.MAX_ITEM_REGIONS, see "Choosing regions for an item" in CONTRIBUTING.md). An NPC's region
+-- comes from its deck file; one found in two regions goes in the first's file and lists the other
+-- in `regions` (one found in more is a general card, in deck/npcs/general.lua). Both kinds of card
+-- may say whether they are free to play or members only.
 Cards.MAX_ITEM_REGIONS = 2
+Cards.MAX_NPC_REGIONS = 2      -- (its deck file's, and one in `regions`)
 function Cards.tagKindsFor(cardKind)
     if cardKind == "item" then
         return { "regions", "skills", "category", "membership" }
     end
-    return { "location", "skills", "category", "membership" }
+    return { "regions", "location", "skills", "category", "membership" }
 end
 
 -- The groups the words of a tag kind are shown in for this kind of card, or nil if the words
@@ -483,6 +497,10 @@ local function checkTags(card)
             "Card " .. card.id .. ": membership is one word, f2p or p2p")
         assert(not (tagKind == "regions" and Cards.kindOf(card) == "item" and #words > Cards.MAX_ITEM_REGIONS),
             "Card " .. card.id .. ": an item takes at most " .. Cards.MAX_ITEM_REGIONS .. " regions (leave it empty if it comes from more)")
+        -- (an NPC's regions here include its deck file's, added before the cards are checked)
+        assert(not (tagKind == "regions" and Cards.kindOf(card) ~= "item" and #words > Cards.MAX_NPC_REGIONS),
+            "Card " .. card.id .. ": an NPC is in at most " .. Cards.MAX_NPC_REGIONS .. " regions, its deck file's and one"
+            .. " in `regions` (one found in more goes in deck/npcs/general.lua with none)")
         -- A word from a group with a `requires` (such as a weapon kind) needs that word too.
         local missing = Cards.missingRequired(Cards.kindOf(card), tagKind, words)[1]
         assert(missing == nil, "Card " .. card.id .. ": the " .. tagKind .. " tag \"" .. tostring(missing and missing.word)

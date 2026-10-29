@@ -201,6 +201,14 @@ The cards are in `deck/npcs/`, one file for each region (`misthalin.lua`, `asgar
 in the file for the region where the NPC is found. Every card in a region's
 file gets that region's tag automatically.
 
+As with items, an NPC found in **two** regions goes in the first region's file and lists the
+second in its own `regions` tag (`regions = { "asgarnia" }` on a card in `kandarin.lua`), so both
+regional packs give it; the Card Builder's **also in** box is for that second region. An NPC found
+in **three or more** regions, or all over the world (Global), goes in `general.lua` with no
+region. A region that is only listed because of somewhere the NPC is fought again (the Dominion
+Tower in the desert, Rush of Blood in Tirannwn) or reached through (the player-owned port's
+portals) does not count; the Wiki Review leaves those out for you.
+
 If your NPC lives in a region that has no file yet, say so in your pull request; a new file has to
 be created and listed in `deck/index.lua`.
 
@@ -216,6 +224,15 @@ gets hard to work with or when two people keep editing the same one.
 the plugin cannot look inside folders. A file that is not listed is never loaded. Run
 `python dev/check_deck_index.py` to check that the files and the list agree. It also runs on every
 pull request, and the pull request cannot be merged while it fails.
+
+**Every card has to load.** A tag word that is not in `core/cards.lua` (a new location, a typo)
+stops the whole plugin loading. Run `lua dev/check_cards.lua` (from the plugin's folder) to load
+every card the way the plugin does: it names the card that would stop it. It also runs on every
+pull request. After adding cards with new locations or categories, `lua dev/add_tag_words.lua`
+adds the words your cards use to `core/cards.lua` for you (a new category goes in the "What it is"
+group: move it if another fits better), then runs the same check. Add `--dry-run` to only see what
+it would add. It does not add item categories, or fix typos in regions, skills or membership; it
+lists those for you to fix.
 
 ---
 
@@ -252,18 +269,14 @@ wanted. Looking at where similar NPCs sit in the existing files is the best guid
 These describe where the existing NPC cards sit, and the Wiki Review's suggested rarities follow
 them. Go down the list and stop at the first one that fits:
 
-A few NPCs are set by hand where the rules can't see what makes them matter: Sliske is
-**legendary** for his weight in the story, and Nomad for his Memory of Nomad fight (combat level 1001) (the other Mahjarrat are epic, and those who became gods,
-like Zamorak and Azzanadra, legendary as gods).
-
 | # | The NPC is... | Rarity | For example |
 |---|---|---|---|
 | 1 | A god (filed under the wiki's Gods, such as Zamorak, Saradomin or Azzanadra) | **Legendary** | Zamorak, Saradomin |
 | 2 | A boss or skilling pet (pets are legendary, like pet items) | **Legendary** | Rocky, Bubbles |
 | 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
 | 4 | A Guthixian Cache automaton | **Common** to **epic**, by the Divination level to subdue it, on the familiars' bands (see below) | Confused automaton |
-| 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat boss is never below epic | Elvarg, Evil Chicken (rare); King Black Dragon (epic) |
-| 6 | A Mahjarrat | **Epic** | Lucien, Hazeel, Zemouregal |
+| 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat or dragonkin boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
+| 6 | A Mahjarrat, or a dragonkin with a name or fought as a boss (not their Nodon soldiers) | **Epic** | Lucien, Hazeel, Kerapac, Strisath |
 | 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
 | 8 | A named character, skill master or Slayer master | See the next table | |
 | 9 | A role (a cook, a guardsman) in 3 or more quests | **Uncommon** | Cook (Lumbridge) |
@@ -273,6 +286,11 @@ like Zamorak and Azzanadra, legendary as gods).
 | 13 | Combat level 100 or more | **Rare** | |
 | 14 | Combat level 30 or more | **Uncommon** | |
 | 15 | Anyone else | **Common** | Man, animals |
+
+A few NPCs are set by hand, where the rules can't see what makes them matter: Sliske is
+**legendary** for his weight in the story, and Nomad for his Memory of Nomad fight (combat level
+1001). The other Mahjarrat are epic, and those who became gods, like Zamorak and Azzanadra, are
+legendary as gods.
 
 Summoning familiars: add a bonus for what the pouch takes to the familiar's Summoning level,
 then read the rarity off the total. Familiars never go above epic.
@@ -494,6 +512,11 @@ For reference, the regions (set by the deck file for an NPC, chosen by hand for 
   does not work, for example for an NPC with no useful body.
 - The camera settings are saved in the card's `art` entry. You do not need to write them by hand.
 - Do not use an animation that is distracting or very fast; the card is small, and zoomed in.
+- To find an NPC's own standing animation, look up its animation set (the Card Builder shows its
+  name; `config.NPC.FromID(id).bas.id` is its number) in `dev/anim_sets.lua`. That file lists
+  every set's stand, walk, run and turns, and the idles it plays now and then, read from the
+  game's cache by `python dev/anim_sets.py` (run it again after a game update). An NPC with an
+  older model can still clip with its own standing animation; frame the clipping out.
 
 ### Duplicates
 

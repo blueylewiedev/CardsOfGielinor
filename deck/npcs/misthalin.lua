@@ -304,7 +304,7 @@ Set.cards = {
         tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper" } },
     },
     {
-        id = "sigmund", name = "Sigmund", rarity = "epic",
+        id = "sigmund", name = "Sigmund", rarity = "rare",
         desc = "Advisor to the Duke of Lumbridge.",
         art = { npc = "LOST_TRIBE_SIGMUND_THERE", anim = 808, cam = { yaw = 0.20, dist = 1306, fov = 20, ty = 600 } },
         tags = { skills = { "thieving" }, location = { "lumbridge" }, category = { "humanoid", "boss" } },
@@ -324,6 +324,30 @@ Set.cards = {
     { id = "fairy_very_wise", name = "Fairy Very Wise", rarity = "uncommon", desc = "No question is so difficult to answer than when answer is obvious", art = { npc = "FAIRY2_ADVISOR", anim = 793, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 600 } }, tags = { category = { "fairy" }, membership = { "p2p" } } },
     { id = "evil_chicken", name = "Evil Chicken", rarity = "rare", desc = "A fowl beast.", art = { npc = "CHICKENQUEST_EVIL_CHICKEN", anim = 16430, cam = { yaw = 0.40, dist = 1988, fov = 20, ty = 280, tx = 10 } }, tags = { category = { "animal", "boss", "monster" }, membership = { "p2p" } } },
     
+    {
+        id = "cave_crawler", name = "Cave crawler", rarity = "rare",
+        desc = "A spiky crawling critter.",
+        art = { npc = "SLAYER_CAVE_CRAWLER_4", anim = 24517, cam = { yaw = -0.40, pitch = 0.30, dist = 1306, fov = 40, ty = 100, tx = 110 } },
+        tags = { regions = { "fremennik_province" }, location = { "lumbridge", "dorgesh_kaan", "fremennik_slayer_dungeon" }, skills = { "slayer" }, category = { "animal", "monster" } },
+    },
+    {
+        id = "rock_slug", name = "Rock slug", rarity = "rare",
+        desc = "The slime of evil.",
+        art = { npc = "SLAYER_ROCKSLUG", anim = 23852, cam = { yaw = -0.20, pitch = -0.15, dist = 748, fov = 30, ty = 120, tx = 40 } },
+        tags = { regions = { "fremennik_province" }, location = { "lumbridge", "dorgesh_kaan", "fremennik_slayer_dungeon" }, skills = { "slayer" }, category = { "animal", "monster" } },
+    },
+    {
+        id = "lil_lamb", name = "Li'l lamb", rarity = "common",
+        desc = "How cute!",
+        art = { npc = "LAMB", anim = 32255, cam = { pitch = 0.30, dist = 861, fov = 35, ty = 160 } },
+        tags = { regions = { "asgarnia" }, location = { "lumbridge", "makeover_mage" }, category = { "animal" }, membership = { "f2p" } },
+    },
+    { id = "stag", name = "Stag", rarity = "common", desc = "A majestic looking stag.", art = { npc = "CRITTER_DEER_STAG", anim = 33760, cam = { yaw = -0.80, pitch = 0.30, dist = 2288, fov = 35, ty = 620, tx = 140 } }, tags = { regions = { "asgarnia" }, category = { "animal", "monster" }, membership = { "f2p" } } },
+    { id = "hollowtoof", name = "Hollowtoof", rarity = "rare", desc = "Overseeing the raid. Oh no, now he's angry!", art = { npc = "DND_RAID_GOBLIN_BOSS_COMBAT", anim = 6180, cam = { yaw = 0.40, dist = 1988, fov = 20, ty = 280, tx = 10 } }, tags = { regions = { "asgarnia" }, category = { "boss", "monster" }, membership = { "f2p" } } },
+    { id = "abyssal_tentacle", name = "Abyssal tentacle", rarity = "uncommon", desc = "Servants of the lord, very fierce little things.", art = { npc = "ABYSSALS_ABYSSAL_SPAWN", anim = 34657, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 280 } }, tags = { regions = { "wilderness" }, category = { "chthonian", "monster" }, membership = { "p2p" } } },
+    { id = "aeonisig_raispher", name = "Aeonisig Raispher", rarity = "rare", desc = "Roald's advisor - he seems to be a follower of Saradomin.", art = { npc = "MYQ3_AEONISIG_ROALDS_ADVISOR", anim = 808, cam = { yaw = 0.20, pitch = 0.15, dist = 431, fov = 60, ty = 600 } }, tags = { regions = { "morytania" }, location = { "varrock", "castle_drakan", "river_of_blood" }, category = { "humanoid", "priest" }, membership = { "p2p" } } },
+    { id = "tramp", name = "Tramp", rarity = "common", desc = "A man down on his luck.", art = { npc = "TRAMP", anim = 808, cam = { yaw = 0.20, pitch = 0.15, dist = 429, fov = 85, ty = 500 } }, tags = { regions = { "kandarin" }, location = { "varrock", "yanille", "seers_village" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "crystal_impling", name = "Crystal impling", rarity = "epic", desc = "An impling that thinks itself an elf.", art = { npc = "II_IMPLING_TYPE_15", anim = 6613, cam = { pitch = 0.30, dist = 493, fov = 35, ty = 820 } }, tags = { regions = { "tirannwn" }, location = { "prifddinas" }, skills = { "hunter" }, category = { "impling" }, membership = { "p2p" } } },
 }
 
 return Set

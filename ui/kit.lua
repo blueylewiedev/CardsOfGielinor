@@ -552,6 +552,11 @@ function Kit.titleBarHeight()
     return Kit.available() and 40 or 0
 end
 
+-- The width there is room for inside a window `width` wide (its frame and padding take the rest).
+function Kit.contentWidth(width)
+    return width - 44
+end
+
 -- Creates the main window frame. Returns window, content: `content` is the component to put
 -- things in. `onClose` is called when the player closes the window with its close button.
 -- With PrettyUI the frame has a title bar; without, it is the plain header-less group box.
