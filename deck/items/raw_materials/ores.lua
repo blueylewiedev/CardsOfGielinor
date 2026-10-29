@@ -293,34 +293,122 @@ Set.cards = {
         id = "light_animica", name = "Light animica", kind = "item", rarity = "legendary",
         desc = "Used in Smithing.",
         art = { item = "LIGHT_ANIMICA", cam = { pitch = 1.05, dist = 456 } },
-        tags = { skills = { "smithing" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+        tags = { skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
     },
     {
         id = "dark_animica", name = "Dark animica", kind = "item", rarity = "legendary",
         desc = "Used in Smithing.",
         art = { item = "DARK_ANIMICA", cam = { pitch = 1.20, dist = 345, fov = 65, ty = -20 } },
-        tags = { regions = { "misthalin", "anachronia" }, skills = { "smithing" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+        tags = { regions = { "misthalin", "anachronia" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
     },
-    --stone slab
-    --rubium
-    --stardust
-    --clay
-    --rune essence
-    --limestone
-    --pure essence
-    --sandstone
-    --granite
-    --living minerals
-    --red sanstone
-    --crystal flecked sandstone
-    --calcified fungus
-    --sea salt
-    --enriched calcified fungus
-    --alaea sea salt
-    --golden idol
-    --porcelain clay
-
-    --ores or processed? Soft-clay / soft porcelain clay
+    {
+        id = "stone_slab", name = "Stone slab", kind = "item", rarity = "uncommon",
+        desc = "A flawed block of obsidian from the Karamja volcano.",
+        art = { item = "DILLO_STONE_SLAB", cam = { yaw = 7.20, pitch = 0.15, dist = 802, fov = 80, ty = 400 } },
+        tags = { regions = { "karamja" }, skills = { "mining" }, category = { "raw_material", "ore", "quest_item" }, membership = { "p2p" } },
+    },
+    {
+        id = "rubium", name = "Rubium", kind = "item", rarity = "uncommon",
+        desc = "Be careful with this near water!",
+        art = { item = "KEN_ROBIDIUM_ORE", cam = { pitch = 1.20, dist = 456, ty = -20, tx = -20 } },
+        tags = { regions = { "kandarin" }, skills = { "mining" }, category = { "quest_item", "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "stardust", name = "Stardust", kind = "item", rarity = "common",
+        desc = "Small, shiny bits of rock. Mined from a fallen star.",
+        art = { item = "STAR_DUST_175_200", cam = { pitch = 0.80, dist = 694 } },
+        tags = { skills = { "mining" }, category = { "raw_material", "ore", "minigame", "currency" }, membership = { "f2p" } },
+    },
+    {
+        id = "clay", name = "Clay", kind = "item", rarity = "common",
+        desc = "Some hard dry clay.",
+        art = { item = "CLAY", cam = { pitch = 1.35, tx = 40 } },
+        tags = { skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "f2p" } },
+    },
+    {
+        id = "rune_essence", name = "Rune essence", kind = "item", rarity = "common",
+        desc = "An uncharged Rune Stone.",
+        art = { item = "BLANKRUNE", cam = { pitch = 0.95 } },
+        tags = { skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "f2p" } },
+    },
+    {
+        id = "pure_essence", name = "Pure essence", kind = "item", rarity = "uncommon",
+        desc = "An uncharged Rune Stone of extra capability.",
+        art = { item = "BLANKRUNE_HIGH", cam = { pitch = 1.20, dist = 525, fov = 30 } },
+        tags = { skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "f2p" } },
+    },
+    {
+        id = "porcelain_clay", name = "Porcelain clay", kind = "item", rarity = "legendary",
+        desc = "Some hard and dry porcelain clay.",
+        art = { item = "PORCELAIN_CLAY", cam = { tx = 40 } },
+        tags = { regions = { "morytania" }, skills = { "mining", "archaeology" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "limestone", name = "Limestone", kind = "item", rarity = "common",
+        desc = "Some limestone.",
+        art = { item = "LIMESTONE", cam = { pitch = 0.95, dist = 694, fov = 45, tx = 30 } },
+        tags = { skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "f2p" } },
+    },
+    {
+        id = "sandstone", name = "Sandstone", kind = "item", rarity = "uncommon",
+        desc = "A large chunk of sandstone.",
+        art = { item = "ENAKH_SANDSTONE_LARGE", cam = { pitch = 0.90, dist = 603, fov = 55, ty = 20 } },
+        tags = { regions = { "kharidian_desert" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "granite_5kg", name = "Granite (5kg)", kind = "item", rarity = "uncommon",
+        desc = "A chunk of granite.",
+        art = { item = "ENAKH_GRANITE_MEDIUM", cam = { pitch = 0.90, dist = 525, tx = 10 } },
+        tags = { regions = { "kharidian_desert" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "living_minerals", name = "Living minerals", kind = "item", rarity = "epic",
+        desc = "These minerals appear to be alive.",
+        art = { item = "LRC_LIVING_MINERALS", cam = { yaw = 0.80, pitch = 1.05, dist = 525, fov = 55, ty = -20 } },
+        tags = { regions = { "asgarnia" }, skills = { "mining" }, category = { "raw_material", "ore", "consumable" }, membership = { "p2p" } },
+    },
+    {
+        id = "red_sandstone", name = "Red sandstone", kind = "item", rarity = "epic",
+        desc = "It can be used to make robust glass.",
+        art = { item = "BIGPOT_SANDSTONE", cam = { yaw = 5.60, pitch = 0.30, ty = 40, tx = 10 } },
+        tags = { regions = { "kandarin", "kharidian_desert" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "crystalflecked_sandstone", name = "Crystal-flecked sandstone", kind = "item", rarity = "epic",
+        desc = "It can be used to make crystal glass.",
+        art = { item = "CRYSTAL_SANDSTONE", cam = { yaw = 7.40, pitch = 0.80, ty = 20 } },
+        tags = { regions = { "tirannwn" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "calcified_fungus", name = "Calcified fungus", kind = "item", rarity = "epic",
+        desc = "Fungus that looks a lot like stone.",
+        art = { item = "EGWD_BIK_BOSS_ENCOUNTER_CALCIFIED", cam = { pitch = 1.35, dist = 456 } },
+        tags = { regions = { "misthalin" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "enriched_calcified_fungus", name = "Enriched calcified fungus", kind = "item", rarity = "legendary",
+        desc = "Dense fungus that looks a lot like stone.",
+        art = { item = "EGWD_BIK_BOSS_ENRICHED_CALCIFIED", cam = { pitch = 1.20, dist = 345, fov = 65, ty = -20 } },
+        tags = { regions = { "misthalin" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "sea_salt", name = "Sea salt", kind = "item", rarity = "legendary",
+        desc = "This salt is only bearable in small amounts.",
+        art = { item = "ELR1_SALT_LOW", cam = { pitch = 0.60, dist = 603, fov = 30, ty = 60 } },
+        tags = { regions = { "the_arc" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "alaea_sea_salt", name = "Alaea sea salt", kind = "item", rarity = "legendary",
+        desc = "This salt has an orange colour because it contains volcanic clay and iron.",
+        art = { item = "ELR1_SALT_HIGH", cam = { pitch = 0.60, dist = 397, ty = 60 } },
+        tags = { regions = { "the_arc" }, skills = { "mining" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
+    {
+        id = "golden_idol", name = "Golden idol", kind = "item", rarity = "legendary",
+        desc = "A mysterious idol. It must be valuable.",
+        art = { item = "ELR1_IDOL", cam = { yaw = -0.40, pitch = 0.00, dist = 300, ty = 80, tx = 10 } },
+        tags = { regions = { "the_arc" }, skills = { "mining", "hunter" }, category = { "raw_material", "ore" }, membership = { "p2p" } },
+    },
 }
 
     return Set

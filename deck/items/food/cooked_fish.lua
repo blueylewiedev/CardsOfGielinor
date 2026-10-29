@@ -236,12 +236,6 @@ Set.cards = {
         tags = { skills = { "cooking" }, category = { "food" }, membership = { "f2p" } },
     },
     {
-        id = "slimy_eel", name = "Slimy eel", kind = "item", rarity = "uncommon",
-        desc = "A slime covered eel - yuck!",
-        art = { item = "MORT_SLIMEY_EEL", cam = { yaw = -0.40, pitch = 1.55, fov = 70, ty = -20 } },
-        tags = { regions = { "misthalin", "morytania" }, skills = { "fishing" }, category = { "food" }, membership = { "p2p" } },
-    },
-    {
         id = "swordfish", name = "Swordfish", kind = "item", rarity = "uncommon",
         desc = "I'd better be careful eating this!",
         art = { item = "SWORDFISH", cam = { pitch = 1.55, dist = 603, fov = 45, ty = 20, tx = 20 } },

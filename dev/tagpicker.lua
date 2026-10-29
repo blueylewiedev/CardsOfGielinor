@@ -49,6 +49,16 @@ local FILTER_FRAMES = 20      -- typing is applied this many frames after the la
 -- Every component uses one of the client's 4096 dynamic IDs, so this counts what the picker has
 -- made, to show in the log if the IDs ever run out.
 local builtTotal = 0
+local pageParts = {}              -- kind -> how many components its page holds now
+local extras = {}                 -- the window's own components (label, Filter box, hint) to destroy on close
+
+local function liveCount()
+    local total = #extras
+    for _, count in pairs(pageParts) do
+        total = total + count
+    end
+    return total
+end
 
 -- Lets the Card Builder say which card the picker works on. Pass nil to remove it.
 function TagPicker.setTarget(newTarget)
@@ -197,6 +207,7 @@ local function buildPage(index, parent, originX, originY)
         parts[#parts + 1] = Kit.text(parent, originX + 4, originY, COLS * COL_W, 26,
             "Items are not tagged with a location.", GREY, ui.AlignMode.TOPLEFT)
         builtTotal = builtTotal + #parts
+        pageParts[kind] = #parts
         return parts, ROW_H
     end
     local selected = chosen(kind)
@@ -239,6 +250,7 @@ local function buildPage(index, parent, originX, originY)
     end
     -- How tall this page really is, so the scrollbar only shows when its words do not fit.
     builtTotal = builtTotal + #parts
+    pageParts[kind] = #parts
     return parts, rows * ROW_H
 end
 
@@ -352,20 +364,21 @@ function TagPicker.show()
     -- Each page is as tall as the longest one needs. The tabs are shorter than that if they have
     -- to be, and then the page scrolls inside them (PrettyUI tab pages scroll with the mouse wheel;
     -- the window itself stays a fixed size).
-    log("tag picker: opened;", builtTotal, "components built so far")
+    log("tag picker: opened;", builtTotal, "components built so far,", liveCount(), "still alive")
     local pageHeight = (tallestPage() + 1) * ROW_H + 10
     local tabsHeight = math.min(TAB_HEADER_H + pageHeight, MAX_VISIBLE_H - TABS_Y - 50)
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Pick tags", WIDTH, TABS_Y + tabsHeight + 50 + Kit.titleBarHeight(),
         function() TagPicker.hide() end, 0.6, 0.08)
-    Kit.text(content, 10, 4, 70, 26, "Filter:", WHITE, ui.AlignMode.TOPLEFT)
+    extras[#extras + 1] = Kit.text(content, 10, 4, 70, 26, "Filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 80, 4, 300, 26, 30, false)
+    extras[#extras + 1] = filterField
     -- Wait until the typing stops, so a word typed letter by letter rebuilds the pages once.
     filterField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
         filterWait = FILTER_FRAMES
     end)
-    Kit.text(content, 10, 34, WIDTH - 20, 22, "Click a word to add it; click again to remove it.", GREY,
-        ui.AlignMode.TOPLEFT)
+    extras[#extras + 1] = Kit.text(content, 10, 34, WIDTH - 20, 22,
+        "Click a word to add it; click again to remove it.", GREY, ui.AlignMode.TOPLEFT)
     tabs = Kit.tabs(content, 10, TABS_Y, WIDTH - 30, tabsHeight, TAB_NAMES, buildPage, pageHeight)
 end
 
@@ -373,6 +386,12 @@ function TagPicker.hide()
     if tabs ~= nil then
         tabs.destroy()
     end
+    -- Destroy everything the window holds one by one: destroying the window alone left the
+    -- components inside it (and their dynamic IDs) behind.
+    for _, part in ipairs(extras) do
+        pcall(function() part:Destroy() end)
+    end
+    extras, pageParts = {}, {}
     if window ~= nil then
         pcall(function() window:Destroy() end)
     end
