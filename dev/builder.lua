@@ -1611,8 +1611,15 @@ function Builder.itemDeckNames(category, sources)
     if first ~= nil and first ~= "" then
         -- The folder: the word in the plural, which is how they are named, then as it is.
         local folders = pluralFirst(first)
-        -- The kinds of item: the second category word, then the wiki categories it came from.
-        local kinds = { category[2] }
+        -- The kinds of item: the second category word (not a combat style, melee_gear and the
+        -- like: a scimitar is `weapon, melee_gear, scimitar`), then the wiki categories it came from.
+        local kinds = {}
+        for i = 2, #category do
+            if not string.find(category[i], "_gear$") then
+                kinds[1] = category[i]
+                break
+            end
+        end
         for _, source in ipairs(sources or {}) do
             local slug = string.gsub(string.lower(source), "[^a-z0-9]+", "_")
             slug = string.gsub(slug, "^_+", "")
