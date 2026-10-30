@@ -83,16 +83,30 @@ function Builder.validTagWord(word)
     return string.match(word, "^[a-z][a-z0-9_]*$") ~= nil
 end
 
+-- The level requirement in brackets at the end of a description: "(60)", or as the game words it for
+-- some items, "(Tier 7)" (Dungeoneering gear) or "(Level 60)".
+local LEVEL_BRACKETS = { "%(%d+%)", "%([Tt][Ii][Ee][Rr]%s*%d+%)", "%([Ll][Ee][Vv][Ee][Ll]%s*%d+%)",
+    "%([Ll][Vv][Ll]%.?%s*%d+%)" }
+
 -- A description without a level requirement on the end: "A sturdy pickaxe. (60)" or "A sturdy pickaxe (60)." becomes
--- "A sturdy pickaxe." (The wiki and the game put the level in brackets after the text.)
+-- "A sturdy pickaxe." (The wiki and the game put the level in brackets after the text; "(Tier 7)" and
+-- "(Level 60)" go too.)
 function Builder.stripLevel(desc)
     local text = desc or ""
-    -- "A sturdy pickaxe (60)." keeps its full stop; "A sturdy pickaxe. (60)" and "... (60)" lose the level.
-    local stop = string.match(text, "%s*%(%d+%)%s*([%.!?])%s*$")
-    if stop ~= nil then
-        return (string.gsub(text, "%s*%(%d+%)%s*[%.!?]%s*$", stop))
+    for _, level in ipairs(LEVEL_BRACKETS) do
+        -- "A sturdy pickaxe (60)." keeps its full stop; "A sturdy pickaxe. (60)" and "... (60)" lose the level.
+        local stop = string.match(text, "%s*" .. level .. "%s*([%.!?])%s*$")
+        if stop ~= nil then
+            local before = string.gsub(text, "%s*" .. level .. "%s*[%.!?]%s*$", "")
+            -- ("A pickaxe. (60)." already ends in a full stop: no second one)
+            return string.find(before, "[%.!?]$") and before or before .. stop
+        end
+        local stripped, count = string.gsub(text, "%s*" .. level .. "%s*$", "")
+        if count > 0 then
+            return stripped
+        end
     end
-    return (string.gsub(text, "%s*%(%d+%)%s*$", ""))
+    return text
 end
 
 -- Splits "prayer, thieving" into { "prayer", "thieving" }, lower case, without repeats. Commas
@@ -1705,6 +1719,20 @@ function Builder.loadCandidate(candidate, configName)
         fresh[tagKind] = table.concat(tags[tagKind] or {}, ", ")
     end
     if fresh.kind == "item" then
+        -- Dungeoneering items are all from Daemonheim (the wiki's regions rarely say so): add the
+        -- region, room permitting, as applyItemFacts does for the game's own skills.
+        local regions, skills = Builder.parseWords(fresh.regions), Builder.parseWords(fresh.skills)
+        local dungeoneering, there = false, false
+        for _, word in ipairs(skills) do
+            dungeoneering = dungeoneering or word == "dungeoneering"
+        end
+        for _, word in ipairs(regions) do
+            there = there or word == "daemonheim"
+        end
+        if dungeoneering and not there and #regions < Cards.MAX_ITEM_REGIONS then
+            regions[#regions + 1] = "daemonheim"
+            fresh.regions = table.concat(regions, ", ")
+        end
         fresh.cam = categoryCamera(Builder.categoryKey(Builder.parseWords(fresh.category)))
     else
         -- (an NPC found in two regions: its deck file is the first's, and it is tagged with the second)
