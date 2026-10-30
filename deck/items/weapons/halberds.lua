@@ -1,7 +1,16 @@
 local Set = {}
 
 Set.cards = {
-
+    { id = "adamant_halberd", name = "Adamant halberd", kind = "item", rarity = "uncommon", desc = "An adamant halberd.", art = { item = "ADAMANT_HALBERD", cam = { yaw = -2.20, dist = 525, fov = 55 } }, tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "attuned_crystal_halberd", name = "Attuned crystal halberd", kind = "item", rarity = "legendary", desc = "A halberd fashioned from crystal.", art = { item = "ELFCITY_CRYSTAL_HALBERD_ATTUNED_100", cam = { yaw = -1.80, dist = 525, fov = 55 } }, tags = { regions = { "tirannwn" }, skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "balmung", name = "Balmung", kind = "item", rarity = "rare", desc = "A raiding axe from an island kingdom.", art = { item = "EVQ_AXE", cam = { yaw = -1.60, dist = 525, ty = 20, tx = 20 } }, tags = { regions = { "fremennik_province" }, skills = { "attack" }, category = { "weapon", "melee_gear", "halberd", "quest_item" }, membership = { "p2p" } } },
+    { id = "black_halberd", name = "Black halberd", kind = "item", rarity = "uncommon", desc = "A black halberd.", art = { item = "BLACK_HALBERD", cam = { yaw = -1.80, dist = 525, fov = 55 } }, tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "blisterwood_polearm", name = "Blisterwood polearm", kind = "item", rarity = "epic", desc = "A polearm, carved from the blisterwood tree.", art = { item = "MYQ5_BLISTERWOOD_POLEARM", cam = { yaw = -1.40, dist = 603 } }, tags = { regions = { "morytania" }, skills = { "fletching", "attack" }, category = { "weapon", "melee_gear", "quest_item", "halberd" }, membership = { "p2p" } } },
+    { id = "bronze_halberd", name = "Bronze halberd", kind = "item", rarity = "common", desc = "A bronze halberd.", art = { item = "BRONZE_HALBERD", cam = { yaw = -1.60, dist = 525, fov = 60 } }, tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "crystal_halberd", name = "Crystal halberd", kind = "item", rarity = "rare", desc = "A halberd fashioned from crystal.", art = { item = "ELFCITY_CRYSTAL_HALBERD_100", cam = { yaw = -9.60, dist = 694, fov = 40 } }, tags = { regions = { "tirannwn" }, skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "dragon_rider_lance", name = "Dragon Rider lance", kind = "item", rarity = "epic", desc = "A lance used by the legendary Dragon Rider Vindicta.", art = { item = "GWD2_DRAGON_RIDER_LANCE_100", cam = { yaw = -8.20, dist = 604, fov = 40 } }, tags = { regions = { "kharidian_desert" }, skills = { "attack" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "dragon_halberd", name = "Dragon halberd", kind = "item", rarity = "rare", desc = "A dragon halberd.", art = { item = "DRAGON_HALBERD", cam = { yaw = -7.20, dist = 798, fov = 55 } }, tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
+    { id = "guthix_mjolnir", name = "Guthix mjolnir", kind = "item", rarity = "common", desc = "A Guthix Mjolnir.", art = { item = "MAKINGHISTORY_GUTHIX_POLESTAFF", cam = { yaw = -7.80, dist = 603, fov = 40, ty = -40 } }, tags = { category = { "weapon", "melee_gear", "halberd" }, membership = { "p2p" } } },
 }
 
 return Set

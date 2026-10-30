@@ -1,7 +1,15 @@
 local Set = {}
 
 Set.cards = {
-
+    { id = "adamant_off_hand_scimitar", name = "Adamant off hand scimitar", kind = "item", rarity = "uncommon", desc = "An adamant off hand scimitar.", art = { item = "ADAMANT_SCIMITAR_O", cam = { yaw = -4.40, pitch = 1.55, dist = 525, fov = 45, tx = -10 } }, tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "f2p" } } },
+    { id = "adamant_scimitar", name = "Adamant scimitar", kind = "item", rarity = "uncommon", desc = "An adamant scimitar.", art = { item = "ADAMANT_SCIMITAR", cam = { yaw = -2.20, dist = 525, fov = 40, tx = 20 } }, tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "f2p" } } },
+    { id = "black_scimitar", name = "Black scimitar", kind = "item", rarity = "uncommon", desc = "A vicious, curved sword.", art = { item = "BLACK_SCIMITAR", cam = { yaw = -0.80, dist = 525, fov = 30 } }, tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "f2p" } } },
+    { id = "blisterwood_sickle", name = "Blisterwood sickle", kind = "item", rarity = "epic", desc = "A sickle with a handle carved from the blisterwood tree.", art = { item = "MYQ6_BLISTERWOOD_SICKLE", cam = { yaw = -0.20, dist = 525, fov = 35 } }, tags = { regions = { "morytania" }, skills = { "fletching", "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "p2p" } } },
+    { id = "brine_sabre", name = "Brine sabre", kind = "item", rarity = "uncommon", desc = "A salty sword.", art = { item = "OLAF2_BRINE_SABRE", cam = { yaw = -1.60, dist = 525, fov = 40, tx = -10 } }, tags = { regions = { "fremennik_province" }, skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "p2p" } } },
+    { id = "bronze_off_hand_scimitar", name = "Bronze off hand scimitar", kind = "item", rarity = "common", desc = "A vicious, curved off-hand sword.", art = { item = "BRONZE_SCIMITAR_O", cam = { yaw = -2.20, dist = 456, fov = 40, tx = 20 } }, tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "f2p" } } },
+    { id = "bronze_scimitar", name = "Bronze scimitar", kind = "item", rarity = "common", desc = "A vicious, curved sword.", art = { item = "BRONZE_SCIMITAR", cam = { yaw = -0.80, dist = 525, fov = 35 } }, tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "f2p" } } },
+    { id = "corrupt_dragon_scimitar", name = "Corrupt dragon scimitar", kind = "item", rarity = "epic", desc = "This item degrades while worn, and will turn to dust.", art = { item = "PVPW_DRAGON_SCIMITAR", cam = { yaw = -7.20, dist = 525, fov = 40, ty = 20 } }, tags = { regions = { "wilderness" }, skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "f2p" } } },
+    { id = "dragon_scimitar", name = "Dragon scimitar", kind = "item", rarity = "rare", desc = "A vicious, curved sword", art = { item = "DRAGON_SCIMITAR", cam = { yaw = -7.20, dist = 603, fov = 35, ty = 20 } }, tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "p2p" } } },
 }
 
 return Set

@@ -5,3 +5,4 @@ dev/wiki_candidates.lua
 dev/wiki_contact.txt
 __pycache__/
 dev/.card_queue_state.json
+docs/img
