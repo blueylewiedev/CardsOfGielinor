@@ -173,6 +173,22 @@ def cache_path(kind, name):
     return CACHE / kind / (safe + ".json")
 
 
+def slayer_races(wiki, refresh):
+    """{ Slayer category: race } from the wiki's Module:NPC races/Slayer (one request; cached).
+    Its infoboxes show this race when a page gives none of its own."""
+    cached = None if refresh else read_cache("buckets", "slayer races")
+    if cached is not None:
+        return cached
+    answer = wiki.get({"action": "query", "titles": "Module:NPC races/Slayer", "prop": "revisions",
+                       "rvprop": "content", "rvslots": "main"})
+    if answer is None:
+        return {}
+    text = answer["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"]
+    found = dict(re.findall(r"^\s*\['([^']+)'\]\s*=\s*'([^']+)'", text, re.M))
+    write_cache("buckets", "slayer races", found)
+    return found
+
+
 def read_cache(kind, name):
     path = cache_path(kind, name)
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -427,6 +443,30 @@ def npc_infobox(page):
     return kind, fields
 
 
+def npc_race(page, fields):
+    """An NPC's race as a slug, or "": its infobox's, or as the wiki's own infobox does for a page
+    that gives none, the race of its Slayer category (Cow: "Cows"). A page's other infoboxes can
+    give either."""
+    boxes = [fields] + other_infoboxes(page, fields)
+    for box in boxes:
+        if plain(first_version(box, "race")).strip():
+            return slug(plain(first_version(box, "race")))
+    for box in boxes:
+        for category in first_version(box, "slayercat").split(","):
+            if category.strip() in SLAYER_RACES:
+                return slug(SLAYER_RACES[category.strip()])
+    return ""
+
+
+def other_infoboxes(page, fields):
+    """The page's other NPC and monster infoboxes than `fields` (from npc_infobox), leaving out any
+    named for something else (the Kitten on the Cat page)."""
+    title = strip_bracket(page.get("title", "")).lower()
+    boxes = [template_fields(inside) for inside in find_templates(page.get("text", ""), ["Infobox NPC", "Infobox Monster"])]
+    return [box for box in boxes if not box.items() <= fields.items()
+            and plain(first_version(box, "name")).lower() in ("", title)]
+
+
 def find_templates(text, names, kinds=False):
     """Every {{...}} template with one of these names, as a list of inside texts (with kinds, of
     (name, inside text) pairs)."""
@@ -441,13 +481,16 @@ def find_templates(text, names, kinds=False):
 
 def template_fields(inside):
     """The named fields of a template's inside text: { name: value }."""
-    fields, depth, part = {}, 0, []
-    for i, ch in enumerate(inside + "|"):
-        two = inside[i:i + 2]
-        if two in ("{{", "[["):
-            depth += 1
-        elif two in ("}}", "]]"):
-            depth -= 1
+    fields, depth, part, i = {}, 0, [], 0
+    text = inside + "|"
+    while i < len(text):
+        ch, two = text[i], text[i:i + 2]
+        if two in ("{{", "[[", "}}", "]]"):     # (both letters, so "}}}}" closes two, not three)
+            depth = depth + 1 if two in ("{{", "[[") else depth - 1
+            part.append(two)
+            i += 2
+            continue
+        i += 1
         if ch == "|" and depth == 0:
             piece = "".join(part)
             if "=" in piece:
@@ -592,8 +635,9 @@ LOCATION_TABLE_PLACES = 3
 
 # Places whose NPCs belong to one region, although the wiki lists more (the regions the place's
 # portals reach): a page filed under the place gets that region only. The player-owned port is in
-# Port Sarim, though its NPCs are "Desert,Asgarnia,Tirannwn".
-HOME_REGIONS = {"Player-owned port": "asgarnia"}
+# Port Sarim, though its NPCs are "Desert,Asgarnia,Tirannwn". A page's title works the same way:
+# Chaeldar lives in Zanaris, though her Monster infobox says Kandarin.
+HOME_REGIONS = {"Player-owned port": "asgarnia", "Chaeldar": "misthalin"}
 
 # Category words suggested by the infobox's race.
 RACE_WORDS = {
@@ -610,9 +654,19 @@ RACE_WORDS = {
     "crab": "animal", "rock_crab": "animal", "lobster": "animal", "leech": "animal", "monkey": "animal", "fish": "animal",
     "ant": "insect", "butterfly": "insect", "soporith_moth": "insect", "firefly": "insect",
     "automaton": "construct", "dorgeshuun": "goblin", "mummy": "undead",
+    "axolotl": "animal", "badger": "animal", "cave_crawler": "animal", "horned_graahk": "animal", "kangaroo": "animal",
+    "mammoth": "animal", "newt": "animal", "pig": "animal", "rocktail": "animal", "sabre_toothed_kyatt": "animal",
+    "snail": "animal", "spined_larupia": "animal", "terrorbird": "animal", "trice": "animal",
+    "cave_bug": "insect", "locust": "insect", "mosquito": "insect", "scorpion": "insect",
+    "elemental_warrior": "elemental", "fiend": "elemental", "glacor": "elemental", "ankou": "undead", "wisp": "spirit",
+    "gargoyle": "construct", "scarecrow": "construct", "clockwork_firefly": "clockwork",
+    "compost": "plant", "ent": "plant", "strange_plant": "plant", "turnip": "plant",
 }
-# Races that say nothing worth a category word of their own.
-RACE_NOT_WORDS = {"unknown", "other", "none", "n_a"}
+# Races that say nothing worth a category word of their own. (Creatures of their own kind are here
+# too: one fought is tagged monster from its infobox anyway, and a pet of the kind has no need of it.)
+RACE_NOT_WORDS = {"unknown", "other", "none", "n_a",
+                  "airut", "aquanites", "ascension_members", "aviansie", "basilisks", "bunyip", "centaur", "dark_beast",
+                  "dust_devil", "grotworm", "karamthulhu", "kurask", "stalker", "turoth", "wyrm", "wyvern"}
 
 # Skills from the page's wiki categories (a whole category name).
 CATEGORY_SKILLS = {
@@ -1435,6 +1489,42 @@ def quest_tier(quest):
     """The rarity of a pet that needs this quest (by its difficulty), or None if it isn't one."""
     return QUEST_TIERS.get(QUEST_DIFFICULTY.get(quest))
 QUEST_DIFFICULTY = {}       # quest -> its official difficulty, read in main (see quest_difficulties)
+SLAYER_RACES = {}           # Slayer category -> race, read in main (see slayer_races)
+
+
+def quest_base(name):
+    """A quest's name without "(miniquest)" or a part number: "Civil War I (miniquest)" -> "Civil War"."""
+    return re.sub(r"\s+[IVX]+$", "", strip_bracket(name)).strip()
+
+
+def is_quest(name):
+    """True if this is a quest, or one named without its part number or "(miniquest)" (an infobox
+    version "Civil War", for Civil War I to III)."""
+    return quest_base(name) in {quest_base(quest) for quest in QUEST_DIFFICULTY}
+
+
+def box_regions(fields, strict=False):
+    """The league regions of an infobox's versions: the first, and every other but one named for a
+    quest it only appears in or a place that doesn't count (see npc_candidate). `strict` is for an
+    NPC's other infoboxes, which only add where it lives: their first version is held to that too,
+    and a box from a quest's update (Sir Tiffy Cashien's fight in Ritual of the Mahjarrat) gives none."""
+    if strict and is_quest(plain(first_version(fields, "update")).strip()):
+        return []
+    numbers = sorted(int(k[len("version"):]) for k in fields if re.fullmatch(r"version\d+", k)) or [0]
+    regions = []
+    for n in numbers:
+        # (without its bracket or part number: "Ritual of the Mahjarrat (dying)", "Swan Song, 1")
+        version = re.sub(r",\s*\d+$", "", strip_bracket(plain(fields.get(f"version{n}", "")).strip()))
+        if (strict or n != numbers[0]) and (is_quest(version) or version in SECONDARY_PLACES):
+            continue
+        for region in version_regions(fields, n):
+            if region not in regions:
+                regions.append(region)
+    # (another version's Global, somewhere outside the regions, doesn't make one that has a region a
+    # general card: Fairy Very Wise's in the Sparse Plane)
+    if "global" in regions and len(regions) > 1 and "global" not in version_regions(fields, numbers[0]):
+        regions.remove("global")
+    return regions
 PET_CATEGORIES = {"Pets", "Boss pets", "Skilling pets", "Companion pets", "Follower pets", "Object pets",
                   "Legendary pets", "Discontinued pets"}
 
@@ -1588,7 +1678,7 @@ def npc_rarity(page, fields, character, named):
     slayer_master = "Slayer Master" in categories
     # The great races of the story, epic like a boss: the Mahjarrat, and the dragonkin who have a
     # name or are fought as bosses (Kerapac, Strisath; not their Nodon soldiers, dragonkin too).
-    race = slug(plain(first_version(fields, "race")))
+    race = npc_race(page, fields)
     lore_race = ("a Mahjarrat" if "Mahjarrat" in categories
                  else "a dragonkin" if race == "dragonkin" and (named or boss_named(categories)) else None)
     # (the Dominion Tower holds the quests' bosses, the Evil Chicken and Sigmund among them)
@@ -1696,27 +1786,23 @@ def npc_candidate(page, kind, fields, names, words):
     # Mage of Zamorak in the Wilderness and Varrock. Found all over the world (Global, like Rat) or
     # in several regions (Imp, Chicken: "Misthalin, Asgarnia, Kandarin"), it is a general card, which
     # has no region (the Card Builder puts a candidate without one in the general deck).
-    numbers = sorted(int(k[len("version"):]) for k in fields if re.fullmatch(r"version\d+", k)) or [0]
-    regions = []
-    for n in numbers:
-        # (without its bracket or part number: "Ritual of the Mahjarrat (dying)", "Swan Song, 1")
-        version = re.sub(r",\s*\d+$", "", strip_bracket(plain(fields.get(f"version{n}", "")).strip()))
-        if n != numbers[0] and (version in QUEST_DIFFICULTY or version in SECONDARY_PLACES):
-            continue
-        for region in version_regions(fields, n):
-            if region not in regions:
-                regions.append(region)
-    # (another version's Global, somewhere outside the regions, doesn't make one that has a region a
-    # general card: Fairy Very Wise's in the Sparse Plane)
-    if "global" in regions and len(regions) > 1 and "global" not in version_regions(fields, numbers[0]):
-        regions.remove("global")
+    regions = box_regions(fields)
+    # A page's other infoboxes: with none in this one, the first of them that gives a region
+    # (Zenevivia's NPC box has none, her Monster box says Misthalin, though for Love Story); with
+    # one, those outside quests add to it (Cruor: Asgarnia for Nex, Misthalin for the Angel of Death).
+    others = other_infoboxes(page, fields)
+    if not regions:
+        regions = next(filter(None, map(box_regions, others)), [])
+    elif regions != ["global"]:
+        for other in others:
+            regions += [r for r in box_regions(other, strict=True) if r not in regions and r != "global"]
     # A minigame that brings back monsters from elsewhere puts them in its own region too, which is
     # not where they are from (see SECONDARY_PLACES): left out when they have another.
     categories = page.get("categories", [])
-    refought = {SECONDARY_PLACES[place] for place in secondary_places(page, fields)}
+    refought = {SECONDARY_PLACES[place] for box in [fields] + others for place in secondary_places(page, box)}
     if len(regions) > 1:
         regions = [r for r in regions if r not in refought] or regions
-    home = next((HOME_REGIONS[c] for c in categories if c in HOME_REGIONS), None)
+    home = next((HOME_REGIONS[c] for c in categories + [page["title"]] if c in HOME_REGIONS), None)
     if home in regions:
         regions = [home]
     # A page named for one of its places ("Firefly (The Lost Grove)", found in the Lost Grove and the
@@ -1798,7 +1884,7 @@ def npc_candidate(page, kind, fields, names, words):
         notes.append("no location on the wiki: add one if it has a home")
 
     category = []
-    race = slug(plain(first_version(fields, "race")))
+    race = npc_race(page, fields)
     # The race's word, or the race itself as a new word (implings, titans) if it has none.
     if race in RACE_WORDS:
         category.append(RACE_WORDS[race])
@@ -2157,6 +2243,7 @@ def main():
 
     names, words = npc_names(), allowed_words()
     QUEST_DIFFICULTY.update(quest_difficulties(wiki, args.refresh))
+    SLAYER_RACES.update(slayer_races(wiki, args.refresh))
     PLACE_REGIONS.update(place_regions(json.loads(f.read_text(encoding="utf-8")) for f in (CACHE / "pages").glob("*.json")))
     # The other places of NPCs the wiki gives no region: their own pages give theirs (fetched once).
     unplaced = places_without_region(pages.values())

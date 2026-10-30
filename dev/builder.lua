@@ -306,8 +306,15 @@ end
 --   3. one named like the NPC or its animation set (Advisor Roddeck's ADVISOR_RODDICK_READY), or
 --      spelt a letter differently;
 --   4. the plain human one, if the game stands it with that, it is a humanoid, or a name gave it.
+--      (Not one found by a job word of the name, tried in October 2026: the deck's cards keep the
+--      plain one for most people the game stands with it, and personal names find other things,
+--      Lucy's SLUG3_LUCY_DYING_READY.)
 -- `text` and `gender` are optional: the card's name and description, and the wiki's gender, for
 -- the trade pose (see tradePose).
+-- (It also returns which of these found it: Builder.checkAnims counts them.)
+local quietAnims = false        -- true while Builder.checkAnims runs, so each card isn't logged
+local ANIM_CHECK_KEY = "dev_anim_check"     -- where Builder.checkAnims saves its report
+
 function Builder.readyAnim(configName, humanoid, text, gender)
     local npcId = Builder.lookupNpc(configName)
     if npcId == nil then
@@ -315,20 +322,23 @@ function Builder.readyAnim(configName, humanoid, text, gender)
     end
     local basName = nil
     pcall(function() basName = tostring(config.NPC.FromID(npcId).bas.configName) end)
-    local function found(name, id)
-        log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):", name, "=", id)
-        return id
+    -- (also returns which of the tries found it, for Builder.checkAnims)
+    local function found(name, id, try)
+        if not quietAnims then
+            log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):", name, "=", id)
+        end
+        return id, try
     end
     local plainHuman = seqId(HUMAN_READY)
     local _, anims = Builder.setAnimsOf(npcId)
     local stand = setStand(anims)
     if stand ~= nil and stand ~= plainHuman then
-        return found("its animation set's", stand)
+        return found("its animation set's", stand, "set stand")
     end
     if humanoid then
         local name, id = tradePose(text, gender)
         if id ~= nil then
-            return found(name .. " (a trade in its description)", id)
+            return found(name .. " (a trade in its description)", id, "trade pose")
         end
     end
     local runs = wordRuns(basName)
@@ -348,7 +358,7 @@ function Builder.readyAnim(configName, humanoid, text, gender)
             local id = usable(run) and seqId(run .. ending) or nil
             namedHuman = namedHuman or (id ~= nil and id == plainHuman)
             if id ~= nil and id ~= plainHuman then
-                return found(run .. ending, id)
+                return found(run .. ending, id, "name")
             end
         end
     end
@@ -360,7 +370,7 @@ function Builder.readyAnim(configName, humanoid, text, gender)
                 for length = #run - 1, #run + 1 do
                     for _, entry in ipairs(stems[length] or {}) do
                         if entry.ending == ending and entry.id ~= plainHuman and oneLetterApart(run, entry.stem) then
-                            return found(entry.stem .. ending .. " (spelt " .. run .. " here)", entry.id)
+                            return found(entry.stem .. ending .. " (spelt " .. run .. " here)", entry.id, "near name")
                         end
                     end
                 end
@@ -368,12 +378,14 @@ function Builder.readyAnim(configName, humanoid, text, gender)
         end
     end
     if stand ~= nil then         -- (the plain human one, from its animation set)
-        return found("its animation set's", stand)
+        return found("its animation set's", stand, "set 808")
     end
     local fallback = (humanoid or namedHuman) and plainHuman or nil
-    log("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
-        .. (fallback and "; using " .. HUMAN_READY or ""))
-    return fallback
+    if not quietAnims then
+        log("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
+            .. (fallback and "; using " .. HUMAN_READY or ""))
+    end
+    return fallback, fallback and "808 fallback" or "none"
 end
 
 -- Animation set names already looked up (config name -> name, or false if it has none), as the
@@ -851,6 +863,7 @@ local RIGHT_X, RIGHT_W = 780, 316
 local HALF_W = 148                 -- the NPC / Item buttons
 local CTRL_X = 120                -- where the buttons of a camera row start (after its label)
 local CTRL_W = 56                 -- width of a small "-" / "+" button
+local CLIP_FIX_FOV = 65           -- the view "Clip fix" widens to first (the clipped cards use 60 to 80)
 local BOTTOM_Y = 510
 local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches the right edge
 local WIN_H = BOTTOM_Y + 220
@@ -1365,6 +1378,76 @@ function Builder.readyAnimFor(configName, card)
     end
     return Builder.readyAnim(configName, humanoid, (card.name or "") .. " " .. (card.desc or ""), card.gender)
 end
+
+-- Where an animation is in an NPC's animation set (dev/anim_sets.lua): "stand", "idle", "set"
+-- (another of its animations: walk, run, turns) or "no".
+local function placeInSet(anims, animId)
+    if anims == nil then
+        return "unknown"
+    end
+    if anims.stand == animId then
+        return "stand"
+    end
+    for _, idle in ipairs(anims.idles or {}) do
+        if idle[1] == animId then
+            return "idle"
+        end
+    end
+    for _, value in pairs(anims) do
+        if value == animId then
+            return "set"
+        end
+    end
+    return "no"
+end
+
+-- Checks the standing animation the builder would choose (Builder.readyAnimFor) against the one
+-- each NPC card in the deck has, and logs the result: for each try (its set's stand, a trade
+-- pose, a name...), how often it chose the card's, then one "animcheck:" line for every card it
+-- didn't, with where the card's animation is in the NPC's animation set. The report is also saved
+-- in the plugin's database under ANIM_CHECK_KEY, where it can be read outside the game (the
+-- DataStore table of PluginData.db, in the client's plugins folder), to look for what the tries miss.
+function Builder.checkAnims()
+    local function named(animId)
+        return animId == nil and "none" or ((AnimSearch.nameOf(animId) or "?") .. " " .. string.format("%.0f", animId))
+    end
+    local tries, total, matched, misses = {}, 0, 0, {}
+    quietAnims = true
+    for _, card in ipairs(Cards.list) do
+        local art = card.art or {}
+        if Cards.kindOf(card) ~= "item" and art.npc ~= nil and art.anim ~= nil and art.model == nil then
+            local ok, suggested, try = pcall(Builder.readyAnimFor, art.npc, card)
+            try = ok and (try or "no such NPC") or "error"
+            tries[try] = tries[try] or { chose = 0, of = 0 }
+            tries[try].of = tries[try].of + 1
+            total = total + 1
+            if ok and suggested == art.anim then
+                matched = matched + 1
+                tries[try].chose = tries[try].chose + 1
+            else
+                local npcId = Builder.lookupNpc(art.npc)
+                local _, anims = Builder.setAnimsOf(npcId)
+                misses[#misses + 1] = "animcheck: " .. card.id .. " | card: " .. named(art.anim) .. " (in its set: "
+                    .. placeInSet(anims, art.anim) .. ") | builder: " .. named(ok and suggested or nil) .. " by " .. try
+                    .. " | set " .. tostring(Builder.animSetOf(art.npc))
+            end
+        end
+    end
+    quietAnims = false
+    local report = { "animcheck: the builder chose the card's animation for " .. matched .. " of " .. total .. " NPC cards" }
+    for try, counts in pairs(tries) do
+        report[#report + 1] = "animcheck: by " .. try .. ": " .. counts.chose .. " of " .. counts.of
+    end
+    for _, line in ipairs(misses) do
+        report[#report + 1] = line
+    end
+    for _, line in ipairs(report) do
+        log(line)
+    end
+    local saved = pcall(function() PersistentDB:Set(ANIM_CHECK_KEY, table.concat(report, "\n")) end)
+    OutputWindow.add("animcheck", matched .. " of " .. total .. " match; " .. #misses .. " differ"
+        .. (saved and " (saved as \"" .. ANIM_CHECK_KEY .. "\")" or " (not saved: see the console)"))
+end
 local CAMERA_FIELDS = { "yaw", "pitch", "dist", "fov", "ty", "tx" }
 -- How much a difference in each camera value counts when comparing two framings.
 local CAMERA_SCALE = { yaw = 1, pitch = 1, dist = 1000, fov = 30, ty = 300, tx = 100 }
@@ -1875,6 +1958,18 @@ function Builder.show()
     y = y + STEP
     control("Size", y, MINUS, PLUS,
         function(c) c.fov = math.min(120, c.fov + 5) end, function(c) c.fov = math.max(5, c.fov - 5) end)
+    -- An older model's clothes or hair poke through it with a far camera and a narrow view (the
+    -- portrait's 1306 and 20): a close camera with a wide view shows it right (Aeonisig: 431 and
+    -- 60). This widens the view (to CLIP_FIX_FOV, then 10 more each press) and moves the camera in
+    -- to match, so the NPC stays the same size on the card.
+    Kit.smallButton(content, "Clip fix", RIGHT_X + CTRL_X + 2 * CTRL_W + 24, y, RIGHT_W - CTRL_X - 2 * CTRL_W - 24, 28,
+        function()
+            withCamera(function(c)
+                local fov = c.fov < CLIP_FIX_FOV and CLIP_FIX_FOV or math.min(100, c.fov + 10)
+                c.dist = c.dist * math.tan(math.rad(c.fov / 2)) / math.tan(math.rad(fov / 2))
+                c.fov = fov
+            end)
+        end, "Closer, with a wider view, the same size: for a model whose clothes or hair poke through")
     y = y + STEP
     control("Tilt", y, MINUS, PLUS,
         function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
@@ -1978,6 +2073,47 @@ function Builder.show()
             AnimSearch.setPicker(useAnim)
             AnimSearch.showList("Animation set " .. setName .. ": " .. #list .. " animations", list)
         end)
+        -- What the deck's cards often use instead of the stand: the set's walk (a creature that only
+        -- stands looks still: the cave slime, the fire giant), or one of its livelier idles (the
+        -- swamp frog's FROG_CUTE_IDLE_EXTRA). Each press of Lively idle plays the next.
+        local function setAnims()
+            local _, anims = Builder.setAnimsOf(Builder.lookupNpc(subject()))
+            if anims == nil then
+                log("builder: no animation set known for", subject(), "(is dev/anim_sets.lua made? python dev/anim_sets.py)")
+            end
+            return anims
+        end
+        Kit.smallButton(content, "Walk", RIGHT_X, y + 2 * STEP + 62, 100, 28, function()
+            local anims = setAnims()
+            if anims ~= nil and anims.walk ~= nil and anims.walk >= 0 then
+                useAnim({ id = anims.walk })
+            end
+        end, "Play the animation set's walk")
+        local idleTurn = 0
+        Kit.smallButton(content, "Lively idle", RIGHT_X + 108, y + 2 * STEP + 62, 130, 28, function()
+            local anims = setAnims()
+            if anims == nil then
+                return
+            end
+            local lively, plain = {}, {}
+            for _, idle in ipairs(anims.idles or {}) do
+                if idle[1] ~= anims.stand then
+                    local name = AnimSearch.nameOf(idle[1]) or ""
+                    local into = (name:find("EXTRA", 1, true) or name:find("RARE", 1, true)
+                        or name:find("RANDOM", 1, true)) and lively or plain
+                    into[#into + 1] = idle[1]
+                end
+            end
+            for _, animId in ipairs(plain) do
+                lively[#lively + 1] = animId
+            end
+            if #lively == 0 then
+                log("builder: the animation set of", subject(), "has no other idles")
+                return
+            end
+            idleTurn = idleTurn % #lively + 1
+            useAnim({ id = lively[idleTurn] })
+        end, "Play the set's next idle, the livelier (EXTRA, RARE) ones first")
         -- Two rows of three (the "+100" label does not fit in a button six across).
         local steps = { -100, -10, -1, 1, 10, 100 }
         for i, amount in ipairs(steps) do
