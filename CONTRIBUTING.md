@@ -78,6 +78,14 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
    **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
 
+   Instead of copying each block by hand, you can let **Done** queue it: the Wiki Review saves
+   the card in the Card Builder (the one you loaded, with no problems showing in its checks) in the
+   plugin's database, and `python dev/card_queue.py --db <the client's PluginData.db>` (run on the
+   computer the client runs on; it keeps watching, or use `--once`) adds each queued card to the end
+   of its deck file. It only reads the database, skips an id that is already in the deck, and
+   remembers what it has done in `dev/.card_queue_state.json`. Reload the plugin afterwards, and add
+   any new tag words it lists to `core/cards.lua`.
+
 Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
 at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in
 `dev/wiki_cache/` so running it again asks the wiki for nothing it already has. Don't lower those

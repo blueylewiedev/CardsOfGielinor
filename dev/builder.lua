@@ -699,6 +699,26 @@ function Builder.blockLines()
     return lines
 end
 
+-- The finished card as an entry for the card queue (dev/wikireview.lua keeps these in the
+-- database for dev/card_queue.py to add to the deck files), or nil and why not: the card has
+-- something to fix, or no deck file. `notes` holds the lines about new tag words, if any.
+function Builder.queueEntry()
+    local _, ready = Builder.checks()
+    if not ready then
+        return nil, "the card still has something to fix"
+    end
+    local deck = Cards.sets[draft.deck]
+    if deck == nil then
+        return nil, "no deck file chosen"
+    end
+    local lines = Builder.blockLines()
+    local notes = {}
+    for i = 2, #lines do
+        notes[#notes + 1] = lines[i]
+    end
+    return { id = draft.cardId, name = draft.name, deck = deck, block = lines[1], notes = table.concat(notes, " | ") }
+end
+
 -- What is right and wrong with the card so far. Returns a list of { level, text } where level
 -- is "ok", "note" (worth a look) or "fix" (will not load). `ready` is true when nothing needs fixing.
 function Builder.checks()

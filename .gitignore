@@ -4,3 +4,4 @@ dev/wiki_candidates.lua
 # Your own contact for the wiki's admins (see dev/wiki_cards.py); each person keeps their own.
 dev/wiki_contact.txt
 __pycache__/
+dev/.card_queue_state.json

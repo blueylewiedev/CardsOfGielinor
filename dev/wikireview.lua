@@ -21,7 +21,7 @@ local WikiFetch = require("dev/wikifetch")
 local WikiReview = {}
 
 local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
-local WIDTH, HEIGHT = 480, 376
+local WIDTH, HEIGHT = 480, 400
 local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
 local NOTE_CHARS = 54       -- about how many letters of a note fit on a row
@@ -281,11 +281,44 @@ local function step(dir)
     refresh()
 end
 
+-- Saying what happened to the card in the queue, under the buttons.
+local function queueMessage(text)
+    if widgets.queueText ~= nil then
+        widgets.queueText.content = text
+    end
+end
+
+-- Adds the card in the Card Builder to the card queue in the database, if it is the candidate
+-- being marked Done: dev/card_queue.py (run on this computer) writes the queued cards into their
+-- deck files. Each card is a key of its own (dev_card_queue_0001...), so none is overwritten.
+local QUEUE_KEY, SEQ_KEY = "dev_card_queue_", "dev_card_queue_seq"
+local function queueCard(candidate)
+    if widgets.loaded ~= candidate or not Builder.isOpen() then
+        queueMessage("Not queued: this candidate is not loaded in the Card Builder")
+        return
+    end
+    local entry, why = Builder.queueEntry()
+    if entry == nil then
+        queueMessage("Not queued: " .. why)
+        return
+    end
+    local ok, seq = pcall(function() return PersistentDB:GetStructuredData(SEQ_KEY) end)
+    local number = ((ok and type(seq) == "table" and tonumber(seq.n)) or 0) + 1
+    local saved = pcall(function()
+        PersistentDB:SetStructuredData(QUEUE_KEY .. string.format("%04d", number), entry)
+        PersistentDB:SetStructuredData(SEQ_KEY, { n = number })
+    end)
+    queueMessage(saved and ("Queued " .. entry.id .. " (#" .. number .. ") for " .. entry.deck) or "Not queued: the database refused it")
+end
+
 -- Marks the current candidate and takes it off the list.
 local function finish(verdict)
     local candidate = queue[index]
     if candidate == nil then
         return
+    end
+    if verdict == "done" then
+        queueCard(candidate)
     end
     mark(candidate, verdict)
     for i, other in ipairs(remaining) do
@@ -367,6 +400,8 @@ function WikiReview.show()
         "The card is made: take it off the list")
     Kit.buttonAt(content, "Skip", 16 + half, buttonsY + 40, half, 30, function() finish("skipped") end, "negative",
         "Not a card: take it off the list")
+
+    widgets.queueText = Kit.text(content, 10, buttonsY + 76, INNER, 18, "", GREY, ui.AlignMode.TOPLEFT)
 
     -- Which category or page to review the candidates of (made last so its list opens on top).
     widgets.filter = Kit.dropdown(content, 10, 38, INNER, 28, { { label = "All", value = ALL } }, ALL,
