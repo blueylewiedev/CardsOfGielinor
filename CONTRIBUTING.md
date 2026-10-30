@@ -94,6 +94,10 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    python dev/card_queue.py --db DB --rename 7 new_id give a failed card another id, then run --once
    ```
 
+   Once the script has added cards and you have reloaded the plugin, press **Clear added cards**
+   in the Wiki Review: it deletes the queued cards that are now in the deck from the database
+   (a card that only shares an id with an existing one, and ones not added yet, stay).
+
    A card whose id is already in the deck, or whose deck file is missing, is reported as failed
    and kept; `--list` shows it with the wiki page it came from. To change it in the builder, type
    that page into the Wiki Review's **Reopen** box, load it, fix it and press **Done** again. Reload

@@ -717,8 +717,8 @@ function Builder.queueEntry(page)
     for i = 2, #lines do
         notes[#notes + 1] = lines[i]
     end
-    return { id = draft.cardId, name = draft.name, deck = deck, block = lines[1], notes = table.concat(notes, " | "),
-        page = page or "" }
+    return { id = draft.cardId, name = draft.name, desc = draft.desc, rarity = draft.rarity, deck = deck,
+        block = lines[1], notes = table.concat(notes, " | "), page = page or "" }
 end
 
 -- What is right and wrong with the card so far. Returns a list of { level, text } where level
