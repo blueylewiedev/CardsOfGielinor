@@ -760,6 +760,20 @@ COSMETIC_CATEGORY = re.compile(r"\bcosmetic|\boverride")
 CAN_HAVE_COSMETICS = re.compile(r"\bcapable of\b|\bcan (?:be )?(?:use|apply|have|wear)")
 
 
+WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd", "whip",
+                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon"}
+# The kind of a weapon from its name (the last word), for a weapon whose wiki categories name no
+# kind: "Adamant claws" is a claw. In order, as "2h sword" must come before "sword".
+WEAPON_NAME_KINDS = [
+    (r"\b2h swords?$", "two_handed_sword"), (r"\bclaws?$", "claw"), (r"\bdaggers?$", "dagger"),
+    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?$|\brapiers?$", "sword"),
+    (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|mauls?|flails?)$", "mace"),
+    (r"\b(?:spears?|hastas?|warspears?|lances?)$", "spear"), (r"\bhalberds?$", "halberd"),
+    (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
+    (r"\bcrossbows?$", "crossbow"), (r"\b(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
+]
+
+
 def slug(text):
     return re.sub(r"[^a-z0-9]+", "_", text.lower()).strip("_")
 
@@ -1222,6 +1236,15 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
+    # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
+    kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
+    if "weapon" in found and not kind_words.intersection(found):
+        plain_name = strip_bracket(name).lower()
+        for pattern, kind in WEAPON_NAME_KINDS:
+            if re.search(pattern, plain_name):
+                found.append(kind)
+                notes.append(f"weapon kind {kind} taken from the name: check it")
+                break
     # (a clean herb is the grimy one after Herblore has cleaned it: a processed material)
     if "herb" in found and re.match(r"clean\b", strip_bracket(name).lower()):
         found = ["processed_material" if w == "raw_material" else w for w in found]
