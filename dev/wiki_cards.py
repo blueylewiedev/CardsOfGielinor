@@ -297,16 +297,20 @@ def region_pages(wiki, region, refresh, members=None):
 WEAPON_STYLES = ("melee", "ranged", "magic", "necromancy", "hybrid")
 # A weapon's upgrade ("Adamant scimitar + 1"): the same weapon, so it has no card of its own.
 UPGRADE_TITLE = re.compile(r"\s\+\s*\d+$")
+# Weapon pages that get no card: skilling tools (pickaxes, hatchets, mattocks), pages with a
+# bracketed suffix ("Scimitar (class 3)", "Zamorak godsword (passive)", "Silverlight (dyed)": variants
+# of another page) and augmented versions of a weapon.
+WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\([^)]*\)\s*$|^augmented\s", re.I)
 
 
 def weapon_pages(wiki, style, refresh):
     """The weapon pages of a combat style (cached), from the wiki's Infobox bonuses: those whose
     slot has "weapon" in it ("main hand weapon"; two-handed and off-hand weapons too, not shields),
-    without cosmetic recolours or upgrades (UPGRADE_TITLE). Returns None if the request limit ran
+    without cosmetic recolours or upgrades (UPGRADE_TITLE) and the pages WEAPON_SKIP names. Returns None if the request limit ran
     out before they were listed."""
     cached = None if refresh else read_cache("weapons", style)
     if cached is not None:
-        return cached
+        return [t for t in cached if not WEAPON_SKIP.search(t)]
     titles, offset, info = [], 0, {}
     while True:
         query = (f"bucket('infobox_bonuses').select('page_name', 'equipment_slot', 'is_cosmetic_recolour',"
@@ -330,7 +334,7 @@ def weapon_pages(wiki, style, refresh):
     titles = list(dict.fromkeys(titles))
     write_cache("weapons", style, titles)
     write_cache("weapon_info", style, info)
-    return titles
+    return [t for t in titles if not WEAPON_SKIP.search(t)]
 
 
 def print_titles(titles, sources):
