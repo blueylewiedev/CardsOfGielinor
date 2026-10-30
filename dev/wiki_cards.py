@@ -1137,6 +1137,9 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
+    # (a clean herb is the grimy one after Herblore has cleaned it: a processed material)
+    if "herb" in found and re.match(r"clean\b", strip_bracket(name).lower()):
+        found = ["processed_material" if w == "raw_material" else w for w in found]
     category = []
     for word in found:
         parents = words["item_requires"].get(word, [])
