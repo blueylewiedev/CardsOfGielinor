@@ -265,6 +265,12 @@ Set.cards = {
         art = { item = "CLARET_CRAB", cam = { pitch = 1.25, fov = 70, ty = -20, tx = 40 } },
         tags = { regions = { "havenhythe" }, skills = { "cooking" }, category = { "food", "fish" }, membership = { "p2p" } },
     },
+    {
+        id = "loach", name = "Loach", kind = "item", rarity = "common",
+        desc = "Steamed cave pond loach.",
+        art = { item = "DORGESH_STEAMED_POND_LOACH", cam = { pitch = 1.55, fov = 40, ty = -20 } },
+        tags = { regions = { "misthalin" }, category = { "food", "fish", "minigame" }, membership = { "p2p" } },
+    },
 }
 
 return Set

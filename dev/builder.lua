@@ -779,7 +779,7 @@ function Builder.checks()
     if draft.desc == "" then
         add("fix", "Write a short description")
     elseif #draft.desc > Cards.MAX_DESC then
-        add("fix", "The description is " .. #draft.desc .. " letters; keep it to " .. Cards.MAX_DESC)
+        add("note", "The description is " .. #draft.desc .. " letters; keep it to " .. Cards.MAX_DESC)
     else
         add("ok", "The description fits the card")
     end

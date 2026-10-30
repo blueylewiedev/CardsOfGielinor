@@ -289,6 +289,18 @@ Set.cards = {
         art = { item = "MORT_SLIMEY_EEL", cam = { yaw = -0.40, pitch = 1.55, fov = 70, ty = -20 } },
         tags = { regions = { "misthalin", "morytania" }, skills = { "fishing" }, category = { "food" }, membership = { "p2p" } },
     },
+    {
+        id = "stone_fish", name = "Stone fish", kind = "item", rarity = "common",
+        desc = "I wonder if I can make soup out of it?",
+        art = { item = "DRUID_STONE_FISH", cam = { pitch = 1.55, dist = 397, fov = 60, ty = -20, tx = 10 } },
+        tags = { regions = { "asgarnia" }, skills = { "fishing" }, category = { "quest_item", "raw_material", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "whitefish", name = "Whitefish", kind = "item", rarity = "common",
+        desc = "An ugly albino fish.",
+        art = { item = "LOTG_WHITEFISH", cam = { yaw = -2.20, pitch = 0.60, fov = 60, ty = -20, tx = 40 } },
+        tags = { regions = { "kandarin" }, skills = { "fishing" }, category = { "quest_item", "raw_material", "fish" }, membership = { "p2p" } },
+    },
 }
 
 return Set

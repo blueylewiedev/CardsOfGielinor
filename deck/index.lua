@@ -51,4 +51,6 @@ return {
     "deck/items/processed_materials/gems",
     "deck/items/consumable",
     "deck/items/seeds",
+    "deck/items/tools",
+    "deck/items/quest_items",
 }

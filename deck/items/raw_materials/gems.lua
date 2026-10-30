@@ -91,6 +91,8 @@ Set.cards = {
         art = { item = "UNCUT_SAPPHIRE", cam = { yaw = -0.80, pitch = 1.00, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
     },
+    { id = "kharidib", name = "Kharid-ib", kind = "item", rarity = "common", desc = "A flawless diamond with a stylised Kharidian heart shape.", art = { item = "OZAN2_DIAMOND", cam = { yaw = -0.40, pitch = 1.45, dist = 525, fov = 20 } }, tags = { category = { "quest_item" }, membership = { "p2p" } } },
+    { id = "red_jewel", name = "Red jewel", kind = "item", rarity = "legendary", desc = "It gives off a faint red glow.", art = { item = "KHARSHAI_REDJEWEL", cam = { yaw = -0.80, pitch = 1.00, dist = 525, fov = 15 } }, tags = { category = { "quest_item", "fashion" }, membership = { "p2p" } } },
 }
 
 return Set

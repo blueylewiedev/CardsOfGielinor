@@ -13,6 +13,7 @@ Set.cards = {
         art = { item = "MOONSTONE_DUST", cam = { yaw = -0.40, dist = 525, fov = 20, tx = 10 } },
         tags = { skills = { "thieving" }, category = { "consumable" }, membership = { "p2p" } },
     },
+    { id = "poison_karambwan", name = "Poison karambwan", kind = "item", rarity = "common", desc = "Cooked octopus. It looks poorly cooked and quite dangerous.", art = { item = "TBWT_POORLY_COOKED_KARAMBWAN", cam = { pitch = 1.05, dist = 525, ty = -40 } }, tags = { regions = { "karamja" }, skills = { "cooking" }, category = { "consumable" }, membership = { "p2p" } } },
 }
 
 return Set
