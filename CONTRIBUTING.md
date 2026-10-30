@@ -78,6 +78,31 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
    **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
 
+   Instead of copying each block by hand, you can let **Done** queue it: the Wiki Review saves
+   the card in the Card Builder (the one you loaded, with no problems showing in its checks) in the
+   plugin's database, and `dev/card_queue.py` (run on the computer the client runs on) adds each
+   queued card to the end of its deck file. If the card can't be queued, a line under the buttons
+   says why and the candidate stays on the list. The script only reads the database; what it has
+   done is kept in `dev/.card_queue_state.json`. Commands (`DB` is the client's `PluginData.db`):
+
+   ```
+   python dev/card_queue.py --db DB                   keep watching, adding each card as it is queued
+   python dev/card_queue.py --db DB --once            add everything queued now (and retry failed ones)
+   python dev/card_queue.py --db DB --dry-run         say what would be added, change nothing
+   python dev/card_queue.py --db DB --list            queued cards not added yet, why, and their blocks
+   python dev/card_queue.py --db DB --list --all      the added ones too
+   python dev/card_queue.py --db DB --rename 7 new_id give a failed card another id, then run --once
+   ```
+
+   Once the script has added cards and you have reloaded the plugin, press **Clear added cards**
+   in the Wiki Review: it deletes the queued cards that are now in the deck from the database
+   (a card that only shares an id with an existing one, and ones not added yet, stay).
+
+   A card whose id is already in the deck, or whose deck file is missing, is reported as failed
+   and kept; `--list` shows it with the wiki page it came from. To change it in the builder, type
+   that page into the Wiki Review's **Reopen** box, load it, fix it and press **Done** again. Reload
+   the plugin afterwards, and add any new tag words the script lists to `core/cards.lua`.
+
 Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
 at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in
 `dev/wiki_cache/` so running it again asks the wiki for nothing it already has. Don't lower those

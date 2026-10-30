@@ -21,7 +21,7 @@ local WikiFetch = require("dev/wikifetch")
 local WikiReview = {}
 
 local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
-local WIDTH, HEIGHT = 480, 376
+local WIDTH, HEIGHT = 480, 468
 local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
 local NOTE_CHARS = 54       -- about how many letters of a note fit on a row
@@ -281,11 +281,131 @@ local function step(dir)
     refresh()
 end
 
+-- Saying what happened to the card in the queue, under the buttons.
+local function queueMessage(text)
+    if widgets.queueText ~= nil then
+        widgets.queueText.content = text
+    end
+end
+
+-- Adds the card in the Card Builder to the card queue in the database, if it is the candidate
+-- being marked Done: dev/card_queue.py (run on this computer) writes the queued cards into their
+-- deck files. Each card is a key of its own (dev_card_queue_0001...), so none is overwritten.
+local QUEUE_KEY, SEQ_KEY = "dev_card_queue_", "dev_card_queue_seq"
+local function queueCard(candidate)
+    if widgets.loaded ~= candidate or not Builder.isOpen() then
+        queueMessage("Not queued: load this candidate into the Card Builder first")
+        return false
+    end
+    local entry, why = Builder.queueEntry(candidate.page)
+    if entry == nil then
+        queueMessage("Not queued: " .. why)
+        return false
+    end
+    local ok, seq = pcall(function() return PersistentDB:GetStructuredData(SEQ_KEY) end)
+    local number = ((ok and type(seq) == "table" and tonumber(seq.n)) or 0) + 1
+    local saved = pcall(function()
+        PersistentDB:SetStructuredData(QUEUE_KEY .. string.format("%04d", number), entry)
+        PersistentDB:SetStructuredData(SEQ_KEY, { n = number })
+    end)
+    if not saved then
+        queueMessage("Not queued: the database refused it")
+        return false
+    end
+    queueMessage("Queued " .. entry.id .. " (#" .. string.format("%04d", number) .. ") for " .. entry.deck)
+    return true
+end
+
+-- True if the loaded deck has the card this queue entry is: the same id, and the same name, and
+-- the same description and rarity too when the entry kept them. (A card that only has the same id,
+-- an entry the script could not add as a duplicate, does not count: it must stay to be fixed.)
+local function inDeck(entry)
+    local card = Cards.byId[entry.id]
+    if card == nil then
+        for _, draft in ipairs(Cards.drafts) do
+            if draft.id == entry.id then
+                card = draft
+            end
+        end
+    end
+    return card ~= nil and card.name == entry.name
+        and (entry.desc == nil or card.desc == entry.desc) and (entry.rarity == nil or card.rarity == entry.rarity)
+end
+
+-- Deletes the queue entries whose cards are now in the loaded deck (reload the plugin after the
+-- script has added them), so the database does not fill up. Entries not in the deck yet, or that
+-- failed, stay. When no entry is left the counter goes too, so the numbers start again.
+local function clearAdded()
+    local keys, left = {}, 0
+    local ok = pcall(function()
+        PersistentDB:IterateEntries(function(key, value)
+            if string.sub(key, 1, #QUEUE_KEY) == QUEUE_KEY and key ~= SEQ_KEY then
+                if type(value) == "table" and inDeck(value) then
+                    keys[#keys + 1] = key
+                else
+                    left = left + 1
+                end
+            end
+            return false
+        end)
+    end)
+    if not ok then
+        queueMessage("Could not read the queue from the database")
+        return
+    end
+    local removed = 0
+    for _, key in ipairs(keys) do
+        local deleted, result = pcall(function() return PersistentDB:Delete(key) end)
+        if deleted and result ~= false then
+            removed = removed + 1
+        else
+            left = left + 1
+        end
+    end
+    if left == 0 then
+        pcall(function() PersistentDB:Delete(SEQ_KEY) end)
+    end
+    queueMessage("Cleared " .. removed .. " added card(s); " .. left .. " still queued")
+end
+
+-- Puts the candidate of a wiki page back on the list (taking off its Done or Skip mark), for a
+-- queued card the script could not add (python dev/card_queue.py --list names the page).
+local reload
+local function reopen(text)
+    local wanted = string.lower((string.gsub(text or "", "^%s*(.-)%s*$", "%1")))
+    if wanted == "" then
+        return
+    end
+    local saved, found = reviewed(), nil
+    for page in pairs(saved) do
+        if string.lower(page) == wanted then
+            found = page
+        end
+    end
+    if found == nil then
+        queueMessage("No Done or Skip mark for a page called " .. text)
+        return
+    end
+    saved[found] = nil
+    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    reload()
+    for i, candidate in ipairs(queue) do
+        if candidate.page == found then
+            index = i
+        end
+    end
+    refresh()
+    queueMessage("Back on the list: " .. found)
+end
+
 -- Marks the current candidate and takes it off the list.
 local function finish(verdict)
     local candidate = queue[index]
     if candidate == nil then
         return
+    end
+    if verdict == "done" and not queueCard(candidate) then
+        return          -- (not queued: it stays on the list, not marked Done)
     end
     mark(candidate, verdict)
     for i, other in ipairs(remaining) do
@@ -310,7 +430,7 @@ local function unmark(verdict)
 end
 
 -- Reads the candidates again (all of them, or after Reset).
-local function reload()
+function reload()
     remaining = loadRemaining() or {}
     index = 1
     applyFilter()
@@ -367,6 +487,14 @@ function WikiReview.show()
         "The card is made: take it off the list")
     Kit.buttonAt(content, "Skip", 16 + half, buttonsY + 40, half, 30, function() finish("skipped") end, "negative",
         "Not a card: take it off the list")
+
+    widgets.queueText = Kit.text(content, 10, buttonsY + 76, INNER, 18, "", GREY, ui.AlignMode.TOPLEFT)
+    Kit.buttonAt(content, "Clear added cards", 10, buttonsY + 132, INNER, 28, clearAdded, "neutral",
+        "Delete the queued cards that are now in the deck (reload the plugin first). Ones not added yet stay")
+    widgets.reopenField = Kit.inputField(content, 10, buttonsY + 98, INNER - 100, 28, 80, false)
+    Kit.buttonAt(content, "Reopen", INNER - 84, buttonsY + 98, 94, 28, function()
+        reopen(widgets.reopenField.content)
+    end, "neutral", "Type the wiki page of a queued card that failed (see card_queue.py --list) to put it back on the list")
 
     -- Which category or page to review the candidates of (made last so its list opens on top).
     widgets.filter = Kit.dropdown(content, 10, 38, INNER, 28, { { label = "All", value = ALL } }, ALL,
