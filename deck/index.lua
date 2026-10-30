@@ -49,6 +49,9 @@ return {
     "deck/items/raw_materials/ores",
     "deck/items/raw_materials/gems",
     "deck/items/processed_materials/gems",
+    "deck/items/processed_materials/herbs",
     "deck/items/consumable",
     "deck/items/seeds",
+    "deck/items/tools",
+    "deck/items/quest_items",
 }

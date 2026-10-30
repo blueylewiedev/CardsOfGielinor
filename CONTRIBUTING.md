@@ -516,8 +516,9 @@ Some words have more to say about the kind, and open their own choice once the w
 - `weapon`, `armour`, `jewellery` or `ammunition` open the **combat style**: `melee_gear`, `ranged_gear`,
   `magic_gear`, `necromancy_gear` or `hybrid_gear` (the wiki's "class" of the item). The words end in
   `_gear` so they are not mistaken for the skills of the same names.
-- `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `herb`, `log`, `ore`, `bone`,
-  `hide` and `gem`; `processed_material` opens `bar` and `plank`.
+- `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `log`, `ore`, `bone`,
+  `hide`, `herb` and `gem`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the grimy one
+  is the raw material, cleaning it with Herblore makes it a processed one) and `gem` (a cut gem).
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)

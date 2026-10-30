@@ -204,6 +204,14 @@ function ItemFacts.interpret(raw)
     elseif GE_KINDS[numberOf(params.GE_CATEGORY)] then
         add(table.unpack(GE_KINDS[numberOf(params.GE_CATEGORY)]))
         if numberOf(params.GE_CATEGORY) == 13 then
+            -- (a clean herb is the grimy one cleaned with Herblore: a processed material)
+            if string.find(string.lower(tostring(raw.name or "")), "^clean%f[%A]") then
+                for i, word in ipairs(category) do
+                    if word == "raw_material" then
+                        category[i] = "processed_material"
+                    end
+                end
+            end
             addSkill("herblore")        -- herbs exist for Herblore
         elseif numberOf(params.GE_CATEGORY) == 28 then
             addSkill("prayer")

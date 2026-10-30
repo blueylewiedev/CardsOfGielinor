@@ -205,7 +205,8 @@ def rename(db_path, key, new_id):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--db", default=os.environ.get("CARD_DB"), help="the client's PluginData.db")
+    parser.add_argument("--db", default=os.environ.get("CARD_DB") or r"C:/ProgramData/Jagex/RuneScape-BETA/plugins/PluginData.db",
+                    help="the client's PluginData.db")
     parser.add_argument("--once", action="store_true", help="process what is queued, then stop")
     parser.add_argument("--dry-run", action="store_true", help="only say what would be added")
     parser.add_argument("--list", action="store_true", help="list the queued cards not added yet, and why")
