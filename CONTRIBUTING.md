@@ -106,7 +106,9 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
 For **weapons**, `--weapons melee` (or `ranged`, `magic`, `necromancy`, `hybrid`) lists every weapon
 of that combat style from the wiki's structured data (Bucket:Infobox_bonuses): main-hand,
 two-handed and off-hand weapons, without cosmetic recolours or upgrades (the plain weapon has the
-card: Adamant scimitar, not Adamant scimitar + 1). Try `--weapons melee --count` first to see how
+card: Adamant scimitar, not Adamant scimitar + 1). Skilling tools (pickaxes, hatchets, mattocks),
+augmented, Golden and Lucky weapons and pages with a bracketed suffix ("Scimitar (class 3)", "(passive)", "(dyed)",
+"(Dominion Tower)"), which are variants of another page, are left out (`WEAPON_SKIP`). Try `--weapons melee --count` first to see how
 many pages that is, and `--weapons melee --list` to see them (with tier and damage type, lowest tier
 first) before fetching any. The kind (scimitar, dagger...) comes from each page as usual.
 
