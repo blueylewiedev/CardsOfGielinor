@@ -2,6 +2,11 @@
 
 A plugin for the RuneScape 3 Client API: earn credits from XP, open packs and collect cards.
 
+## Browsing the cards
+
+Every card in the deck can be browsed on a small website built from the deck files (`docs/`, see
+[CONTRIBUTING.md](CONTRIBUTING.md#card-browser-website)).
+
 ## Contributing
 
 New cards and artwork are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -22,7 +22,8 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
 4. [Submitting your cards](#submitting-your-cards)
 5. [Artwork](#artwork)
 6. [Code changes](#code-changes)
-7. [Licence and ownership](#licence-and-ownership)
+7. [Card browser website](#card-browser-website)
+8. [Licence and ownership](#licence-and-ownership)
 
 ---
 
@@ -661,6 +662,38 @@ else works from a fork. Either way:
   windows you changed (and the Card Builder, if you touched `ui/` or `core/`) and check them in the
   game. Run `prf` then `prl` in the developer console after adding new files such as images.
 - Releases are made by the project owner.
+
+---
+
+## Card browser website
+
+`docs/` is a small website for browsing every card in the deck: search, filters for rarity, category,
+collection, region, skill, location, membership and the pack a card can come from, sorting, an overview of
+the totals, and a detail view for each card. It is plain HTML, CSS and JavaScript with no build step, and it
+reads `docs/cards.json`, which `dev/build_site.py` makes from the deck files (it needs only Python 3, and
+reads the Lua directly: drafts are left out, as in the game).
+
+    python dev/build_site.py              rebuild docs/cards.json after the deck changes, then commit it
+    python dev/build_site.py --check      say whether docs/cards.json is out of date (changes nothing)
+    python dev/build_site.py --images     first fetch the pictures the site does not have yet
+
+To look at it on your computer, run `python -m http.server` inside `docs/` and open
+http://localhost:8000 (opening index.html as a file will not work, as browsers will not let it read
+cards.json). To put it on GitHub Pages: Settings > Pages > Deploy from a branch > `main` and `/docs`.
+
+Contributors only change `deck/`, so rebuilding `docs/cards.json` is part of the maintainer's merge routine
+(or of any pull request that wants the site updated).
+
+**Pictures.** The cards on the site show the wiki's picture of the item (`<name> detail.png`) or NPC
+(`<name>.png`, then `<name> chathead.png`), saved as small thumbnails in `docs/img/` and committed, so
+visitors never load anything from the wiki. `--images` finds them the way `dev/wiki_cards.py` fetches pages: a
+User-Agent with your contact (`--contact`, or the first line of `dev/wiki_contact.txt`), one request every two
+seconds, `maxlag`, waiting when the wiki asks us to, 50 pictures looked up per request, and a limit of
+`--max-requests` requests a run (default 200: run it again to carry on). Each card's picture is fetched once;
+`docs/img/images.json` remembers it, and the cards the wiki has no picture for (they show a letter instead)
+until `--refresh-images`. A card whose name changes is looked up again. The wiki's pictures are CC BY-NC-SA,
+so the site credits the wiki and links each picture's file page. The game's own card art in `resources/images/`
+is not shown on the site.
 
 ---
 
