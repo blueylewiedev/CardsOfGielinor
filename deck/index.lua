@@ -74,4 +74,8 @@ return {
     "deck/items/weapons/wands",
     "deck/items/weapons/lanterns",
     "deck/items/weapons/siphons",
+    "deck/items/weapons/defenders",
+    "deck/items/weapons/mauls",
+
+    "deck/items/fashions/general",
 }
