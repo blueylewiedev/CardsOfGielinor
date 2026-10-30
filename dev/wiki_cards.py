@@ -16,6 +16,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     in two or more regions (Imp, Chicken): general cards, like Global's. "None"
                     is every one the wiki gives no region (Lucien): each takes its places'
                     regions where it can, and is filed under them
+  --weapons STYLE   the weapons of a combat style: melee, ranged, magic, necromancy or hybrid, from
+                    the wiki's structured data (Bucket:Infobox_bonuses: every page whose combat
+                    class is the style and whose slot is a weapon: main hand, two-handed or
+                    off-hand). Cosmetic recolours and the upgrades (Adamant scimitar + 1, + 2) are
+                    left out: the plain weapon has the card. Fetched over several runs, like a
+                    region; --count says how many pages. e.g.  --weapons melee --count
   --race NAME       only NPCs of this race (as the wiki's infobox names it, e.g. Dog, Dwarf, Demon)
                     from this run's categories and regions; more than once for several
   --members f2p|p2p only the free to play (f2p) or members (p2p) pages of this run's categories
@@ -280,6 +286,42 @@ def region_pages(wiki, region, refresh, members=None):
     if region == NO_REGION:
         titles = [t for t in titles if not values.get(t)]
     write_cache("regions", key, titles)
+    return titles
+
+
+WEAPON_STYLES = ("melee", "ranged", "magic", "necromancy", "hybrid")
+# A weapon's upgrade ("Adamant scimitar + 1"): the same weapon, so it has no card of its own.
+UPGRADE_TITLE = re.compile(r"\s\+\s*\d+$")
+
+
+def weapon_pages(wiki, style, refresh):
+    """The weapon pages of a combat style (cached), from the wiki's Infobox bonuses: those whose
+    slot has "weapon" in it ("main hand weapon"; two-handed and off-hand weapons too, not shields),
+    without cosmetic recolours or upgrades (UPGRADE_TITLE). Returns None if the request limit ran
+    out before they were listed."""
+    cached = None if refresh else read_cache("weapons", style)
+    if cached is not None:
+        return cached
+    titles, offset = [], 0
+    while True:
+        query = (f"bucket('infobox_bonuses').select('page_name', 'equipment_slot', 'is_cosmetic_recolour')"
+                 f".where('combat_class', {json.dumps(style)}).limit({BUCKET_LIMIT}).offset({offset}).run()")
+        answer = wiki.get({"action": "bucket", "query": query})
+        if answer is None:
+            print(f"  request limit reached before the {style} weapons were listed")
+            return None
+        rows = answer.get("bucket", [])
+        for row in rows:
+            name = row.get("page_name") or ""
+            recolour = str(row.get("is_cosmetic_recolour") or "").lower() in ("true", "yes", "1")
+            if name and "weapon" in str(row.get("equipment_slot") or "").lower() and not recolour \
+                    and not UPGRADE_TITLE.search(name):
+                titles.append(name)
+        if len(rows) < BUCKET_LIMIT:
+            break
+        offset += BUCKET_LIMIT
+    titles = list(dict.fromkeys(titles))
+    write_cache("weapons", style, titles)
     return titles
 
 
@@ -632,7 +674,11 @@ CATEGORY_WORDS = {
 
 # Item category words suggested by the equipment slot (Infobox Bonuses' slot).
 SLOT_WORDS = {
-    "weapon": ["weapon"], "2h": ["weapon"], "main-hand": ["weapon"], "off-hand": ["armour", "off_hand"],
+    "weapon": ["weapon"], "2h": ["weapon"], "main-hand": ["weapon"], "main": ["weapon"], "mainhand": ["weapon"],
+    "main hand": ["weapon"], "main hand weapon": ["weapon"], "two handed weapon": ["weapon"],
+    "two-handed weapon": ["weapon"], "2h weapon": ["weapon"],
+    "off-hand weapon": ["weapon"], "off hand weapon": ["weapon"], "ohw": ["weapon"],
+    "off-hand": ["armour", "off_hand"],
     "shield": ["armour", "off_hand"], "head": ["armour", "helmet"], "torso": ["armour", "body"],
     "body": ["armour", "body"], "legs": ["armour", "legs"], "hands": ["armour", "gloves"],
     "feet": ["armour", "boots"], "cape": ["armour", "back"], "back": ["armour", "back"],
@@ -1969,6 +2015,7 @@ def remembered_sources(args):
         saved = json.loads(SOURCES.read_text(encoding="utf-8"))
     this_run = {"categories": [source(c, args.race, args.members, args.npcs, args.within) for c in args.category],
                 "regions": [source(r, args.race, args.members, args.npcs) for r in args.region],
+                "weapons": [source(w, (), args.members) for w in args.weapons],
                 "pages": list(args.page)}
     for key, new in this_run.items():
         saved.setdefault(key, [])
@@ -1979,7 +2026,7 @@ def remembered_sources(args):
         SOURCES.parent.mkdir(parents=True, exist_ok=True)
         SOURCES.write_text(json.dumps(saved, indent=1), encoding="utf-8")
     chosen = this_run if args.count or args.only else saved
-    return chosen["categories"], chosen["regions"], chosen["pages"]
+    return chosen["categories"], chosen["regions"], chosen.get("weapons", []), chosen["pages"]
 
 
 def candidate_sources(made, listed_in, filters, words):
@@ -2041,6 +2088,7 @@ def main():
     parser.add_argument("--category", action="append", default=[])
     parser.add_argument("--page", action="append", default=[])
     parser.add_argument("--region", action="append", default=[])
+    parser.add_argument("--weapons", action="append", default=[], type=str.lower, choices=WEAPON_STYLES)
     parser.add_argument("--race", action="append", default=[])
     parser.add_argument("--members", choices=["f2p", "p2p"])
     parser.add_argument("--npcs", action="store_true")
@@ -2062,17 +2110,18 @@ def main():
     if args.all_bosses:
         args.drops_from.append("Bosses")
         args.until = args.until or "Quest bosses"
-    if (not args.category and not args.region and not args.page and not args.drops and not args.drops_from
-            and not SOURCES.exists()):
+    if (not args.category and not args.region and not args.weapons and not args.page and not args.drops
+            and not args.drops_from and not SOURCES.exists()):
         print(__doc__)
         return 1
-    categories, regions, page_titles = remembered_sources(args)
-    if not categories and not regions and not page_titles and not args.drops and not args.drops_from:
-        print("Nothing to fetch: give --category, --region or --page.")
+    categories, regions, weapons, page_titles = remembered_sources(args)
+    if not categories and not regions and not weapons and not page_titles and not args.drops and not args.drops_from:
+        print("Nothing to fetch: give --category, --region, --weapons or --page.")
         return 1
 
     wiki = make_wiki(args)
     print("From:", ", ".join([source_label(c) for c in categories] + [source_label(r, True) for r in regions]
+                             + ["Weapons: " + source_label(w) for w in weapons]
                              + [f'page "{p}"' for p in page_titles]))
     # Each title, with the categories (or the page asked for) it came from, so the review window
     # can show one at a time.
@@ -2130,6 +2179,15 @@ def main():
             if listed is None:
                 print(f"  request limit reached before {label} was narrowed; it is fetched next run")
                 continue
+        for title in listed:
+            add(title, label)
+    for entry in weapons:
+        name, _, members = source_parts(entry)
+        label = "Weapons: " + source_label(entry)
+        filters[label] = entry
+        listed = weapon_pages(wiki, name, args.refresh and name in args.weapons)
+        if listed is None:
+            continue                # (listed next run)
         for title in listed:
             add(title, label)
     if args.count:
