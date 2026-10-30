@@ -21,7 +21,7 @@ local WikiFetch = require("dev/wikifetch")
 local WikiReview = {}
 
 local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
-local WIDTH, HEIGHT = 480, 400
+local WIDTH, HEIGHT = 480, 432
 local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
 local NOTE_CHARS = 54       -- about how many letters of a note fit on a row
@@ -294,13 +294,13 @@ end
 local QUEUE_KEY, SEQ_KEY = "dev_card_queue_", "dev_card_queue_seq"
 local function queueCard(candidate)
     if widgets.loaded ~= candidate or not Builder.isOpen() then
-        queueMessage("Not queued: this candidate is not loaded in the Card Builder")
-        return
+        queueMessage("Not queued: load this candidate into the Card Builder first")
+        return false
     end
-    local entry, why = Builder.queueEntry()
+    local entry, why = Builder.queueEntry(candidate.page)
     if entry == nil then
         queueMessage("Not queued: " .. why)
-        return
+        return false
     end
     local ok, seq = pcall(function() return PersistentDB:GetStructuredData(SEQ_KEY) end)
     local number = ((ok and type(seq) == "table" and tonumber(seq.n)) or 0) + 1
@@ -308,7 +308,42 @@ local function queueCard(candidate)
         PersistentDB:SetStructuredData(QUEUE_KEY .. string.format("%04d", number), entry)
         PersistentDB:SetStructuredData(SEQ_KEY, { n = number })
     end)
-    queueMessage(saved and ("Queued " .. entry.id .. " (#" .. number .. ") for " .. entry.deck) or "Not queued: the database refused it")
+    if not saved then
+        queueMessage("Not queued: the database refused it")
+        return false
+    end
+    queueMessage("Queued " .. entry.id .. " (#" .. string.format("%04d", number) .. ") for " .. entry.deck)
+    return true
+end
+
+-- Puts the candidate of a wiki page back on the list (taking off its Done or Skip mark), for a
+-- queued card the script could not add (python dev/card_queue.py --list names the page).
+local reload
+local function reopen(text)
+    local wanted = string.lower((string.gsub(text or "", "^%s*(.-)%s*$", "%1")))
+    if wanted == "" then
+        return
+    end
+    local saved, found = reviewed(), nil
+    for page in pairs(saved) do
+        if string.lower(page) == wanted then
+            found = page
+        end
+    end
+    if found == nil then
+        queueMessage("No Done or Skip mark for a page called " .. text)
+        return
+    end
+    saved[found] = nil
+    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    reload()
+    for i, candidate in ipairs(queue) do
+        if candidate.page == found then
+            index = i
+        end
+    end
+    refresh()
+    queueMessage("Back on the list: " .. found)
 end
 
 -- Marks the current candidate and takes it off the list.
@@ -317,8 +352,8 @@ local function finish(verdict)
     if candidate == nil then
         return
     end
-    if verdict == "done" then
-        queueCard(candidate)
+    if verdict == "done" and not queueCard(candidate) then
+        return          -- (not queued: it stays on the list, not marked Done)
     end
     mark(candidate, verdict)
     for i, other in ipairs(remaining) do
@@ -343,7 +378,7 @@ local function unmark(verdict)
 end
 
 -- Reads the candidates again (all of them, or after Reset).
-local function reload()
+function reload()
     remaining = loadRemaining() or {}
     index = 1
     applyFilter()
@@ -402,6 +437,10 @@ function WikiReview.show()
         "Not a card: take it off the list")
 
     widgets.queueText = Kit.text(content, 10, buttonsY + 76, INNER, 18, "", GREY, ui.AlignMode.TOPLEFT)
+    widgets.reopenField = Kit.inputField(content, 10, buttonsY + 98, INNER - 100, 28, 80, false)
+    Kit.buttonAt(content, "Reopen", INNER - 84, buttonsY + 98, 94, 28, function()
+        reopen(widgets.reopenField.content)
+    end, "neutral", "Type the wiki page of a queued card that failed (see card_queue.py --list) to put it back on the list")
 
     -- Which category or page to review the candidates of (made last so its list opens on top).
     widgets.filter = Kit.dropdown(content, 10, 38, INNER, 28, { { label = "All", value = ALL } }, ALL,
