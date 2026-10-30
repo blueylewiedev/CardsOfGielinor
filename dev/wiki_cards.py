@@ -299,8 +299,8 @@ WEAPON_STYLES = ("melee", "ranged", "magic", "necromancy", "hybrid")
 UPGRADE_TITLE = re.compile(r"\s\+\s*\d+$")
 # Weapon pages that get no card: skilling tools (pickaxes, hatchets, mattocks), pages with a
 # bracketed suffix ("Scimitar (class 3)", "Zamorak godsword (passive)", "Silverlight (dyed)": variants
-# of another page) and augmented versions of a weapon.
-WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\([^)]*\)\s*$|^augmented\s", re.I)
+# of another page) and augmented, golden and lucky versions of a weapon.
+WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\([^)]*\)\s*$|^(augmented|golden|lucky)\s", re.I)
 
 
 def weapon_pages(wiki, style, refresh):
