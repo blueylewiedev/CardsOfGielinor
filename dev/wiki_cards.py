@@ -755,6 +755,9 @@ ITEM_CATEGORY_WORDS = {
 # A wiki category that says an item is a cosmetic (an override, only worn for its looks): it is
 # tagged fashion, and nothing else, as the Contributing guide says.
 COSMETIC_CATEGORY = re.compile(r"\bcosmetic|\boverride")
+# ...but not a category for items that merely can have cosmetics applied: the abyssal whip is in
+# "Equipment capable of making cosmetic changes", and is a weapon.
+CAN_HAVE_COSMETICS = re.compile(r"\bcapable of\b|\bcan (?:be )?(?:use|apply|have|wear)")
 
 
 def slug(text):
@@ -1205,7 +1208,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     patch = seed_patch(page.get("text", ""), set(words["item_category"]))
     if patch:
         found += ["seed", patch]
-    cosmetic = [c for c in page.get("categories", []) if COSMETIC_CATEGORY.search(c.lower())]
+    cosmetic = [c for c in page.get("categories", [])
+                if COSMETIC_CATEGORY.search(c.lower()) and not CAN_HAVE_COSMETICS.search(c.lower())]
     if cosmetic:
         found = ["fashion"]
         notes.append(f"looks like a cosmetic ({cosmetic[0]}): tagged fashion only")
