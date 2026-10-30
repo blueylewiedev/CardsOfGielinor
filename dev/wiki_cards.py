@@ -22,6 +22,11 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     off-hand). Cosmetic recolours and the upgrades (Adamant scimitar + 1, + 2) are
                     left out: the plain weapon has the card. Fetched over several runs, like a
                     region; --count says how many pages. e.g.  --weapons melee --count
+  --list            with --weapons (or other sources): print the pages each would fetch, one per line
+                    (weapons with their tier and damage type, lowest tier first), and stop: no pages
+                    are fetched and nothing is remembered. For deciding what to leave out. The tier
+                    and damage type are kept when a weapon style is listed; --refresh lists it again
+                    to get them if it was listed before they were
   --race NAME       only NPCs of this race (as the wiki's infobox names it, e.g. Dog, Dwarf, Demon)
                     from this run's categories and regions; more than once for several
   --members f2p|p2p only the free to play (f2p) or members (p2p) pages of this run's categories
@@ -302,9 +307,10 @@ def weapon_pages(wiki, style, refresh):
     cached = None if refresh else read_cache("weapons", style)
     if cached is not None:
         return cached
-    titles, offset = [], 0
+    titles, offset, info = [], 0, {}
     while True:
-        query = (f"bucket('infobox_bonuses').select('page_name', 'equipment_slot', 'is_cosmetic_recolour')"
+        query = (f"bucket('infobox_bonuses').select('page_name', 'equipment_slot', 'is_cosmetic_recolour',"
+                 f" 'equipment_tier', 'attack_style')"
                  f".where('combat_class', {json.dumps(style)}).limit({BUCKET_LIMIT}).offset({offset}).run()")
         answer = wiki.get({"action": "bucket", "query": query})
         if answer is None:
@@ -317,12 +323,37 @@ def weapon_pages(wiki, style, refresh):
             if name and "weapon" in str(row.get("equipment_slot") or "").lower() and not recolour \
                     and not UPGRADE_TITLE.search(name):
                 titles.append(name)
+                info.setdefault(name, [row.get("equipment_tier"), str(row.get("attack_style") or "")])
         if len(rows) < BUCKET_LIMIT:
             break
         offset += BUCKET_LIMIT
     titles = list(dict.fromkeys(titles))
     write_cache("weapons", style, titles)
+    write_cache("weapon_info", style, info)
     return titles
+
+
+def print_titles(titles, sources):
+    """The --list output: the pages of each source (a weapon style's with tier and damage type,
+    lowest tier first, as far as they are known)."""
+    for label in dict.fromkeys(label for title in titles for label in sources[title]):
+        mine = [t for t in titles if label in sources[t]]
+        weapons = label.startswith("Weapons: ")
+        info = read_cache("weapon_info", label[len("Weapons: "):].split(" (")[0]) if weapons else None
+        print(f"{label}: {len(mine)} pages")
+        if info:
+            def tier(title):
+                value = (info.get(title) or [None])[0]
+                return value if isinstance(value, (int, float)) else -1
+            for title in sorted(mine, key=lambda t: (tier(t), t.lower())):
+                found = info.get(title) or ["", ""]
+                number = found[0] if found[0] not in (None, "") else "-"
+                print(f"  {str(number):>3}  {found[1] or '-':<7} {title}")
+        else:
+            if weapons:
+                print("  (no tier or damage type kept for these: run with --refresh to list them again)")
+            for title in sorted(mine, key=str.lower):
+                print(f"  {title}")
 
 
 def search_titles(wiki, query, refresh):
@@ -2022,10 +2053,10 @@ def remembered_sources(args):
         for item in new:
             if item not in saved[key]:
                 saved[key].append(item)
-    if not args.count:              # (a preview keeps nothing)
+    if not (args.count or args.list):       # (a preview keeps nothing)
         SOURCES.parent.mkdir(parents=True, exist_ok=True)
         SOURCES.write_text(json.dumps(saved, indent=1), encoding="utf-8")
-    chosen = this_run if args.count or args.only else saved
+    chosen = this_run if args.count or args.list or args.only else saved
     return chosen["categories"], chosen["regions"], chosen.get("weapons", []), chosen["pages"]
 
 
@@ -2094,6 +2125,7 @@ def main():
     parser.add_argument("--npcs", action="store_true")
     parser.add_argument("--within")
     parser.add_argument("--count", action="store_true")
+    parser.add_argument("--list", action="store_true")
     parser.add_argument("--contact", default="")
     parser.add_argument("--max-requests", type=int, default=30)
     parser.add_argument("--refresh", action="store_true")
@@ -2190,6 +2222,9 @@ def main():
             continue                # (listed next run)
         for title in listed:
             add(title, label)
+    if args.list:
+        print_titles(titles, sources)
+        return 0
     if args.count:
         return show_count(titles, sources, args, wiki)
     pages = fetch_pages(wiki, titles, args.refresh)
