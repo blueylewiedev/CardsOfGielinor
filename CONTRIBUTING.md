@@ -107,7 +107,8 @@ For **weapons**, `--weapons melee` (or `ranged`, `magic`, `necromancy`, `hybrid`
 of that combat style from the wiki's structured data (Bucket:Infobox_bonuses): main-hand,
 two-handed and off-hand weapons, without cosmetic recolours or upgrades (the plain weapon has the
 card: Adamant scimitar, not Adamant scimitar + 1). Try `--weapons melee --count` first to see how
-many pages that is. The kind (scimitar, dagger...) comes from each page as usual.
+many pages that is, and `--weapons melee --list` to see them (with tier and damage type, lowest tier
+first) before fetching any. The kind (scimitar, dagger...) comes from each page as usual.
 
 Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
 at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in
