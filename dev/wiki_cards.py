@@ -865,6 +865,27 @@ SKIPPED_CATEGORIES = {"Removed content": "removed from the game", "Historical ar
 # Pages that never become cards, by title without its bracket, and why.
 SKIPPED_PAGES = {"Mystery figure": "the disguised champions: Leon d'Cour and Glophren have their own pages"}
 
+# Treasure Hunter items are bought with real money (microtransactions), so they never become cards.
+# The wiki marks them three ways: the {{TH Item}} template on the page, the item infobox's
+# restriction field being "th" (the restriction field also says "limited", "quest", "minigame" and
+# so on, which are not skipped), and the page being in the Treasure Hunter or Treasure Hunter
+# rewards category.
+TREASURE_HUNTER_TEMPLATE = re.compile(r"\{\{\s*TH[ _]Item\s*[|}]", re.I)
+TREASURE_HUNTER_CATEGORY = re.compile(r"^Treasure Hunter\b", re.I)
+SKIPPED_TREASURE_HUNTER = "a Treasure Hunter item (real-money only)"
+
+
+def treasure_hunter_item(text, fields, categories=()):
+    """True if an item page is marked as a Treasure Hunter item: it has the {{TH Item}} template,
+    is in a Treasure Hunter category, or its infobox's restriction (restriction, restriction1, ...)
+    is th."""
+    if TREASURE_HUNTER_TEMPLATE.search(text):
+        return True
+    if any(TREASURE_HUNTER_CATEGORY.match(category) for category in categories):
+        return True
+    return any(re.fullmatch(r"restriction\d*", key) and plain(value).strip().lower() == "th"
+               for key, value in fields.items())
+
 
 def secondary_places(page, fields):
     """The SECONDARY_PLACES an NPC is in: filed under, named as a location, or (Rush of Blood) one
@@ -927,8 +948,11 @@ def candidate(page, names, words, price=None, drop=None):
             return None, "only seen in cutscenes"
         return npc_candidate(page, kind, fields, names, words)
     if inside is not None:
+        item_fields = template_fields(inside)
+        if treasure_hunter_item(text, item_fields, page.get("categories", [])):
+            return None, SKIPPED_TREASURE_HUNTER
         _, bonuses = find_template(text, ["Infobox Bonuses"])
-        return item_candidate(page, template_fields(inside), template_fields(bonuses or ""), words, price, drop)
+        return item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
     return None, "no NPC or item infobox"
 
 
