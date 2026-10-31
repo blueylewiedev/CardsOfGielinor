@@ -82,12 +82,6 @@ Set.cards = {
         tags = { skills = { "herblore" }, location = { "draynor" }, category = { "humanoid", "shopkeeper" } },
     },
     {
-        id = "wise_old_man", name = "Wise Old Man", rarity = "epic",
-        desc = "Claims to know a great deal about everything.",
-        art = { npc = "WOM_CUTSCENE_4", anim = 813, cam = { yaw = 0.40, fov = 20, ty = 580, tx = 20 } },
-        tags = { regions = { "asgarnia" }, location = { "draynor" }, category = { "humanoid", "shopkeeper", "wizard" } },
-    },
-    {
         id = "doomsayer", name = "Doomsayer", rarity = "uncommon",
         desc = "We are all DOOMED!",
         art = { npc = "CWS_DOOMSAYER", anim = 12292, cam = { yaw = 0.40, dist = 862, fov = 40, ty = 740 } },
@@ -128,12 +122,6 @@ Set.cards = {
         desc = "This is my wall, get yer own!",
         art = { npc = "SWAMP_WALLBEAST", anim = 1803, cam = { yaw = -0.40, dist = 1502, fov = 35, ty = 260, tx = -90 } },
         tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer" }, category = { "monster" } },
-    },
-    {
-        id = "cave_goblin", name = "Cave goblin (Dorgesh-Kaan)", rarity = "common",
-        desc = "One of the many citizens of Dorgesh-Kaan.",
-        art = { npc = "CAVE_GOBLIN4", anim = 6047, cam = { dist = 988, fov = 30, ty = 400 } },
-        tags = { location = { "dorgesh_kaan" }, skills = { "thieving" }, category = { "goblin" } },
     },
     {
         id = "king_roald", name = "King Roald", rarity = "epic",
@@ -504,9 +492,9 @@ Set.cards = {
     { id = "fumus", name = "Fumus", rarity = "rare", desc = "A mage who has mastered the art of smoke magic.", art = { npc = "NEX2_PILLAR_MAGE_FUMUS", anim = 37652, cam = { yaw = -0.40, dist = 1306, fov = 40, ty = 660, tx = 50 } }, tags = { regions = { "asgarnia" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
     { id = "glacies", name = "Glacies", rarity = "rare", desc = "A mage who has mastered the art of ice magic.", art = { npc = "NEX2_PILLAR_MAGE_GLACIES", anim = 37652, cam = { yaw = -0.40, dist = 1306, fov = 40, ty = 740 } }, tags = { regions = { "asgarnia" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
      
-
-
-
+    { id = "man_lumbridge_market", name = "Man (Lumbridge Market)", rarity = "common", desc = "Deep in conversation.", art = { npc = "LUMBRIDGE_MARKET_MAN1", anim = 27476, cam = { yaw = 2.40, dist = 361, fov = 80, ty = 600 } }, tags = { location = { "lumbridge" }, skills = { "thieving" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "woman_lumbridge_market", name = "Woman (Lumbridge Market)", rarity = "common", desc = "Engaged in a frank exchange of views.", art = { npc = "LUMBRIDGE_MARKET_WOMAN1", anim = 27475, cam = { yaw = -0.40, dist = 361, fov = 65, ty = 600 } }, tags = { location = { "lumbridge" }, skills = { "thieving" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "gargoyle_sentinel", name = "Gargoyle sentinel", rarity = "rare", desc = "It's ugly, but then it is a gargoyle.", art = { npc = "QUEST_SENNTISTEN_GARGOYLE_01", anim = 24655, cam = { pitch = 0.30, dist = 1137, fov = 60, ty = 880 } }, tags = { location = { "senntisten" }, category = { "construct", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

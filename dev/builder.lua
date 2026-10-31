@@ -313,6 +313,11 @@ end
 -- the trade pose (see tradePose).
 -- (It also returns which of these found it: Builder.checkAnims counts them.)
 local quietAnims = false        -- true while Builder.checkAnims runs, so each card isn't logged
+local function animLog(...)
+    if not quietAnims then
+        log(...)
+    end
+end
 local ANIM_CHECK_KEY = "dev_anim_check"     -- where Builder.checkAnims saves its report
 
 function Builder.readyAnim(configName, humanoid, text, gender)
@@ -324,9 +329,7 @@ function Builder.readyAnim(configName, humanoid, text, gender)
     pcall(function() basName = tostring(config.NPC.FromID(npcId).bas.configName) end)
     -- (also returns which of the tries found it, for Builder.checkAnims)
     local function found(name, id, try)
-        if not quietAnims then
-            log("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):", name, "=", id)
-        end
+        animLog("builder: standing animation for", configName, "(animation set " .. tostring(basName) .. "):", name, "=", id)
         return id, try
     end
     local plainHuman = seqId(HUMAN_READY)
@@ -381,10 +384,8 @@ function Builder.readyAnim(configName, humanoid, text, gender)
         return found("its animation set's", stand, "set 808")
     end
     local fallback = (humanoid or namedHuman) and plainHuman or nil
-    if not quietAnims then
-        log("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
-            .. (fallback and "; using " .. HUMAN_READY or ""))
-    end
+    animLog("builder: no standing animation found by name for", configName, "(animation set " .. tostring(basName) .. ")"
+        .. (fallback and "; using " .. HUMAN_READY or ""))
     return fallback, fallback and "808 fallback" or "none"
 end
 
@@ -1391,9 +1392,40 @@ local HUMANOID_WORDS = { humanoid = true, shopkeeper = true, stallholder = true,
     knight = true, wizard = true, priest = true, pirate = true, banker = true, farmer = true, thief = true,
     adventurer = true, quest_giver = true }
 
+-- The signature heroes, by card name, and the start of their standing animations' names. Their
+-- NPCs are often named for something else (Ariane's EGWD_WEN_BOSS_MECHANIC_SWITCH_ADDS_MULTI), so
+-- the name is what finds them, all of it: Merchant Xenia is someone else.
+local SIGNATURE_HEROES = { ariane = "SIGHERO_ARIANE", linza = "SIGHERO_LINZA", ["linza the bold"] = "SIGHERO_LINZA",
+    ozan = "SIGHERO_OZAN", ["sir owen"] = "SIGHERO_SIROWEN", xenia = "SIGHERO_XENIA", raptor = "SIGHERO_RAPTOR",
+    ["the raptor"] = "SIGHERO_RAPTOR" }
+
+-- The standing animation of a signature hero, or nil for anyone else or if the client has none:
+-- the look its NPC is named for, otherwise adventurer if the hero has one, then casual.
+local function signatureHeroAnim(configName, name)
+    local stem = SIGNATURE_HEROES[string.lower(string.gsub(name or "", "%s*%b()%s*$", ""))]
+    if stem == nil then
+        return nil
+    end
+    local looks = string.find(configName or "", "CASUAL", 1, true) and { "CASUAL", "ADVENTURER" }
+        or { "ADVENTURER", "CASUAL" }
+    for _, look in ipairs(looks) do
+        local animId = seqId(stem .. "_" .. look .. "_READY")
+        if animId ~= nil then
+            return animId, stem .. "_" .. look .. "_READY"
+        end
+    end
+    return nil
+end
+
 -- Builder.readyAnim for the NPC `configName` of a card or wiki candidate, from what it says: a
--- person by its category tags (HUMANOID_WORDS), its name and description, and its gender.
+-- signature hero's own animation (see signatureHeroAnim), or otherwise a person by its category
+-- tags (HUMANOID_WORDS), its name and description, and its gender.
 function Builder.readyAnimFor(configName, card)
+    local heroAnim, heroSeq = signatureHeroAnim(configName, card.name)
+    if heroAnim ~= nil then
+        animLog("builder: standing animation for", configName, "(signature hero):", heroSeq, "=", heroAnim)
+        return heroAnim, "signature hero"
+    end
     local humanoid = false
     for _, word in ipairs((card.tags or {}).category or {}) do
         humanoid = humanoid or HUMANOID_WORDS[word] == true
@@ -1987,7 +2019,7 @@ function Builder.show()
     Kit.smallButton(content, "Clip fix", RIGHT_X + CTRL_X + 2 * CTRL_W + 24, y, RIGHT_W - CTRL_X - 2 * CTRL_W - 24, 28,
         function()
             withCamera(function(c)
-                local fov = c.fov < CLIP_FIX_FOV and CLIP_FIX_FOV or math.min(100, c.fov + 10)
+                local fov = c.fov < CLIP_FIX_FOV and CLIP_FIX_FOV or math.min(math.max(100, c.fov), c.fov + 10)
                 c.dist = c.dist * math.tan(math.rad(c.fov / 2)) / math.tan(math.rad(fov / 2))
                 c.fov = fov
             end)

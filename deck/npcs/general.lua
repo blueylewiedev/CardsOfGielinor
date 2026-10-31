@@ -24,12 +24,6 @@ Set.cards = {
         tags = { category = { "animal" } },
     },
 
-    {
-        id = "goblin", name = "Goblin", rarity = "common",
-        desc = "Squabbles over the colour of its armour.",
-        art = { npc = "GOBLIN_UNARMED_MELEE_1", anim = 6180, cam = { yaw = -0.20, dist = 859, ty = 280 } },
-        tags = { category = { "monster", "goblin" } },
-    },
 
     {
         id = "giant_rat", name = "Giant rat", rarity = "common",
@@ -38,19 +32,7 @@ Set.cards = {
         tags = { category = { "animal", "monster" } },
     },
 
-    {
-        id = "woman", name = "Woman", rarity = "common",
-        desc = "One of Gielinor's many citizens",
-        art = { npc = "LUMBRIDGE_MARKET_WOMAN3", anim = 37589, cam = { dist = 988, fov = 40, ty = 500, tx = 30 } },
-        tags = { skills = { "thieving" }, category = { "humanoid" } },
-    },
     
-    {
-        id = "man", name = "Man", rarity = "common",
-        desc = "Just a man, going about his day.",
-        art = { npc = "LUMBRIDGE_MARKET_MAN1", anim = 808, cam = { yaw = -0.20, pitch = 0.15, dist = 748, ty = 500 } },
-        tags = { skills = { "thieving" }, category = { "humanoid", "monster" } },
-    },
 
     {
         id = "dog_stray", name = "Stray dog", rarity = "common",
@@ -926,9 +908,23 @@ Set.cards = {
     { id = "lucien", name = "Lucien", rarity = "epic", desc = "A Mahjarrat of incomprehensible power", art = { npc = "MAH5_WAVE_LUCIEN_SKIN", anim = 11292, cam = { pitch = 0.30, dist = 1137, fov = 70, ty = 600, tx = -70 } }, tags = { location = { "the_north", "varrock" }, category = { "mahjarrat" }, membership = { "p2p" } } },
     { id = "dwarf_2", name = "Dwarf", rarity = "common", desc = "Loves mining.", art = { npc = "DWARF_NORMAL", anim = 17844, cam = { yaw = -0.20, dist = 429, fov = 75, ty = 280 } }, tags = { category = { "humanoid", "monster" }, membership = { "f2p" } } },
     
-
-
-
+    { id = "man", name = "Man", rarity = "common", desc = "One of Gielinor's many citizens.", art = { npc = "MAN", anim = 808, cam = { yaw = -0.20, dist = 478, fov = 65, ty = 540 } }, tags = { skills = { "thieving" }, category = { "humanoid", "monster" }, membership = { "f2p" } } },
+    { id = "woman", name = "Woman", rarity = "common", desc = "One of Gielinor's many citizens.", art = { npc = "WOMAN", anim = 808, cam = { yaw = 0.20, pitch = 0.15, dist = 650, fov = 60, ty = 500 } }, tags = { skills = { "thieving" }, category = { "humanoid", "monster" }, membership = { "f2p" } } },
+    { id = "glacor", name = "Glacor", rarity = "rare", desc = "A mysterious ice creature infused with power drawn from the Stone", art = { npc = "MAH5_GLACOR", anim = 34338, cam = { pitch = 0.30, dist = 1137, fov = 55, ty = 720 } }, tags = { category = { "elemental", "monster" }, membership = { "p2p" } } },
+    { id = "goblin", name = "Goblin", rarity = "common", desc = "An ugly green creature.", art = { npc = "FAI_BARBARIAN_GOBLIN_ARMED_1", anim = 6186, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { location = { "deserted_mine", "al_kharid", "camelot", "draynor", "tree_gnome_stronghold" }, category = { "goblin", "monster" }, membership = { "f2p" } } },
+    { id = "postie_pete", name = "Postie Pete", rarity = "uncommon", desc = "Posts things.", art = { npc = "PREM15_POSTIE_PETE", anim = 27870, cam = { yaw = -0.60, pitch = 0.30, dist = 1306, fov = 20, ty = 80, tx = -10 } }, tags = { location = { "premier_club" }, category = { "human_skull", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "ariane", name = "Ariane", rarity = "rare", desc = "A skilled sorceress and seer.", art = { npc = "EGWD_WEN_BOSS_MECHANIC_SWITCH_ADDS_MULTI", anim = 1334, cam = { yaw = 0.20, dist = 404, fov = 65, ty = 600, tx = 20 } }, tags = { category = { "humanoid", "wizard" }, membership = { "f2p" } } },
+    { id = "bill", name = "Bill", rarity = "rare", desc = "The former Lumber Yard owner turned 'Manager of Blueprint papers'", art = { npc = "QUEST_FORT_BILL", anim = 22880, cam = { yaw = 0.20, dist = 651, fov = 45, ty = 600 } }, tags = { location = { "fort_forinthry" }, skills = { "construction" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } } },
+    { id = "bosun_higgs", name = "Bosun Higgs", rarity = "uncommon", desc = "Black Knight sergeant Evie Higgs.", art = { npc = "ELR0_BOSUN_01", anim = 18041, cam = { pitch = 0.15, dist = 650, ty = 560 } }, tags = { location = { "draynor", "the_rusty_anchor", "sarim_s_revenge", "black_knights_fortress" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "bryll_thoksdottir", name = "Bryll Thoksdottir", rarity = "uncommon", desc = "A Fremennik, requesting aid at the dungeons of Daemonheim.", art = { npc = "DUNGEON_REWARD_SHOP_NPC", anim = 15762, cam = { yaw = -0.20, dist = 1306, fov = 20, ty = 600 } }, tags = { location = { "taverley", "daemonheim" }, skills = { "dungeoneering" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "captain_errdo", name = "Captain Errdo", rarity = "uncommon", desc = "Up up and away!", art = { npc = "PILOT_GRAND_TREE_DURINGQUEST", anim = 37961, cam = { yaw = -0.20, dist = 548, fov = 55, ty = 340 } }, tags = { location = { "grand_tree", "varrock", "tree_gnome_stronghold" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "drunken_dwarf", name = "Drunken Dwarf", rarity = "rare", desc = "He's had a fair bit to drink...", art = { npc = "MACRO_DWARF", anim = 21368, cam = { yaw = -0.20, dist = 652, ty = 320 } }, tags = { location = { "seers_village" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "guardian_of_armadyl", name = "Guardian of Armadyl", rarity = "uncommon", desc = "A guard who has devoted their life to Armadyl.", art = { npc = "LUC2_ARMADYL_GUARDIAN_MALE", anim = 813, cam = { pitch = 0.15, dist = 650, ty = 560 } }, tags = { location = { "temple_of_ikov_dungeon" }, category = { "humanoid", "guard", "monster" }, membership = { "p2p" } } },
+    { id = "master_farmer", name = "Master Farmer", rarity = "uncommon", desc = "A master at farming.", art = { npc = "LUMBRIDGE_MARKET_MASTER_FARMER", anim = 18019, cam = { yaw = 0.20, dist = 415, fov = 65, ty = 600 } }, tags = { location = { "catherby", "draynor", "taverley" }, skills = { "farming", "thieving" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "sir_owen", name = "Sir Owen", rarity = "uncommon", desc = "A Temple Knight on a mission.", art = { npc = "SIGHERO_OWEN_ADVENTURING_APPEARANCE", anim = 2834, cam = { yaw = 0.20, dist = 632, fov = 45, ty = 600 } }, tags = { location = { "daemonheim" }, category = { "humanoid", "knight" }, membership = { "f2p" } } },
+    { id = "talent_scout", name = "Talent scout", rarity = "common", desc = "He's on the lookout for top athletes, but why?", art = { npc = "AGIDAD_SCOUT_NORMAL", anim = 13518, cam = { pitch = 0.15, dist = 724, fov = 45, ty = 560 } }, tags = { location = { "prifddinas" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "azzanadra", name = "Azzanadra", rarity = "legendary", desc = "A seemingly honourable Mahjarrat dedicated to Zaros.", art = { npc = "EGWD_WEN_BOSS_MECHANIC_SWITCH_HARDMODE_ACTIVE", anim = 11013, cam = { pitch = 0.30, dist = 745, fov = 55, ty = 800 } }, tags = { location = { "jaldraocht_pyramid" }, category = { "mahjarrat", "god" }, membership = { "p2p" } } },
+    { id = "general_khazard", name = "General Khazard", rarity = "epic", desc = "He looks really nasty. Smells bad, too.", art = { npc = "SLISKE1_MAH_KHAZARD", anim = 25993, cam = { yaw = 0.40, pitch = 0.30, dist = 464, fov = 75, ty = 780, tx = -10 } }, tags = { location = { "fight_arena_location" }, category = { "mahjarrat", "thief", "boss" }, membership = { "p2p" } } },
 }
 
 return Set

@@ -38,9 +38,7 @@ Set.cards = {
     { id = "tzhaarmej", name = "TzHaar-Mej", rarity = "uncommon", desc = "The Mej caste protect the TzHaar using powerful fire magic.", art = { npc = "TZHAAR_MEJ1", anim = 16125, cam = { pitch = 0.30, dist = 1729, fov = 45, ty = 500 } }, tags = { location = { "tzhaar_city" }, category = { "tzhaar", "monster" }, membership = { "p2p" } } },
     { id = "tzhaarxil", name = "TzHaar-Xil", rarity = "uncommon", desc = "It belongs to the hunter class.", art = { npc = "TZHAAR_XIL2", anim = 16150, cam = { yaw = 0.40, pitch = 0.30, dist = 1308, fov = 65, ty = 520, tx = -210 } }, tags = { location = { "tzhaar_city" }, category = { "tzhaar", "monster" }, membership = { "p2p" } } },
     { id = "ytmejkot", name = "Yt-MejKot", rarity = "rare", desc = "Made from fire and rock. The Yt-MejKot is a fearsome foe.", art = { npc = "TZHAAR_FIGHTCAVE_SWARM_4A", anim = 16099, cam = { yaw = 0.60, pitch = 0.30, dist = 3478, fov = 40, ty = 920 } }, tags = { category = { "volcanic_creature", "monster" }, membership = { "p2p" } } },
-
-
-
+    { id = "black_knight_titan", name = "Black Knight Titan", rarity = "rare", desc = "He looks mean and powerful.", art = { npc = "GOWER_BLACK_KNIGHT_TITAN_ENEMY", anim = 28896, cam = { yaw = 0.20, pitch = 0.30, dist = 1731, ty = 520, tx = -180 } }, tags = { regions = { "misthalin" }, location = { "fisher_realm", "behind_the_scenes_location" }, category = { "giant", "boss", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

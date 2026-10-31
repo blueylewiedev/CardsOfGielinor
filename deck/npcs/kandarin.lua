@@ -152,8 +152,12 @@ Set.cards = {
     { id = "white_wolf", name = "White wolf", rarity = "common", desc = "A vicious mountain wolf.", art = { npc = "WHITEWOLF", anim = 23577, cam = { yaw = -0.60, pitch = 0.30, dist = 1505, fov = 35, ty = 200, tx = 60 } }, tags = { regions = { "asgarnia" }, location = { "white_wolf_mountain" }, category = { "animal", "monster" }, membership = { "p2p" } } },
     { id = "roger_murray", name = "Roger Murray", rarity = "common", desc = "Not the cleanest of men.", art = { npc = "CSI_MUGGER_VICTIM", anim = 808, cam = { yaw = 0.20, dist = 361, fov = 65, ty = 600 } }, tags = { location = { "seers_village" }, category = { "humanoid" }, membership = { "p2p" } } },
     
-
-
+    { id = "awowogei", name = "Awowogei", rarity = "uncommon", desc = "A rather dapper little monkey.", art = { npc = "MM_AWOWOGEI_CUTSCENE", anim = 1386, cam = { pitch = 0.30, dist = 396, fov = 65, ty = 240 } }, tags = { regions = { "misthalin" }, location = { "ape_atoll", "lumbridge" }, category = { "animal" }, membership = { "p2p" } } },
+    { id = "double_agent", name = "Double agent", rarity = "uncommon", desc = "He's playing both sides!", art = { npc = "DOUBLE_AGENT_4", anim = 808, cam = { pitch = 0.15, dist = 650, ty = 560 } }, tags = { regions = { "misthalin" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "hazelmere", name = "Hazelmere", rarity = "epic", desc = "An ancient looking gnome.", art = { npc = "GRANDTREE_HAZELMERE", anim = 3965, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { regions = { "misthalin" }, location = { "hazelmere_s_island", "yanille", "city_of_um" }, category = { "humanoid", "wizard" }, membership = { "p2p" } } },
+    { id = "zanik", name = "Zanik", rarity = "epic", desc = "Chosen Commander and saviour of the Cave Goblins.", art = { npc = "QUEST_NOMEL_SIEGE_ASSAULT_ZANIK", anim = 28094, cam = { yaw = -0.20, pitch = 0.15, dist = 749, fov = 55, ty = 340 } }, tags = { regions = { "misthalin" }, location = { "warforge_dig_site", "dorgesh_kaan" }, category = { "goblin", "shopkeeper" }, membership = { "p2p" } } },
+    { id = "zaros", name = "Zaros", rarity = "legendary", desc = "The so-called Empty Lord. ", art = { npc = "QUEST_ENDGAME_PRO", anim = 22989, cam = { pitch = 0.30, dist = 563, fov = 75, ty = 860 } }, tags = { location = { "freneskae" }, category = { "creation_of_mah", "god" }, membership = { "p2p" } } },
+    { id = "zombie", name = "Zombie", rarity = "common", desc = "Dead man walking. The walking dead.", art = { npc = "ZOMBIE_ARMED", anim = 35252, cam = { pitch = 0.30, dist = 744, fov = 55, ty = 420 } }, tags = { regions = { "misthalin" }, category = { "undead", "monster" }, membership = { "f2p" } } },
 }
 
 return Set

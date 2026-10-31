@@ -24,9 +24,11 @@ Set.cards = {
     { id = "phoenix", name = "Phoenix", rarity = "rare", desc = "Goodness, gracious, great bird of fire!", art = { npc = "LORE_PHOENIX", anim = 11092, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 520 } }, tags = { regions = { "kandarin" }, skills = { "summoning" }, category = { "phoenix", "monster" }, membership = { "p2p" } } },
     { id = "ripper_demon", name = "Ripper Demon", rarity = "uncommon", desc = "Skilled demonic slasher.", art = { npc = "HLM_RIPPER", anim = 27766, cam = { yaw = 0.40, pitch = 0.30, dist = 1137, fov = 45, ty = 80 } }, tags = { regions = { "wilderness" }, skills = { "slayer" }, category = { "chthonian", "monster" }, membership = { "p2p" } } },
     
-
-
-
+    { id = "amascut", name = "Amascut", rarity = "legendary", desc = "The Menaphite goddess of destruction.", art = { npc = "REBIRTH_SANCTUM_AMASCUT", anim = 36845, cam = { pitch = 0.30, dist = 565, ty = 820, tx = 40 } }, tags = { regions = { "misthalin" }, location = { "temple_of_isolation" }, category = { "god" }, membership = { "p2p" } } },
+    { id = "dr_nabanik", name = "Dr Nabanik", rarity = "uncommon", desc = "The site's manager.", art = { npc = "ARCH_KHARIDET_MANAGER", anim = 23780, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 540 } }, tags = { location = { "kharid_et_dig_site", "archaeology_campus" }, skills = { "archaeology" }, category = { "mahjarrat" }, membership = { "f2p" } } },
+    { id = "emir_ali_mirza", name = "Emir Ali Mirza", rarity = "rare", desc = "He exudes an aura of wisdom far beyond his years might suggest.", art = { npc = "OZAN2_PRINCE", anim = 17664, cam = { yaw = -0.20, dist = 478, fov = 55, ty = 680, tx = 10 } }, tags = { location = { "al_kharid", "draynor", "temple_of_amascut" }, category = { "humanoid", "royalty" }, membership = { "f2p" } } },
+    { id = "gorvek", name = "Gorvek", rarity = "legendary", desc = "His feral instincts are no longer suppressed.", art = { npc = "GWD2_ZAROS_BOSS_GORVEK", anim = 28267, cam = { yaw = 0.40, pitch = 0.30, dist = 1731, fov = 65, ty = 920, tx = -130 } }, tags = { regions = { "misthalin" }, category = { "dragon", "boss", "monster" }, membership = { "p2p" } } },
+    { id = "nymora_the_vengeful", name = "Nymora, the Vengeful", rarity = "legendary", desc = "Feared for invoking Zamorak's wrath on those who break oaths.", art = { npc = "GWD2_ZAM_BOSS_RANGED", anim = 28237, cam = { yaw = 0.40, pitch = 0.30, dist = 1731, ty = 860, tx = -10 } }, tags = { regions = { "misthalin" }, location = { "heart_of_gielinor" }, category = { "avernic", "boss", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

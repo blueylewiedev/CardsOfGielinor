@@ -90,12 +90,15 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
+from functools import lru_cache
+from itertools import zip_longest
 from pathlib import Path
+
+from npc_looks import Looks, npc_ids
 
 ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / "dev" / "wiki_cache"
 OUTPUT = ROOT / "dev" / "wiki_candidates.lua"
-NPC_LIST = ROOT / "dev" / "npc.txt"
 CONTACT_FILE = ROOT / "dev" / "wiki_contact.txt"
 CARDS = ROOT / "core" / "cards.lua"
 
@@ -458,13 +461,33 @@ def npc_race(page, fields):
     return ""
 
 
-def other_infoboxes(page, fields):
+def distinct_looks(configs):
+    """(the configs that look different from those before them, the ones that don't). A config
+    whose look isn't known counts as different, so without the cache every one is kept."""
+    kept, same, seen = [], [], set()
+    for config in configs:
+        look = LOOKS.look(NPC_IDS[config]) if config in NPC_IDS else None
+        if look is None or look not in seen:
+            kept.append(config)
+        else:
+            same.append(config)
+        seen.add(look)
+    return kept, same
+
+
+@lru_cache(maxsize=1)
+def infoboxes(text):
+    """The fields of each NPC and monster infobox in a page's text. (Kept for the page in hand, which
+    asks several times: they are only to be read.)"""
+    return [template_fields(inside) for inside in find_templates(text, ["Infobox NPC", "Infobox Monster"])]
+
+
+def other_infoboxes(page, fields, any_name=False):
     """The page's other NPC and monster infoboxes than `fields` (from npc_infobox), leaving out any
-    named for something else (the Kitten on the Cat page)."""
+    named for something else (the Kitten on the Cat page) unless `any_name`."""
     title = strip_bracket(page.get("title", "")).lower()
-    boxes = [template_fields(inside) for inside in find_templates(page.get("text", ""), ["Infobox NPC", "Infobox Monster"])]
-    return [box for box in boxes if not box.items() <= fields.items()
-            and plain(first_version(box, "name")).lower() in ("", title)]
+    return [box for box in infoboxes(page.get("text", "")) if not box.items() <= fields.items()
+            and (any_name or plain(first_version(box, "name")).lower() in ("", title))]
 
 
 def find_templates(text, names, kinds=False):
@@ -479,26 +502,23 @@ def find_templates(text, names, kinds=False):
         start += text[start:].find(inside) + len(inside)
 
 
+BRACKET_DEPTH = {"{{": 1, "[[": 1, "}}": -1, "]]": -1}
+
+
 def template_fields(inside):
     """The named fields of a template's inside text: { name: value }."""
-    fields, depth, part, i = {}, 0, [], 0
-    text = inside + "|"
-    while i < len(text):
-        ch, two = text[i], text[i:i + 2]
-        if two in ("{{", "[[", "}}", "]]"):     # (both letters, so "}}}}" closes two, not three)
-            depth = depth + 1 if two in ("{{", "[[") else depth - 1
-            part.append(two)
-            i += 2
-            continue
-        i += 1
-        if ch == "|" and depth == 0:
+    fields, depth, part = {}, 0, []
+    # (by pairs of letters, so "}}}}" closes two, not three)
+    for token in re.split(r"(\{\{|\[\[|\}\}|\]\]|\|)", inside + "|"):
+        depth += BRACKET_DEPTH.get(token, 0)
+        if token == "|" and depth == 0:
             piece = "".join(part)
             if "=" in piece:
                 key, value = piece.split("=", 1)
                 fields[key.strip().lower()] = value.strip()
             part = []
         else:
-            part.append(ch)
+            part.append(token)
     return fields
 
 
@@ -547,12 +567,7 @@ def all_ids(fields):
 
 def npc_names():
     """{ npc id: config name } from dev/npc.txt."""
-    names = {}
-    for line in NPC_LIST.read_text(encoding="utf-8").splitlines():
-        parts = line.split(None, 1)
-        if len(parts) == 2 and parts[0].isdigit():
-            names[int(parts[0])] = parts[1].strip()
-    return names
+    return {npc_id: name for name, npc_id in NPC_IDS.items()}
 
 
 def allowed_words():
@@ -620,6 +635,11 @@ RUSH_OF_BLOOD = {
 # file's and one more: one found in more is a general card), as core/cards.lua sets them.
 MAX_DESC = int(re.search(r"Cards\.MAX_DESC\s*=\s*(\d+)", CARDS.read_text(encoding="utf-8")).group(1))
 MAX_NPC_REGIONS = int(re.search(r"Cards\.MAX_NPC_REGIONS\s*=\s*(\d+)", CARDS.read_text(encoding="utf-8")).group(1))
+
+# The most models a candidate lists to choose from.
+MAX_MODELS = 22
+LOOKS = Looks()             # how NPC configs look, from the client's cache (see npc_looks.py)
+NPC_IDS = {}                # NPC config name -> id, read in main
 
 # NPC configs that show nothing: stand-ins a cutscene or quest uses.
 BLANK_CONFIG = re.compile(r"BLANK|INVISIBLE|DUMMY")
@@ -1356,7 +1376,10 @@ def merge_versions(found, words):
         group = sorted(merged[entry], key=lambda c: (c["page"] != entry, c["page"]))
         first = dict(group[0])
         models = everyday_first(list(dict.fromkeys(m for c in group for m in [c["npc"]] + c["others"])))
-        first["npc"], first["others"] = models[0], models[1:8]
+        # (after they are put in order, so of the configs that look the same the everyday one stays;
+        # `also` is those not offered, which the Wiki Review still knows as this NPC's)
+        models, same_look = distinct_looks(models)
+        first["npc"], first["others"], first["also"] = models[0], models[1:MAX_MODELS], models[MAX_MODELS:] + same_look
         first["sources"] = sorted({s for c in group for s in c["sources"]})
         places = list(dict.fromkeys(p for c in group for p in c["tags"].get("location", [])))
         if places:
@@ -1375,7 +1398,7 @@ def merge_versions(found, words):
         if len(group) > 1:
             first["notes"] = [f"{len(group)} wiki pages: " + ", ".join(c["page"] for c in group)] + first["notes"]
         if len(models) > 1:
-            first["notes"] = [f"{len(models)} models (Next model); first is {models[0]}"] + first["notes"]
+            first["notes"] = [f"{min(len(models), MAX_MODELS)} models (Next model); first is {models[0]}"] + first["notes"]
         out.append(first)
     for c in out:
         c.pop("league_regions", None)       # (only for the merge)
@@ -1386,7 +1409,7 @@ def merge_versions(found, words):
 ANIMAL_RACES = {"sheep", "cow", "chicken", "dog", "cat", "rat", "bird", "bear", "wolf", "goat", "horse", "frog", "spider"}
 
 # Words for a job rather than a person: an NPC whose name ends in one is a role ("Cooking Tutor").
-ROLE_WORDS = {"tutor", "instructor", "guard", "guardsman", "guardswoman", "priest", "priestess", "herbalist",
+ROLE_WORDS = {"tutor", "instructor", "guard", "farmer", "guardsman", "guardswoman", "priest", "priestess", "herbalist",
               "shopkeeper", "assistant", "banker", "merchant", "musician", "citizen", "villager", "monk", "nun",
               "sailor", "worker", "cleaner", "trader", "soldier", "knight", "cook", "chef"}
 # (Not "man" or "woman": the plain Man and Woman aren't filed as characters anyway, and the Wise
@@ -1489,6 +1512,7 @@ def quest_tier(quest):
     """The rarity of a pet that needs this quest (by its difficulty), or None if it isn't one."""
     return QUEST_TIERS.get(QUEST_DIFFICULTY.get(quest))
 QUEST_DIFFICULTY = {}       # quest -> its official difficulty, read in main (see quest_difficulties)
+QUEST_BASES = set()         # those quests' names, as quest_base gives them, read in main
 SLAYER_RACES = {}           # Slayer category -> race, read in main (see slayer_races)
 
 
@@ -1500,7 +1524,7 @@ def quest_base(name):
 def is_quest(name):
     """True if this is a quest, or one named without its part number or "(miniquest)" (an infobox
     version "Civil War", for Civil War I to III)."""
-    return quest_base(name) in {quest_base(quest) for quest in QUEST_DIFFICULTY}
+    return quest_base(name) in QUEST_BASES
 
 
 def box_regions(fields, strict=False):
@@ -1664,14 +1688,16 @@ def npc_rarity(page, fields, character, named):
 
     level = number(first_version(fields, "level") or first_version(fields, "combat"))
     slayer = number(fields.get("slaylvl"))
+    # (from all the page's infoboxes of its name: Zanik's first, for the Warforge, lists no quests)
+    boxes = [fields] + other_infoboxes(page, fields)
     # (linked, or written out: "A Clockwork Syringe, Pieces of Hate"; "No" and "None" are none)
-    quest_text = " ".join(numbered_fields(fields, "quest"))
+    quest_text = " ".join(value for box in boxes for value in numbered_fields(box, "quest"))
     quests = set(links(quest_text)) or {q.strip() for q in plain(quest_text).split(",")
                                          if q.strip() and q.strip().lower() not in ("no", "none", "n/a")}
     quests |= {c[len("Characters in "):] for c in categories if c.startswith("Characters in ")}
     # Each location row (LocLine) and each map lists its spawn points as x:..,y:.. (or x=..).
     location_rows = " ".join(re.findall(r"\{\{\s*LocLine.*?\}\}", text, re.S))
-    maps = " ".join(numbered_fields(fields, "map"))
+    maps = " ".join(value for box in boxes for value in numbered_fields(box, "map"))
     spawns = len(re.findall(r"\bx\s*[:=]\s*\d+", location_rows or maps))
     royalty = any(c in ("Monarchs", "Royalty") for c in categories)
     skill_master = "Skill masters" in categories
@@ -1692,7 +1718,7 @@ def npc_rarity(page, fields, character, named):
     # Azzanadra) are legendary, whatever their combat level.
     # (a god's own NPC page can be a bracketed one, "Azzanadra (Children of Mah)", so its title
     # without the bracket is looked for among the gods too)
-    if "Gods" in categories or strip_bracket(page["title"]) in GODS:
+    if is_god(page):
         return "legendary", "a god"
     # Pets first (a boss pet's category has "boss" in it, but it is not a boss): see pet_rarity.
     pet = pet_rarity(page)
@@ -1748,6 +1774,11 @@ def npc_rarity(page, fields, character, named):
     return "common", "an everyday NPC"
 
 
+def is_god(page):
+    """True for a god's page (see GODS)."""
+    return "Gods" in page.get("categories", []) or strip_bracket(page["title"]) in GODS
+
+
 def npc_candidate(page, kind, fields, names, words):
     """A candidate from an NPC or monster page."""
     notes = []
@@ -1756,18 +1787,23 @@ def npc_candidate(page, kind, fields, names, words):
         return None, "unreleased"
     ids = all_ids(fields)
     configs = [names[i] for i in ids if i in names]
-    # (a copy in the player-owned house looks the same: POH_GROWNCAT is GROWNCAT)
-    configs = [c for c in configs if not (c.startswith("POH_") and c[len("POH_"):] in configs)]
     if not configs:
         return None, "no NPC id the plugin knows" if ids else "no NPC id on the page"
     name, desc = name_and_desc(page, fields, notes, versions_merge=True)
     name = SAME_CARD.get(name, name)
     # A version the wiki gives no id is often the NPC as it usually is (Aris's "Human"): the game's
-    # configs named for the NPC (DEMON_SLAYER_QIP_ARIS) come first then. And a blank stand-in a
-    # cutscene uses (DEMON_SLAYER_QIP_BLANK_NPC) shows nothing, so it goes last.
+    # configs named for the NPC (DEMON_SLAYER_QIP_ARIS) come first then.
     versions = [k for k in fields if re.fullmatch(r"version\d+", k)]
     if BLANK_CONFIG.search(configs[0]) and len(versions) > len([k for k in fields if re.fullmatch(r"id\d+", k)]):
         configs = [n for n in configs_named(name, names) if n not in configs][:3] + configs
+    # A page's other infoboxes of its name hold more of the NPC's looks (Zanik has nine, one for each
+    # part of her story): one from each in turn, so the first few don't take every place in the list.
+    others = other_infoboxes(page, fields)
+    boxes = [configs] + [[names[i] for i in all_ids(box) if i in names] for box in others]
+    configs = list(dict.fromkeys(c for turn in zip_longest(*boxes) for c in turn if c))
+    # (a copy in the player-owned house looks the same: POH_GROWNCAT is GROWNCAT)
+    configs = [c for c in configs if not (c.startswith("POH_") and c[len("POH_"):] in configs)]
+    # (a blank stand-in a cutscene uses, DEMON_SLAYER_QIP_BLANK_NPC, shows nothing, so it goes last)
     configs = sorted(configs, key=lambda c: bool(BLANK_CONFIG.search(c)))
     is_pet = bool(PET_CATEGORIES & set(page.get("categories", [])))
     # A pet named for its kind in its infobox ("Cat") but more fully in its title ("Purple cat")
@@ -1787,12 +1823,12 @@ def npc_candidate(page, kind, fields, names, words):
     # in several regions (Imp, Chicken: "Misthalin, Asgarnia, Kandarin"), it is a general card, which
     # has no region (the Card Builder puts a candidate without one in the general deck).
     regions = box_regions(fields)
-    # A page's other infoboxes: with none in this one, the first of them that gives a region
-    # (Zenevivia's NPC box has none, her Monster box says Misthalin, though for Love Story); with
-    # one, those outside quests add to it (Cruor: Asgarnia for Nex, Misthalin for the Angel of Death).
-    others = other_infoboxes(page, fields)
+    # A page's other infoboxes: with none in this one, the first of them that gives a region, by
+    # any name (Zenevivia's NPC box has none, her Monster box says Misthalin, though for Love Story;
+    # the Gargoyle sentinel's is its "Statue" box); with one, those of its name outside quests add
+    # to it (Cruor: Asgarnia for Nex, Misthalin for the Angel of Death).
     if not regions:
-        regions = next(filter(None, map(box_regions, others)), [])
+        regions = next(filter(None, map(box_regions, other_infoboxes(page, fields, any_name=True))), [])
     elif regions != ["global"]:
         for other in others:
             regions += [r for r in box_regions(other, strict=True) if r not in regions and r != "global"]
@@ -1885,11 +1921,16 @@ def npc_candidate(page, kind, fields, names, words):
 
     category = []
     race = npc_race(page, fields)
-    # The race's word, or the race itself as a new word (implings, titans) if it has none.
+    # The race's word, or the race itself as a new word (implings, titans) if it has none. A god
+    # of an animal's race isn't an animal (Amascut's is Cat), and any god is tagged god.
+    god = is_god(page)
     if race in RACE_WORDS:
-        category.append(RACE_WORDS[race])
+        if RACE_WORDS[race] != "animal" or not god:
+            category.append(RACE_WORDS[race])
     elif race and race not in RACE_NOT_WORDS:
         category.append(race)
+    if god:
+        category.append("god")
     page_categories = " ".join(page.get("categories", [])).lower()
     for key, word in CATEGORY_WORDS.items():
         if key in page_categories and word in words["category"] and word not in category:
@@ -1938,7 +1979,7 @@ def npc_candidate(page, kind, fields, names, words):
 
     # (gender: the Card Builder picks a trade's male or female pose by it, such as
     # MALE_FARMER_INTERFACE_ANIM; race whether to frame it as short, like a dwarf.)
-    return {"page": page["title"], "kind": "npc", "npc": configs[0], "others": configs[1:6], "name": name,
+    return {"page": page["title"], "kind": "npc", "npc": configs[0], "others": configs[1:], "name": name,
             "league_regions": regions,
             "named": named, "gender": gender, "race": race or None, "desc": desc, "rarity": rarity, "tags": tags,
             "notes": notes}, None
@@ -2241,8 +2282,12 @@ def main():
                    for title in titles if title in pages and "Infobox Item" in pages[title].get("text", "")}
     prices = fetch_prices(wiki, [n for n in price_names.values() if n], args.refresh) if price_names else {}
 
+    NPC_IDS.update(npc_ids())
     names, words = npc_names(), allowed_words()
+    if LOOKS.db is None:
+        print("No readable client cache, so a candidate's models aren't checked for ones that look the same.")
     QUEST_DIFFICULTY.update(quest_difficulties(wiki, args.refresh))
+    QUEST_BASES.update(map(quest_base, QUEST_DIFFICULTY))
     SLAYER_RACES.update(slayer_races(wiki, args.refresh))
     PLACE_REGIONS.update(place_regions(json.loads(f.read_text(encoding="utf-8")) for f in (CACHE / "pages").glob("*.json")))
     # The other places of NPCs the wiki gives no region: their own pages give theirs (fetched once).
