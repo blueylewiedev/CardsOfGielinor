@@ -136,12 +136,18 @@ local function loadRemaining()
         return nil
     end
     local done, inDeck, list = reviewed(), subjectsInDeck(), {}
+    local function anyInDeck(kind, modelList)
+        for _, model in ipairs(modelList) do
+            if inDeck[kind .. ":" .. model] then
+                return true
+            end
+        end
+        return false
+    end
     for _, candidate in ipairs(candidates) do
         local kind = candidate.kind == "item" and "item" or "npc"
-        local made = false
-        for _, model in ipairs(models(candidate)) do
-            made = made or inDeck[kind .. ":" .. model]
-        end
+        -- (and the NPC's models not offered: the rest of a long list, or ones that look the same)
+        local made = anyInDeck(kind, models(candidate)) or anyInDeck(kind, candidate.also or {})
         -- (Marks used to be kept by NPC name; those still count.)
         if not (done[candidate.page] or done[candidate.npc or ""]) and not made then
             list[#list + 1] = candidate

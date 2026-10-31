@@ -77,13 +77,17 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    check and change anything that is wrong (the tags and rarity are only guesses), try the other
    models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
    **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
+   **Next model** only offers models that look different: `dev/wiki_cards.py` compares their parts
+   and colours in the client's cache (`dev/npc_looks.py`), and keeps every model if there's no cache.
 
    Instead of copying each block by hand, you can let **Done** queue it: the Wiki Review saves
    the card in the Card Builder (the one you loaded, with no problems showing in its checks) in the
    plugin's database, and `dev/card_queue.py` (run on the computer the client runs on) adds each
    queued card to the end of its deck file. If the card can't be queued, a line under the buttons
    says why and the candidate stays on the list. The script only reads the database; what it has
-   done is kept in `dev/.card_queue_state.json`. Commands (`DB` is the client's `PluginData.db`):
+   done is kept in `dev/.card_queue_state.json`. A new location or NPC category word on an added
+   card goes into `core/cards.lua` too; any other unlisted word is only reported. Check the result
+   with `lua dev/check_cards.lua`. Commands (`DB` is the client's `PluginData.db`):
 
    ```
    python dev/card_queue.py --db DB                   keep watching, adding each card as it is queued

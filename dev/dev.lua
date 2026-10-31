@@ -69,6 +69,7 @@ function Dev.buttons(api, refresh)
         end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
+        { label = "Anim check", action = Builder.checkAnims },
         { label = "Wiki Review", action = WikiReview.toggle },
         { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
