@@ -178,6 +178,45 @@ local function filterEntries()
     return entries, counts
 end
 
+-- Puts the items together by kind (all the swords, then all the maces, and so on: the card's most
+-- specific category word, see Builder.categoryKey), lowest rarity first within a kind and then by
+-- name, so the models of one kind come one after another and the camera tuned for the first starts
+-- the rest off (see "Save camera for this kind" in the Card Builder). NPCs come after the items,
+-- in the order they were fetched. Returns a new list.
+local function groupedByKind(list)
+    local items, others = {}, {}
+    for position, candidate in ipairs(list) do
+        if candidate.kind == "item" then
+            items[#items + 1] = {
+                candidate = candidate, position = position,
+                kind = Builder.categoryKey((candidate.tags or {}).category) or "",
+                rank = Cards.rarityRank[candidate.rarity] or 0,
+                name = string.lower(candidate.name or ""),
+            }
+        else
+            others[#others + 1] = candidate
+        end
+    end
+    table.sort(items, function(a, b)
+        if a.kind ~= b.kind then
+            return a.kind < b.kind
+        elseif a.rank ~= b.rank then
+            return a.rank < b.rank
+        elseif a.name ~= b.name then
+            return a.name < b.name
+        end
+        return a.position < b.position
+    end)
+    local sorted = {}
+    for _, entry in ipairs(items) do
+        sorted[#sorted + 1] = entry.candidate
+    end
+    for _, candidate in ipairs(others) do
+        sorted[#sorted + 1] = candidate
+    end
+    return sorted
+end
+
 -- Narrows the list to the chosen source (back to all if it has none left), keeping the
 -- drop-down's counts up to date.
 local function applyFilter()
@@ -191,6 +230,7 @@ local function applyFilter()
             queue[#queue + 1] = candidate
         end
     end
+    queue = groupedByKind(queue)
     if index > #queue then
         index = 1
     end
