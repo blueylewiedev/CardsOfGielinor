@@ -555,6 +555,12 @@ end
 
 -- The camera values currently on the card, from the shown view if there is one.
 local view = nil
+-- Mouse control of the camera on the preview (see "Mouse control" below): the drag in progress, the
+-- seconds until the checks are redrawn after the camera moved, and the functions made later.
+local drag = nil
+local checksIn = nil
+local tickDrag = nil
+local addGrip = nil
 local function currentCam()
     if view ~= nil and view.cam ~= nil then
         return view.cam
@@ -567,17 +573,23 @@ end
 -- saved camera starts from it. The kind is the card's most specific category word.
 local CAMERA_DB_KEY = "dev_category_cameras"
 
--- The most specific word of an item's category tags: one that needs another word (scimitar, which
--- needs weapon) if there is one, otherwise the first word. nil if there are none.
+-- The most specific word of an item's category tags: the last one that needs another word
+-- (scimitar, which needs weapon; two_handed_sword rather than sword), not counting the combat
+-- style words (melee_gear: every melee weapon has it, so it would put them all in one kind).
+-- Failing that the first word that needs another, otherwise the first word. nil if there are none.
 function Builder.categoryKey(words)
-    local first = nil
+    local first, gear, needing = nil, nil, nil
     for _, word in ipairs(words or {}) do
         if Cards.requiredWord("item", "category", word) ~= nil then
-            return word
+            if string.find(word, "_gear$") then
+                gear = gear or word
+            else
+                needing = word
+            end
         end
         first = first or word
     end
-    return first
+    return needing or gear or first
 end
 
 local function savedCameras()
@@ -589,10 +601,137 @@ local function copyCamera(cam)
     return { yaw = cam.yaw, pitch = cam.pitch, dist = cam.dist, fov = cam.fov, ty = cam.ty, tx = cam.tx }
 end
 
+-- True for an off-hand weapon: "off hand" or "off-hand" in its name, or an item config name that
+-- ends _O (ADAMANT_BATTLEAXE_O, GWD2_TWINS_WEAPON_O_100). Its model is the main-hand one the other
+-- way round (the axe head on the other side), so it needs its own camera.
+function Builder.isOffHand(name, configName)
+    if string.find(string.lower(name or ""), "off[ %-]?hand") then
+        return true
+    end
+    configName = string.upper(configName or "")
+    return string.find(configName, "_O$") ~= nil or string.find(configName, "_O_%d+$") ~= nil
+end
+
+-- What a kind of item is called in a message, and the key its saved camera is kept under: an
+-- off-hand weapon has its own, apart from the main-hand ones of the same kind.
+local function kindLabel(key, offHand)
+    return offHand and (key .. " (off-hand)") or key
+end
+
+local function cameraSlot(key, offHand)
+    return offHand and (key .. "/off_hand") or key
+end
+
 -- A copy of the camera saved for a category word, or nil.
 local function categoryCamera(key)
     local cam = key ~= nil and savedCameras()[key] or nil
     return type(cam) == "table" and copyCamera(cam) or nil
+end
+
+-- The cameras the deck already uses for a kind of item, most common first, for "Next camera for
+-- this kind". Two cameras are the same framing when they turn the model about the same way, are
+-- about as zoomed in (the zoom is dist * tan(fov / 2): distance and field of view do the same job)
+-- and look at about the same spot. Cameras are grouped by that; each group is shown as its most
+-- typical camera, and groups of one card are left out unless there is nothing else.
+local SAME_YAW, SAME_PITCH, SAME_ZOOM, SAME_PAN = 0.5, 0.3, 1.25, 30
+local MAX_PRESETS, MIN_PRESETS = 8, 3
+
+local function angleApart(a, b)
+    local apart = math.abs(a - b) % (2 * math.pi)
+    return math.min(apart, 2 * math.pi - apart)
+end
+
+-- A card's camera with the item defaults filled in for whatever it leaves out.
+local function withItemDefaults(cam)
+    local defaults = CardView.CAMERA_DEFAULTS.item
+    local full = {}
+    for field, default in pairs(defaults) do
+        full[field] = cam[field] or default
+    end
+    return full
+end
+
+local function sameFraming(a, b)
+    local zoomA = a.dist * math.tan(math.rad(a.fov) / 2)
+    local zoomB = b.dist * math.tan(math.rad(b.fov) / 2)
+    return angleApart(a.yaw, b.yaw) <= SAME_YAW
+        and math.abs(a.pitch - b.pitch) <= SAME_PITCH
+        and math.max(zoomA, zoomB) / math.min(zoomA, zoomB) <= SAME_ZOOM
+        and math.abs(a.tx - b.tx) <= SAME_PAN
+        and math.abs(a.ty - b.ty) <= SAME_PAN
+end
+
+-- The presets for a kind of item (its most specific category word, see Builder.categoryKey) as a
+-- list of { cam, count }: the camera, and how many cards in the deck are framed like it. Only the
+-- off-hand weapons of the kind with `offHand`, only the others without.
+function Builder.cameraPresets(key, offHand)
+    if key == nil then
+        return {}
+    end
+    local left = {}
+    for _, card in ipairs(Cards.list) do
+        local art = card.art or {}
+        if Cards.kindOf(card) == "item" and art.cam ~= nil
+            and Builder.categoryKey((card.tags or {}).category) == key
+            and Builder.isOffHand(card.name, art.item) == (offHand == true) then
+            left[#left + 1] = withItemDefaults(art.cam)
+        end
+    end
+    local groups = {}
+    while #left > 0 do
+        -- the camera most of the rest are framed like leads the next group
+        local best, bestCount = nil, 0
+        for _, cam in ipairs(left) do
+            local count = 0
+            for _, other in ipairs(left) do
+                if sameFraming(cam, other) then
+                    count = count + 1
+                end
+            end
+            if count > bestCount then
+                best, bestCount = cam, count
+            end
+        end
+        local rest = {}
+        for _, cam in ipairs(left) do
+            if not sameFraming(best, cam) then
+                rest[#rest + 1] = cam
+            end
+        end
+        groups[#groups + 1] = { cam = best, count = bestCount }
+        left = rest
+    end
+    local presets = {}
+    for _, group in ipairs(groups) do
+        if group.count >= 2 and #presets < MAX_PRESETS then
+            presets[#presets + 1] = group
+        end
+    end
+    -- a kind with few cards (the off-hand ones) has mostly groups of one: use them rather than too few
+    for _, group in ipairs(groups) do
+        if group.count < 2 and #presets < MIN_PRESETS then
+            presets[#presets + 1] = group
+        end
+    end
+    return presets
+end
+
+-- The camera a new item card of a kind starts from: the one saved for the kind, otherwise the
+-- most common one in the deck. An off-hand weapon with neither starts from its main-hand kind's,
+-- which has the model the other way round but is about the right size.
+local function startingCamera(key, offHand)
+    local saved = categoryCamera(cameraSlot(key, offHand))
+    if saved ~= nil then
+        return saved
+    end
+    local presets = Builder.cameraPresets(key, offHand)
+    if presets[1] ~= nil then
+        return copyCamera(presets[1].cam)
+    end
+    if offHand then
+        return startingCamera(key, false)
+    end
+    return nil
 end
 
 -- The animation box's text for the draft's animation.
@@ -999,6 +1138,7 @@ local function showCard()
         return
     end
     pending = nil
+    drag = nil
     if view ~= nil then
         pcall(function() view.root:Destroy() end)
         view = nil
@@ -1019,6 +1159,9 @@ local function showCard()
     end
     view = CardView.create(content, card, { scale = PREVIEW_SCALE })
     view.root:SetPos(MID_X + (MID_W - CARD_W) // 2, 30)
+    if addGrip ~= nil then
+        addGrip()
+    end
     if widgets.modelButton ~= nil then
         if isItem() then
             Kit.setLabel(widgets.modelButton, "Model: Item")
@@ -1044,11 +1187,22 @@ local function onDraw(e)
         Builder.rebuild()
         return
     end
+    local ok, dt = pcall(function() return e.timeDeltaSecs end)
+    dt = (ok and type(dt) == "number") and dt or 0.016
+    if drag ~= nil and tickDrag ~= nil then
+        tickDrag(dt)
+    end
+    if checksIn ~= nil then
+        checksIn = checksIn - dt
+        if checksIn <= 0 then
+            checksIn = nil
+            refreshChecks()
+        end
+    end
     if pending == nil then
         return
     end
-    local ok, dt = pcall(function() return e.timeDeltaSecs end)
-    pending = pending - ((ok and type(dt) == "number") and dt or 0.016)
+    pending = pending - dt
     if pending <= 0 then
         showCard()
     end
@@ -1136,11 +1290,12 @@ local function setSubject(configName)
         return
     end
     draft[isItem() and "item" or "npc"] = configName
-    -- An item starts from the camera saved for its kind, if there is one.
-    draft.cam = isItem() and categoryCamera(Builder.categoryKey(tagWords("category"))) or nil
     draft.anim = nil
     setField(widgets.animField, "")
     local subjectId, displayName = lookupSubject(configName)
+    -- An item starts from the camera saved for its kind (off-hand weapons have their own), if there is one.
+    draft.cam = isItem() and startingCamera(Builder.categoryKey(tagWords("category")),
+        Builder.isOffHand(displayName or draft.name, configName)) or nil
     if widgets.npcStatus ~= nil then
         widgets.npcStatus.content = subjectId ~= nil and "Found" or (configName == "" and "" or "Not found")
     end
@@ -1158,8 +1313,11 @@ local function setSubject(configName)
     soon()
 end
 
--- Changes the camera with `change(cam)`, applies it and keeps the values for redraws.
-local function withCamera(change)
+-- Changes the camera with `change(cam)`, applies it and keeps the values for redraws. With
+-- `quiet` (the mouse moving the camera many times a second) the checks, which show the camera in the
+-- card block, are redrawn a moment after the last change instead of every time.
+local CHECKS_DELAY = 0.3
+local function withCamera(change, quiet)
     local cam = currentCam()
     if cam == nil then
         return
@@ -1167,7 +1325,170 @@ local function withCamera(change)
     change(cam)
     CardView.applyCamera(cam)
     draft.cam = { yaw = cam.yaw, pitch = cam.pitch, dist = cam.dist, fov = cam.fov, ty = cam.ty, tx = cam.tx }
+    if quiet then
+        checksIn = CHECKS_DELAY
+    else
+        refreshChecks()
+    end
+end
+
+-- ---------------------------------------------------------------------------------------------
+-- Mouse control of the camera
+-- ---------------------------------------------------------------------------------------------
+-- A transparent layer over the card's art window (made again with each redraw of the card, so it
+-- stays on top of it):
+--   drag          turns the model (yaw)
+--   Shift + drag  moves it across the card (tx, ty), following the mouse
+--   Ctrl + drag   tilts it (pitch)
+--   mouse wheel   zooms (dist; wheel up = closer)
+-- Like the Pack Maker's boxes, pressing stretches the layer over the whole window, so it keeps
+-- getting the hold and release wherever the mouse goes, and it goes back to the art window on
+-- release. The camera is applied a few times a second while dragging, not every frame.
+local YAW_PER_PIXEL, TILT_PER_PIXEL = 0.01, 0.008
+local MAX_TILT = 1.5
+local DRAG_PERIOD = 0.05        -- seconds between camera updates while dragging
+local DRAG_IDLE = 1.5           -- no hold for this long: the release was missed, so stop dragging
+local WHEEL_FACTOR = 1.1
+
+local function mousePosition()
+    local ok, x, y = pcall(function()
+        if not Mouse.IsAvailable() then
+            return nil
+        end
+        local position = Mouse.GetPosition()
+        return position.x, position.y
+    end)
+    if ok then
+        return x, y
+    end
+    return nil
+end
+
+local function keyDown(name)
+    local ok, down = pcall(function() return Keyboard[name]() end)
+    return ok and down == true
+end
+
+-- Where the art window of the preview card is in the Card Builder's content: x, y, w, h.
+local function artBox()
+    local x0, y0 = MID_X + (MID_W - CARD_W) // 2, 30
+    local rarity = Cards.rarities[draft.rarity] and draft.rarity or "common"
+    if CardView.frameResource(rarity) ~= nil then
+        local zone = CardView.FRAME_ZONES.window[rarity] or CardView.FRAME_ZONES.window.common
+        return x0 + zone.x * PREVIEW_SCALE, y0 + zone.y * PREVIEW_SCALE, zone.w * PREVIEW_SCALE, zone.h * PREVIEW_SCALE
+    end
+    return x0 + 10, y0 + 34 * PREVIEW_SCALE, CARD_W - 20, 110 * PREVIEW_SCALE      -- (the plain layout)
+end
+
+local function placeGrip()
+    if widgets.grip == nil then
+        return
+    end
+    local x, y, w, h = artBox()
+    pcall(function()
+        widgets.grip:SetPos(x, y)
+        widgets.grip:SetSize(w, h, 0, 0)
+    end)
+end
+
+local function startDrag()
+    if drag ~= nil then
+        return
+    end
+    local cam = currentCam()
+    local x, y = mousePosition()
+    if cam == nil or x == nil then
+        return
+    end
+    local _, _, _, boxH = artBox()
+    drag = {
+        x = x, y = y, start = copyCamera(cam), boxH = boxH, since = 0, idle = 0,
+        mode = keyDown("IsShiftDown") and "pan" or (keyDown("IsControlDown") and "tilt" or "turn"),
+    }
+    if widgets.grip ~= nil then
+        widgets.grip:SetPos(0, 0)
+        widgets.grip:SetSize(0, 0, 1, 1)
+        pcall(function() widgets.grip:MoveToFront() end)
+    end
+end
+
+-- Moves the camera to where the mouse has taken it since the press.
+local function applyDrag()
+    local x, y = mousePosition()
+    if drag == nil or x == nil then
+        return
+    end
+    local dx, dy, start = x - drag.x, y - drag.y, drag.start
+    withCamera(function(cam)
+        if drag.mode == "pan" then
+            -- how far the camera's view covers per pixel of the art window, so the model follows the mouse
+            local perPixel = 2 * start.dist * math.tan(math.rad(start.fov) / 2) / drag.boxH
+            cam.tx = start.tx - dx * perPixel
+            cam.ty = start.ty + dy * perPixel
+        elseif drag.mode == "tilt" then
+            cam.pitch = math.max(-MAX_TILT, math.min(MAX_TILT, start.pitch + dy * TILT_PER_PIXEL))
+        else
+            cam.yaw = start.yaw - dx * YAW_PER_PIXEL
+        end
+    end, true)
+end
+
+local function endDrag(final)
+    if drag == nil then
+        return
+    end
+    if final then
+        applyDrag()
+    end
+    drag = nil
+    placeGrip()
     refreshChecks()
+end
+
+tickDrag = function(dt)
+    drag.since = drag.since + dt
+    drag.idle = drag.idle + dt
+    if drag.idle > DRAG_IDLE then
+        endDrag(false)
+    elseif drag.since >= DRAG_PERIOD then
+        drag.since = 0
+        applyDrag()
+    end
+end
+
+local function wheelZoom(delta)
+    if delta == 0 then
+        return
+    end
+    withCamera(function(cam)
+        cam.dist = math.max(10, cam.dist * (delta > 0 and WHEEL_FACTOR or 1 / WHEEL_FACTOR))
+    end, true)
+end
+
+addGrip = function()
+    if widgets.grip ~= nil then
+        pcall(function() widgets.grip:Destroy() end)
+        widgets.grip = nil
+    end
+    local ok, grip = pcall(function()
+        local layer = ui.Layer.new(content)
+        layer.clickthrough = false
+        layer:Subscribe(ui.Hook.ONCLICK, startDrag)
+        layer:Subscribe(ui.Hook.ONHOLD, function()
+            if drag ~= nil then
+                drag.idle = 0
+            end
+        end)
+        layer:Subscribe(ui.Hook.ONRELEASE, function() endDrag(true) end)
+        Kit.onWheel(layer, wheelZoom)
+        return layer
+    end)
+    if ok then
+        widgets.grip = grip
+        placeGrip()
+    else
+        log("builder: the mouse control of the camera could not be made:", tostring(grip))
+    end
 end
 
 local function setAnim(animId)
@@ -1321,6 +1642,7 @@ end
 -- Takes the window down without touching the pickers or the card being made.
 local function destroyWindow()
     pending = nil
+    drag, checksIn = nil, nil
     closeDropdown()
     clearParts(checkParts)
     for _, native in ipairs(widgets.dropdowns or {}) do
@@ -1733,7 +2055,8 @@ function Builder.loadCandidate(candidate, configName)
             regions[#regions + 1] = "daemonheim"
             fresh.regions = table.concat(regions, ", ")
         end
-        fresh.cam = categoryCamera(Builder.categoryKey(Builder.parseWords(fresh.category)))
+        fresh.cam = startingCamera(Builder.categoryKey(Builder.parseWords(fresh.category)),
+            Builder.isOffHand(fresh.name, fresh.item))
     else
         -- (an NPC found in two regions: its deck file is the first's, and it is tagged with the second)
         fresh.regions = table.concat({ table.unpack(tags.regions or {}, 2) }, ", ")
@@ -1888,6 +2211,10 @@ function Builder.show()
 
     -- 2. Live preview -----------------------------------------------------------------------
     section("2. Live preview", MID_X, 4, MID_W)
+    local hintY = 30 + CARD_H + 6
+    caption("Drag the art: turn the model", MID_X, hintY, MID_W)
+    caption("Shift+drag: move   Ctrl+drag: tilt", MID_X, hintY + 18, MID_W)
+    caption("Mouse wheel: zoom", MID_X, hintY + 36, MID_W)
 
     -- 3. Tune the art -------------------------------------------------------------------------
     section("3. Tune the art", RIGHT_X, 4, RIGHT_W)
@@ -1956,7 +2283,7 @@ function Builder.show()
         -- The camera of this kind of item (its most specific category word), kept for the next
         -- card of the kind: tune one, press Save, and the others start from it.
         y = y + 26
-        widgets.categoryCameraNote = Kit.text(content, RIGHT_X, y + 68, RIGHT_W, 20, "", GREY, ui.AlignMode.TOPLEFT)
+        widgets.categoryCameraNote = Kit.text(content, RIGHT_X, y + 102, RIGHT_W, 20, "", GREY, ui.AlignMode.TOPLEFT)
         local function note(text)
             widgets.categoryCameraNote.content = text
         end
@@ -1968,21 +2295,58 @@ function Builder.show()
             if cam == nil then
                 return note("No card is shown")
             end
+            local offHand = Builder.isOffHand(draft.name, draft.item)
             local saved = savedCameras()
-            saved[key] = copyCamera(cam)
+            saved[cameraSlot(key, offHand)] = copyCamera(cam)
             pcall(function() PersistentDB:SetStructuredData(CAMERA_DB_KEY, saved) end)
-            note("Saved the camera for " .. key)
-        end, "neutral", "Keep this camera for every other card of the same kind (its most specific category word)")
+            note("Saved the camera for " .. kindLabel(key, offHand))
+        end, "neutral", "Keep this camera for every other card of the same kind (its most specific category word; off-hand weapons have their own)")
         Kit.buttonAt(content, "Use the saved camera", RIGHT_X, y + 34, RIGHT_W - 4, 28, function()
             local key = Builder.categoryKey(tagWords("category"))
-            local cam = categoryCamera(key)
+            local offHand = Builder.isOffHand(draft.name, draft.item)
+            local cam = categoryCamera(cameraSlot(key, offHand))
             if cam == nil then
-                return note(key ~= nil and ("No camera saved for " .. key) or "Choose a category first")
+                return note(key ~= nil and ("No camera saved for " .. kindLabel(key, offHand)) or "Choose a category first")
             end
             draft.cam = cam
             showCard()
-            note("Using the camera saved for " .. key)
+            note("Using the camera saved for " .. kindLabel(key, offHand))
         end, "neutral", "Start this card from the camera saved for its kind")
+        -- The cameras the deck already uses for this kind, most common first: each press tries the
+        -- next one, then it only needs nudging with the mouse.
+        local presetKey, presetIndex = nil, 0
+        Kit.buttonAt(content, "Next camera for this kind", RIGHT_X, y + 68, RIGHT_W - 4, 28, function()
+            local key = Builder.categoryKey(tagWords("category"))
+            if key == nil then
+                return note("Choose a category first")
+            end
+            -- An off-hand weapon is shown the off-hand cameras of its kind (its model is the main-hand
+            -- one the other way round). With none yet, the main-hand ones are shown, to be turned.
+            local offHand = Builder.isOffHand(draft.name, draft.item)
+            local presets = Builder.cameraPresets(key, offHand)
+            local fromMainHand = false
+            if #presets == 0 and offHand then
+                presets, fromMainHand = Builder.cameraPresets(key, false), true
+            end
+            if #presets == 0 then
+                return note("No " .. kindLabel(key, offHand) .. " card has a camera yet")
+            end
+            local which = cameraSlot(key, offHand) .. (fromMainHand and "/main" or "")
+            if presetKey ~= which then
+                presetKey, presetIndex = which, 0
+            end
+            presetIndex = presetIndex % #presets + 1
+            local preset = presets[presetIndex]
+            draft.cam = copyCamera(preset.cam)
+            showCard()
+            if fromMainHand then
+                note(string.format("No off-hand %s camera yet: main-hand %d of %d (turn it round)", key, presetIndex,
+                    #presets))
+            else
+                note(string.format("%s camera %d of %d (%d card%s like it)", kindLabel(key, offHand), presetIndex,
+                    #presets, preset.count, preset.count == 1 and "" or "s"))
+            end
+        end, "neutral", "Try the next camera the deck already uses for this kind of item (most common first; off-hand weapons are matched with off-hand ones)")
     else
         caption("Animation (sequence id, optional)", RIGHT_X, y, RIGHT_W)
         y = y + 20
