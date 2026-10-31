@@ -12,6 +12,7 @@ Set.cards = {
     { id = "dwarven_army_axe", name = "Dwarven army axe", kind = "item", rarity = "common", desc = "A highly useful modular tool.", art = { item = "HOOKS1_AXE", cam = { yaw = -5.00, dist = 525, fov = 35 } }, tags = { category = { "weapon", "melee_gear", "tool", "axe" }, membership = { "f2p" } } },
     { id = "enhanced_yaktwee_stick", name = "Enhanced yaktwee stick", kind = "item", rarity = "common", desc = "An improved tool used to hunt charm sprites.", art = { item = "HUNTCHARM_STAVE_ENHANCED", cam = { yaw = -8.80, dist = 525, fov = 45, ty = -20, tx = 60 } }, tags = { regions = { "kandarin" }, category = { "weapon", "melee_gear", "minigame", "tool" }, membership = { "p2p" } } },
     { id = "good_locator", name = "Good locator", kind = "item", rarity = "rare", desc = "Helps me to get to useful resources.", art = { item = "MOB_REWARD_LOCATOR3", cam = { yaw = -7.80, dist = 525, fov = 25, ty = -20, tx = 20 } }, tags = { skills = { "divination" }, category = { "tool" }, membership = { "p2p" } } },
+    { id = "inferior_locator", name = "Inferior locator", kind = "item", rarity = "common", desc = "Helps me to get to useful resources.", art = { item = "MOB_REWARD_LOCATOR1", cam = { yaw = -8.41, dist = 326, fov = 35, ty = 6, tx = 17 } }, tags = { skills = { "divination" }, category = { "tool" }, membership = { "p2p" } } },
 }
 
 return Set
