@@ -833,6 +833,15 @@ COSMETIC_CATEGORY = re.compile(r"\bcosmetic|\boverride")
 # "Equipment capable of making cosmetic changes", and is a weapon.
 CAN_HAVE_COSMETICS = re.compile(r"\bcapable of\b|\bcan (?:be )?(?:use|apply|have|wear)")
 
+# Novelty items: joke and prop items that are wielded but never used to fight (a rubber chicken, a
+# frying pan). They are tagged novelty, and not weapon or a weapon kind, so a pack of weapons never
+# contains them; one that is also a cosmetic override keeps fashion too. The wiki puts many in
+# these categories (a Cleaver is in "Kitchen weaponry" too, so the note says to check)...
+NOVELTY_CATEGORY = re.compile(r"^(?:fun weapons|kitchen weaponry)$")
+# ...and the rest, which the wiki does not group, by page title (lower case).
+NOVELTY_PAGES = {"tambourine", "mega-phonus", "rubber turkey", "off-hand rubber turkey", "rubber blackjack",
+                 "pogo stick", "gavel", "walking stick"}
+
 
 WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd", "whip",
                      "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon"}
@@ -1322,7 +1331,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         found += ["seed", patch]
     cosmetic = [c for c in page.get("categories", [])
                 if COSMETIC_CATEGORY.search(c.lower()) and not CAN_HAVE_COSMETICS.search(c.lower())]
-    if cosmetic:
+    novelty = [c for c in page.get("categories", []) if NOVELTY_CATEGORY.search(c.lower())]
+    if not novelty and strip_bracket(page["title"]).lower() in NOVELTY_PAGES:
+        novelty = ["a known joke item"]
+    if novelty and "novelty" in words["item_category"]:
+        found = ["novelty"] + (["fashion"] if cosmetic else [])
+        notes.append(f"looks like a novelty item ({novelty[0]}): tagged novelty, not weapon: check it is not used to fight")
+    elif cosmetic:
         found = ["fashion"]
         notes.append(f"looks like a cosmetic ({cosmetic[0]}): tagged fashion only")
     else:
@@ -1367,6 +1382,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
     worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
+    if "novelty" in found:
+        worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
     grown_with, grown_level = seed_requirements(page.get("text", ""), set(words["skills"]))
     if grown_with and not made_with:
         made_with, level = grown_with, grown_level
@@ -1378,7 +1395,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         notes.append("planted with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
     elif made_with:
         notes.append("made with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
-    elif not worn_with:
+    elif not worn_with and "novelty" not in found:
         notes.append("no recipe or wear requirement found on the page: check which skills it needs")
     if worn_with:
         notes.append("needs " + ", ".join(f"{w}" for w in worn_with) + f" level {worn_level} to wear")

@@ -54,6 +54,8 @@ return {
     "deck/items/seeds",
     "deck/items/tools",
     "deck/items/quest_items",
+    "deck/items/treasure_trails",
+    "deck/items/novelties",
 
     -- Weapons (by kind; the combat style is a tag)
     "deck/items/weapons/daggers",
