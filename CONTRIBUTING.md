@@ -521,9 +521,11 @@ of weapon (`sword`, `longbow`, `staff`...), the armour slot (`helmet`, `legs`...
 the type of ammunition (`arrow`, `bolt` or `spike`). These only show once the word above them is on
 the card, and taking that word off takes them off too. A card that has one of them also needs the
 word above it, so a rune scimitar is `{ "weapon", "scimitar" }`. Throwing knives and darts are
-`thrown` weapons. Items that are only worn or wielded for their looks (hats, masks, novelty weapons)
+`thrown` weapons. Items that are only worn or wielded for their looks (hats, masks)
 are `fashion` and are not given `weapon`, `armour` or a slot, so a pack of helmets or weapons never
-contains them. An item can have several words, for example `{ "raw_material" }` for logs.
+contains them. Joke and prop items nobody uses to fight (a rubber chicken, a tambourine, a frying pan)
+are `novelty` and are not given `weapon` or a weapon kind either; one that is also a cosmetic override
+keeps `fashion` too. They go in `deck/items/novelties.lua`. An item can have several words, for example `{ "raw_material" }` for logs.
 
 Some words have more to say about the kind, and open their own choice once the word above is on the card:
 - `weapon`, `armour`, `jewellery` or `ammunition` open the **combat style**: `melee_gear`, `ranged_gear`,
@@ -567,7 +569,7 @@ to guess.
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
 - `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
-- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 

@@ -51,12 +51,6 @@ Set.cards = {
         tags = { skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
     },
     {
-        id = "blue_logs", name = "Blue logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical covered wooden logs.",
-        art = { item = "BLUE_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail" }, membership = { "p2p" } },
-    },
-    {
         id = "corrupted_magic_logs", name = "Corrupted magic logs", kind = "item", rarity = "epic",
         desc = "Magic logs seeped in corruption.",
         art = { item = "MENAPHOS_CORRUPTED_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
@@ -117,12 +111,6 @@ Set.cards = {
         tags = { skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
     },
     {
-        id = "green_logs", name = "Green logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical covered wooden logs.",
-        art = { item = "GREEN_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
-    },
-    {
         id = "logs", name = "Logs", kind = "item", rarity = "common",
         desc = "A number of wooden logs. They have many uses.",
         art = { item = "LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
@@ -177,22 +165,10 @@ Set.cards = {
         tags = { regions = { "morytania" }, skills = { "firemaking" }, category = { "raw_material", "log" }, membership = { "p2p" } },
     },
     {
-        id = "purple_logs", name = "Purple logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical- covered wooden logs.",
-        art = { item = "TRAIL_LOGS_PURPLE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
-    },
-    {
         id = "pyre_logs", name = "Pyre logs", kind = "item", rarity = "common",
         desc = "Logs prepared with sacred oil for a funeral pyre.",
         art = { item = "LOGS_PYRE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
         tags = { regions = { "morytania" }, skills = { "firemaking" }, category = { "raw_material", "log" }, membership = { "p2p" } },
-    },
-    {
-        id = "red_logs", name = "Red logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical covered wooden logs.",
-        art = { item = "RED_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
     },
     {
         id = "red_mahogany_logs", name = "Red mahogany logs", kind = "item", rarity = "common",
@@ -217,12 +193,6 @@ Set.cards = {
         desc = "Teak logs prepared with sacred oil for a funeral pyre.",
         art = { item = "TEAK_LOGS_PYRE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
         tags = { regions = { "morytania" }, skills = { "firemaking" }, category = { "raw_material", "log" }, membership = { "p2p" } },
-    },
-    {
-        id = "white_logs", name = "White logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical-covered wooden logs.",
-        art = { item = "TRAIL_LOGS_WHITE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
     },
     {
         id = "willow_logs", name = "Willow logs", kind = "item", rarity = "common",
@@ -308,14 +278,54 @@ Set.cards = {
         art = { item = "RAND_LOGS_4", cam = { yaw = 0.60, pitch = 1.10, dist = 456, fov = 65, ty = -20 } },
         tags = { regions = { "daemonheim" }, skills = { "woodcutting", "dungeoneering" }, category = { "raw_material", "log" }, membership = { "f2p" } },
     },
-    { id = "curly_root", name = "Curly root", kind = "item", rarity = "epic", desc = "A curly jade root. Only good for burning.", art = { item = "JARO_ROOT_CURLY", cam = { pitch = 1.10, dist = 456, fov = 60 } }, tags = { regions = { "karamja" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } } },
-    { id = "jungle_logs", name = "Jungle logs", kind = "item", rarity = "common", desc = "They can be crafted into traps and spears to bring down big creatures.", art = { item = "DINO_GAME_LOGS", cam = { yaw = 0.60, pitch = 0.50, dist = 456, ty = 40 } }, tags = { regions = { "anachronia" }, skills = { "woodcutting" }, category = { "raw_material", "log", "minigame" }, membership = { "p2p" } } },
-    { id = "petrified_bark", name = "Petrified bark", kind = "item", rarity = "epic", desc = "Bark cut from a giant petrified tree.", art = { item = "FENMOOR_WOODCUTTING_PETRIFIED_BARK", cam = { yaw = 0.60, pitch = 1.40, dist = 456 } }, tags = { regions = { "havenhythe" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } } },
-    { id = "petrified_logs", name = "Petrified logs", kind = "item", rarity = "legendary", desc = "Logs cut from a giant petrified tree.", art = { item = "FENMOOR_WOODCUTTING_PETRIFIED_LOGS", cam = { yaw = 0.60, pitch = 0.35, dist = 456, fov = 45, ty = 60 } }, tags = { regions = { "havenhythe" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } } },
-    { id = "petrified_roots", name = "Petrified roots", kind = "item", rarity = "rare", desc = "Roots cut from a giant petrified tree.", art = { item = "FENMOOR_WOODCUTTING_PETRIFIED_ROOT", cam = { yaw = 0.20, pitch = 1.25, dist = 456, fov = 65, tx = -20 } }, tags = { regions = { "havenhythe" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } } },
-    { id = "scrapey_tree_logs", name = "Scrapey tree logs", kind = "item", rarity = "common", desc = "Slimy logs from the Scrapey tree.", art = { item = "BREW_SCRAPEY_LOGS", cam = { yaw = 0.60, pitch = 0.80, dist = 456, fov = 55, ty = -20 } }, tags = { regions = { "morytania" }, skills = { "woodcutting" }, category = { "raw_material", "log", "minigame" }, membership = { "p2p" } } },
-    { id = "special_mahogany_log", name = "Special mahogany log", kind = "item", rarity = "rare", desc = "Someone who turns logs into planks might be interested in this.", art = { item = "MAHOGANY_LOGS_SPECIAL", cam = { yaw = 0.60, pitch = 0.50, dist = 456, ty = 60 } }, tags = { skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } } },
-    { id = "special_teak_log", name = "Special teak log", kind = "item", rarity = "uncommon", desc = "Someone who turns logs into planks might be interested in this.", art = { item = "TEAK_LOGS_SPECIAL", cam = { yaw = 0.60, pitch = 0.50, dist = 456, ty = 40 } }, tags = { skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } } },
+    {
+        id = "curly_root", name = "Curly root", kind = "item", rarity = "epic",
+        desc = "A curly jade root. Only good for burning.",
+        art = { item = "JARO_ROOT_CURLY", cam = { pitch = 1.10, dist = 456, fov = 60 } },
+        tags = { regions = { "karamja" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "jungle_logs", name = "Jungle logs", kind = "item", rarity = "common",
+        desc = "They can be crafted into traps and spears to bring down big creatures.",
+        art = { item = "DINO_GAME_LOGS", cam = { yaw = 0.60, pitch = 0.50, dist = 456, ty = 40 } },
+        tags = { regions = { "anachronia" }, skills = { "woodcutting" }, category = { "raw_material", "log", "minigame" }, membership = { "p2p" } },
+    },
+    {
+        id = "petrified_bark", name = "Petrified bark", kind = "item", rarity = "epic",
+        desc = "Bark cut from a giant petrified tree.",
+        art = { item = "FENMOOR_WOODCUTTING_PETRIFIED_BARK", cam = { yaw = 0.60, pitch = 1.40, dist = 456 } },
+        tags = { regions = { "havenhythe" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "petrified_logs", name = "Petrified logs", kind = "item", rarity = "legendary",
+        desc = "Logs cut from a giant petrified tree.",
+        art = { item = "FENMOOR_WOODCUTTING_PETRIFIED_LOGS", cam = { yaw = 0.60, pitch = 0.35, dist = 456, fov = 45, ty = 60 } },
+        tags = { regions = { "havenhythe" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "petrified_roots", name = "Petrified roots", kind = "item", rarity = "rare",
+        desc = "Roots cut from a giant petrified tree.",
+        art = { item = "FENMOOR_WOODCUTTING_PETRIFIED_ROOT", cam = { yaw = 0.20, pitch = 1.25, dist = 456, fov = 65, tx = -20 } },
+        tags = { regions = { "havenhythe" }, skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "scrapey_tree_logs", name = "Scrapey tree logs", kind = "item", rarity = "common",
+        desc = "Slimy logs from the Scrapey tree.",
+        art = { item = "BREW_SCRAPEY_LOGS", cam = { yaw = 0.60, pitch = 0.80, dist = 456, fov = 55, ty = -20 } },
+        tags = { regions = { "morytania" }, skills = { "woodcutting" }, category = { "raw_material", "log", "minigame" }, membership = { "p2p" } },
+    },
+    {
+        id = "special_mahogany_log", name = "Special mahogany log", kind = "item", rarity = "rare",
+        desc = "Someone who turns logs into planks might be interested in this.",
+        art = { item = "MAHOGANY_LOGS_SPECIAL", cam = { yaw = 0.60, pitch = 0.50, dist = 456, ty = 60 } },
+        tags = { skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
+    {
+        id = "special_teak_log", name = "Special teak log", kind = "item", rarity = "uncommon",
+        desc = "Someone who turns logs into planks might be interested in this.",
+        art = { item = "TEAK_LOGS_SPECIAL", cam = { yaw = 0.60, pitch = 0.50, dist = 456, ty = 40 } },
+        tags = { skills = { "woodcutting" }, category = { "raw_material", "log" }, membership = { "p2p" } },
+    },
 }
 
 return Set
