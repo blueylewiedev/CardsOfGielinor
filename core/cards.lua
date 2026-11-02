@@ -72,9 +72,9 @@ Cards.odds = {
 --                     shows its head (chathead) instead; an NPC with no chathead shows an
 --                     empty box (the NPC browser helps find them)
 --              cam  : camera settings, any of yaw, pitch (radians), dist, fov (degrees),
---                     ty (height looked at) and tx (left/right). Leave out to use the
---                     defaults in ui/cardview.lua. Find good values with the buttons in the
---                     preview window, then paste the line it logs.
+--                     ty (height looked at), tx (left/right) and near (see ui/cardview.lua).
+--                     Leave out to use the defaults in ui/cardview.lua. Find good values with
+--                     the buttons in the preview window, then paste the line it logs.
 -- The cards themselves are in the deck folder (see below and deck/index.lua).
 Cards.list = {}
 
@@ -139,7 +139,22 @@ Cards.tagWords = {
                  "lunar_isle", "camelot", "premier_club",
                  "the_rusty_anchor", "sarim_s_revenge", "black_knights_fortress", "grand_tree",
                  "hazelmere_s_island",
-                 "warforge_dig_site", "freneskae", "temple_of_isolation", "kharid_et_dig_site", "temple_of_amascut", "heart_of_gielinor", "fight_arena_location" },
+                 "warforge_dig_site", "freneskae", "temple_of_isolation", "kharid_et_dig_site", "temple_of_amascut", "heart_of_gielinor", "fight_arena_location",
+                 "armadyl_s_tower", "sliske_s_endgame", "new_varrock", "harvest_hollow",
+                 "archaeology_guild",
+                 "thieves_guild", "runespan", "basement_of_doom", "tzekhaar_front",
+                 "gower_farm", "tolna_s_rift", "wizards_tower", "aqueduct_portal", "glacor_front", "wizards_tower_2011_christmas_event",
+                 "entrana", "yeti_town", "town_hall_fort_forinthry", "cathedral_senntisten", "the_empty_throne_room", "clan_camp", "clan_citadel", "soul_wars", "the_last_call",
+                 "maggie", "shady_grove", "zanaris",
+                 "silvarea", "star_lodge_cellar", "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point", "dig_site", "mage_training_arena", "sliske_s_lair", "stronghold_of_security", "gunnarsgrunn", "war_s_retreat", "death_s_office", "closure_s_study", "stronghold_of_player_safety", "paddlington", "croesus_front", "trollweiss",
+                 "alice_s_farm", "tzhaar_fight_pits", "grim_reaper_s_citadel", "infernal_source_dig_site", "dorgeshuun_mines", "zamorakian_crypt", "thammaron_s_throne_room", "nodon_front", "het_s_oasis", "may_s_quest_caravan", "psychiatry_clinic", "barbarian_village", "seth_groats", "ancient_guthix_temple", "gulvas_mansion",
+                 "fairy_resistance_hideout", "ork_s_rift", "chapel_fort_forinthry", "crypt_wilderness", "prison_fort_forinthry",
+                 "polypore_dungeon", "polypore_dungeon_resource_dungeon", "elder_god_wars_dungeon", "gorak_plane", "h_a_m", "h_a_m_hideout", "rasial_s_citadel", "h_a_m_dungeon", "sanctum_of_rebirth", "the_skulls_headquarters", "killerwatt_plane", "wizard_s_tower", "wanderer", "soul_altar", "runecrafting_guild", "uzer_mastaba", "chasm_of_tears", "guthixian_temple", "hefin_clan", "king_s_road", "black_arm_gang",
+                 "courthouse", "priest_in_peril", "death_s_mansion", "eastfold_farm", "nomad_s_temple", "memorial_to_guthix", "outlaw_camp", "gunnarsgrun", "command_centre", "kitchen", "misthalin_training_centre_of_excellence", "richie_npc", "owlery", "air_ruins",
+                 "um_ritual_site", "ungael_ritual_site", "lost_city", "the_skullery", "tuska", "silverlight_crypt",
+                 "everlight", "the_zamorakian_undercity",
+                 "ectofuntus", "river_noumenon",
+                 "baby_monkey_hunter" },
     skills   = { "attack", "defence", "strength", "constitution", "ranged", "prayer", "magic",
                 "cooking", "woodcutting", "fletching", "fishing", "firemaking", "crafting",
                 "smithing", "mining", "herblore", "agility", "thieving", "slayer", "farming",
@@ -174,7 +189,19 @@ Cards.tagGroups = {
             "humans",
             "ourg",
             "human_skull",
-            "creation_of_mah", "avernic" } },
+            "creation_of_mah", "avernic",
+            "tortle",
+            "essling", "hell_rat",
+            "phantom",
+            "yeti", "esshound", "avatar",
+            "skeleton_cow",
+            "snow_imp", "esswraith", "cabbage", "ilujanka", "catablepon", "cave_goblin", "cerberus", "cockroach", "soul_devourer", "frogeel",
+            "fungus", "infernal", "moth", "avernic_disguised_as_human", "gnome_ghost",
+            "tzekhaar", "fleshcrawler",
+            "fungal_mage", "ganodermic", "mindslayer", "cat_ghost", "troll_ghost", "ghoul", "gorak", "grifolapine", "grifolaroo", "gublinch", "mahjarrat_formerly_mahserrat", "otherworldly_being", "imcando_dwarf_ghost", "killerwatt", "god_disguised_as_human", "leprechaun", "light_creature", "mimic", "molanisk",
+            "zygomite", "honey_badger", "leprechaun_zombie", "magpie",
+            "shade", "soul",
+            "hedgehog", "tree_spirit", "zombie_elf", "undead_cow", "scarab", "undead_dragon", "wall_beast", "wight" } },
         { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
             "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief" } },
         { title = "Whether it can be fought", words = { "monster", "boss" } },

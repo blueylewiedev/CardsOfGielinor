@@ -14,9 +14,11 @@ local DB_KEY = "dev_card_tuning"
 
 Tuning.enabled = false
 
-local data = nil     -- { [card id] = { body = true/false, cam = { yaw, pitch, dist, fov, ty, tx }, anim = number or nil } }
+-- { [card id] = { body = true/false, cam = { yaw, pitch, dist, fov, ty, tx, near }, anim = number or nil,
+--   line = the card's art line, for dev/apply_tuning.py } }
+local data = nil
 
-local FIELDS = { "yaw", "pitch", "dist", "fov", "ty", "tx" }
+local FIELDS = require("ui/cardview").CAMERA_FIELDS
 
 -- Reads the saved settings the first time they are needed. Anything damaged is skipped.
 local function load()
@@ -37,7 +39,8 @@ local function load()
                 end
             end
             data[cardId] = { body = entry.body == true, cam = cam,
-                anim = type(entry.anim) == "number" and entry.anim or nil }
+                anim = type(entry.anim) == "number" and entry.anim or nil,
+                line = type(entry.line) == "string" and entry.line or nil }
         end
     end
 end
@@ -60,10 +63,10 @@ function Tuning.get(cardId)
 end
 
 -- Saves a card's settings. `cam` needs yaw, pitch, dist, fov, ty and tx; `body` is whether
--- the body model is used; `anim` is the animation id, or nil for none.
-function Tuning.set(cardId, body, cam, anim)
+-- the body model is used; `anim` is the animation id, or nil for none; `line` is its art line.
+function Tuning.set(cardId, body, cam, anim, line)
     load()
-    local entry = { body = body == true, cam = {}, anim = anim }
+    local entry = { body = body == true, cam = {}, anim = anim, line = line }
     for _, field in ipairs(FIELDS) do
         entry.cam[field] = cam[field]
     end

@@ -494,10 +494,10 @@ local cardItem = nil           -- { id, configName, name } of the item shown on 
 local function camText(cam)
     local defaults = CardView.defaultsFor(cam)
     local parts = {}
-    for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
-        local value, default = cam[field], defaults[field]
+    for _, field in ipairs(CardView.CAMERA_FIELDS) do
+        local value, default = cam[field] or defaults[field], defaults[field]
         if math.abs(value - default) >= 0.005 then
-            parts[#parts + 1] = (field == "yaw" or field == "pitch") and string.format("%s = %.2f", field, value)
+            parts[#parts + 1] = (field == "yaw" or field == "pitch" or field == "near") and string.format("%s = %.2f", field, value)
                 or string.format("%s = %.0f", field, value)
         end
     end

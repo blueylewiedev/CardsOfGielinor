@@ -110,16 +110,21 @@ end
 --   fov        : field of view in degrees (smaller zooms in)
 --   ty         : height of the point the camera looks at
 --   tx         : left/right of centre it looks at (negative moves the NPC right on the card)
+--   near       : how far out the camera starts drawing, as a share of dist (0 is right at the
+--                camera; more can stop an old model's surfaces poking through each other, but
+--                anything nearer than that is cut off)
 -- Anything left out uses these defaults. NPC cards show the whole body model unless they set
 -- `art.body = false` (the head), so each has its own defaults (the body is much bigger). Item
 -- cards show the item's model, which is far smaller than an NPC, so they have their own too.
 -- Item models lie flat, as if on the ground, so the item camera looks down on them (pitch 1.5,
 -- nearly straight down). The distance is a first guess: items differ a lot in size, so most item
 -- cards will set `art.cam`.
+-- The camera's fields, in the order the art lines give them (every list of them uses this one).
+CardView.CAMERA_FIELDS = { "yaw", "pitch", "dist", "fov", "ty", "tx", "near" }
 CardView.CAMERA_DEFAULTS = {
-    head = { yaw = 0.0, pitch = 0.0, dist = 2040, fov = 55, ty = 0, tx = 0 },
-    body = { yaw = 0.0, pitch = 0.0, dist = 1500, fov = 50, ty = 0, tx = 0 },
-    item = { yaw = 0.0, pitch = 1.5, dist = 300, fov = 50, ty = 0, tx = 0 },
+    head = { yaw = 0.0, pitch = 0.0, dist = 2040, fov = 55, ty = 0, tx = 0, near = 0 },
+    body = { yaw = 0.0, pitch = 0.0, dist = 1500, fov = 50, ty = 0, tx = 0, near = 0 },
+    item = { yaw = 0.0, pitch = 1.5, dist = 300, fov = 50, ty = 0, tx = 0, near = 0 },
 }
 
 -- The camera defaults for a camera state or art table: { kind = "item" } for an item card,
@@ -174,7 +179,7 @@ local function applyCamera(cam)
     local z = targetZ - cam.dist * cosYaw * math.cos(cam.pitch)
     camera:SetPosition(Vector3.new(x, y, z), 0)
     camera:SetLookAt(Vector3.new(targetX, targetY, targetZ), 0)
-    camera:SetClipPlanes(1, cam.dist * 20)
+    camera:SetClipPlanes(math.max(1, cam.dist * (cam.near or 0)), cam.dist * 20)
     camera.clearColour = Vector4.new(0, 0, 0, 0)      -- see-through, so the card backdrop shows
     camera.useLookAt = true
     local old = cam.cameraIndex
@@ -285,7 +290,7 @@ local function addArt(parent, card, box, bodyOverride)
         -- The card's own camera values belong to its own model type, so they are ignored when
         -- the preview has switched to the other one. (An item has only one model type.)
         local own = (isItem or (body == true) == (art.body == true)) and art.cam or {}
-        for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
+        for _, field in ipairs(CardView.CAMERA_FIELDS) do
             state[field] = own[field] or defaults[field]
         end
         applyCamera(state)
