@@ -11,6 +11,7 @@ everything, so nothing is lost if a game update changes the layout.
 
     python dev/npc_looks.py                  how many NPC configs read cleanly (and which didn't)
     python dev/npc_looks.py CONFIG_NAME ...  the look of these configs
+    python dev/npc_looks.py --tiles          writes dev/npc_tiles.lua, the NPCs bigger than a tile
 """
 import sqlite3
 import struct
@@ -22,6 +23,7 @@ from anim_sets import DEFAULT_CACHE, archive_files, big_smart, file_ids, unzip
 
 ROOT = Path(__file__).resolve().parent.parent
 NPC_INDEX = "js5-18.jcache"     # the NPC configs of the cache: group = id >> 7, file = id & 127
+TILES_OUTPUT = ROOT / "dev" / "npc_tiles.lua"
 
 # Fields of a fixed size, by opcode (their values don't change how an NPC looks on a card). The
 # sizes were worked out from the data; only ones that hundreds of configs agree on are here, as a
@@ -29,11 +31,10 @@ NPC_INDEX = "js5-18.jcache"     # the NPC configs of the cache: group = id >> 7,
 FIXED = {}
 for size, opcodes in {
     0: [93, 99, 107, 109, 111, 141, 143, 158, 159, 162, 169, 178, 182],
-    1: [12, 79, 100, 101, 119, 125, 128, 134, 140, 163, 165, 168, 184, 253],
+    1: [79, 100, 101, 119, 125, 128, 134, 140, 163, 165, 168, 184, 253],
     2: [26, 27, 44, 45, 95, 103, 122, 123, 127, 137, 142, 170, 172],
     4: [102, 255],
     7: [85],
-    10: [187],
     12: [58, 179, 188],
 }.items():
     FIXED.update(dict.fromkeys(opcodes, size))
@@ -48,11 +49,13 @@ class Unread(Exception):
     """A config holds something this reader doesn't know."""
 
 
-def read_look(data):
-    """The look of an NPC config: (body models, recolours, retextures, palette, scale), or None for
-    a config with no models of its own (a stand-in that turns into others). Raises Unread if the
-    config doesn't read cleanly to its end."""
-    pos, models, recolours, retextures, palette, named = 0, None, (), (), (), False
+def read_config(data):
+    """An NPC config's look: (body models, recolours, retextures, palette, scale), or None for a
+    config with no models of its own (a stand-in that turns into others), how many tiles wide it
+    is, and the NPC ids it turns into (opcode 187: ARIANE1_ELLARON is ARIANE1_ELLARON_APPEARANCE).
+    Raises Unread if the config doesn't read cleanly to its end."""
+    pos, models, recolours, retextures, palette, named, tiles = 0, None, (), (), (), False, 1
+    turns_into = []
     scale = [NORMAL_SCALE, NORMAL_SCALE]
 
     def smart_list():
@@ -103,6 +106,20 @@ def read_look(data):
             elif opcode in (97, 98):
                 scale[opcode - 97] = struct.unpack(">H", data[pos:pos + 2])[0]
                 pos += 2
+            elif opcode == 12:
+                tiles = data[pos]
+                pos += 1
+            elif opcode == 187:
+                # (a byte, the varbit and varp it goes by, then a count (a smart: one byte, or two
+                # with the top bit set, NASTY_TREE's 240) and that many ids and one more, 65535 for none)
+                pos += 5
+                if data[pos] < 128:
+                    count, pos = data[pos], pos + 1
+                else:
+                    count, pos = struct.unpack(">H", data[pos:pos + 2])[0] - 32768, pos + 2
+                found = struct.unpack(f">{count + 1}H", data[pos:pos + 2 * (count + 1)])
+                turns_into += [i for i in dict.fromkeys(found) if i != 0xFFFF and i not in turns_into]
+                pos += 2 * (count + 1)
             elif opcode in STRINGS:
                 text()
             elif opcode == 2:
@@ -130,7 +147,12 @@ def read_look(data):
         raise Unread(f"ran off the end ({problem})") from problem
     if pos != len(data):
         raise Unread(f"{len(data) - pos} bytes after the end")
-    return (models, recolours, retextures, palette, tuple(scale)) if models else None
+    return ((models, recolours, retextures, palette, tuple(scale)) if models else None), tiles, turns_into
+
+
+def read_look(data):
+    """The look of an NPC config (see read_config)."""
+    return read_config(data)[0]
 
 
 class Looks:
@@ -140,6 +162,7 @@ class Looks:
         path = DEFAULT_CACHE / NPC_INDEX
         self.db = None
         self.groups = {}
+        self.decoded = {}           # npc id -> what read gives
         if path.exists():
             try:
                 # (read-only and immutable, so the running client is never locked or written to)
@@ -162,15 +185,26 @@ class Looks:
                 self.groups[group] = {}
         return self.groups[group].get(file)
 
+    def read(self, npc_id):
+        """An NPC config read once (see read_config): (look, tiles, turns_into), or None if the
+        cache doesn't hold it or it doesn't read cleanly."""
+        if npc_id not in self.decoded:
+            data = self.config(npc_id)
+            try:
+                self.decoded[npc_id] = read_config(data) if data else None
+            except Unread:
+                self.decoded[npc_id] = None
+        return self.decoded[npc_id]
+
     def look(self, npc_id):
         """The look of an NPC, or None if it has none that can be trusted."""
-        data = self.config(npc_id)
-        if not data:
-            return None
-        try:
-            return read_look(data)
-        except Unread:
-            return None
+        read = self.read(npc_id)
+        return read[0] if read else None
+
+    def turns_into(self, npc_id):
+        """The NPC ids a stand-in config turns into (see read_config), or [] if none or unread."""
+        read = self.read(npc_id)
+        return read[2] if read else []
 
 
 def npc_ids():
@@ -183,12 +217,34 @@ def npc_ids():
     return found
 
 
+def write_tiles(looks, ids):
+    """Writes the Card Builder's table of the NPCs wider than one tile (dev/npc_tiles.lua)."""
+    lines = ["-- dev/npc_tiles.lua",
+             "-- Made by `python dev/npc_looks.py --tiles` from the RuneScape client's cache. Do not edit; run it again.",
+             "-- Data from the RuneScape client, which belongs to Jagex: not covered by this repository's licence.",
+             "-- Used only by the developer tools (dev/), which are left out of the released plugin.",
+             "-- How many tiles wide an NPC is, by config name. Any other NPC is one tile.",
+             "return {"]
+    wide = 0
+    for name, npc_id in sorted(ids.items()):
+        read = looks.read(npc_id)
+        if read is not None and read[1] > 1:
+            lines.append(f'    ["{name}"] = {read[1]},')
+            wide += 1
+    lines.append("}")
+    TILES_OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"{wide} NPCs written to {TILES_OUTPUT.relative_to(ROOT)}")
+
+
 def main():
     looks = Looks()
     if looks.db is None:
         print(f"No cache at {DEFAULT_CACHE}.")
         return 1
     ids = npc_ids()
+    if sys.argv[1:] == ["--tiles"]:
+        write_tiles(looks, ids)
+        return 0
     if len(sys.argv) > 1:
         for name in sys.argv[1:]:
             print(name, looks.look(ids[name]))

@@ -610,8 +610,25 @@ local function savedCameras()
     return (ok and type(saved) == "table") and saved or {}
 end
 
+-- How wide the camera's view is where it looks (the model's distance): what sets how big the
+-- NPC is on the card, whatever the mix of zoom (dist) and size (fov).
+function Builder.cameraWidth(cam)
+    return 2 * cam.dist * math.tan(math.rad(cam.fov) / 2)
+end
+
+-- Changes the camera's fov and moves it in or out to match, so the model stays the same size
+-- (Clip fix, and the Preview's Swap to depth).
+function Builder.setFov(cam, fov)
+    cam.dist = cam.dist * math.tan(math.rad(cam.fov) / 2) / math.tan(math.rad(fov) / 2)
+    cam.fov = fov
+end
+
 local function copyCamera(cam)
-    return { yaw = cam.yaw, pitch = cam.pitch, dist = cam.dist, fov = cam.fov, ty = cam.ty, tx = cam.tx }
+    local copy = {}
+    for _, field in ipairs(CardView.CAMERA_FIELDS) do
+        copy[field] = cam[field]
+    end
+    return copy
 end
 
 -- True for an off-hand weapon: "off hand" or "off-hand" in its name, or an item config name that
@@ -665,8 +682,7 @@ local function withItemDefaults(cam)
 end
 
 local function sameFraming(a, b)
-    local zoomA = a.dist * math.tan(math.rad(a.fov) / 2)
-    local zoomB = b.dist * math.tan(math.rad(b.fov) / 2)
+    local zoomA, zoomB = Builder.cameraWidth(a), Builder.cameraWidth(b)
     return angleApart(a.yaw, b.yaw) <= SAME_YAW
         and math.abs(a.pitch - b.pitch) <= SAME_PITCH
         and math.max(zoomA, zoomB) / math.min(zoomA, zoomB) <= SAME_ZOOM
@@ -782,10 +798,10 @@ function Builder.artText(itemArt, subjectName, body, anim, cam, defaults, model)
     end
     if cam ~= nil then
         local camParts = {}
-        for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
+        for _, field in ipairs(CardView.CAMERA_FIELDS) do
             local value, default = cam[field], defaults[field]
             if value ~= nil and math.abs(value - default) >= 0.005 then
-                if field == "yaw" or field == "pitch" then
+                if field == "yaw" or field == "pitch" or field == "near" then
                     camParts[#camParts + 1] = string.format("%s = %.2f", field, value)
                 else
                     camParts[#camParts + 1] = string.format("%s = %.0f", field, value)
@@ -1039,6 +1055,13 @@ local RIGHT_X, RIGHT_W = 780, 316
 local HALF_W = 148                 -- the NPC / Item buttons
 local CTRL_X = 120                -- where the buttons of a camera row start (after its label)
 local CTRL_W = 56                 -- width of a small "-" / "+" button
+local DEPTH_FIX_STEPS = { [0] = 0.25, [0.25] = 0.5, [0.5] = 0 }  -- what each press of "Depth fix" moves near to
+
+-- The `near` one press of Depth fix goes to from `near`.
+function Builder.nextDepthFix(near)
+    return DEPTH_FIX_STEPS[near or 0] or 0
+end
+
 local CLIP_FIX_FOV = 65           -- the view "Clip fix" widens to first (the clipped cards use 60 to 80)
 local BOTTOM_Y = 510
 local WIN_W = RIGHT_X + RIGHT_W + 34      -- leaves a margin so nothing touches the right edge
@@ -1338,7 +1361,7 @@ local function withCamera(change, quiet)
     end
     change(cam)
     CardView.applyCamera(cam)
-    draft.cam = { yaw = cam.yaw, pitch = cam.pitch, dist = cam.dist, fov = cam.fov, ty = cam.ty, tx = cam.tx }
+    draft.cam = copyCamera(cam)
     if quiet then
         checksIn = CHECKS_DELAY
     else
@@ -1355,6 +1378,7 @@ end
 --   Shift + drag  moves it across the card (tx, ty), following the mouse
 --   Ctrl + drag   tilts it (pitch)
 --   mouse wheel   zooms (dist; wheel up = closer)
+--   Shift + wheel changes the size (fov; wheel up = narrower, a bigger model)
 -- Like the Pack Maker's boxes, pressing stretches the layer over the whole window, so it keeps
 -- getting the hold and release wherever the mouse goes, and it goes back to the art window on
 -- release. The camera is applied a few times a second while dragging, not every frame.
@@ -1436,7 +1460,7 @@ local function applyDrag()
     withCamera(function(cam)
         if drag.mode == "pan" then
             -- how far the camera's view covers per pixel of the art window, so the model follows the mouse
-            local perPixel = 2 * start.dist * math.tan(math.rad(start.fov) / 2) / drag.boxH
+            local perPixel = Builder.cameraWidth(start) / drag.boxH
             cam.tx = start.tx - dx * perPixel
             cam.ty = start.ty + dy * perPixel
         elseif drag.mode == "tilt" then
@@ -1470,12 +1494,18 @@ tickDrag = function(dt)
     end
 end
 
-local function wheelZoom(delta)
+local function wheelCamera(delta)
     if delta == 0 then
         return
     end
+    local factor = delta > 0 and WHEEL_FACTOR or 1 / WHEEL_FACTOR
+    local resize = keyDown("IsShiftDown")
     withCamera(function(cam)
-        cam.dist = math.max(10, cam.dist * (delta > 0 and WHEEL_FACTOR or 1 / WHEEL_FACTOR))
+        if resize then
+            cam.fov = math.max(5, math.min(120, cam.fov * factor))
+        else
+            cam.dist = math.max(10, cam.dist * factor)
+        end
     end, true)
 end
 
@@ -1494,7 +1524,7 @@ addGrip = function()
             end
         end)
         layer:Subscribe(ui.Hook.ONRELEASE, function() endDrag(true) end)
-        Kit.onWheel(layer, wheelZoom)
+        Kit.onWheel(layer, wheelCamera)
         return layer
     end)
     if ok then
@@ -1838,15 +1868,14 @@ function Builder.checkAnims()
     OutputWindow.add("animcheck", matched .. " of " .. total .. " match; " .. #misses .. " differ"
         .. (saved and " (saved as \"" .. ANIM_CHECK_KEY .. "\")" or " (not saved: see the console)"))
 end
-local CAMERA_FIELDS = { "yaw", "pitch", "dist", "fov", "ty", "tx" }
 -- How much a difference in each camera value counts when comparing two framings.
-local CAMERA_SCALE = { yaw = 1, pitch = 1, dist = 1000, fov = 30, ty = 300, tx = 100 }
--- A person's card is a close portrait (like Bob's) when its field of view is this narrow or less,
--- and shows them whole (like a guard's) when it is wider.
-local PORTRAIT_FOV = 25
--- A short card's close-up is made by moving in rather than narrowing the view (Aksel: dist 566,
--- the usual field of view), so for short cards a camera this close or closer is one as well.
-local SHORT_CLOSE_DIST = 700
+local CAMERA_SCALE = { yaw = 1, pitch = 1, dist = 1000, fov = 30, ty = 300, tx = 100, near = 1 }
+-- A person's card is a close portrait (like Bob's) when its view is this wide or less, and shows
+-- them whole (like a guard's) when it is wider. (By the view, as distance and field of view do the
+-- same job: see cameraWidth.)
+local PORTRAIT_VIEW = 650
+-- The same for a short person, who fills less of a view (Aksel: 528; a whole goblin raider: 625).
+local SHORT_CLOSE_VIEW = 610
 
 -- The short peoples, framed lower and closer than a person (the deck has no category word for
 -- dwarves or gnomes: they are humanoids).
@@ -1887,8 +1916,8 @@ end
 -- framed close like Aksel, or whole like a goblin), "character" (a person framed close, like Bob),
 -- "person" (a person framed whole, like a guard), "flying" (see Builder.isFlying) or "creature".
 -- For a candidate, closeUp is whether it is a named person rather than a role (dev/wiki_cards.py
--- works that out); for a card, whether its camera is a close-up (PORTRAIT_FOV, and
--- SHORT_CLOSE_DIST for short cards). `isFlying` is a function, only asked when the answer is
+-- works that out); for a card, whether its camera is a close-up (PORTRAIT_VIEW, or
+-- SHORT_CLOSE_VIEW for short cards). `isFlying` is a function, only asked when the answer is
 -- between those two last groups (it can look up the NPC's animation set).
 function Builder.framingGroup(categoryWords, closeUp, short, isFlying)
     local person = false
@@ -1933,33 +1962,62 @@ local function nameFamily(name)
     return table.concat(sizes, " ")
 end
 
+-- How much of the scene a camera's view takes in, at the model.
+-- How many cards of a size it takes to frame by them.
+local SIZE_CARDS = 2
+
+-- How many tiles wide an NPC is, read from the game's cache by dev/npc_looks.py (1 if not known).
+local npcTiles = nil
+function Builder.tilesOf(configName)
+    if npcTiles == nil then
+        local ok, data = pcall(require, "dev/npc_tiles")
+        npcTiles = ok and type(data) == "table" and data or {}
+    end
+    return npcTiles[configName] or 1
+end
+
+-- The cards of a list that are `tiles` wide.
+local function ofSize(list, tiles)
+    local found = {}
+    for _, member in ipairs(list) do
+        if member.tiles == tiles then
+            found[#found + 1] = member
+        end
+    end
+    return found
+end
+
 -- The camera of the most typical NPC card framed with the body model in `group`, as a copy, and
 -- that card; or nil if no card is in the group yet. Given a `name`, the cards of its family (the
 -- titans, the minotaurs: see nameFamily) are used instead when there are FAMILY_CARDS of them, as
--- a creature's size is much more like its family's than its group's.
-function Builder.typicalCamera(group, name)
+-- a creature's size is much more like its family's than its group's. Without a family, `tiles`
+-- (see Builder.tilesOf) narrows them to the group's cards of that size; a big NPC whose group has
+-- none is framed like the nearest size of any group, as the deck's framing follows tiles closely.
+function Builder.typicalCamera(group, name, tiles)
     local defaults = CardView.defaultsFor({ body = true })
-    local members = {}
+    local members, everyone = {}, {}
     for _, card in ipairs(Cards.list) do
         local art = card.art or {}
         if Cards.kindOf(card) ~= "item" and art.body ~= false then
             local cam = {}
-            for _, field in ipairs(CAMERA_FIELDS) do
+            for _, field in ipairs(CardView.CAMERA_FIELDS) do
                 cam[field] = (art.cam or {})[field] or defaults[field]
             end
             local short = Builder.isShort(card.name, card.desc, art.npc)
-            local closeUp = cam.fov <= PORTRAIT_FOV or (short and cam.dist <= SHORT_CLOSE_DIST)
+            local closeUp = Builder.cameraWidth(cam) <= (short and SHORT_CLOSE_VIEW or PORTRAIT_VIEW)
             local function flying()
                 return Builder.isFlying(card.name, card.desc, art.npc and Builder.animSetOf(art.npc))
             end
+            local member = { card = card, cam = cam, tiles = Builder.tilesOf(art.npc) }
+            everyone[#everyone + 1] = member
             if Builder.framingGroup((card.tags or {}).category, closeUp, short, flying) == group then
-                members[#members + 1] = { card = card, cam = cam }
+                members[#members + 1] = member
             end
         end
     end
     local function apart(a, b)
         local total = 0
-        for _, field in ipairs(CAMERA_FIELDS) do
+        for _, field in ipairs(CardView.CAMERA_FIELDS) do
             total = total + math.abs(a[field] - b[field]) / CAMERA_SCALE[field]
         end
         return total
@@ -1974,6 +2032,28 @@ function Builder.typicalCamera(group, name)
         end
         if #kin >= FAMILY_CARDS then
             members = kin
+            tiles = nil
+        end
+    end
+    if tiles ~= nil then
+        -- (too few of the group's own: the same size of any group, then one smaller, one bigger,
+        -- two smaller and so on, never down to a single tile)
+        local sized = ofSize(members, tiles)
+        local sizes = { tiles }
+        for step = 1, tiles do
+            sizes[#sizes + 1] = tiles - step
+            sizes[#sizes + 1] = tiles + step
+        end
+        for _, size in ipairs(sizes) do
+            if #sized >= SIZE_CARDS then
+                break
+            end
+            if size >= 2 then
+                sized = ofSize(everyone, size)
+            end
+        end
+        if #sized >= SIZE_CARDS then
+            members = sized
         end
     end
     local best, bestTotal = nil, math.huge
@@ -2127,6 +2207,12 @@ function Builder.loadCandidate(candidate, configName)
     else
         fresh.npc = configName or candidate.npc
         fresh.anim = Builder.readyAnimFor(fresh.npc, candidate)
+        -- (the game draws this NPC as scenery; or only its animation is given, Zommy's at the piano)
+        local scenery = candidate.scenery
+        if scenery ~= nil then
+            fresh.model = scenery.model
+            fresh.anim = scenery.anim or fresh.anim
+        end
         -- Short by the wiki's race if it gives one, otherwise by what the name and description
         -- say; flying by either.
         local short
@@ -2139,7 +2225,7 @@ function Builder.loadCandidate(candidate, configName)
             return Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
         end
         local group = Builder.framingGroup(tags.category, candidate.named == true, short, flying)
-        local cam, like = Builder.typicalCamera(group, candidate.name)
+        local cam, like = Builder.typicalCamera(group, candidate.name, Builder.tilesOf(fresh.npc))
         if cam ~= nil then
             fresh.cam = cam
             log("builder: framing", candidate.name, "as a " .. group .. ", like", like.name)
@@ -2228,7 +2314,8 @@ function Builder.show()
         isItem() and "positive" or "neutral")
 
     caption((isItem() and "Item" or "NPC") .. " config name (this sets the model)", LEFT_X, 82, LEFT_W)
-    widgets.npcField = field(LEFT_X, 100, 250, 60, subject(), setSubject)
+    -- (128: the longest NPC config name; 260 are 60 letters or more)
+    widgets.npcField = field(LEFT_X, 100, 250, 128, subject(), setSubject)
     local subjectId = lookupSubject(subject())
     widgets.npcStatus = Kit.text(content, LEFT_X + 350, 100, 110, 28,
         subjectId ~= nil and "Found" or (subject() == "" and "" or "Not found"), GREY, ui.AlignMode.TOPLEFT)
@@ -2329,7 +2416,7 @@ function Builder.show()
     local hintY = 30 + CARD_H + 6
     caption("Drag the art: turn the model", MID_X, hintY, MID_W)
     caption("Shift+drag: move   Ctrl+drag: tilt", MID_X, hintY + 18, MID_W)
-    caption("Mouse wheel: zoom", MID_X, hintY + 36, MID_W)
+    caption("Wheel: zoom   Shift+wheel: size", MID_X, hintY + 36, MID_W)
 
     -- 3. Tune the art -------------------------------------------------------------------------
     section("3. Tune the art", RIGHT_X, 4, RIGHT_W)
@@ -2375,27 +2462,38 @@ function Builder.show()
     y = y + STEP
     control("Size", y, MINUS, PLUS,
         function(c) c.fov = math.min(120, c.fov + 5) end, function(c) c.fov = math.max(5, c.fov - 5) end)
+    y = y + STEP
+    control("Tilt", y, MINUS, PLUS,
+        function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
+    -- The "-" / "+" controls are together above; the arrow controls are together below, with the
+    -- clipping fixes in the free space to the right of their arrows.
+    local FIX_W = 88
+    local FIX_X = RIGHT_X + RIGHT_W - 4 - FIX_W
+    y = y + STEP
     -- An older model's clothes or hair poke through it with a far camera and a narrow view (the
     -- portrait's 1306 and 20): a close camera with a wide view shows it right (Aeonisig: 431 and
     -- 60). This widens the view (to CLIP_FIX_FOV, then 10 more each press) and moves the camera in
     -- to match, so the NPC stays the same size on the card.
-    Kit.smallButton(content, "Clip fix", RIGHT_X + CTRL_X + 2 * CTRL_W + 24, y, RIGHT_W - CTRL_X - 2 * CTRL_W - 24, 28,
+    Kit.smallButton(content, "Clip fix", FIX_X, y, FIX_W, 28,
         function()
             withCamera(function(c)
-                local fov = c.fov < CLIP_FIX_FOV and CLIP_FIX_FOV or math.min(math.max(100, c.fov), c.fov + 10)
-                c.dist = c.dist * math.tan(math.rad(c.fov / 2)) / math.tan(math.rad(fov / 2))
-                c.fov = fov
+                Builder.setFov(c, c.fov < CLIP_FIX_FOV and CLIP_FIX_FOV or math.min(math.max(100, c.fov), c.fov + 10))
             end)
         end, "Closer, with a wider view, the same size: for a model whose clothes or hair poke through")
-    y = y + STEP
-    control("Tilt", y, MINUS, PLUS,
-        function(c) c.pitch = c.pitch - 0.15 end, function(c) c.pitch = c.pitch + 0.15 end)
-    -- The "-" / "+" controls are together above; the arrow controls are together below.
-    y = y + STEP
     control("Height", y, { icon = "ARROW_DOWN", tip = "Move the card art down", fallback = "Down" },
         { icon = "ARROW_UP", tip = "Move the card art up", fallback = "Up" },
         function(c) c.ty = c.ty + 20 end, function(c) c.ty = c.ty - 20 end)
     y = y + STEP
+    -- The same trouble may come from the renderer running short of depth precision far from the
+    -- camera. This starts the drawing nearer the model (cam.near), which changes nothing about the
+    -- view, so a held item isn't enlarged as with Clip fix. Each press goes 0.25, 0.5, then off:
+    -- too far and the front of the model is cut off.
+    Kit.smallButton(content, "Depth fix", FIX_X, y, FIX_W, 28,
+        function()
+            withCamera(function(c)
+                c.near = Builder.nextDepthFix(c.near)
+            end)
+        end, "Keeps the view, draws surfaces more exactly: try for clipping first; off again if the model is cut")
     control("Sideways", y, { icon = "ARROW_LEFT", tip = "Move the card art left", fallback = "Left" },
         { icon = "ARROW_RIGHT", tip = "Move the card art right", fallback = "Right" },
         function(c) c.tx = c.tx + 10 end, function(c) c.tx = c.tx - 10 end)

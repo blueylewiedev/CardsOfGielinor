@@ -6,6 +6,10 @@
 -- Under the card:
 --   Prev / Next     : cycle through every card
 --   Save / Reset    : keep this card's camera across reloads / go back to the card's own values
+--   Clip review     : Prev / Next visit only the NPC cards with a Clip fix camera (a wide view,
+--                     CLIP_FOV or more) that have not been saved yet, so saving ends a card's review
+--   Swap to depth   : changes such a card to a narrower view at the same size, with Depth fix on
+--   Depth fix       : steps near as in the Card Builder
 -- Camera (right side):
 --   Zoom +/-        : camera distance (closer is a bigger NPC)
 --   Size +/-        : camera field of view (narrower is a bigger NPC)
@@ -25,7 +29,8 @@
 --
 -- Under everything, a box holds the card's `art = { ... }` line as tuned, to copy (Ctrl+A, Ctrl+C)
 -- over the card's art line in its deck file. Every press also logs the line to the console and to
--- the Output window (toggle it from the Home window).
+-- the Output window (toggle it from the Home window). dev/apply_tuning.py writes every saved card's
+-- line into the deck files, for when there are too many to paste.
 
 local Kit = require("ui/kit")
 local Cards = require("core/cards")
@@ -78,6 +83,9 @@ local STEP = 36                                 -- height of a row of buttons
 local UNDER_Y = CARD_Y + PH + 12                -- the rows of buttons under the card
 local UNDER_W = (PW - GAP) // 2                 -- width of each of the two buttons in a row there
 
+local CLIP_FOV = 60                             -- an NPC camera this wide is taken as clip fixed
+local SWAP_FOV, SWAP_NEAR = 30, 0.25            -- what Swap to depth changes it to
+
 local CONTENT_W = PANEL_X + PANEL_W + 10
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1.0)
 
@@ -93,7 +101,8 @@ function Preview.show()
     local cameraTop = 10
     local viewTop = cameraTop + 24 + 6 * STEP + 8
     local animTop = viewTop + 24 + 4 * STEP + 8
-    local boxTop = math.max(UNDER_Y + STEP + 30, animTop + 24 + 34 + 4 * STEP - 6) + 14
+    -- (under the card: Prev to Reset, the Clip review rows and their status line)
+    local boxTop = math.max(UNDER_Y + 4 * STEP + 20, animTop + 24 + 34 + 4 * STEP - 6) + 14
     local contentH = boxTop + 20 + 32 + 22
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
@@ -101,6 +110,8 @@ function Preview.show()
         function() Preview.hide() end, 0.4, 0.05, false, true)
 
     local index = 1
+    local reviewing = nil         -- while in Clip review, the indexes in Cards.list still to review
+    local reviewStatus = nil
     local view = nil
     local bodyOverride = nil      -- nil = the card's own setting; true/false = chosen with the button
     local modelButton = nil
@@ -197,6 +208,11 @@ function Preview.show()
         end
         local card = Cards.list[index]
         view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE })
+        if reviewStatus ~= nil then
+            local own = Cards.getArt(card).cam or {}
+            reviewStatus.content = reviewing == nil and "" or string.format("Clip review: %d left. %s: zoom %.0f, size %.0f",
+                #reviewing, card.id, own.dist or 0, own.fov or 0)
+        end
         view.root:SetPos(CARD_X, CARD_Y)
         if modelButton ~= nil then
             -- An item has one model (no body or head), so the button is greyed out for it.
@@ -267,25 +283,49 @@ function Preview.show()
         return Kit.buttonAt(content, text, CARD_X + column * (UNDER_W + GAP), UNDER_Y + row * STEP, UNDER_W, 30,
             onPress, style)
     end
-    underButton("Prev", 1, function()
-        index = index - 1
-        if index < 1 then index = #Cards.list end
+    -- The card `direction` (1 or -1) along from the shown one: among the cards left to review
+    -- during Clip review, otherwise among all of them. The review's cards are saved as they go, so
+    -- this finds its place by index rather than by counting.
+    local function stepCard(direction)
+        local list = reviewing
+        if list ~= nil and #list == 0 then
+            -- (none left to review, or none at all: back to every card)
+            reviewing, list = nil, nil
+            OutputWindow.add("Clip review", "no wide-view cards left to review")
+        end
+        if list == nil then
+            index = (index - 1 + direction) % #Cards.list + 1
+        else
+            local found = direction > 0 and list[1] or list[#list]
+            for i = direction > 0 and 1 or #list, direction > 0 and #list or 1, direction do
+                if (list[i] - index) * direction > 0 then
+                    found = list[i]
+                    break
+                end
+            end
+            index = found
+        end
         bodyOverride = nil
         showCard()
-    end)
-    underButton("Next", 2, function()
-        index = index + 1
-        if index > #Cards.list then index = 1 end
-        bodyOverride = nil
-        showCard()
-    end)
+    end
+    underButton("Prev", 1, function() stepCard(-1) end)
+    underButton("Next", 2, function() stepCard(1) end)
     -- Save keeps the current camera for this card (until Reset), so it survives a reload and
     -- applies everywhere the card is drawn. Reset goes back to what the card's file says.
     underButton("Save", 3, function()
         if view ~= nil and view.cam ~= nil then
             local cam = view.cam
-            if Tuning.set(view.card.id, cam.body, cam, cam.anim) then
+            if Tuning.set(view.card.id, cam.body, cam, cam.anim, artLine(view.card, cam)) then
                 report(" (saved)")
+                for i, listed in ipairs(reviewing or {}) do
+                    if listed == index then
+                        table.remove(reviewing, i)
+                        break
+                    end
+                end
+                if reviewing ~= nil then
+                    stepCard(1)
+                end
             end
         end
     end, "positive")
@@ -297,6 +337,42 @@ function Preview.show()
             showCard()
         end
     end, "negative")
+
+    -- Clip review, under Save and Reset. (Plain buttons: they need their whole label.)
+    local function reviewButton(text, slot, onPress, tooltip)
+        local column, row = (slot - 1) % 2, (slot - 1) // 2
+        Kit.smallButton(content, text, CARD_X + column * (UNDER_W + GAP), UNDER_Y + 2 * STEP + row * STEP, UNDER_W, 30,
+            onPress, tooltip)
+    end
+    reviewButton("Clip review", 1, function()
+        if reviewing ~= nil then
+            reviewing = nil
+            return showCard()
+        end
+        reviewing = {}
+        for i, card in ipairs(Cards.list) do
+            local cam = Cards.getArt(card).cam
+            if Cards.kindOf(card) ~= "item" and cam ~= nil and (cam.fov or 0) >= CLIP_FOV and Tuning.entry(card.id) == nil then
+                reviewing[#reviewing + 1] = i
+            end
+        end
+        if #reviewing > 0 then
+            index = 0
+        end
+        stepCard(1)
+    end, "Prev and Next visit only the wide-view NPC cards not yet saved; press again to leave")
+    reviewButton("Swap to depth", 2, function()
+        withCamera(function(c)
+            if c.fov > SWAP_FOV then
+                Builder.setFov(c, SWAP_FOV)
+            end
+            c.near = SWAP_NEAR
+        end)
+    end, "The same size with a narrow view and Depth fix on, so a held item is no longer enlarged")
+    reviewButton("Depth fix", 3, function()
+        withCamera(function(c) c.near = Builder.nextDepthFix(c.near) end)
+    end, "Each press goes 0.25, 0.5, then off; off again if the front of the model is cut")
+    reviewStatus = Kit.text(content, CARD_X, UNDER_Y + 4 * STEP, PW, 20, "", GREY, ui.AlignMode.TOPLEFT)
 
     -- Camera.
     section("Camera", cameraTop)
@@ -437,7 +513,7 @@ function Preview.show()
         for field, value in pairs(entry.cam) do
             cam[field] = value
         end
-        for _, field in ipairs({ "yaw", "pitch", "dist", "fov", "ty", "tx" }) do
+        for _, field in ipairs(CardView.CAMERA_FIELDS) do
             cam[field] = cam[field] or CardView.defaultsFor(cam)[field]
         end
         OutputWindow.add(cardId .. " (saved)", artLine(saved, cam))

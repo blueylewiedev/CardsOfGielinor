@@ -317,7 +317,7 @@ them. Go down the list and stop at the first one that fits:
 | 1 | A god (filed under the wiki's Gods, such as Zamorak, Saradomin or Azzanadra) | **Legendary** | Zamorak, Saradomin |
 | 2 | A pet | **Common** to **legendary**, by how it is got (see below) | Rocky, Trevor, terrier |
 | 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
-| 4 | A Guthixian Cache automaton | **Common** to **epic**, by the Divination level to subdue it, on the familiars' bands (see below) | Confused automaton |
+| 4 | A Guthixian Cache automaton, a Runespan creature (essling, esshound, esswraith) or a Divination wisp | **Common** to **epic**, by the Divination level to subdue or harvest it or the Runecrafting level to siphon it, on the familiars' bands (see below) | Confused automaton, Soul esswraith, Brilliant wisp |
 | 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat or dragonkin boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
 | 6 | A Mahjarrat, or a dragonkin with a name or fought as a boss (not their Nodon soldiers) | **Epic** | Lucien, Hazeel, Kerapac, Strisath |
 | 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
@@ -328,7 +328,8 @@ them. Go down the list and stop at the first one that fits:
 | 12 | A Hunter creature or an NPC to pickpocket, with no combat level | **Common** to **epic**, by the Hunter or Thieving level it needs, on the familiars' bands (see below) | Crimson swift, Kingly impling, Man |
 | 13 | Combat level 100 or more | **Rare** | |
 | 14 | Combat level 30 or more | **Uncommon** | |
-| 15 | Anyone else | **Common** | Man, animals |
+| 15 | A named quest NPC the wiki gives no gender (not an animal) | **Uncommon** | Angurvadal |
+| 16 | Anyone else | **Common** | Man, animals |
 
 A few NPCs are set by hand, where the rules can't see what makes them matter: Sliske is
 **legendary** for his weight in the story, and Nomad for his Memory of Nomad fight (combat level
@@ -336,6 +337,10 @@ A few NPCs are set by hand, where the rules can't see what makes them matter: Sl
 legendary as gods. A skill master, who sells a skillcape, is at least rare, so the sellers of the
 capes above it are **epic**: Max and Elen Anterth (max cape), Curator Haig Halen (master quest
 cape) and Minerva (master max cape).
+
+The gods' emissaries (the wiki's God Emissaries, such as Julienne, Emissary of Saradomin) are at
+least **uncommon**: one the rules rate common is raised to uncommon, and one rated higher keeps
+its rarity (Relomia, Emissary of Sliske, in 7 quests, is rare).
 
 Summoning familiars: add a bonus for what the pouch takes to the familiar's Summoning level,
 then read the rarity off the total. Familiars never go above epic.
@@ -363,6 +368,11 @@ impling caught at level 17 is **common**, at 91 **epic**.
 
 Automatons read the same table with the Divination level needed to subdue them (no bonus): the
 ancient automaton (none needed) is **common**, the confused (45) **uncommon**, the enraged (85) **rare**.
+Runespan creatures read it with the Runecrafting level to siphon them, from their examine: the
+esslings and the body and cosmic esshounds are **common**, the chaos (35) to law (54) esshounds
+**uncommon**, the death (65) and blood (77) esswraiths **rare** and the soul esswraith (90) **epic**.
+Wisps read it with the Divination level to harvest them, from their examine (an enriched wisp the
+same as its plain one): the pale (1) and bright (20) wisps are **common**, the brilliant (80) **rare**.
 
 Pets (the first that fits):
 
@@ -388,6 +398,7 @@ Named characters, skill masters and Slayer masters (again, the first that fits):
 | In 12 or more quests, or in 5 or more and found in 5 or more places | **Epic** | King Roald, Wise Old Man |
 | A skill master (sells a skillcape) | **Rare** | Captain Harlan |
 | In 5 or more quests, or royalty | **Rare** | Duke Horacio, Aggie |
+| In 3 or more quests and found in 5 or more places | **Rare** | Evil Dave, Sir Owen |
 | A Slayer master in no quests | **Uncommon** | Jacquelyn |
 | In 1 to 4 quests | **Uncommon** | Gillie Groats |
 | In no quests (a local) and under combat level 30 | **Common** | Donie, Barfy Bill |
@@ -678,7 +689,7 @@ noncommercial purposes, but not distributed or modified, except as set out below
 computer, only to prepare a contribution to this project and to send it as a pull request. This
 is the only change to the code the licence allows.
 
-**Game data.** `dev/anim_sets.lua`, `dev/seq.txt` and `dev/npc.txt` hold data from the RuneScape client (animation sets, animation names and NPC names), which belongs to Jagex and is not covered by the licence above. The developer tools read them, and they are left out of the released plugin.
+**Game data.** `dev/anim_sets.lua`, `dev/npc_tiles.lua`, `dev/seq.txt` and `dev/npc.txt` hold data from the RuneScape client (animation sets, NPC sizes, animation names and NPC names), which belongs to Jagex and is not covered by the licence above. The developer tools read them, and they are left out of the released plugin.
 
 **Cards.** By sending a card (its id, name, description, tags and art settings) you confirm that
 the text is your own writing, and you give the project owner a non-exclusive, perpetual,

@@ -41,6 +41,8 @@ ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "dev" / ".card_queue_state.json"
 CARDS = ROOT / "core" / "cards.lua"
 PLUGIN = "CardCollector"
+# the client's plugin data (or the CARD_DB environment variable's)
+DEFAULT_DB = os.environ.get("CARD_DB") or r"C:/ProgramData/Jagex/RuneScape-BETA/plugins/PluginData.db"
 KEY_PREFIX = "dev_card_queue_"
 SEQ_KEY = "dev_card_queue_seq"
 # the end of a deck file: the closing brace of Set.cards, then return Set
@@ -303,7 +305,7 @@ def rename(db_path, key, new_id):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--db", default=os.environ.get("CARD_DB") or r"C:/ProgramData/Jagex/RuneScape-BETA/plugins/PluginData.db",
+    parser.add_argument("--db", default=DEFAULT_DB,
                     help="the client's PluginData.db")
     parser.add_argument("--once", action="store_true", help="process what is queued, then stop")
     parser.add_argument("--dry-run", action="store_true", help="only say what would be added")
