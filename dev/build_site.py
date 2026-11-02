@@ -379,6 +379,52 @@ def spellings(name):
     return [n for n in dict.fromkeys(out) if n != name]
 
 
+ITEM_IMAGES = ROOT / "dev" / "wiki_cache" / "buckets" / "item_images.json"   # { item name: [its infobox's images] }
+_item_images = None
+
+
+def item_images():
+    """What the wiki's item infoboxes name as each item's image (see lookup_item_images), by item
+    name; read once."""
+    global _item_images
+    if _item_images is None:
+        _item_images = json.loads(ITEM_IMAGES.read_text(encoding="utf-8")) if ITEM_IMAGES.exists() else {}
+    return _item_images
+
+
+def lookup_item_images(cards, wiki, images):
+    """Asks the wiki's item infoboxes (the bucket Infobox item) which image each item without a
+    picture uses, 50 names to a request, and keeps the answers in ITEM_IMAGES (an item the wiki
+    does not know too, so nothing is asked twice). The image is the item's own file ("File:Acorn.png"),
+    whatever the item's picture is called, and file_candidates tries it and its "detail" picture."""
+    known = item_images()
+    have = images.get("cards", {})
+    names = []
+    for card in cards:
+        name = card.get("name") or card["id"]
+        if (card.get("kind") or "npc") == "item" and card["id"] not in have and name not in known and name not in names:
+            names.append(name)
+    for start in range(0, len(names), LOOKUP_BATCH):
+        batch = names[start:start + LOOKUP_BATCH]
+        either = ", ".join("{'item_name', " + json.dumps(n) + "}" for n in batch)
+        answer = wiki.get({"action": "bucket", "query": (
+            f"bucket('infobox_item').select('item_name', 'image').where(bucket.Or({either})).limit(5000).run()")})
+        if answer is None:
+            print("request limit reached: run again to carry on")
+            break
+        by_lower = {n.lower(): n for n in batch}
+        found = {n: [] for n in batch}
+        for row in answer.get("bucket", []):
+            asked = by_lower.get(str(row.get("item_name", "")).lower())
+            image = row.get("image") or []
+            for title in ([image] if isinstance(image, str) else image):
+                if asked and title not in found[asked]:
+                    found[asked].append(title)
+        known.update(found)
+    ITEM_IMAGES.parent.mkdir(parents=True, exist_ok=True)
+    ITEM_IMAGES.write_text(json.dumps(known, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 def file_candidates(card):
     """The file names to try for a card's picture, best first."""
     name = card.get("name") or card["id"]
@@ -388,7 +434,13 @@ def file_candidates(card):
         bases.append(plain)
     if (card.get("kind") or "npc") == "item":
         bases += [s for b in list(bases) for s in spellings(b) if s not in bases]
-        return [f"{b} detail.png" for b in bases]
+        files = [f"{b} detail.png" for b in bases]
+        # last, the image the item's own infobox names, and its detail picture: for a name the
+        # wiki spells otherwise, or an item that has no detail picture (a seed is a small icon)
+        for title in item_images().get(name, []):
+            base = re.sub(r"^File:|\.(png|gif|jpg)$", "", title)
+            files += [f for f in (f"{base} detail.png", f"{base}.png") if f not in files]
+        return files
     return [f"{b}.png" for b in bases] + [f"{b} chathead.png" for b in bases]
 
 
@@ -439,6 +491,7 @@ def look_up(wiki, titles, width=IMAGE_WIDTH):
 def fetch_images(cards, wiki, refresh):
     images = read_images()
     have, missing = images.setdefault("cards", {}), images.setdefault("missing", {})
+    lookup_item_images(cards, wiki, images)
     todo = []
     for card in cards:
         name = card.get("name") or card["id"]
