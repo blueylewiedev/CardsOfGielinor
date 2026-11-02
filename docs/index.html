@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Collector - card browser</title>
+<meta name="description" content="Browse every card in the Card Collector RuneScape 3 plugin: search, filter by rarity, category, region and skill, and see which packs a card can come from.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='7' y='3' width='18' height='26' rx='3' fill='%23e0c070'/%3E%3Crect x='10' y='7' width='12' height='10' rx='1' fill='%231c1814'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <h1>Card Collector <span>card browser</span></h1>
+    <p class="count" id="count" aria-live="polite"></p>
+    <button class="btn only-small" id="filters-toggle" aria-expanded="false" aria-controls="filters">Filters</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="filters" id="filters" aria-label="Filters">
+    <div class="field">
+      <label for="q">Search</label>
+      <input id="q" type="search" placeholder="Search cards (press / to focus)" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <span class="label" id="kind-label">Type</span>
+      <div class="seg" role="group" aria-labelledby="kind-label" id="kind"></div>
+    </div>
+
+    <div class="field">
+      <span class="label" id="rarity-label">Rarity</span>
+      <div class="chips" role="group" aria-labelledby="rarity-label" id="rarity"></div>
+    </div>
+
+    <div class="field"><label for="category">Category</label><select id="category"></select></div>
+    <div class="field"><label for="collection">Collection (deck file)</label><select id="collection"></select></div>
+    <div class="field"><label for="regions">Region</label><select id="regions"></select></div>
+    <div class="field"><label for="skills">Skill</label><select id="skills"></select></div>
+    <div class="field"><label for="location">Location</label><select id="location"></select></div>
+    <div class="field"><label for="membership">Membership</label><select id="membership"></select></div>
+    <div class="field"><label for="pack">Pack it can come from</label><select id="pack"></select></div>
+    <div class="field"><label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="rarity-desc">Rarity, rarest first</option>
+        <option value="rarity-asc">Rarity, most common first</option>
+        <option value="name">Name A to Z</option>
+        <option value="name-desc">Name Z to A</option>
+        <option value="deck">Deck order</option>
+      </select>
+    </div>
+
+    <div class="field row">
+      <label class="check"><input type="checkbox" id="art-only"> Only cards with a picture</label>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="reset" type="button">Clear all filters</button>
+      <button class="btn ghost" id="overview-btn" type="button" aria-expanded="false" aria-controls="overview">Show overview</button>
+    </div>
+  </aside>
+
+  <main>
+    <section id="overview" class="overview" hidden aria-label="Overview"></section>
+    <div id="active" class="active" aria-label="Active filters"></div>
+    <div id="grid" class="grid" role="list"></div>
+    <div id="empty" class="empty" hidden>
+      <p>No cards match these filters.</p>
+      <button class="btn" id="empty-reset" type="button">Clear all filters</button>
+    </div>
+    <div id="more" class="more" aria-hidden="true"></div>
+  </main>
+</div>
+
+<footer class="foot">
+  <p>An unofficial fan project for the RuneScape 3 Client API. Pictures and descriptive text come from the
+  <a href="https://runescape.wiki/" rel="noopener">RuneScape Wiki</a> under
+  <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="noopener">CC BY-NC-SA 3.0</a>; each card's
+  detail view links to the picture's file page. RuneScape and its characters, names and models belong to Jagex.
+  The game's own card art is not shown here.</p>
+  <p><a href="https://github.com/blueylewiedev/CardsOfGielinor" rel="noopener">Source on GitHub</a></p>
+</footer>
+
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="m-name">
+  <div class="modal-box">
+    <button class="close" id="m-close" aria-label="Close">&times;</button>
+    <button class="nav prev" id="m-prev" aria-label="Previous card">&#8249;</button>
+    <button class="nav next" id="m-next" aria-label="Next card">&#8250;</button>
+    <div id="m-body"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
