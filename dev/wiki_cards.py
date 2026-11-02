@@ -67,6 +67,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     category names to use with --category (one request, cached). Makes no candidates
                     and does not change the remembered categories. e.g.
                     python dev/wiki_cards.py --subcategories "Equipment Slots"
+  --bucket NAME     what one of the wiki's buckets (its structured data, e.g. "Dropsline" or
+                    "Infobox seed") holds: its schema (the field names and types, all the buckets
+                    asked for in one request) and two sample rows (one request each), printed and
+                    cached in dev/wiki_cache/buckets/ (a bucket is only asked for once). Makes no
+                    candidates and does not change the remembered categories. e.g.
+                    python dev/wiki_cards.py --bucket Dropsline --bucket "Infobox seed"
 
 The categories, regions and pages asked for are remembered (dev/wiki_cache/sources.json), and the
 candidates are made from all of them each run, from the cache, so asking for more adds to the
@@ -158,8 +164,9 @@ class Wiki:
                     time.sleep(delay)
                     continue
                 raise
-            if data.get("error", {}).get("code") == "maxlag" and attempt < RETRIES:
-                delay = int(data["error"].get("lag", 5)) + 5
+            problem = data.get("error", {})     # (the bucket action gives its errors as plain text)
+            if isinstance(problem, dict) and problem.get("code") == "maxlag" and attempt < RETRIES:
+                delay = int(problem.get("lag", 5)) + 5
                 print(f"  the wiki is busy (maxlag); waiting {delay}s")
                 time.sleep(delay)
                 continue
@@ -2283,6 +2290,107 @@ def make_wiki(args):
     return Wiki(contact, args.max_requests)
 
 
+def bucket_key(name):
+    """A bucket's name as the wiki's queries spell it ("Infobox seed" -> infobox_seed)."""
+    return re.sub(r"\s+", "_", name.strip().lower())
+
+
+def schema_fields(text):
+    """{ field: type } from the text of a Bucket: page: the largest object in its JSON whose values
+    are objects with a "type". Empty if the text is not JSON of that shape (it is printed anyway)."""
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return {}
+    best = {}
+
+    def look(node):
+        nonlocal best
+        if isinstance(node, dict):
+            fields = {k: v["type"] for k, v in node.items() if isinstance(v, dict) and "type" in v}
+            if len(fields) > len(best):
+                best = fields
+            for value in node.values():
+                look(value)
+        elif isinstance(node, list):
+            for value in node:
+                look(value)
+
+    look(data)
+    return best
+
+
+def bucket_peek(wiki, names, refresh):
+    """{ name: { "schema": the Bucket: page's text, "fields": { field: type }, "rows": two sample
+    rows, or "error" } } for each bucket (cached, so each is asked for once). The schemas of the
+    buckets not cached are fetched together (one request); each then gets one sample query, selecting
+    every field the schema has. None for a bucket the request limit ran out before."""
+    out, todo = {}, []
+    for name in names:
+        cached = None if refresh else read_cache("buckets", "peek " + bucket_key(name))
+        if cached is not None:
+            out[name] = cached
+        else:
+            todo.append(name)
+    schemas, asked = {}, set()
+    for start in range(0, len(todo), 50):
+        batch = todo[start:start + 50]
+        answer = wiki.get({"action": "query", "titles": "|".join("Bucket:" + n.strip() for n in batch),
+                           "prop": "revisions", "rvprop": "content", "rvslots": "main"})
+        if answer is None:
+            print("request limit reached: run again to carry on")
+            break
+        asked.update(batch)
+        for page in answer["query"]["pages"]:
+            if not page.get("missing") and page.get("revisions"):
+                schemas[bucket_key(page["title"].split(":", 1)[-1])] = page["revisions"][0]["slots"]["main"]["content"]
+    for name in todo:
+        key = bucket_key(name)
+        if key not in schemas:
+            if name in asked:
+                out[name] = {"schema": "", "fields": {}, "rows": [], "error": "no such bucket page"}
+                write_cache("buckets", "peek " + key, out[name])
+            continue
+        fields = schema_fields(schemas[key])
+        names_ = ", ".join(f"'{field}'" for field in fields if field != "page_name")
+        query = f"bucket('{key}').select('page_name'{', ' + names_ if names_ else ''}).limit(2).run()"
+        entry = {"schema": schemas[key], "fields": fields, "rows": []}
+        try:
+            answer = wiki.get({"action": "bucket", "query": query})
+        except RuntimeError as error:
+            entry["error"] = str(error)
+            answer = {}
+        if answer is None:
+            print("request limit reached: run again to carry on")
+            break
+        entry["rows"] = answer.get("bucket", [])
+        write_cache("buckets", "peek " + key, entry)
+        out[name] = entry
+    return out
+
+
+def show_buckets(args):
+    wiki = make_wiki(args)
+    found = bucket_peek(wiki, args.bucket, args.refresh)
+    for name in args.bucket:
+        entry = found.get(name)
+        print(f"\n== {name} ==")
+        if entry is None:
+            print("  (not fetched: the request limit ran out)")
+            continue
+        if entry.get("error"):
+            print("  error:", entry["error"])
+        if entry["fields"]:
+            print("  fields:", ", ".join(f"{k} ({v})" for k, v in entry["fields"].items()))
+        elif entry["schema"]:
+            print("  schema (not the shape expected):", entry["schema"][:600])
+        for row in entry["rows"]:
+            print("  row:", json.dumps({k: (v if len(str(v)) < 70 else str(v)[:67] + "...") for k, v in row.items()},
+                                       ensure_ascii=False))
+    print(f"\n{args.max_requests - wiki.left} requests made")
+    return 0
+
+
 def show_subcategories(args):
     wiki = make_wiki(args)
     for category in args.subcategories:
@@ -2335,9 +2443,12 @@ def main():
     parser.add_argument("--until", default="")
     parser.add_argument("--all-bosses", action="store_true")
     parser.add_argument("--subcategories", action="append", default=[])
+    parser.add_argument("--bucket", action="append", default=[])
     args = parser.parse_args()
     if args.subcategories:
         return show_subcategories(args)
+    if args.bucket:
+        return show_buckets(args)
     if args.all_bosses:
         args.drops_from.append("Bosses")
         args.until = args.until or "Quest bosses"

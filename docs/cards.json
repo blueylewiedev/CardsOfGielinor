@@ -8459,7 +8459,9 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 335
+   "order": 335,
+   "img": "img/stardust.png",
+   "imgPage": "File:Stardust 1 detail.png"
   },
   {
    "id": "clay",
@@ -9113,7 +9115,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 362
+   "order": 362,
+   "img": "img/acorn.png",
+   "imgPage": "File:Acorn 1 detail.png"
   },
   {
    "id": "apple_tree_seed",
@@ -9135,7 +9139,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 363
+   "order": 363,
+   "img": "img/apple_tree_seed.png",
+   "imgPage": "File:Apple tree seed 1 detail.png"
   },
   {
    "id": "asgarnian_seed",
@@ -9157,7 +9163,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 364
+   "order": 364,
+   "img": "img/asgarnian_seed.png",
+   "imgPage": "File:Asgarnian seed 1 detail.png"
   },
   {
    "id": "banana_tree_seed",
@@ -9179,7 +9187,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 365
+   "order": 365,
+   "img": "img/banana_tree_seed.png",
+   "imgPage": "File:Banana tree seed 1 detail.png"
   },
   {
    "id": "barley_seed",
@@ -9201,7 +9211,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 366
+   "order": 366,
+   "img": "img/barley_seed.png",
+   "imgPage": "File:Barley seed 1 detail.png"
   },
   {
    "id": "cabbage_seed",
@@ -9223,7 +9235,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 367
+   "order": 367,
+   "img": "img/cabbage_seed.png",
+   "imgPage": "File:Cabbage seed 1 detail.png"
   },
   {
    "id": "cadavaberry_seed",
@@ -9245,7 +9259,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 368
+   "order": 368,
+   "img": "img/cadavaberry_seed.png",
+   "imgPage": "File:Cadavaberry seed 1 detail.png"
   },
   {
    "id": "cave_potato_seed",
@@ -9268,7 +9284,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 369
+   "order": 369,
+   "img": "img/cave_potato_seed.png",
+   "imgPage": "File:Cave potato seed 1 detail.png"
   },
   {
    "id": "guam_seed",
@@ -9290,7 +9308,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 370
+   "order": 370,
+   "img": "img/guam_seed.png",
+   "imgPage": "File:Guam seed 1 detail.png"
   },
   {
    "id": "hammerstone_seed",
@@ -9312,7 +9332,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 371
+   "order": 371,
+   "img": "img/hammerstone_seed.png",
+   "imgPage": "File:Hammerstone seed 1 detail.png"
   },
   {
    "id": "jute_seed",
@@ -9706,7 +9728,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 387
+   "order": 387,
+   "img": "img/wendlewick_seed.png",
+   "imgPage": "File:Wendlewick seed 1 detail.png"
   },
   {
    "id": "yanillian_seed",
@@ -22898,7 +22922,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 899
+   "order": 899,
+   "img": "img/aloe_seed.png",
+   "imgPage": "File:Aloe seed 1 detail.png"
   },
   {
    "id": "blindweed_seed",
@@ -22924,7 +22950,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 900
+   "order": 900,
+   "img": "img/blindweed_seed.png",
+   "imgPage": "File:Blindweed seed 1 detail.png"
   },
   {
    "id": "curry_tree_seed",
@@ -22946,7 +22974,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 901
+   "order": 901,
+   "img": "img/curry_tree_seed.png",
+   "imgPage": "File:Curry tree seed 1 detail.png"
   },
   {
    "id": "delphinium_seed",
@@ -22972,7 +23002,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 902
+   "order": 902,
+   "img": "img/delphinium_seed.png",
+   "imgPage": "File:Delphinium seed 1 detail.png"
   },
   {
    "id": "dwellberry_seed",
@@ -22994,7 +23026,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 903
+   "order": 903,
+   "img": "img/dwellberry_seed.png",
+   "imgPage": "File:Dwellberry seed 1 detail.png"
   },
   {
    "id": "evil_turnip_seed",
@@ -23016,7 +23050,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 904
+   "order": 904,
+   "img": "img/evil_turnip_seed.png",
+   "imgPage": "File:Evil turnip seed 1 detail.png"
   },
   {
    "id": "gissel_mushroom_spore",
@@ -23042,7 +23078,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 905
+   "order": 905,
+   "img": "img/gissel_mushroom_spore.png",
+   "imgPage": "File:Gissel mushroom spore 1 detail.png"
   },
   {
    "id": "grapevine_seed",
@@ -23064,7 +23102,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 906
+   "order": 906,
+   "img": "img/grapevine_seed.png",
+   "imgPage": "File:Grapevine seed 1 detail.png"
   },
   {
    "id": "harralander_seed",
@@ -23086,7 +23126,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 907
+   "order": 907,
+   "img": "img/harralander_seed.png",
+   "imgPage": "File:Harralander seed 1 detail.png"
   },
   {
    "id": "irit_seed",
@@ -23108,7 +23150,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 908
+   "order": 908,
+   "img": "img/irit_seed.png",
+   "imgPage": "File:Irit seed 1 detail.png"
   },
   {
    "id": "jangerberry_seed",
@@ -32479,7 +32523,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1266
+   "order": 1266,
+   "img": "img/argway_seed.png",
+   "imgPage": "File:Argway seed 1 detail.png"
   },
   {
    "id": "avantoe_seed",
@@ -32501,7 +32547,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1267
+   "order": 1267,
+   "img": "img/avantoe_seed.png",
+   "imgPage": "File:Avantoe seed 1 detail.png"
   },
   {
    "id": "bittercap_mushroom_spore",
@@ -32523,7 +32571,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1268
+   "order": 1268,
+   "img": "img/bittercap_mushroom_spore.png",
+   "imgPage": "File:Bittercap mushroom spore 1 detail.png"
   },
   {
    "id": "bloodweed_seed",
@@ -32548,7 +32598,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1269
+   "order": 1269,
+   "img": "img/bloodweed_seed.png",
+   "imgPage": "File:Bloodweed seed 1 detail.png"
   },
   {
    "id": "blue_blossom_seed",
@@ -32573,7 +32625,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1270
+   "order": 1270,
+   "img": "img/blue_blossom_seed.png",
+   "imgPage": "File:Blue blossom seed 1 detail.png"
   },
   {
    "id": "erzille_seed",
@@ -32598,7 +32652,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1271
+   "order": 1271,
+   "img": "img/erzille_seed.png",
+   "imgPage": "File:Erzille seed 1 detail.png"
   },
   {
    "id": "green_blossom_seed",
@@ -32623,7 +32679,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1272
+   "order": 1272,
+   "img": "img/green_blossom_seed.png",
+   "imgPage": "File:Green blossom seed 1 detail.png"
   },
   {
    "id": "lergberry_seed",
@@ -32723,7 +32781,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1276
+   "order": 1276,
+   "img": "img/cactus_seed.png",
+   "imgPage": "File:Cactus seed 1 detail.png"
   },
   {
    "id": "cadantine_seed",
@@ -32745,7 +32805,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1277
+   "order": 1277,
+   "img": "img/cadantine_seed.png",
+   "imgPage": "File:Cadantine seed 1 detail.png"
   },
   {
    "id": "cave_nightshade_seed",
@@ -32767,7 +32829,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1278
+   "order": 1278,
+   "img": "img/cave_nightshade_seed.png",
+   "imgPage": "File:Cave nightshade seed 1 detail.png"
   },
   {
    "id": "edicap_mushroom_spore",
@@ -32793,7 +32857,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1279
+   "order": 1279,
+   "img": "img/edicap_mushroom_spore.png",
+   "imgPage": "File:Edicap mushroom spore 1 detail.png"
   },
   {
    "id": "featherfoil_seed",
@@ -32819,7 +32885,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1280
+   "order": 1280,
+   "img": "img/featherfoil_seed.png",
+   "imgPage": "File:Featherfoil seed 1 detail.png"
   },
   {
    "id": "jade_vine_seed",
@@ -38343,7 +38411,9 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 1491
+   "order": 1491,
+   "img": "img/crystalflecked_sandstone.png",
+   "imgPage": "File:Crystal-flecked sandstone.png"
   },
   {
    "id": "calcified_fungus",
@@ -38735,7 +38805,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1507
+   "order": 1507,
+   "img": "img/arbuck_seed.png",
+   "imgPage": "File:Arbuck seed 1 detail.png"
   },
   {
    "id": "barberry_seed",
@@ -38757,7 +38829,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1508
+   "order": 1508,
+   "img": "img/barberry_seed.png",
+   "imgPage": "File:Barberry seed 1 detail.png"
   },
   {
    "id": "kalferberry_seed",
@@ -38887,7 +38961,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1513
+   "order": 1513,
+   "img": "img/butterfly_flower_seed.png",
+   "imgPage": "File:Butterfly flower seed 1 detail.png"
   },
   {
    "id": "calquat_tree_seed",
@@ -38909,7 +38985,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1514
+   "order": 1514,
+   "img": "img/calquat_tree_seed.png",
+   "imgPage": "File:Calquat tree seed 1 detail.png"
   },
   {
    "id": "devils_snare_seed",
@@ -38955,7 +39033,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1516
+   "order": 1516,
+   "img": "img/dwarf_weed_seed.png",
+   "imgPage": "File:Dwarf weed seed 1 detail.png"
   },
   {
    "id": "harmony_moss_seed",
@@ -38980,7 +39060,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1517
+   "order": 1517,
+   "img": "img/harmony_moss_seed.png",
+   "imgPage": "File:Harmony moss seed 1 detail.png"
   },
   {
    "id": "lampenflora_seed",
@@ -39373,7 +39455,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1533
+   "order": 1533,
+   "img": "img/blisterberry_seed.png",
+   "imgPage": "File:Blisterberry seed.png"
   },
   {
    "id": "cocoaberry_seed",
@@ -39398,7 +39482,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1534
+   "order": 1534,
+   "img": "img/cocoaberry_seed.png",
+   "imgPage": "File:Cocoaberry seed.png"
   },
   {
    "id": "exuberry_seed",
@@ -39423,7 +39509,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1535
+   "order": 1535,
+   "img": "img/exuberry_seed.png",
+   "imgPage": "File:Exuberry seed.png"
   },
   {
    "id": "fireberry_seed",
@@ -39448,7 +39536,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1536
+   "order": 1536,
+   "img": "img/fireberry_seed.png",
+   "imgPage": "File:Fireberry seed.png"
   },
   {
    "id": "gloomberry_seed",
@@ -39473,7 +39563,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1537
+   "order": 1537,
+   "img": "img/gloomberry_seed.png",
+   "imgPage": "File:Gloomberry seed.png"
   },
   {
    "id": "jitterberry_seed",
@@ -39579,7 +39671,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1541
+   "order": 1541,
+   "img": "img/musaberry_seed.png",
+   "imgPage": "File:Musaberry seed.png"
   },
   {
    "id": "rosaberry_seed",
@@ -44887,7 +44981,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1740
+   "order": 1740,
+   "img": "img/avocado_seed.png",
+   "imgPage": "File:Avocado seed 1 detail.png"
   },
   {
    "id": "buckthorn_seed",
@@ -44913,7 +45009,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1741
+   "order": 1741,
+   "img": "img/buckthorn_seed.png",
+   "imgPage": "File:Buckthorn seed 1 detail.png"
   },
   {
    "id": "carambola_seed",
@@ -44935,7 +45033,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1742
+   "order": 1742,
+   "img": "img/carambola_seed.png",
+   "imgPage": "File:Carambola seed 1 detail.png"
   },
   {
    "id": "ciku_seed",
@@ -44957,7 +45057,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1743
+   "order": 1743,
+   "img": "img/ciku_seed.png",
+   "imgPage": "File:Ciku seed 1 detail.png"
   },
   {
    "id": "crystal_acorn",
@@ -44982,7 +45084,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1744
+   "order": 1744,
+   "img": "img/crystal_acorn.png",
+   "imgPage": "File:Crystal acorn 1 detail.png"
   },
   {
    "id": "dragonfruit_seed",
@@ -45004,7 +45108,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1745
+   "order": 1745,
+   "img": "img/dragonfruit_seed.png",
+   "imgPage": "File:Dragonfruit seed 1 detail.png"
   },
   {
    "id": "elder_seed",
@@ -45026,7 +45132,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1746
+   "order": 1746,
+   "img": "img/elder_seed.png",
+   "imgPage": "File:Elder seed 1 detail.png"
   },
   {
    "id": "fellstalk_seed",
@@ -45048,7 +45156,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1747
+   "order": 1747,
+   "img": "img/fellstalk_seed.png",
+   "imgPage": "File:Fellstalk seed 1 detail.png"
   },
   {
    "id": "fly_trap_seed",
@@ -45070,7 +45180,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1748
+   "order": 1748,
+   "img": "img/fly_trap_seed.png",
+   "imgPage": "File:Fly trap seed 1 detail.png"
   },
   {
    "id": "godly_grapevine_seed",
@@ -45092,7 +45204,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1749
+   "order": 1749,
+   "img": "img/godly_grapevine_seed.png",
+   "imgPage": "File:Godly grapevine seed 1 detail.png"
   },
   {
    "id": "golden_dragonfruit_seed",
@@ -45114,7 +45228,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1750
+   "order": 1750,
+   "img": "img/golden_dragonfruit_seed.png",
+   "imgPage": "File:Golden dragonfruit seed 1 detail.png"
   },
   {
    "id": "guarana_seed",
@@ -45136,7 +45252,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1751
+   "order": 1751,
+   "img": "img/guarana_seed.png",
+   "imgPage": "File:Guarana seed 1 detail.png"
   },
   {
    "id": "liverwort_seed",
@@ -45278,7 +45396,9 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 1757
+   "order": 1757,
+   "img": "img/starbloom_flower_seed.png",
+   "imgPage": "File:Starbloom flower seed 1.png"
   },
   {
    "id": "stinkshroom_spore",
@@ -46776,7 +46896,9 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 1810
+   "order": 1810,
+   "img": "img/primal_off_hand_warhammer.png",
+   "imgPage": "File:Primal off hand warhammer (used) detail.png"
   },
   {
    "id": "primal_warhammer",
@@ -46803,7 +46925,9 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 1811
+   "order": 1811,
+   "img": "img/primal_warhammer.png",
+   "imgPage": "File:Primal warhammer (Dungeoneering) detail.png"
   },
   {
    "id": "promethium_warhammer",
