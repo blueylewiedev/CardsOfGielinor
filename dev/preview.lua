@@ -10,6 +10,10 @@
 --                     CLIP_FOV or more) that have not been saved yet, so saving ends a card's review
 --   Swap to depth   : changes such a card to a narrower view at the same size, with Depth fix on
 --   Depth fix       : steps near as in the Card Builder
+--   Find a card     : type part of a card's name or id (every word must be in it, capitals,
+--                     spaces and hyphens don't matter: "off hand rune dag") and the preview jumps
+--                     to the first card found; Prev match / Next match step through the others.
+--                     For looking up a card made earlier to read its camera in the art line.
 -- Camera (right side):
 --   Zoom +/-        : camera distance (closer is a bigger NPC)
 --   Size +/-        : camera field of view (narrower is a bigger NPC)
@@ -21,6 +25,8 @@
 --   Model: Head/Body: switches this card between its head and body model (back to the
 --                     card's own setting when you change card)
 --   Frames: On/Off  : draws cards with the frame images, or the plain layout, to compare
+--   Use in Builder  : gives this card's camera to the Card Builder's card (only the camera, and
+--                     only item to item or NPC to NPC), to frame a card like this one
 --   Show: Back      : shows the card back image (resources/images/card_back.png) over a
 --                     magenta and white backdrop, to check its transparency in the client
 -- Animation (right side): type a sequence id, or step it with the buttons; Off stops it. Search
@@ -85,6 +91,10 @@ local UNDER_W = (PW - GAP) // 2                 -- width of each of the two butt
 
 local CLIP_FOV = 60                             -- an NPC camera this wide is taken as clip fixed
 local SWAP_FOV, SWAP_NEAR = 30, 0.25            -- what Swap to depth changes it to
+-- The find block under the Clip review rows: a label, the box, a line saying what was found,
+-- and the match buttons.
+local FIND_Y = UNDER_Y + 4 * STEP + 20 + 8       -- (under the Clip review rows and their status line)
+local FIND_H = 20 + 28 + 4 + 18 + 4 + 30
 
 local CONTENT_W = PANEL_X + PANEL_W + 10
 local GREY = Vector4.new(0.7, 0.7, 0.7, 1.0)
@@ -101,8 +111,7 @@ function Preview.show()
     local cameraTop = 10
     local viewTop = cameraTop + 24 + 6 * STEP + 8
     local animTop = viewTop + 24 + 4 * STEP + 8
-    -- (under the card: Prev to Reset, the Clip review rows and their status line)
-    local boxTop = math.max(UNDER_Y + 4 * STEP + 20, animTop + 24 + 34 + 4 * STEP - 6) + 14
+    local boxTop = math.max(FIND_Y + FIND_H + 8, animTop + 24 + 34 + 4 * STEP - 6) + 14
     local contentH = boxTop + 20 + 32 + 22
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
@@ -117,6 +126,7 @@ function Preview.show()
     local modelButton = nil
     local showAnimLabel = nil      -- set once the Anim box is made
     local artBox, artHint = nil, nil
+    local updateFindStatus = nil   -- set once the Find box is made
 
     -- Puts the shown card's art line in the box (and says which file it goes in). Returns it.
     local function showArtLine()
@@ -228,6 +238,9 @@ function Preview.show()
             showAnimLabel()
         end
         showArtLine()
+        if updateFindStatus ~= nil then
+            updateFindStatus()
+        end
 
         if view.cam ~= nil then
             local c = view.cam
@@ -373,6 +386,108 @@ function Preview.show()
         withCamera(function(c) c.near = Builder.nextDepthFix(c.near) end)
     end, "Each press goes 0.25, 0.5, then off; off again if the front of the model is cut")
     reviewStatus = Kit.text(content, CARD_X, UNDER_Y + 4 * STEP, PW, 20, "", GREY, ui.AlignMode.TOPLEFT)
+    -- Find a card: typing jumps to the first card whose id and name hold every word typed (in any
+    -- order; capitals, spaces and hyphens ignored), and the match buttons step through the rest.
+    -- The art line below then shows the camera that card has.
+    local findField, findStatus = nil, nil
+    local matches = {}                  -- indexes into Cards.list, best first
+
+    local function simple(text)
+        return (string.gsub(string.lower(tostring(text or "")), "[^%w]", ""))
+    end
+
+    -- The indexes of the cards that have every word of `query`; the shortest names come first
+    -- (a search for "rune scimitar" lists Rune scimitar before Off-hand rune scimitar), then deck order.
+    local function findCards(query)
+        local words = {}
+        for word in string.gmatch(string.lower(query or ""), "%S+") do
+            local plain = simple(word)
+            if plain ~= "" then
+                words[#words + 1] = plain
+            end
+        end
+        local found = {}
+        if #words == 0 then
+            return found
+        end
+        for cardIndex, card in ipairs(Cards.list) do
+            local text = simple(card.id) .. " " .. simple(card.name)
+            local all = true
+            for _, word in ipairs(words) do
+                if string.find(text, word, 1, true) == nil then
+                    all = false
+                    break
+                end
+            end
+            if all then
+                found[#found + 1] = cardIndex
+            end
+        end
+        table.sort(found, function(a, b)
+            local la, lb = #tostring(Cards.list[a].name or ""), #tostring(Cards.list[b].name or "")
+            if la ~= lb then
+                return la < lb
+            end
+            return a < b
+        end)
+        return found
+    end
+
+    -- Where the shown card is among the matches (0 if it is not one of them).
+    local function matchPosition()
+        for position, cardIndex in ipairs(matches) do
+            if cardIndex == index then
+                return position
+            end
+        end
+        return 0
+    end
+
+    function updateFindStatus()
+        if findStatus == nil then
+            return
+        end
+        if #matches == 0 then
+            findStatus.content = simple(findField.content) == "" and "Type part of a card's name or id"
+                or "No card found"
+            return
+        end
+        local position = matchPosition()
+        findStatus.content = (position > 0 and ("Match " .. position .. " of " .. #matches) or (#matches .. " found"))
+            .. ": " .. tostring(Cards.list[index].name or Cards.list[index].id)
+    end
+
+    local function showMatch(position)
+        index = matches[position]
+        bodyOverride = nil
+        showCard()
+    end
+
+    Kit.text(content, CARD_X, FIND_Y, PW, 20, "Find a card", GREY, ui.AlignMode.TOPLEFT)
+    findField = Kit.inputField(content, CARD_X, FIND_Y + 20, PW, 28, 60, false)
+    findStatus = Kit.text(content, CARD_X, FIND_Y + 20 + 28 + 4, PW, 18, "", GREY, ui.AlignMode.TOPLEFT)
+    findField:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
+        matches = findCards(findField.content)
+        if #matches > 0 then
+            showMatch(1)
+        else
+            updateFindStatus()
+        end
+    end)
+    local matchY = FIND_Y + 20 + 28 + 4 + 18 + 4
+    Kit.buttonAt(content, "Prev match", CARD_X, matchY, UNDER_W, 30, function()
+        if #matches > 0 then
+            local position = matchPosition()
+            showMatch(position <= 1 and #matches or position - 1)
+        end
+    end)
+    Kit.buttonAt(content, "Next match", CARD_X + UNDER_W + GAP, matchY, UNDER_W, 30, function()
+        if #matches > 0 then
+            local position = matchPosition()
+            showMatch(position >= #matches and 1 or position + 1)
+        end
+    end)
+    updateFindStatus()
 
     -- Camera.
     section("Camera", cameraTop)
@@ -419,6 +534,21 @@ function Preview.show()
         else
             showBack()
         end
+    end)
+    y = y + STEP
+    -- Gives the shown card's camera to the card the Builder is making (what it says goes in the
+    -- line under the Find box).
+    panelButton("Use in Builder", nil, y, function()
+        if view == nil or view.cam == nil then
+            findStatus.content = "No camera to give (no card is shown)"
+            return
+        end
+        local cam = view.cam
+        local ok, why = Builder.useCamera(
+            { yaw = cam.yaw, pitch = cam.pitch, dist = cam.dist, fov = cam.fov, ty = cam.ty, tx = cam.tx },
+            Cards.kindOf(view.card), cam.body)
+        findStatus.content = ok and ("Camera of " .. tostring(view.card.name or view.card.id) .. " sent to the Builder")
+            or tostring(why)
     end)
 
     -- Animation: type an animation id into the box to play it, or step it with the buttons (by

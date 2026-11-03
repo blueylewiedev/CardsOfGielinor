@@ -112,7 +112,7 @@ of that combat style from the wiki's structured data (Bucket:Infobox_bonuses): m
 two-handed and off-hand weapons, without cosmetic recolours or upgrades (the plain weapon has the
 card: Adamant scimitar, not Adamant scimitar + 1). Skilling tools (pickaxes, hatchets, mattocks),
 augmented, Golden and Lucky weapons and pages with a bracketed suffix ("Scimitar (class 3)", "(passive)", "(dyed)",
-"(Dominion Tower)"), which are variants of another page, are left out (`WEAPON_SKIP`). Try `--weapons melee --count` first to see how
+"(Dominion Tower)"), which are variants of another page, are left out (`WEAPON_SKIP`), and so are off-hand thrown weapons (an off-hand dart is the same item), Abyssal crossbows and "Mk. 5" upgrades. Try `--weapons melee --count` first to see how
 many pages that is, and `--weapons melee --list` to see them (with tier and damage type, lowest tier
 first) before fetching any. The kind (scimitar, dagger...) comes from each page as usual.
 

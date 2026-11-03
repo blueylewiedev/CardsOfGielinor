@@ -85,6 +85,66 @@ Set.cards = {
         art = { item = "TRAIL_LOGS_WHITE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
         tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
     },
+    {
+        id = "black_2h_crossbow", name = "Black 2h crossbow", kind = "item", rarity = "uncommon",
+        desc = "A black two-handed crossbow.",
+        art = { item = "TT14_BLACK_2H_XBOW", cam = { yaw = -2.82, pitch = 0.28, dist = 363, ty = 16, tx = -42 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "black_crossbow", name = "Black crossbow", kind = "item", rarity = "uncommon",
+        desc = "A black crossbow.",
+        art = { item = "TRAIL_BLACK_CROSSBOW", cam = { yaw = -5.93, pitch = 0.96, dist = 225, ty = 6, tx = 21 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "offhand_black_crossbow", name = "Off-hand black crossbow", kind = "item", rarity = "uncommon",
+        desc = "An off-hand black crossbow.",
+        art = { item = "TRAIL_BLACK_CROSSBOW_O", cam = { yaw = -2.56, pitch = 0.08, dist = 205, ty = 9, tx = -6 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "willow_composite_bow", name = "Willow composite bow", kind = "item", rarity = "uncommon",
+        desc = "A powerful bow made from willow.",
+        art = { item = "TRAIL_COMPOSITE_BOW_WILLOW", cam = { yaw = -1.61, pitch = 0.98, dist = 532, ty = -51, tx = -5 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "guthix_bow", name = "Guthix bow", kind = "item", rarity = "rare",
+        desc = "A bow imbued with the power of Guthix.",
+        art = { item = "TRAIL_GUTHIX_GODBOW", cam = { yaw = -1.60, pitch = 0.86, dist = 400, ty = -28, tx = -40 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "saradomin_bow", name = "Saradomin bow", kind = "item", rarity = "rare",
+        desc = "A bow imbued with the power of Saradomin.",
+        art = { item = "TRAIL_SARADOMIN_GODBOW", cam = { yaw = -1.60, pitch = 0.86, dist = 400, ty = -28, tx = -40 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "zamorak_bow", name = "Zamorak bow", kind = "item", rarity = "rare",
+        desc = "A bow imbued with the power of Zamorak.",
+        art = { item = "TRAIL_ZAMORAK_GODBOW", cam = { yaw = -1.60, pitch = 0.86, dist = 400, ty = -28, tx = -40 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "magic_composite_bow", name = "Magic composite bow", kind = "item", rarity = "epic",
+        desc = "A powerful bow made from magic logs.",
+        art = { item = "TRAIL_COMPOSITE_BOW_MAGIC", cam = { yaw = -1.61, pitch = 0.98, dist = 532, ty = -51, tx = -5 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "yew_composite_bow", name = "Yew composite bow", kind = "item", rarity = "epic",
+        desc = "A powerful bow made from yew.",
+        art = { item = "TRAIL_COMPOSITE_BOW_YEW", cam = { yaw = -1.61, pitch = 0.98, dist = 532, ty = -51, tx = -5 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
+    },
+    {
+        id = "secondage_bow", name = "Second-Age bow", kind = "item", rarity = "legendary",
+        desc = "An exquisite bow created in the Second-Age.",
+        art = { item = "TRAIL17_SECONDAGE_RANGE_WEAPON", cam = { yaw = -0.25, pitch = 1.12, dist = 532, ty = -8, tx = 68 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow", "treasure_trail" }, membership = { "p2p" } },
+    },
 }
 
 return Set

@@ -1,7 +1,198 @@
 local Set = {}
 
 Set.cards = {
-
+    {
+        id = "blood_spindle_shortbow", name = "Blood spindle shortbow", kind = "item", rarity = "common",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_3", cam = { yaw = -3.56, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "kayles_chargebow", name = "Kayle's chargebow", kind = "item", rarity = "common",
+        desc = "A brightly coloured chargebow that fires magical arrows.",
+        art = { item = "LUMBCAT_BOW", cam = { yaw = -1.40, dist = 483, ty = -21, tx = 27 } },
+        tags = { regions = { "misthalin" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow", "quest_item" }, membership = { "f2p" } },
+    },
+    {
+        id = "oak_shortbow", name = "Oak shortbow", kind = "item", rarity = "common",
+        desc = "A shortbow made out of oak, still effective.",
+        art = { item = "OAK_SHORTBOW", cam = { yaw = -4.92, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "quickbow", name = "Quickbow", kind = "item", rarity = "common",
+        desc = "A ranged weapon with special properties.",
+        art = { item = "OMGE_HOOKS_BOW", cam = { yaw = -1.58, dist = 532, ty = 10, tx = 9 } },
+        tags = { regions = { "asgarnia" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "seeping_elm_shortbow", name = "Seeping elm shortbow", kind = "item", rarity = "common",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_2", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "shortbow", name = "Shortbow", kind = "item", rarity = "common",
+        desc = "Short but effective.",
+        art = { item = "SHORTBOW", cam = { yaw = -11.21, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "tangle_gum_shortbow", name = "Tangle gum shortbow", kind = "item", rarity = "common",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_1", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "willow_shortbow", name = "Willow shortbow", kind = "item", rarity = "common",
+        desc = "A shortbow made out of willow, still effective.",
+        art = { item = "WILLOW_SHORTBOW", cam = { yaw = -11.18, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "maple_shortbow", name = "Maple shortbow", kind = "item", rarity = "uncommon",
+        desc = "A shortbow made out of Maple, still effective.",
+        art = { item = "MAPLE_SHORTBOW", cam = { yaw = -11.19, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "ogre_composite_bow", name = "Ogre composite bow", kind = "item", rarity = "uncommon",
+        desc = "A composite ogre bow.",
+        art = { item = "ZOGRE_BOW", cam = { yaw = -1.50, pitch = 0.91, dist = 585, ty = -61, tx = -44 } },
+        tags = { regions = { "kandarin" }, skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "spinebeam_shortbow", name = "Spinebeam shortbow", kind = "item", rarity = "uncommon",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_5", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "utuku_shortbow", name = "Utuku shortbow", kind = "item", rarity = "uncommon",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_4", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "acadia_shortbow", name = "Acadia shortbow", kind = "item", rarity = "rare",
+        desc = "Short but effective.",
+        art = { item = "ACADIA_SHORTBOW", cam = { yaw = -11.24, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "bovistrangler_shortbow", name = "Bovistrangler shortbow", kind = "item", rarity = "rare",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_6", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "chargebow", name = "Chargebow", kind = "item", rarity = "rare",
+        desc = "A bow to fire magical arrows at your enemies with.",
+        art = { item = "SLING", cam = { yaw = -1.40, dist = 300, ty = -50, tx = 0 } },
+        tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "gravite_chargebow", name = "Gravite chargebow", kind = "item", rarity = "rare",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_45_REWARD", cam = { yaw = -0.48, dist = 363, ty = -23, tx = -27 } },
+        tags = { regions = { "daemonheim" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "seercull", name = "Seercull", kind = "item", rarity = "rare",
+        desc = "An ancient Fremennik bow that was once used to battle the Moon Clan.",
+        art = { item = "DAGANOTH_CAVE_MAGIC_SHORTBOW", cam = { yaw = 1.65, dist = 439, ty = -4, tx = 4 } },
+        tags = { regions = { "fremennik_province" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "thigat_shortbow", name = "Thigat shortbow", kind = "item", rarity = "rare",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_7", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "f2p" } },
+    },
+    {
+        id = "corpsethorn_shortbow", name = "Corpsethorn shortbow", kind = "item", rarity = "epic",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_8", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "crystal_bow", name = "Crystal bow", kind = "item", rarity = "epic",
+        desc = "A bow fashioned from crystal.",
+        art = { item = "ELFCITY_CRYSTAL_BOW_100", cam = { yaw = -11.08, pitch = 0.94, dist = 531, ty = -43, tx = 91 } },
+        tags = { regions = { "tirannwn" }, skills = { "smithing", "ranged", "agility" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "decimation", name = "Decimation", kind = "item", rarity = "epic",
+        desc = "A ranged weapon of incredible power.",
+        art = { item = "DMBH_WEAPON_RANGED_NEW", cam = { yaw = -8.92, dist = 643, ty = 14, tx = -32 } },
+        tags = { regions = { "wilderness" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow", "slayer_drop" }, membership = { "p2p" } },
+    },
+    {
+        id = "entgallow_shortbow", name = "Entgallow shortbow", kind = "item", rarity = "epic",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_9", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "magic_shortbow", name = "Magic shortbow", kind = "item", rarity = "epic",
+        desc = "Short and magical, but still effective.",
+        art = { item = "MAGIC_SHORTBOW", cam = { yaw = -11.20, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "yew_shortbow", name = "Yew shortbow", kind = "item", rarity = "epic",
+        desc = "A shortbow made out of yew, still effective.",
+        art = { item = "YEW_SHORTBOW", cam = { yaw = -11.25, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "zaryte_bow", name = "Zaryte bow", kind = "item", rarity = "epic",
+        desc = "A powerful bow imbued with the fury of Zaros.",
+        art = { item = "GODWARS2_ZARYTE_BOW_100", cam = { yaw = -9.58, dist = 483, ty = -21, tx = -3 } },
+        tags = { regions = { "asgarnia" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "elder_shortbow", name = "Elder shortbow", kind = "item", rarity = "legendary",
+        desc = "A shortbow made out of elder.",
+        art = { item = "ELDER_SHORTBOW", cam = { yaw = -11.20, dist = 399, ty = 16, tx = 15 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "eternal_magic_shortbow", name = "Eternal magic shortbow", kind = "item", rarity = "legendary",
+        desc = "Short but effective.",
+        art = { item = "ETERNAL_SHORTBOW", cam = { yaw = -11.17, dist = 399, ty = 2, tx = 37 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "grave_creeper_shortbow", name = "Grave creeper shortbow", kind = "item", rarity = "legendary",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_10", cam = { yaw = -9.81, dist = 399, ty = 2, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "fletching", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "hexhunter_bow", name = "Hexhunter bow", kind = "item", rarity = "legendary",
+        desc = "It is stronger against targets with magical powers.",
+        art = { item = "STALKER_HEXHUNTER_BOW_NEW", cam = { yaw = -9.81, dist = 399, ty = 16, tx = 51 } },
+        tags = { regions = { "wilderness" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "masterwork_bow", name = "Masterwork bow", kind = "item", rarity = "legendary",
+        desc = "A masterful bow made by a master fletcher.",
+        art = { item = "MASTERWORK_BOW", cam = { yaw = -12.61, pitch = 1.06, dist = 439, ty = -17, tx = -66 } },
+        tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "sagittarian_shortbow", name = "Sagittarian shortbow", kind = "item", rarity = "legendary",
+        desc = "A small bow, only effective at short distance.",
+        art = { item = "RAND_SHORTBOW_11", cam = { yaw = -9.81, dist = 399, ty = 8, tx = 46 } },
+        tags = { regions = { "daemonheim" }, skills = { "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
+    {
+        id = "seren_godbow", name = "Seren godbow", kind = "item", rarity = "legendary",
+        desc = "An intricate bow of pure crystal.",
+        art = { item = "GWD2_SOLO_RANGED_WEAPON_NEW", cam = { yaw = -11.02, pitch = 0.72, dist = 483, ty = -55, tx = 27 } },
+        tags = { regions = { "kharidian_desert" }, skills = { "crafting", "ranged" }, category = { "weapon", "ranged_gear", "shortbow" }, membership = { "p2p" } },
+    },
 }
 
 return Set
