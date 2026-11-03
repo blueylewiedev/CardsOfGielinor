@@ -115,6 +115,24 @@ Set.cards = {
         art = { item = "BIGCHINCHOMPA_FLOWER", cam = { yaw = -1.80, dist = 525, fov = 45, tx = 10 } },
         tags = { skills = { "hunter" }, category = { "tool" }, membership = { "p2p" } },
     },
+    {
+        id = "butterfly_net", name = "Butterfly net", kind = "item", rarity = "common",
+        desc = "For catching butterflies...",
+        art = { item = "HUNTING_BUTTERFLY_NET", cam = { yaw = -6.18, pitch = 0.76, dist = 524, fov = 45, ty = 26, tx = -20 } },
+        tags = { skills = { "hunter" }, category = { "tool" }, membership = { "p2p" } },
+    },
+    {
+        id = "magic_butterfly_net", name = "Magic butterfly net", kind = "item", rarity = "rare",
+        desc = "For catching butterflies.",
+        art = { item = "II_MAGIC_BUTTERFLY_NET", cam = { yaw = -1.74, pitch = 0.86, dist = 577, fov = 45, ty = 28, tx = -2 } },
+        tags = { skills = { "hunter" }, category = { "tool" }, membership = { "p2p" } },
+    },
+    {
+        id = "tellervos_net", name = "Tellervo's net", kind = "item", rarity = "common",
+        desc = "A gnome net used for catching implings, moths, and butterflies. The name 'Tellervo' is neatly carved into it.",
+        art = { item = "GIANT_MOTH_BUTTERFLY_NET", cam = { yaw = -3.98, pitch = 0.83, dist = 698, fov = 45, ty = 50, tx = -57 } },
+        tags = { regions = { "havenhythe" }, skills = { "hunter" }, category = { "tool" }, membership = { "p2p" } },
+    },
 }
 
 return Set

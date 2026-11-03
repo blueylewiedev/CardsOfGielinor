@@ -91,6 +91,9 @@ Set.cards = {
         art = { item = "T90_RANGED_PARRYINGDAGGER", cam = { yaw = 0.69, pitch = 0.85, dist = 273, ty = -9, tx = -56 } },
         tags = { regions = { "kharidian_desert" }, skills = { "ranged", "defence" }, category = { "weapon", "ranged_gear", "defender" }, membership = { "p2p" } },
     },
+    { id = "ancient_lantern", name = "Ancient lantern", kind = "item", rarity = "epic", desc = "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.", art = { item = "T80_MAGIC_PARRYINGDAGGER", cam = { pitch = 1.44, dist = 248, ty = 10, tx = -3 } }, tags = { regions = { "asgarnia", "daemonheim" }, skills = { "magic", "defence" }, category = { "weapon", "magic_gear", "defender" }, membership = { "p2p" } } },
+    { id = "blighted_rebounder", name = "Blighted rebounder", kind = "item", rarity = "epic", desc = "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.", art = { item = "T70_MAGIC_PARRYINGDAGGER", cam = { yaw = -0.42, pitch = 0.44, dist = 225, ty = 39, tx = 4 } }, tags = { regions = { "morytania" }, skills = { "magic", "defence" }, category = { "weapon", "magic_gear", "defender" }, membership = { "p2p" } } },
+    { id = "kalphite_rebounder", name = "Kalphite rebounder", kind = "item", rarity = "legendary", desc = "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.", art = { item = "T90_MAGIC_PARRYINGDAGGER", cam = { yaw = 0.59, pitch = 1.04, ty = -8 } }, tags = { regions = { "kharidian_desert", "asgarnia" }, skills = { "magic", "defence" }, category = { "weapon", "magic_gear", "defender" }, membership = { "p2p" } } },
 }
 
 return Set
