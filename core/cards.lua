@@ -225,7 +225,7 @@ Cards.itemTagGroups = {
             "armour", "jewellery", "pocket", "ammunition", "fashion", "novelty", "treasure_trail", "slayer_drop", "minigame", "discontinued" } },
         { title = "What kind of weapon", requires = "weapon",
             words = { "dagger", "defender", "sword", "scimitar", "two_handed_sword", "axe", "mace", "maul", "spear", "halberd",
-                "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon" } },
+                "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book" } },
         { title = "Which armour slot", requires = "armour",
             words = { "helmet", "body", "legs", "gloves", "boots", "off_hand", "back" } },
         { title = "Which jewellery slot", requires = "jewellery",
