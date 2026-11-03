@@ -115,6 +115,7 @@ Set.cards = {
         art = { item = "XMAS2014_SNOWBALL", cam = { yaw = 0.74, pitch = 0.96, dist = 273, ty = 36, tx = 25 } },
         tags = { category = { "novelty" }, membership = { "f2p" } },
     },
+    { id = "draccles", name = "Draccles", kind = "item", rarity = "common", desc = "I'll hug him, and pet him, and squeeze him!", art = { item = "MYQ7_LOST_TOYS_PLAYER_PLUSH", cam = { yaw = 0.32, pitch = 0.29, dist = 205, ty = 80, tx = 3 } }, tags = { category = { "novelty" }, membership = { "p2p" } } },
 }
 
 return Set

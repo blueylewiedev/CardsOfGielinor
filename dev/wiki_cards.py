@@ -863,7 +863,7 @@ NOVELTY_PAGES = {"tambourine", "mega-phonus", "rubber turkey", "off-hand rubber 
 
 
 WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd", "whip",
-                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon"}
+                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book"}
 # The kind of a weapon from its name (the last word), for a weapon whose wiki categories name no
 # kind: "Adamant claws" is a claw. In order, as "2h sword" must come before "sword".
 WEAPON_NAME_KINDS = [
@@ -872,7 +872,8 @@ WEAPON_NAME_KINDS = [
     (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|mauls?|flails?)$", "mace"),
     (r"\b(?:spears?|hastas?|warspears?|lances?)$", "spear"), (r"\bhalberds?$", "halberd"),
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
-    (r"\bcrossbows?$", "crossbow"), (r"\b(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
+    (r"\bcrossbows?$", "crossbow"), (r"\b(?:battle)?(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
+    (r"\borbs?$|^orb of\b", "orb"), (r"\b(?:spell)?books?$|\bbook of magic$|\btome\b", "book"),
 ]
 
 

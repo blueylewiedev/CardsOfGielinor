@@ -16,8 +16,12 @@
 local Set = {}
 
 Set.cards = {
-   
-    
+    {
+        id = "coins", name = "coins", kind = "item", rarity = "common",
+        desc = "Lovely money!",
+        art = { item = "COINS_1000", cam = { pitch = 0.52, ty = 45, tx = -39 } },
+        tags = { category = { "currency" }, membership = { "f2p" } },
+    },
 }
 
 return Set
