@@ -97,6 +97,24 @@ Set.cards = {
         art = { item = "HUNDRED_KNIFE", cam = { yaw = -1.14, dist = 326, fov = 45, ty = -23, tx = 49 } },
         tags = { category = { "novelty" }, membership = { "p2p" } },
     },
+    {
+        id = "mud_pie", name = "Mud pie", kind = "item", rarity = "uncommon",
+        desc = "All the good of the earth.",
+        art = { item = "MUD_PIE", cam = { yaw = -4.90, pitch = 0.54, dist = 296, fov = 45, ty = 22, tx = 11 } },
+        tags = { skills = { "cooking", "magic" }, category = { "novelty" }, membership = { "p2p" } },
+    },
+    {
+        id = "eggsterminator", name = "Eggsterminator", kind = "item", rarity = "common",
+        desc = "This modified handcannon fires scotch eggs or marshmallows.",
+        art = { item = "EASTER12_HANDCANNON_PERM", cam = { yaw = 0.89, pitch = 0.17, dist = 330, ty = 64, tx = -21 } },
+        tags = { skills = { "ranged" }, category = { "novelty" }, membership = { "p2p" } },
+    },
+    {
+        id = "snowball", name = "Snowball", kind = "item", rarity = "common",
+        desc = "Yep - it's a ball made of snow.",
+        art = { item = "XMAS2014_SNOWBALL", cam = { yaw = 0.74, pitch = 0.96, dist = 273, ty = 36, tx = 25 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
 }
 
 return Set

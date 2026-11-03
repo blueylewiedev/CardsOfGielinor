@@ -73,6 +73,24 @@ Set.cards = {
         art = { item = "T90_MELEE_PARRYINGDAGGER", cam = { yaw = -1.05, dist = 394, fov = 35, ty = 4, tx = -11 } },
         tags = { regions = { "kharidian_desert" }, skills = { "attack", "defence" }, category = { "weapon", "melee_gear", "defender" }, membership = { "p2p" } },
     },
+    {
+        id = "ancient_repriser", name = "Ancient repriser", kind = "item", rarity = "epic",
+        desc = "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+        art = { item = "T80_RANGED_PARRYINGDAGGER", cam = { yaw = -0.88, pitch = 0.43, dist = 273, ty = 21, tx = 28 } },
+        tags = { regions = { "asgarnia", "daemonheim" }, skills = { "ranged", "defence" }, category = { "weapon", "ranged_gear", "defender" }, membership = { "p2p" } },
+    },
+    {
+        id = "tainted_repriser", name = "Tainted repriser", kind = "item", rarity = "epic",
+        desc = "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+        art = { item = "T70_RANGED_PARRYINGDAGGER", cam = { yaw = 0.73, pitch = 0.86, dist = 273, ty = 40, tx = -10 } },
+        tags = { regions = { "morytania" }, skills = { "ranged", "defence" }, category = { "weapon", "ranged_gear", "defender" }, membership = { "p2p" } },
+    },
+    {
+        id = "kalphite_repriser", name = "Kalphite repriser", kind = "item", rarity = "legendary",
+        desc = "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+        art = { item = "T90_RANGED_PARRYINGDAGGER", cam = { yaw = 0.69, pitch = 0.85, dist = 273, ty = -9, tx = -56 } },
+        tags = { regions = { "kharidian_desert" }, skills = { "ranged", "defence" }, category = { "weapon", "ranged_gear", "defender" }, membership = { "p2p" } },
+    },
 }
 
 return Set
