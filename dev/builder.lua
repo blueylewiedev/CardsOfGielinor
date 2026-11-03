@@ -2090,6 +2090,35 @@ function Builder.useModel(configName, candidate)
     end
 end
 
+-- Uses `cam` (yaw, pitch, dist, fov, ty, tx) as the camera of the card being made: the Card Preview
+-- window's "Use in Builder" button, to frame this card like one made earlier. `kind` is "item" or
+-- "npc", the kind of card the camera came from: the two are framed differently, so they are not
+-- mixed, and nor are the body and head models of an NPC (`body` is true for the body model). Only the
+-- camera is taken; the model, body and animation stay as they are. Returns true, or false and why not.
+function Builder.useCamera(cam, kind, body)
+    if window == nil then
+        return false, "The Card Builder is not open"
+    end
+    if currentCam() == nil then
+        return false, "No card is shown in the Builder"
+    end
+    local mine = isItem() and "item" or "npc"
+    if kind ~= mine then
+        return false, "The Builder is making " .. (mine == "item" and "an item" or "an NPC") .. " card, "
+            .. (kind == "item" and "an item's" or "an NPC's") .. " camera does not fit it"
+    end
+    if mine == "npc" and (body == true) ~= (draft.body == true) then
+        return false, "The Builder shows the NPC's " .. (draft.body and "body" or "head") .. ", this camera is for its "
+            .. (body and "body" or "head")
+    end
+    draft.cam = copyCamera(cam)
+    showCard()
+    if widgets.categoryCameraNote ~= nil then
+        widgets.categoryCameraNote.content = "Using the camera from the Card Preview"
+    end
+    return true
+end
+
 -- Starts an NPC card for an NPC found in the game (the Uncarded NPCs window): its model, name, card
 -- id and a guess at its standing animation, in the general NPC deck file. `npc` is { configName,
 -- name }. Anything entered before is replaced.
