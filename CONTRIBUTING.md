@@ -443,6 +443,13 @@ Also:
   with no Grand Exchange price is not held.
 - **An item a shop sells ignores its drop rate**: mind runes, ores and basic staves drop from monsters, but
   anyone can buy them. The shops are in `dev/shop_items.json` (`python dev/wiki_cards.py --shops`).
+- **An item with no level and no shop is rated by where it drops.** If nothing gives a level (no recipe,
+  gathering, planting or wearing) and no shop sells it, it is only got from what drops it, so the easiest
+  live source decides (the one that is least trouble to reach). The monster's **combat level** gives
+  uncommon from 70, rare from 100 and epic from 150, and a level the source asks for (Slayer to kill it,
+  Hunter to catch it, Thieving to steal from it) uses the level table above. The higher of the two counts,
+  epic at most. Fury shark drops only from the Lava strykewyrm (combat 115, Slayer 94), so it is **epic**.
+  Historical sources, and rewards, shop stock and prizes that hand an item over indirectly, are left out.
 - **Pets** are legendary, however they are obtained. They are very hard to get.
 - **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
 - **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and

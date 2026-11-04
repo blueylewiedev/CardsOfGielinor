@@ -1128,6 +1128,9 @@ RARITIES = ["common", "uncommon", "rare", "epic", "legendary"]
 # (the level needed gives at most epic: how hard an item is to use says little about how rare it is,
 # so legendary comes from the price, the drop rate, pets and discontinued items)
 LEVEL_BANDS = [(90, "epic"), (70, "rare"), (40, "uncommon")]    # level needed
+# (the combat level of the monster an item drops from, for an item with no other way to gauge it: a level
+# that asks for a skill, Slayer to kill it for one, uses LEVEL_BANDS; both give epic at most)
+COMBAT_BANDS = [(150, "epic"), (100, "rare"), (70, "uncommon")]
 PRICE_BANDS = [(50_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
 DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
 PET_CATEGORY = re.compile(r"\bpets?$")
@@ -1142,10 +1145,12 @@ def band(value, bands):
     return "common"
 
 
-def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False):
+def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False, source=None):
     """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
     (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its most common drop
-    rate of 1 in N, `shop` whether a shop sells it; any can be None when not known. Pets and
+    rate of 1 in N, `shop` whether a shop sells it, `source` the easiest monster or other source it drops
+    from, as {"combat": its combat level, "req": the level it asks for} (for an item with no `level`
+    and no shop, which is only got from what drops it); any can be None when not known. Pets and
     discontinued items are legendary. Otherwise the highest rarity any known signal gives wins (a
     level gives epic at most), with two limits on the drop rate: an item a shop sells ignores it
     (anyone can buy a mind rune, whatever monsters drop it), and one with a price is held to the
@@ -1170,6 +1175,11 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
             if RARITIES.index(rarity) > limit:
                 rarity, held = RARITIES[limit], ", held down by its price"
         given.append((rarity, f"drop rate 1/{drop:,}{held}"))
+    if source:
+        tier = max(RARITIES.index(band(source.get("combat") or 0, COMBAT_BANDS)),
+                   RARITIES.index(band(source.get("req") or 0, LEVEL_BANDS)))
+        parts = [f"{key} {source[key]}" for key in ("combat", "req") if source.get(key)]
+        given.append((RARITIES[tier], "easiest drop source: " + ", ".join(parts)))
     if not given:
         return "common", ["no signal"]
     best = max(RARITIES.index(r) for r, _ in given)
@@ -1512,9 +1522,29 @@ def dropline_kept(row):
 INDIRECT_KINDS = {"reward", "store", "sof", "th", "search"}
 
 
+def source_difficulty(kinds, groups):
+    """(tier, combat level, requirement) of one source: a monster's combat level (COMBAT_BANDS) and the
+    highest level any other kind asks for (Slayer to kill it, Hunter to catch it; LEVEL_BANDS), the tier
+    the higher of the two (0 common to 3 epic). The lowest level of a kind is used (a source with
+    several versions). None for a source that gives no level."""
+    combat, req = None, None
+    for kind, group in zip(kinds, groups):
+        numbers = [n for n in (group if isinstance(group, list) else [group]) if isinstance(n, (int, float))]
+        if numbers and isinstance(kind, str):
+            if kind == "combat":
+                combat = min(numbers)
+            else:
+                req = max(req or 0, min(numbers))
+    if combat is None and req is None:
+        return None
+    tier = max(RARITIES.index(band(combat or 0, COMBAT_BANDS)), RARITIES.index(band(req or 0, LEVEL_BANDS)))
+    return tier, combat, req
+
+
 def reduce_drops(rows):
     """{ item name in lower case: {"common": the most common rate's N, "rarest": the rarest rate's N,
-    "sources": how many lines, "levels": the lowest level any source asks, by kind} } from the lines
+    "sources": how many lines, "levels": the lowest level any source asks, by kind, "easy": the easiest
+    source's {"combat", "req"} (see source_difficulty)} } from the lines
     kept for each item (dropline_kept). Sources the wiki hides (historical_source) and indirect ones
     (INDIRECT_KINDS) are left out. A line's
     "Drop level" is a list of levels for each kind in its "Drop type": [[85], [65]] with ["combat",
@@ -1532,11 +1562,17 @@ def reduce_drops(rows):
                 item["common"] = low if item["common"] is None else min(item["common"], low)
                 item["rarest"] = high if item["rarest"] is None else max(item["rarest"], high)
             if isinstance(kinds, list) and isinstance(groups, list):
+                hard = source_difficulty(kinds, groups)
+                if hard and ("easy" not in item or hard[0] < item["_tier"]):
+                    item["_tier"] = hard[0]
+                    item["easy"] = {key: value for key, value in (("combat", hard[1]), ("req", hard[2])) if value}
                 for kind, group in zip(kinds, groups):
                     numbers = [n for n in (group if isinstance(group, list) else [group]) if isinstance(n, (int, float))]
                     if numbers and isinstance(kind, str):
                         levels = item.setdefault("levels", {})
                         levels[kind] = min(levels.get(kind, min(numbers)), min(numbers))
+    for item in items.values():
+        item.pop("_tier", None)
     return items
 
 
@@ -1793,8 +1829,12 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         tags["membership"] = membership
 
     categories = [c.lower() for c in page.get("categories", [])]
+    sold = sold_in_shop(name)
+    # (an item that no recipe, gathering, planting or wearing gives a level for, and that no shop sells, is only
+    # got from what drops it: how hard the easiest source is to reach says how hard the item is to get)
+    easiest = (drop_items().get(name.lower()) or {}).get("easy") if level is None and not sold else None
     rarity, why = item_rarity(
-        level=level, price=price, drop=round(drop) if drop else None, shop=sold_in_shop(name),
+        level=level, price=price, drop=round(drop) if drop else None, shop=sold, source=easiest,
         pet=any(PET_CATEGORY.search(c) for c in categories),
         discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
     notes.append("rarity is a guess: " + ", ".join(why))
