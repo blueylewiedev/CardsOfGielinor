@@ -1257,7 +1257,8 @@ def farming_level(text):
 
 def gather_requirements(text, skill_words, categories=()):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
-    the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
+    the logs, fish or ore on its page (the main catch's `level`: a version has level1, level2..., and
+    a fish's swarm and whirlpool versions catch it far below its level). An ore's
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
     beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
     other skill in the text is something else), or "no Mining requirement", which is level 1. For a
@@ -1269,8 +1270,12 @@ def gather_requirements(text, skill_words, categories=()):
         _, inside = find_template(text, [name])
         if inside is None or skill not in skill_words:
             continue
-        levels = [int(m.group()) for key, value in template_fields(inside).items()
-                  if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m]
+        found = {key: int(m.group()) for key, value in template_fields(inside).items()
+                 if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m}
+        # (the main catch: a fish's page has a version for each spot and the swarm and whirlpool ones, which
+        # catch it far below its level, so the first version's level, else the plain `level`, not the lowest)
+        main = found.get("level1", found.get("level", min(found.values()) if found else None))
+        levels = [main] if main is not None else []
         if not levels:
             said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?" + skill
                              + r"\b", text, re.I)
@@ -1279,7 +1284,7 @@ def gather_requirements(text, skill_words, categories=()):
             elif re.search(r"\bno\s+(?:\[\[)?" + skill + r"(?:\]\])?\s+requirement", text, re.I):
                 levels = [1]
         if levels:
-            return [skill], min(levels)
+            return [skill], levels[0]
     if "Herbs" in categories and "farming" in skill_words:
         level = farming_level(text)
         if level is not None:
