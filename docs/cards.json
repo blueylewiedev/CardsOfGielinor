@@ -24217,7 +24217,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 939
+   "order": 939,
+   "img": "img/lumbridge_guide.png",
+   "imgPage": "File:Lumbridge Sage.png"
   },
   {
    "id": "cook",
