@@ -7,8 +7,8 @@ wiki file to show on the card site when the page's own choice is wrong:
     "zanik": {"page": "Zanik"},
     "some_card": {"page": "Some page", "image": "File:Some picture.png"},
 
-dev/card_queue.py adds each card it writes into a deck file. Cards made before that are filled in
-once with --backfill. The card site (dev/build_site.py) uses the page to choose the card's
+dev/card_queue.py adds each card it writes into a deck file (and resolves its picture, below).
+Cards made before that are filled in once with --backfill. The card site (dev/build_site.py) uses the page to choose the card's
 picture, best first:
 
   1. the entry's "image", if it has one;
@@ -18,10 +18,20 @@ picture, best first:
      pet as it follows you (its pet infobox), not its item's icon;
   4. otherwise the card's name, as before, and last the page's first picture.
 
+The wiki cache (dev/wiki_cache) is not in the repository, so --resolve writes the picture chosen
+from each NPC card's page into its entry as "resolved", and the page's first picture as "first"
+when that is another picture: a checkout without the cache uses those instead. --report says
+when they are out of date (a card's art.npc changed).
+
+    "richie": {"page": "Richie (NPC)", "resolved": "File:Richie (NPC).png"},
+    "blazehound": {"page": "Blazehound", "resolved": "File:Blazehound adult.png", "first": "File:Baby-blazehound.png"},
+
     python dev/wiki_pages.py --backfill    add the cards with no entry yet, matched to the cached
                                            wiki pages by name and NPC id (no internet); never
                                            changes an entry; lists the cards it can't match
     python dev/wiki_pages.py --report      how each NPC card's picture would be chosen (no internet)
+    python dev/wiki_pages.py --resolve     write each NPC card's picture from the cached pages into
+                                           its entry, for a checkout without the cache (no internet)
 """
 
 import argparse
@@ -37,11 +47,15 @@ PICTURE = re.compile(r"(?:(?:File|Image):)?\s*([^\[\]|{}<>=:\n]+?\.(?:png|gif|jp
 
 
 def load():
-    """{ card id: { "page", "image"? } }."""
+    """{ card id: { "page", "image"?, "resolved"?, "first"? } }. Stops if the file can't be read,
+    rather than have the next save write over every entry with only the new ones."""
+    if not PAGES_JSON.exists():
+        return {}
     try:
         return json.loads(PAGES_JSON.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}
+    except ValueError as error:
+        raise SystemExit(f"{PAGES_JSON} is not valid JSON ({error}): fix it (a merge "
+                         "conflict?) and run again")
 
 
 def save(pages):
@@ -51,12 +65,20 @@ def save(pages):
 
 
 def record(added):
-    """Keeps the pages new cards came from, given as { card id: page } (an entry a card already
-    has is left alone)."""
+    """Keeps the pages new cards came from, given as { card id: page }, and resolves their pictures
+    from the wiki cache. A new card's id is in no deck file, so an entry it already has is left
+    from a removed or renamed card, and is replaced."""
+    new = {cid: page for cid, page in added.items() if page}
+    if not new:
+        return
     pages = load()
-    new = {cid: {"page": page} for cid, page in added.items() if page and cid not in pages}
-    if new:
-        save({**pages, **new})
+    pages.update({cid: {"page": page} for cid, page in new.items()})
+    try:
+        cards, npc_ids = deck_and_ids()
+        resolve_entries(pages, [card for card in cards if card["id"] in new], npc_ids)
+    except SystemExit as error:
+        print(f"Could not resolve the new cards' pictures ({error}): run python dev/wiki_pages.py --resolve")
+    save(pages)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -101,8 +123,9 @@ def page_pictures(text):
 
 
 Choice = namedtuple("Choice", "file reason how default page")
-# file: the picture chosen (or None); reason: entry, scenery, npc, missing (the NPC is not on the
-# page), none (no page, not an NPC); how: the same in words; default: the page's first picture
+# file: the picture chosen (or None); reason: entry, scenery, npc, resolved (no cached page: the
+# entry's "resolved"), missing (the NPC is not on the page), none (no page, not an NPC); how: the
+# same in words; default: the page's first picture (without the cached page, the entry's "first")
 
 
 def chosen_picture(card, entry, found, npc_ids):
@@ -113,6 +136,8 @@ def chosen_picture(card, entry, found, npc_ids):
     if (card.get("kind") or "npc") != "npc":
         return None, "none", "not an NPC: by name"
     if found is None:
+        if entry and entry.get("resolved"):
+            return entry["resolved"], "resolved", "the entry's resolved picture (no cached page)"
         return None, "none", "no page"
     art = card.get("art") or {}
     if art.get("model"):
@@ -131,16 +156,19 @@ def page_default(found):
     return next((picture for _, _, picture in found or [] if picture), None)
 
 
-def choices(cards, entries, npc_ids):
+def choices(cards, entries, npc_ids, found=None):
     """{ card id: Choice } for the cards with an entry in dev/wiki_pages.json (`entries`), from the
-    pages in the wiki cache. The card site (dev/build_site.py) and --report both use this."""
-    found = pictures_by_page({entries[c["id"]]["page"] for c in cards if c["id"] in entries})
+    pages in the wiki cache (or `found`, from pictures_by_page). The card site (dev/build_site.py)
+    and --report both use this."""
+    if found is None:
+        found = pictures_by_page({entries[c["id"]]["page"] for c in cards if c["id"] in entries})
     out = {}
     for card in cards:
         entry = entries.get(card["id"])
         if entry:
             pictures = found.get(entry["page"])
-            out[card["id"]] = Choice(*chosen_picture(card, entry, pictures, npc_ids), page_default(pictures), entry["page"])
+            default = page_default(pictures) if pictures is not None else entry.get("first") or entry.get("resolved")
+            out[card["id"]] = Choice(*chosen_picture(card, entry, pictures, npc_ids), default, entry["page"])
     return out
 
 
@@ -148,31 +176,50 @@ def cached_pages():
     """Every page in the wiki cache, as { its own title: text }. (A page is cached under the title
     asked for, which for a redirect is not its own: "Lumbridge Guide" holds Lumbridge Sage.)"""
     from wiki_cards import CACHE
-    found = {}
-    for path in (CACHE / "pages").glob("*.json"):
+    return {title: json.loads((CACHE / "pages" / name).read_text(encoding="utf-8"))["text"]
+            for title, name in cached_titles().items()}
+
+
+def cached_titles():
+    """{ a cached page's own title: its file in the cache's pages }. Kept in the cache as
+    page_titles.json, and made again when a page is added or changed."""
+    from wiki_cards import CACHE
+    files = list((CACHE / "pages").glob("*.json"))
+    if not files:
+        return {}
+    stamp = [len(files), max(path.stat().st_mtime_ns for path in files)]
+    index = CACHE / "page_titles.json"
+    try:
+        kept = json.loads(index.read_text(encoding="utf-8"))
+        if kept.get("stamp") == stamp:
+            return kept["titles"]
+    except (OSError, ValueError):
+        pass
+    titles = {}
+    for path in files:
         try:
             page = json.loads(path.read_text(encoding="utf-8"))
         except ValueError:
             continue
         if page.get("title") and page.get("text") and not page.get("missing"):
-            found[page["title"]] = page["text"]
-    return found
+            titles[page["title"]] = path.name
+    index.write_text(json.dumps({"stamp": stamp, "titles": titles}), encoding="utf-8")
+    return titles
 
 
 def pictures_by_page(titles, texts=None):
-    """{ title: its page_pictures } for the titles whose pages are in the wiki cache: under the
-    title asked for, or else (a page reached by a redirect) its own, found in the whole cache."""
-    from wiki_cards import read_cache
-    found, missed = {}, []
+    """{ title: its page_pictures } for the titles whose pages are in the wiki cache (or `texts`):
+    under the title asked for, or else (a page reached by a redirect) its own (cached_titles)."""
+    from wiki_cards import CACHE, read_cache
+    found, own = {}, None
     for title in set(titles):
         text = (texts or {}).get(title) or (read_cache("pages", title) or {}).get("text")
+        if not text and texts is None:
+            own = cached_titles() if own is None else own
+            if title in own:
+                text = json.loads((CACHE / "pages" / own[title]).read_text(encoding="utf-8")).get("text")
         if text:
             found[title] = page_pictures(text)
-        else:
-            missed.append(title)
-    if missed and texts is None:
-        texts = cached_pages()
-        found.update({title: page_pictures(texts[title]) for title in missed if title in texts})
     return found
 
 
@@ -246,9 +293,52 @@ def backfill():
         print(f"  {card['id']}  ({card.get('kind') or 'npc'}, {card['_file']})")
 
 
+def resolve_entries(pages, cards, npc_ids, found=None):
+    """Writes each NPC card's picture, chosen from its cached page (or `found`, from
+    pictures_by_page), into its entry in `pages` ("resolved", and the page's first picture as
+    "first" when that is another picture). An entry whose page is not cached is left alone.
+    Returns (the ids changed, the ids not cached)."""
+    npc_cards = [card for card in cards if card["id"] in pages and (card.get("kind") or "npc") == "npc"]
+    if found is None:
+        found = pictures_by_page({pages[card["id"]]["page"] for card in npc_cards})
+    changed, uncached = [], []
+    for card in npc_cards:
+        cid, entry = card["id"], pages[card["id"]]
+        pictures = found.get(entry["page"])
+        if pictures is None:
+            uncached.append(cid)
+            continue
+        # (without the entry's "image": the page's own choice)
+        picture, reason, _ = chosen_picture(card, None, pictures, npc_ids)
+        picture = picture if reason in ("npc", "scenery") else None
+        first = page_default(pictures)
+        new = {key: value for key, value in entry.items() if key not in ("resolved", "first")}
+        if picture:
+            new["resolved"] = picture
+        if first and first != picture:
+            new["first"] = first
+        if new != entry:
+            pages[cid] = new
+            changed.append(cid)
+    return changed, uncached
+
+
+def resolve():
+    cards, npc_ids = deck_and_ids()
+    pages = load()
+    changed, uncached = resolve_entries(pages, cards, npc_ids)
+    save(pages)
+    resolved = sum("resolved" in entry for entry in pages.values())
+    print(f"{resolved} NPC cards resolved ({len(changed)} changed), {len(uncached)} with no cached page:")
+    for cid in uncached:
+        print(f"  {cid}")
+
+
 def report():
     cards, npc_ids = deck_and_ids()
-    found = choices(cards, load(), npc_ids)
+    pages = load()
+    pictures = pictures_by_page({entry["page"] for entry in pages.values()})
+    found = choices(cards, pages, npc_ids, pictures)
     tally = {}
     for card in cards:
         if (card.get("kind") or "npc") != "npc":
@@ -259,6 +349,9 @@ def report():
     print()
     for reason, count in sorted(tally.items(), key=lambda kv: -kv[1]):
         print(f"{count:5}  {reason}")
+    stale, _ = resolve_entries(dict(pages), cards, npc_ids, pictures)
+    if stale:
+        print(f"\n{len(stale)} entries' resolved pictures are out of date (run --resolve): {', '.join(stale[:10])}")
 
 
 def main():
@@ -266,11 +359,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--backfill", action="store_true", help="add the cards with no entry yet")
     parser.add_argument("--report", action="store_true", help="how each NPC card's picture would be chosen")
+    parser.add_argument("--resolve", action="store_true", help="write each NPC card's picture into its entry")
     args = parser.parse_args()
     if args.backfill:
         backfill()
     elif args.report:
         report()
+    elif args.resolve:
+        resolve()
     else:
         parser.print_help()
 

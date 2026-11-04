@@ -565,9 +565,12 @@ def fetch_images(cards, wiki, refresh):
                         continue
                     title, url, mime = hit[:3]
                     old = have.get(cid)
-                    if old and same_file(old["title"], title) and (IMG / old["file"]).exists():
-                        # (the picture it has after all: the chosen one is not on the wiki)
+                    name = pending[cid].get("name") or cid
+                    if old and same_file(old["title"], title) and (IMG / old["file"]).exists() and not refresh:
+                        # (the picture it has after all: the chosen one is not on the wiki, or the
+                        # card was renamed)
                         old["chosen"] = chosen.get(cid)
+                        old["name"] = name
                         missing.pop(cid, None)
                         pending.pop(cid)
                         continue
@@ -577,21 +580,19 @@ def fetch_images(cards, wiki, refresh):
                         write_images(images)
                         return images
                     suffix = ".gif" if "gif" in mime else (".jpg" if "jpeg" in mime else ".png")
-                    entry = {"file": cid + suffix, "title": title, "name": pending[cid].get("name") or cid}
+                    entry = {"file": cid + suffix, "title": title, "name": name}
                     if cid in chosen:
                         entry["chosen"] = chosen[cid]
-                    if old and old.get("file") not in (None, entry["file"]) and (IMG / old["file"]).exists():
-                        (IMG / old["file"]).unlink()        # (the picture it had, under another suffix)
                     if is_item:
                         RAW.mkdir(parents=True, exist_ok=True)
                         (RAW / (cid + suffix)).write_bytes(data)
                         entry["raw"] = cid + suffix
-                        have[cid] = entry
                         process_card(pending[cid], entry)
                     else:
                         IMG.mkdir(parents=True, exist_ok=True)
                         (IMG / (cid + suffix)).write_bytes(data)
-                        have[cid] = entry
+                    drop_old_pictures(old, entry)
+                    have[cid] = entry
                     missing.pop(cid, None)
                     pending.pop(cid)
                     saved += 1
@@ -601,6 +602,14 @@ def fetch_images(cards, wiki, refresh):
     write_images(images)
     print(f"{saved} pictures saved, {len(pending)} cards have none on the wiki")
     return images
+
+
+def drop_old_pictures(old, entry):
+    """Deletes the pictures a card had under another file name (another suffix), once the new
+    ones in `entry` are saved."""
+    for folder, key in ((IMG, "file"), (RAW, "raw")):
+        if old and old.get(key) and old[key] != entry.get(key):
+            (folder / old[key]).unlink(missing_ok=True)
 
 
 def process_card(card, entry):
@@ -733,10 +742,9 @@ def fetch_pets(cards, wiki, images):
             entry = {"file": card["id"] + suffix, "title": title, "name": card.get("name") or card["id"],
                      "raw": card["id"] + suffix, "pet": True}
             (RAW / entry["raw"]).write_bytes(data)
-            if old and old.get("file") and old["file"] != entry["file"] and (IMG / old["file"]).exists():
-                (IMG / old["file"]).unlink()
-            have[card["id"]] = entry
             process_card(card, entry)
+            drop_old_pictures(old, entry)
+            have[card["id"]] = entry
             images.get("missing", {}).pop(card["id"], None)
             none.pop(card["id"], None)
             got += 1
