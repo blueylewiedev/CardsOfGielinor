@@ -29,7 +29,9 @@ ItemFacts.SKILLS = { [0] = "attack", "defence", "strength", "constitution", "ran
     "summoning", "dungeoneering", "divination", "invention", "archaeology", "necromancy" }
 
 -- The level bands of the item rarity rules (CONTRIBUTING, "Guidelines for items").
-ItemFacts.LEVEL_BANDS = { { 90, "legendary" }, { 70, "epic" }, { 50, "rare" }, { 25, "uncommon" } }
+-- (a level gives epic at most: legendary comes from the price, the drop rate, pets and discontinued
+-- items, which this cannot know.)
+ItemFacts.LEVEL_BANDS = { { 90, "epic" }, { 70, "rare" }, { 40, "uncommon" } }
 
 function ItemFacts.levelRarity(level)
     for _, band in ipairs(ItemFacts.LEVEL_BANDS) do
