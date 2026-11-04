@@ -70973,7 +70973,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2704,
    "img": "img/ace.png",
-   "imgPage": "File:Ace.png"
+   "imgPage": "File:Ace (pet).png"
   },
   {
    "id": "gemi",
@@ -70997,7 +70997,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2705,
    "img": "img/gemi.png",
-   "imgPage": "File:Gemi.png"
+   "imgPage": "File:Gemi (pet).png"
   },
   {
    "id": "rocky",
@@ -71021,7 +71021,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2706,
    "img": "img/rocky.png",
-   "imgPage": "File:Rocky.png"
+   "imgPage": "File:Rocky (pet).png"
   },
   {
    "id": "smithy",
@@ -71045,7 +71045,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2707,
    "img": "img/smithy.png",
-   "imgPage": "File:Smithy.png"
+   "imgPage": "File:Smithy (pet).png"
   },
   {
    "id": "sifu",
@@ -71069,7 +71069,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2708,
    "img": "img/sifu.png",
-   "imgPage": "File:Sifu.png"
+   "imgPage": "File:Sifu (pet).png"
   },
   {
    "id": "rue",
@@ -71093,7 +71093,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2709,
    "img": "img/rue.png",
-   "imgPage": "File:Rue.png"
+   "imgPage": "File:Rue (pet).png"
   },
   {
    "id": "ramsay",
@@ -71117,7 +71117,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2710,
    "img": "img/ramsay.png",
-   "imgPage": "File:Ramsay.png"
+   "imgPage": "File:Ramsay (pet).png"
   },
   {
    "id": "ghostly",
@@ -71141,7 +71141,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2711,
    "img": "img/ghostly.png",
-   "imgPage": "File:Ghostly.png"
+   "imgPage": "File:Ghostly (pet).png"
   },
   {
    "id": "shamini",
@@ -71165,7 +71165,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2712,
    "img": "img/shamini.png",
-   "imgPage": "File:Shamini.png"
+   "imgPage": "File:Shamini (pet).png"
   },
   {
    "id": "archie",
@@ -71189,7 +71189,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2713,
    "img": "img/archie.png",
-   "imgPage": "File:Archie.png"
+   "imgPage": "File:Archie (pet).png"
   },
   {
    "id": "baby_yagas_house",
@@ -71212,7 +71212,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2714,
    "img": "img/baby_yagas_house.png",
-   "imgPage": "File:Baby Yaga's House.png"
+   "imgPage": "File:Baby Yaga's House (pet).png"
   },
   {
    "id": "bernie",
@@ -71235,7 +71235,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2715,
    "img": "img/bernie.png",
-   "imgPage": "File:Bernie.png"
+   "imgPage": "File:Bernie (pet).png"
   },
   {
    "id": "brains",
@@ -71259,7 +71259,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2716,
    "img": "img/brains.png",
-   "imgPage": "File:Brains.png"
+   "imgPage": "File:Brains (pet).png"
   },
   {
    "id": "bubbles",
@@ -71283,7 +71283,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2717,
    "img": "img/bubbles.png",
-   "imgPage": "File:Bubbles.png"
+   "imgPage": "File:Bubbles (pet).png"
   },
   {
    "id": "crabbe",
@@ -71307,7 +71307,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2718,
    "img": "img/crabbe.png",
-   "imgPage": "File:Crabbe.png"
+   "imgPage": "File:Crabbe (pet).png"
   },
   {
    "id": "flo",
@@ -71330,7 +71330,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2719,
    "img": "img/flo.png",
-   "imgPage": "File:Flo.png"
+   "imgPage": "File:Flo (pet).png"
   },
   {
    "id": "gordie",
@@ -71354,7 +71354,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2720,
    "img": "img/gordie.png",
-   "imgPage": "File:Gordie.png"
+   "imgPage": "File:Gordie (pet).png"
   },
   {
    "id": "herbert",
@@ -71378,7 +71378,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2721,
    "img": "img/herbert.png",
-   "imgPage": "File:Herbert.png"
+   "imgPage": "File:Herbert (pet).png"
   },
   {
    "id": "kangali",
@@ -71402,7 +71402,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2722,
    "img": "img/kangali.png",
-   "imgPage": "File:Kangali.png"
+   "imgPage": "File:Kangali (pet).png"
   },
   {
    "id": "malcolm",
@@ -71426,7 +71426,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2723,
    "img": "img/malcolm.png",
-   "imgPage": "File:Malcolm.png"
+   "imgPage": "File:Malcolm (pet).png"
   },
   {
    "id": "morty",
@@ -71450,7 +71450,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2724,
    "img": "img/morty.png",
-   "imgPage": "File:Morty.png"
+   "imgPage": "File:Morty (pet).png"
   },
   {
    "id": "newton",
@@ -71474,7 +71474,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2725,
    "img": "img/newton.png",
-   "imgPage": "File:Newton.png"
+   "imgPage": "File:Newton (pet).png"
   },
   {
    "id": "omen",
@@ -71498,7 +71498,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2726,
    "img": "img/omen.png",
-   "imgPage": "File:Omen.png"
+   "imgPage": "File:Omen (pet).png"
   },
   {
    "id": "ralph",
@@ -71522,7 +71522,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2727,
    "img": "img/ralph.png",
-   "imgPage": "File:Ralph.png"
+   "imgPage": "File:Ralph (pet).png"
   },
   {
    "id": "sparky",
@@ -71546,7 +71546,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2728,
    "img": "img/sparky.png",
-   "imgPage": "File:Sparky.png"
+   "imgPage": "File:Sparky (pet).png"
   },
   {
    "id": "wallace",
@@ -71570,7 +71570,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2729,
    "img": "img/wallace.png",
-   "imgPage": "File:Wallace.png"
+   "imgPage": "File:Wallace (pet).png"
   },
   {
    "id": "willow",
@@ -71592,7 +71592,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2730
+   "order": 2730,
+   "img": "img/willow.png",
+   "imgPage": "File:Willow (pet).png"
   },
   {
    "id": "woody",
@@ -71615,7 +71617,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2731,
    "img": "img/woody.png",
-   "imgPage": "File:Woody.png"
+   "imgPage": "File:Woody (pet).png"
   },
   {
    "id": "dojo_mojo",
@@ -71639,7 +71641,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2732,
    "img": "img/dojo_mojo.png",
-   "imgPage": "File:Dojo Mojo.png"
+   "imgPage": "File:Dojo Mojo (pet).png"
   },
   {
    "id": "golden_gnome",
