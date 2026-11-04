@@ -28,6 +28,12 @@ if not devLoaded then
     Dev = nil
 end
 
+-- The dev copy and a released copy of the plugin share one PersistentDB, so the dev copy keeps
+-- its collections under their own keys.
+if Dev ~= nil then
+    Storage.setProfileSuffix("-dev")
+end
+
 -- True while the development tools are in use (see applyDevTools below).
 local function devOn()
     return Dev ~= nil and Dev.active

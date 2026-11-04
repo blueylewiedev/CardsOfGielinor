@@ -11,11 +11,21 @@ local Storage = {}
 
 local DATA_VERSION = 3
 
+-- Added to the end of every key while the development tools are present (main.lua sets it).
+-- The dev copy of the plugin and a released copy on the same computer have the same plugin name,
+-- so they share one PersistentDB; the suffix gives each its own collections.
+local profileSuffix = ""
+
+function Storage.setProfileSuffix(suffix)
+    profileSuffix = suffix or ""
+end
+
 -- Builds the PersistentDB key for a character, e.g. "Some Name" -> "collection_some_name"
+-- (or "collection_some_name-dev" while the development tools are present)
 local function keyFor(characterName)
     local key = string.lower(characterName)
     key = string.gsub(key, "[^%w]", "_")
-    return "collection_" .. key
+    return "collection_" .. key .. profileSuffix
 end
 
 -- A fresh, empty collection.
