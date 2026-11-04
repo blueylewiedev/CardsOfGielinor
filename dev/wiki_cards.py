@@ -73,6 +73,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     cached in dev/wiki_cache/buckets/ (a bucket is only asked for once). Makes no
                     candidates and does not change the remembered categories. e.g.
                     python dev/wiki_cards.py --bucket Dropsline --bucket "Infobox seed"
+  --item-drops      where each item card drops and how often, from the wiki's dropsline bucket (the table
+                    a page's "Drop sources" shows, which is not in its text): for each item the most
+                    common and the rarest rate and how many lines. 40 items to a request (resumes if the
+                    request limit stops it), kept in dev/wiki_cache/buckets/dropsline_items.json and
+                    written reduced to dev/drop_items.json, which is committed. Asked for once;
+                    --refresh asks again. The item names come from docs/cards.json. Makes no candidates.
   --shops           what the wiki's shops sell, from its storeline bucket: for each item the cheapest
                     price in coins, how many shops sell it, whether any never runs out and whether
                     they are all members only. Read 5,000 rows to a request (resumes if the request
@@ -1220,16 +1226,34 @@ def seed_requirements(text, skill_words):
 GATHER_INFOBOXES = (("Infobox logs", "woodcutting"), ("Infobox Logs", "woodcutting"), ("Fishing info", "fishing"),
                     ("Mining info", "mining"), ("Infobox ore", "mining"), ("Infobox Ore", "mining"),
                     ("Infobox Dungeoneering ore", "mining"))
-HERB_CLEANING = re.compile(r"cleaned?,? requiring level (\d+) \[\[Herblore", re.I)
+# How a grimy herb's page words the level to grow it: "at level 50 Farming", "[[Farming]] level of 26",
+# "with 67 [[Farming]]", "requiring farming level 65" (the skill may be a link, or "Dungeoneering/Farming|Farming").
+_FARMING = r"(?:\[\[)?(?:[^\]|\[]+\|)?Farming(?:\]\])?"
+FARMING_LEVEL = (re.compile(r"level\s+(\d+)\s+" + _FARMING, re.I), re.compile(_FARMING + r"\s+level\s+of\s+(\d+)", re.I),
+                 re.compile(r"\bwith\s+(?:a\s+)?(\d+)\s+" + _FARMING, re.I), re.compile(r"\bfarming\s+level\s+(\d+)", re.I))
 
 
-def gather_requirements(text, skill_words):
+def farming_level(text):
+    """The Farming level to grow a herb, from the sentence of its page about planting, growing or
+    harvesting it, or None."""
+    for sentence in re.split(r"(?<=[.!?])\s+|\n", text or ""):
+        if re.search(r"seed|grown|harvest|plant", sentence, re.I):
+            for pattern in FARMING_LEVEL:
+                found = pattern.search(sentence)
+                if found:
+                    return int(found.group(1))
+    return None
+
+
+def gather_requirements(text, skill_words, categories=()):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
     the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
     beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
-    other skill in the text is something else), or "no Mining requirement", which is level 1. For a grimy herb it is the
-    level to clean it, "cleaned, requiring level 91 Herblore". ([], None) if none."""
+    other skill in the text is something else), or "no Mining requirement", which is level 1. For a
+    grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
+    not the Herblore level to clean it, which is a use. Only how an item is obtained counts, never what
+    it is used for (the Smithing level to smelt corrupted ore). ([], None) if none."""
     text = text or ""
     for name, skill in GATHER_INFOBOXES:
         _, inside = find_template(text, [name])
@@ -1246,9 +1270,10 @@ def gather_requirements(text, skill_words):
                 levels = [1]
         if levels:
             return [skill], min(levels)
-    cleaned = HERB_CLEANING.search(text)
-    if cleaned and "herblore" in skill_words:
-        return ["herblore"], int(cleaned.group(1))
+    if "Herbs" in categories and "farming" in skill_words:
+        level = farming_level(text)
+        if level is not None:
+            return ["farming"], level
     return [], None
 
 
@@ -1440,6 +1465,112 @@ def fetch_shops(wiki, refresh):
     return state["items"]
 
 
+DROP_ITEMS = ROOT / "dev" / "drop_items.json"      # where items drop and how often, reduced (committed)
+SITE_CARDS = ROOT / "docs" / "cards.json"          # the deck as the site has it: the item names to ask about
+DROP_BATCH = 40                                    # item names asked for in one request of the dropsline bucket
+DROPLINE_ROWS = 5000                               # rows of it a request returns at most
+RATE = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*/\s*(\d[\d,]*(?:\.\d+)?)")
+
+
+def rarity_ns(text):
+    """The N (1 in N) of every rate in a dropsline's "Rarity": "Always" is 1, "1/9.72" is 9.72, a range
+    ("1/30.7-1/28.9") gives both ends, "5%" is 20. A name ("Rare", "Varies") gives none."""
+    text = plain(str(text or ""))
+    if re.fullmatch(r"\s*always\s*", text, re.I):
+        return [1.0]
+    ns = []
+    for top, bottom in RATE.findall(text):
+        try:
+            ns.append(float(bottom.replace(",", "")) / float(top.replace(",", "")))
+        except (ValueError, ZeroDivisionError):
+            pass
+    ns += [100 / float(p) for p in re.findall(r"(\d+(?:\.\d+)?)\s*%", text) if float(p) > 0]
+    return ns
+
+
+def fold_dropline(items, row):
+    """Adds one row of the dropsline bucket (one source of one item) to `items`: { item name in lower
+    case: {"common": the most common rate's N, "rarest": the rarest rate's N, "sources": how many lines} }."""
+    name = plain(str(row.get("item_name") or "")).lower()
+    try:
+        line = json.loads(row.get("drop_json") or "{}")
+    except ValueError:
+        return
+    ns = rarity_ns(line.get("Rarity"))
+    item = items.setdefault(name, {"common": None, "rarest": None, "sources": 0})
+    item["sources"] += 1
+    if ns:
+        low, high = round(min(ns), 1), round(max(ns), 1)
+        item["common"] = low if item["common"] is None else min(item["common"], low)
+        item["rarest"] = high if item["rarest"] is None else max(item["rarest"], high)
+
+
+def write_drop_items(items):
+    """dev/drop_items.json, one item to a line in name order (a whole number written as one)."""
+    def tidy(item):
+        return {k: (int(v) if isinstance(v, float) and v == int(v) else v) for k, v in item.items()}
+    lines = [f"  {json.dumps(name, ensure_ascii=False)}: {json.dumps(tidy(items[name]))}" for name in sorted(items)]
+    DROP_ITEMS.write_bytes(("{\n" + ",\n".join(lines) + "\n}\n").encode("utf-8"))
+
+
+def fetch_item_drops(wiki, names, refresh):
+    """Where each of these items drops and how often, from the dropsline bucket (the table the wiki's
+    "Drop sources" shows on an item's page, which is not in the page's text), `DROP_BATCH` names to a
+    request and more requests for a batch with more than `DROPLINE_ROWS` rows. Each row is folded into
+    its item and dropped (see fold_dropline). The work so far is kept in
+    dev/wiki_cache/buckets/dropsline_items.json (the names done, so a run the request limit stops
+    carries on), and a finished read is written to dev/drop_items.json. Returns (the items, done)."""
+    state = None if refresh else read_cache("buckets", "dropsline_items")
+    if state is None:
+        state = {"asked": [], "items": {}}
+    asked = set(state["asked"])
+    todo = [name for name in names if name not in asked]
+    print(f"{len(names)} items, {len(todo)} still to ask about")
+    for start in range(0, len(todo), DROP_BATCH):
+        batch = todo[start:start + DROP_BATCH]
+        either = ", ".join("{'item_name', " + json.dumps(name, ensure_ascii=False) + "}" for name in batch)
+        found, offset = {}, 0
+        while True:
+            answer = wiki.get({"action": "bucket", "query": (
+                f"bucket('dropsline').select('item_name', 'drop_json').where(bucket.Or({either}))"
+                f".limit({DROPLINE_ROWS}).offset({offset}).run()")})
+            if answer is None:
+                print("request limit reached: run again to carry on")
+                return state["items"], False
+            rows = answer.get("bucket", [])
+            for row in rows:
+                fold_dropline(found, row)
+            offset += len(rows)
+            if len(rows) < DROPLINE_ROWS:
+                break
+        state["items"].update(found)
+        state["asked"] += batch
+        write_cache("buckets", "dropsline_items", state)
+        print(f"  {len(state['asked'])} of {len(names)} items asked, {len(state['items'])} with a source")
+    write_drop_items(state["items"])
+    return state["items"], True
+
+
+_drop_items = None
+
+
+def drop_items():
+    """Where items drop (dev/drop_items.json, see fetch_item_drops), by item name in lower case; read once."""
+    global _drop_items
+    if _drop_items is None:
+        _drop_items = json.loads(DROP_ITEMS.read_text(encoding="utf-8")) if DROP_ITEMS.exists() else {}
+    return _drop_items
+
+
+def common_drop(name, drops=None):
+    """N for an item's most common drop rate: from every source the wiki lists (dev/drop_items.json), else
+    from the monster pages read (`drops`, dev/wiki_cache/drops.json). None if neither knows one."""
+    item = drop_items().get(name.lower())
+    if item and item.get("common"):
+        return item["common"]
+    return (drops or {}).get(name.lower())
+
+
 GEP_BATCH = 25       # prices asked for in one request
 GEP_MARK = "@@"      # put round each answer so they can be told apart
 
@@ -1593,7 +1724,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # Banana tree seed has one that names Farming and no level)
     if grown_with and (not made_with or level is None):
         made_with, level = list(made_with) + [w for w in grown_with if w not in made_with], grown_level
-    gathered_with, gathered_level = gather_requirements(page.get("text", ""), set(words["skills"]))
+    gathered_with, gathered_level = gather_requirements(page.get("text", ""), set(words["skills"]),
+                                                        page.get("categories", []))
     if gathered_with and (not made_with or level is None):
         made_with, level = list(made_with) + [w for w in gathered_with if w not in made_with], gathered_level
     skills = list(made_with) + [w for w in worn_with if w not in made_with]
@@ -2713,11 +2845,19 @@ def main():
     parser.add_argument("--subcategories", action="append", default=[])
     parser.add_argument("--bucket", action="append", default=[])
     parser.add_argument("--shops", action="store_true")
+    parser.add_argument("--item-drops", action="store_true")
     args = parser.parse_args()
     if args.subcategories:
         return show_subcategories(args)
     if args.bucket:
         return show_buckets(args)
+    if args.item_drops:
+        wiki = make_wiki(args)
+        cards = json.loads(SITE_CARDS.read_text(encoding="utf-8"))["cards"]
+        names = sorted({card["name"] for card in cards if card["kind"] == "item"})
+        items, done = fetch_item_drops(wiki, names, args.refresh)
+        print(f"{len(items)} items with a source{'' if done else ' so far'}; {args.max_requests - wiki.left} requests made")
+        return 0
     if args.shops:
         wiki = make_wiki(args)
         items = fetch_shops(wiki, args.refresh)
@@ -2856,7 +2996,7 @@ def main():
         if page is None:
             continue
         made, reason = candidate(page, names, words, prices.get(price_names.get(title)),
-                                drops.get((pages[title].get('title') or title).lower()))
+                                common_drop(pages[title].get('title') or title, drops))
         if made is not None:
             made["sources"] = candidate_sources(made, sources[title], filters, words)
             if not made["sources"]:

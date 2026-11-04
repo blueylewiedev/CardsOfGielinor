@@ -462,10 +462,14 @@ discontinued items, and lists what it used in the notes.
 - **Level:** from the Recipe infobox (only recipes that make the item; the easiest one if there are
   several) and, for gear, from the Bonuses box's wear requirement. The highest wins. An item no recipe makes
   gets the level to plant it (a seed), to gather it (the logs, fishing and ore infoboxes; an ore's infobox
-  only names its rock, so the sentence "requires level 90 Mining" beside it is read) or to clean it (a grimy
-  herb). The skills they name go in the `skills` tag.
+  only names its rock, so the sentence "requires level 90 Mining" beside it is read) or to grow it (a grimy
+  herb: its Farming level). Only how an item is **obtained** counts, never what it is used for: the Smithing
+  level to smelt corrupted ore, or the Herblore level to clean a herb, is not read. The skills they name go
+  in the `skills` tag.
 - **Price:** the wiki's own Grand Exchange price (`{{GEP}}`).
-- **Drop rate:** the wiki's item pages do not list it, so give the tool the monster pages with
+- **Drop rate:** the table of drop sources on an item's page is not in the page's text, so
+  `python dev/wiki_cards.py --item-drops` reads it from the wiki's dropsline bucket for every item card (the most
+  common and the rarest rate of each, kept in `dev/drop_items.json`). Without that, give the tool the monster pages with
   `--drops "Kree'arra"`. It keeps the most common rate it has read for each item (`dev/wiki_cache/drops.json`)
   and uses it for any item that drops there. An item that drops from a page you have not given it has
   no drop rate, so check those by hand.
