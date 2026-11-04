@@ -1227,8 +1227,8 @@ def gather_requirements(text, skill_words):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
     the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
-    beside it: "requires level 90 [[Mining]]" (the same skill; any other skill in the text is
-    something else), or "no [[Mining]] requirement", which is level 1. For a grimy herb it is the
+    beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
+    other skill in the text is something else), or "no Mining requirement", which is level 1. For a grimy herb it is the
     level to clean it, "cleaned, requiring level 91 Herblore". ([], None) if none."""
     text = text or ""
     for name, skill in GATHER_INFOBOXES:
@@ -1238,11 +1238,11 @@ def gather_requirements(text, skill_words):
         levels = [int(m.group()) for key, value in template_fields(inside).items()
                   if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m]
         if not levels:
-            said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+\[\[" + skill
-                             + r"(?:\|[^\]]*)?\]\]", text, re.I)
+            said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?" + skill
+                             + r"\b", text, re.I)
             if said:
                 levels = [int(said.group(1))]
-            elif re.search(r"\bno\s+\[\[" + skill + r"\]\]\s+requirement", text, re.I):
+            elif re.search(r"\bno\s+(?:\[\[)?" + skill + r"(?:\]\])?\s+requirement", text, re.I):
                 levels = [1]
         if levels:
             return [skill], min(levels)
