@@ -9,6 +9,10 @@
                       location: "Location", membership: "Membership", pack: "Pack" };
   var MEMBERSHIP = { f2p: "Free to play", p2p: "Members" };
   var KINDS = [["", "All"], ["npc", "NPCs"], ["item", "Items"]];
+  // The card pictures are published from their own repository (CardsOfGielinor-Images, served by GitHub
+  // Pages), not from this one. Opened from a file or from localhost the local docs/img folder is used.
+  var IMAGE_BASE = (location.hostname === "" || location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? "img/" : "https://blueylewiedev.github.io/CardsOfGielinor-Images/";
 
   var data, cards, byId = {}, rarityIndex = {}, rarityById = {}, packName = {}, packIds = {};
   var state, results = [], shown = 0, openId = null;
@@ -202,7 +206,7 @@
     var r = rarityById[c.rarity] || { name: c.rarity, colour: "#9aa0a6" };
     var art = el("div", { class: "c-art" }, []);
     if (c.img) {
-      var img = el("img", { src: c.img, alt: "", loading: "lazy", decoding: "async" });
+      var img = el("img", { src: IMAGE_BASE + c.img.replace(/^img\//, ""), alt: "", loading: "lazy", decoding: "async" });
       img.addEventListener("error", function () { art.textContent = ""; art.appendChild(placeholder(c)); art.appendChild(el("span", { class: "c-kind", text: c.kind })); });
       art.appendChild(img);
     } else { art.appendChild(placeholder(c)); }
