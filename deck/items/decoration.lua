@@ -2,7 +2,7 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "big_bass", name = "Big bass", kind = "item", rarity = "epic",
+        id = "big_bass", name = "Big bass", kind = "item", rarity = "uncommon",
         desc = "Whopper! I should get this stuffed!",
         art = { item = "POH_TROPHYDROP_BASS", cam = { dist = 345, fov = 70 } },
         tags = { skills = { "fishing" }, category = { "decoration" }, membership = { "p2p" } },

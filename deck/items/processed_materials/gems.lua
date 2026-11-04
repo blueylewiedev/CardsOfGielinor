@@ -8,7 +8,7 @@ Set.cards = {
         tags = { skills = { "invention", "crafting" }, category = { "processed_material", "gem" }, membership = { "p2p" } },
     },
     {
-        id = "alchemical_onyx", name = "Alchemical onyx", kind = "item", rarity = "legendary",
+        id = "alchemical_onyx", name = "Alchemical onyx", kind = "item", rarity = "epic",
         desc = "An Onyx, charged with energy and materials, outshining a regular Onyx.",
         art = { item = "INVENT_ALCHEMICAL_ONYX", cam = { yaw = -0.40, pitch = 1.20, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "invention", "crafting" }, category = { "processed_material", "gem" }, membership = { "p2p" } },
@@ -26,13 +26,13 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "dragonstone", name = "Dragonstone", kind = "item", rarity = "rare",
+        id = "dragonstone", name = "Dragonstone", kind = "item", rarity = "uncommon",
         desc = "This looks valuable.",
         art = { item = "DRAGONSTONE", cam = { yaw = -0.40, pitch = 1.20, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "p2p" } },
     },
     {
-        id = "emerald", name = "Emerald", kind = "item", rarity = "uncommon",
+        id = "emerald", name = "Emerald", kind = "item", rarity = "common",
         desc = "This looks valuable.",
         art = { item = "EMERALD", cam = { yaw = -0.40, pitch = 1.20, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "f2p" } },
@@ -56,7 +56,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "moonstone", name = "Moonstone", kind = "item", rarity = "epic",
+        id = "moonstone", name = "Moonstone", kind = "item", rarity = "uncommon",
         desc = "I don't think gold is gonna cut it with this one.",
         art = { item = "MOONSTONE", cam = { yaw = 0.20, pitch = 1.20, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "p2p" } },
@@ -80,7 +80,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "ruby", name = "Ruby", kind = "item", rarity = "uncommon",
+        id = "ruby", name = "Ruby", kind = "item", rarity = "common",
         desc = "This looks valuable.",
         art = { item = "RUBY", cam = { yaw = -0.40, pitch = 1.20, dist = 525, fov = 30, ty = 20 } },
         tags = { skills = { "crafting" }, category = { "processed_material", "gem" }, membership = { "f2p" } },

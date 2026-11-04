@@ -2,7 +2,7 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "alchemical_hydrix_dust", name = "Alchemical hydrix dust", kind = "item", rarity = "legendary",
+        id = "alchemical_hydrix_dust", name = "Alchemical hydrix dust", kind = "item", rarity = "epic",
         desc = "Fine dust of an alchemical hydrix gem.",
         art = { item = "INVENT_ALCHEMICAL_HYDRIX_DUST", cam = { yaw = 1.20, pitch = 1.05, fov = 40, tx = 10 } },
         tags = { skills = { "crafting" }, category = { "consumable" }, membership = { "p2p" } },

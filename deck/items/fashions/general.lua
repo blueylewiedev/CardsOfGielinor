@@ -98,7 +98,7 @@ Set.cards = {
         tags = { category = { "weapon", "melee_gear", "whip", "quest_item", "fashion" }, membership = { "f2p" } },
     },
     {
-        id = "full_easter_basket", name = "Full Easter basket", kind = "item", rarity = "epic",
+        id = "full_easter_basket", name = "Full Easter basket", kind = "item", rarity = "legendary",
         desc = "An Easter basket full with eggs.",
         art = { item = "EASTER23_EGG_BASKET_FULL", cam = { yaw = -7.20, pitch = 0.75, dist = 397, fov = 35, ty = 60 } },
         tags = { category = { "fashion", "weapon", "discontinued" }, membership = { "f2p" } },
@@ -110,7 +110,7 @@ Set.cards = {
         tags = { regions = { "morytania" }, category = { "minigame", "fashion" }, membership = { "p2p" } },
     },
     {
-        id = "royal_sceptre", name = "Royal sceptre", kind = "item", rarity = "uncommon",
+        id = "royal_sceptre", name = "Royal sceptre", kind = "item", rarity = "epic",
         desc = "The sceptre of royalty!",
         art = { item = "II_ROYAL_SCEPTRE", cam = { yaw = -6.49, pitch = 0.80, dist = 578, fov = 35, ty = 4, tx = 22 } },
         tags = { category = { "weapon", "melee_gear", "mace", "fashion" }, membership = { "p2p" } },
