@@ -1505,7 +1505,9 @@ def historical_source(name):
 
 def dropline_kept(row):
     """The part of a dropline row worth keeping: (item name in lower case, [source, rarity, kinds, levels]),
-    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level"."""
+    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level". The
+    rarity is the line's "Rarity" followed by its alternative rates ("Alt Rarities": the Camel staff's
+    1/10,000 is 1/1,940 on a Slayer task, shown as the range 1/10,000-1/1,940), all of which count."""
     name = plain(str(row.get("item_name") or "")).lower()
     try:
         line = json.loads(row.get("drop_json") or "{}")
@@ -1513,7 +1515,13 @@ def dropline_kept(row):
         return None
     if not name:
         return None
-    return name, [str(row.get("page_name") or ""), str(line.get("Rarity") or ""), line.get("Drop type"), line.get("Drop level")]
+    rarity = str(line.get("Rarity") or "")
+    alternatives = [str(a.get("text") or "") for a in line.get("Alt Rarities") or [] if isinstance(a, dict)]
+    if not alternatives and line.get("Alt Rarity"):
+        alternatives = [str(line["Alt Rarity"])]
+    if alternatives and not re.fullmatch(r"\s*always\s*", rarity, re.I):
+        rarity = " ".join([rarity] + alternatives)
+    return name, [str(row.get("page_name") or ""), rarity, line.get("Drop type"), line.get("Drop level")]
 
 
 # Kinds of source that hand an item over indirectly: a reward, a shop's stock, a Squeal of Fortune or
