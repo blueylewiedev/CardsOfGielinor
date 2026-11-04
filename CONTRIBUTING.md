@@ -86,8 +86,11 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    queued card to the end of its deck file. If the card can't be queued, a line under the buttons
    says why and the candidate stays on the list. The script only reads the database; what it has
    done is kept in `dev/.card_queue_state.json`. A new location or NPC category word on an added
-   card goes into `core/cards.lua` too; any other unlisted word is only reported. Check the result
-   with `lua dev/check_cards.lua`. Commands (`DB` is the client's `PluginData.db`):
+   card goes into `core/cards.lua` too; any other unlisted word is only reported. The wiki page
+   each added card came from goes into `dev/wiki_pages.json`, which the card site uses to pick the
+   picture of the card's own NPC version (see `dev/wiki_pages.py`; give an entry an `"image"` to
+   override it). Check the result with `lua dev/check_cards.lua`. Commands (`DB` is the client's
+   `PluginData.db`):
 
    ```
    python dev/card_queue.py --db DB                   keep watching, adding each card as it is queued

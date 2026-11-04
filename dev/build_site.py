@@ -15,7 +15,10 @@ Python 3. Drafts (cards whose art is still empty) are left out, as they are in t
 rarity colours and each themed pack's cards come from core/cards.lua and deck/packs.lua.
 
 PICTURES. The site shows the wiki's picture of the item (File:<name> detail.png) or the NPC
-(File:<name>.png, then <name> chathead.png), saved on your own computer in docs/img/ (not committed:
+(File:<name>.png, then <name> chathead.png). A card in dev/wiki_pages.json gets the picture its
+page shows for the card's own NPC first (see dev/wiki_pages.py: Zanik with her crossbow, The Spirit
+of Rhythm at its drums), and a picture saved before that is looked up again. The pictures are
+saved on your own computer in docs/img/ (not committed:
 it is big and changes on every rebuild, see dev/HANDOVER_site_pictures.md), so visitors never load
 anything from the wiki once that folder is published. They are
 asked for the way dev/wiki_cards.py asks for pages: a User-Agent with a way to contact you (--contact,
@@ -430,13 +433,31 @@ def lookup_item_images(cards, wiki, images):
     ITEM_IMAGES.write_text(json.dumps(known, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-def file_candidates(card):
-    """The file names to try for a card's picture, best first."""
+def picture_choices(cards):
+    """{ card id: wiki_pages.Choice } for the cards in dev/wiki_pages.json (see dev/wiki_pages.py)."""
+    import wiki_pages
+    from npc_looks import npc_ids
+    return wiki_pages.choices(cards, wiki_pages.load(), npc_ids())
+
+
+def same_file(a, b):
+    """Whether two wiki file titles name the same file ("File:A_b.png", "File:A b.png")."""
+    from wiki_pages import file_title
+    return file_title(a) is not None and file_title(a) == file_title(b)
+
+
+def file_candidates(card, choice=None):
+    """The file names to try for a card's picture, best first: the one chosen from its wiki page
+    (see picture_choices), then the ones named as the card (or its page), with the page's first
+    picture before the chatheads."""
     name = card.get("name") or card["id"]
     bases = [name]
     plain = re.sub(r"\s*\([^)]*\)$", "", name).strip()
     if plain and plain != name:
         bases.append(plain)
+    if choice and choice.page.lower() not in (b.lower() for b in bases):
+        bases.append(choice.page)
+    first = [choice.file.removeprefix("File:")] if choice and choice.file else []
     if (card.get("kind") or "npc") == "item":
         bases += [s for b in list(bases) for s in spellings(b) if s not in bases]
         files = [f"{b} detail.png" for b in bases]
@@ -445,8 +466,11 @@ def file_candidates(card):
         for title in item_images().get(name, []):
             base = re.sub(r"^File:|\.(png|gif|jpg)$", "", title)
             files += [f for f in (f"{base} detail.png", f"{base}.png") if f not in files]
-        return files
-    return [f"{b}.png" for b in bases] + [f"{b} chathead.png" for b in bases]
+    else:
+        # (the page's own picture before the chatheads: it is the whole NPC)
+        default = [choice.default.removeprefix("File:")] if choice and choice.default else []
+        files = [f"{b}.png" for b in bases] + default + [f"{b} chathead.png" for b in bases]
+    return list(dict.fromkeys(first + files))
 
 
 def download(wiki, url):
@@ -497,22 +521,31 @@ def fetch_images(cards, wiki, refresh):
     images = read_images()
     have, missing = images.setdefault("cards", {}), images.setdefault("missing", {})
     lookup_item_images(cards, wiki, images)
-    todo = []
+    choices = picture_choices(cards)
+    chosen = {cid: choice.file for cid, choice in choices.items() if choice.file}
+    todo, tries = [], {}
     for card in cards:
         name = card.get("name") or card["id"]
         done = have.get(card["id"])
-        if done and done.get("name") == name and (IMG / done["file"]).exists() and not refresh:
+        want = chosen.get(card["id"])
+        # (a picture saved before its page chose another is looked up again, unless that choice was
+        # tried then and the wiki hadn't got it; not a pet's from --pets)
+        if done and done.get("name") == name and (IMG / done["file"]).exists() and not refresh \
+                and (want is None or done.get("pet") or done.get("chosen") == want or same_file(done["title"], want)):
             continue
+        tries[card["id"]] = file_candidates(card, choices.get(card["id"]))
         tried = missing.get(card["id"], {})
-        if tried.get("name") == name and not refresh and set(file_candidates(card)) <= set(tried.get("tried", [])):
+        if tried.get("name") == name and not refresh and set(tries[card["id"]]) <= set(tried.get("tried", [])):
             continue
         todo.append(card)
     print(f"{len(cards)} cards, {len(cards) - len(todo)} with a picture or known to have none, {len(todo)} to look up")
     pending = {card["id"]: card for card in todo}
+    for cid in sorted(pending):
+        if cid in choices and choices[cid].reason == "scenery":
+            print(f"  {cid}: {choices[cid].file} ({choices[cid].how})")
     kinds = {card["id"]: card.get("kind") or "npc" for card in todo}
     saved = 0
-    tries = {card["id"]: file_candidates(card) for card in todo}
-    for round_number in range(max((len(t) for t in tries.values()), default=0)):
+    for round_number in range(max((len(tries[cid]) for cid in pending), default=0)):
         asking = [(cid, tries[cid][round_number]) for cid in pending if round_number < len(tries[cid])]
         if not asking:
             break
@@ -531,6 +564,13 @@ def fetch_images(cards, wiki, refresh):
                     if not hit or cid not in pending:
                         continue
                     title, url, mime = hit[:3]
+                    old = have.get(cid)
+                    if old and same_file(old["title"], title) and (IMG / old["file"]).exists():
+                        # (the picture it has after all: the chosen one is not on the wiki)
+                        old["chosen"] = chosen.get(cid)
+                        missing.pop(cid, None)
+                        pending.pop(cid)
+                        continue
                     data = download(wiki, url)
                     if data is None:
                         print("request limit reached: run again to carry on")
@@ -538,6 +578,10 @@ def fetch_images(cards, wiki, refresh):
                         return images
                     suffix = ".gif" if "gif" in mime else (".jpg" if "jpeg" in mime else ".png")
                     entry = {"file": cid + suffix, "title": title, "name": pending[cid].get("name") or cid}
+                    if cid in chosen:
+                        entry["chosen"] = chosen[cid]
+                    if old and old.get("file") not in (None, entry["file"]) and (IMG / old["file"]).exists():
+                        (IMG / old["file"]).unlink()        # (the picture it had, under another suffix)
                     if is_item:
                         RAW.mkdir(parents=True, exist_ok=True)
                         (RAW / (cid + suffix)).write_bytes(data)
