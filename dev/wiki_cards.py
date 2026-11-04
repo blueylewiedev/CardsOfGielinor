@@ -76,7 +76,7 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
   --item-drops      where each item card drops and how often, from the wiki's dropsline bucket (the table
                     a page's "Drop sources" shows, which is not in its text): for each item the most
                     common and the rarest rate and how many lines. 40 items to a request (resumes if the
-                    request limit stops it), kept in dev/wiki_cache/buckets/dropsline_items.json and
+                    request limit stops it), kept in dev/wiki_cache/buckets/dropsline_rows.json and
                     written reduced to dev/drop_items.json, which is committed. Asked for once;
                     --refresh asks again. The item names come from docs/cards.json. Makes no candidates.
   --shops           what the wiki's shops sell, from its storeline bucket: for each item the cheapest
@@ -1488,21 +1488,56 @@ def rarity_ns(text):
     return ns
 
 
-def fold_dropline(items, row):
-    """Adds one row of the dropsline bucket (one source of one item) to `items`: { item name in lower
-    case: {"common": the most common rate's N, "rarest": the rarest rate's N, "sources": how many lines} }."""
+def historical_source(name):
+    """Whether a dropline's source is one the wiki hides by default ("WildyWyrm (2011, historical)")."""
+    return bool(re.search(r"historical|non-permanent", name or "", re.I))
+
+
+def dropline_kept(row):
+    """The part of a dropline row worth keeping: (item name in lower case, [source, rarity, kinds, levels]),
+    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level"."""
     name = plain(str(row.get("item_name") or "")).lower()
     try:
         line = json.loads(row.get("drop_json") or "{}")
     except ValueError:
-        return
-    ns = rarity_ns(line.get("Rarity"))
-    item = items.setdefault(name, {"common": None, "rarest": None, "sources": 0})
-    item["sources"] += 1
-    if ns:
-        low, high = round(min(ns), 1), round(max(ns), 1)
-        item["common"] = low if item["common"] is None else min(item["common"], low)
-        item["rarest"] = high if item["rarest"] is None else max(item["rarest"], high)
+        return None
+    if not name:
+        return None
+    return name, [str(row.get("page_name") or ""), str(line.get("Rarity") or ""), line.get("Drop type"), line.get("Drop level")]
+
+
+# Kinds of source that hand an item over indirectly: a reward, a shop's stock, a Squeal of Fortune or
+# Treasure Hunter prize, a search. A chest that gives 1,497 in 1,500 says nothing about how hard the item is
+# to get, so these are left out.
+INDIRECT_KINDS = {"reward", "store", "sof", "th", "search"}
+
+
+def reduce_drops(rows):
+    """{ item name in lower case: {"common": the most common rate's N, "rarest": the rarest rate's N,
+    "sources": how many lines, "levels": the lowest level any source asks, by kind} } from the lines
+    kept for each item (dropline_kept). Sources the wiki hides (historical_source) and indirect ones
+    (INDIRECT_KINDS) are left out. A line's
+    "Drop level" is a list of levels for each kind in its "Drop type": [[85], [65]] with ["combat",
+    "slayer"] is a monster of combat level 85 that needs Slayer 65 to kill."""
+    items = {}
+    for name, lines in rows.items():
+        for source, rarity, kinds, groups in lines:
+            if historical_source(source) or (isinstance(kinds, list) and kinds and set(kinds) <= INDIRECT_KINDS):
+                continue
+            item = items.setdefault(name, {"common": None, "rarest": None, "sources": 0})
+            item["sources"] += 1
+            ns = rarity_ns(rarity)
+            if ns:
+                low, high = round(min(ns), 1), round(max(ns), 1)
+                item["common"] = low if item["common"] is None else min(item["common"], low)
+                item["rarest"] = high if item["rarest"] is None else max(item["rarest"], high)
+            if isinstance(kinds, list) and isinstance(groups, list):
+                for kind, group in zip(kinds, groups):
+                    numbers = [n for n in (group if isinstance(group, list) else [group]) if isinstance(n, (int, float))]
+                    if numbers and isinstance(kind, str):
+                        levels = item.setdefault("levels", {})
+                        levels[kind] = min(levels.get(kind, min(numbers)), min(numbers))
+    return items
 
 
 def write_drop_items(items):
@@ -1516,13 +1551,14 @@ def write_drop_items(items):
 def fetch_item_drops(wiki, names, refresh):
     """Where each of these items drops and how often, from the dropsline bucket (the table the wiki's
     "Drop sources" shows on an item's page, which is not in the page's text), `DROP_BATCH` names to a
-    request and more requests for a batch with more than `DROPLINE_ROWS` rows. Each row is folded into
-    its item and dropped (see fold_dropline). The work so far is kept in
-    dev/wiki_cache/buckets/dropsline_items.json (the names done, so a run the request limit stops
-    carries on), and a finished read is written to dev/drop_items.json. Returns (the items, done)."""
-    state = None if refresh else read_cache("buckets", "dropsline_items")
+    request and more requests for a batch with more than `DROPLINE_ROWS` rows. The lines worth keeping
+    (dropline_kept: source, rate, kinds and levels) are in dev/wiki_cache/buckets/dropsline_rows.json,
+    with the names done, so a run the request limit stops carries on, and a rule about what to keep
+    or count (reduce_drops) can change without asking again. The reduced result is written to
+    dev/drop_items.json. Returns (the items, whether every name was asked)."""
+    state = None if refresh else read_cache("buckets", "dropsline_rows")
     if state is None:
-        state = {"asked": [], "items": {}}
+        state = {"asked": [], "rows": {}}
     asked = set(state["asked"])
     todo = [name for name in names if name not in asked]
     print(f"{len(names)} items, {len(todo)} still to ask about")
@@ -1532,23 +1568,26 @@ def fetch_item_drops(wiki, names, refresh):
         found, offset = {}, 0
         while True:
             answer = wiki.get({"action": "bucket", "query": (
-                f"bucket('dropsline').select('item_name', 'drop_json').where(bucket.Or({either}))"
+                f"bucket('dropsline').select('item_name', 'page_name', 'drop_json').where(bucket.Or({either}))"
                 f".limit({DROPLINE_ROWS}).offset({offset}).run()")})
             if answer is None:
                 print("request limit reached: run again to carry on")
-                return state["items"], False
+                return reduce_drops(state["rows"]), False
             rows = answer.get("bucket", [])
             for row in rows:
-                fold_dropline(found, row)
+                kept = dropline_kept(row)
+                if kept:
+                    found.setdefault(kept[0], []).append(kept[1])
             offset += len(rows)
             if len(rows) < DROPLINE_ROWS:
                 break
-        state["items"].update(found)
+        state["rows"].update(found)
         state["asked"] += batch
-        write_cache("buckets", "dropsline_items", state)
-        print(f"  {len(state['asked'])} of {len(names)} items asked, {len(state['items'])} with a source")
-    write_drop_items(state["items"])
-    return state["items"], True
+        write_cache("buckets", "dropsline_rows", state)
+        print(f"  {len(state['asked'])} of {len(names)} items asked, {len(state['rows'])} with a source")
+    items = reduce_drops(state["rows"])
+    write_drop_items(items)
+    return items, True
 
 
 _drop_items = None
