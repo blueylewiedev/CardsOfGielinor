@@ -20,12 +20,22 @@ function Storage.setProfileSuffix(suffix)
     profileSuffix = suffix or ""
 end
 
--- Builds the PersistentDB key for a character, e.g. "Some Name" -> "collection_some_name"
--- (or "collection_some_name-dev" while the development tools are present)
-local function keyFor(characterName)
-    local key = string.lower(characterName)
-    key = string.gsub(key, "[^%w]", "_")
-    return "collection_" .. key .. profileSuffix
+-- Lower-cases text and swaps anything but letters and digits for "_", so it is safe in a key.
+local function clean(text)
+    local key = string.gsub(string.lower(tostring(text)), "[^%w]", "_")
+    return key
+end
+
+-- PersistentDB key for a collection kept under a character's name,
+-- e.g. "Some Name" -> "collection_some_name" (plus the profile suffix, see above).
+function Storage.keyForName(characterName)
+    return "collection_" .. clean(characterName) .. profileSuffix
+end
+
+-- PersistentDB key for a collection kept under a character's tracking id. The different
+-- prefix means no character name can ever produce the same key.
+function Storage.keyForTracking(trackingId)
+    return "tracking_" .. clean(trackingId) .. profileSuffix
 end
 
 -- A fresh, empty collection.
@@ -67,11 +77,12 @@ local function loadCounts(saved)
     return counts
 end
 
--- Reads a character's collection, or returns a fresh one if nothing was saved yet.
+-- Reads the collection stored under a key (see keyForName / keyForTracking), or returns a
+-- fresh one if nothing was saved yet.
 -- Values are checked and rounded so a damaged or hand-edited entry cannot crash the plugin.
-function Storage.load(characterName)
+function Storage.load(key)
     local state = Storage.newState()
-    local saved = PersistentDB:GetStructuredData(keyFor(characterName))
+    local saved = PersistentDB:GetStructuredData(key)
     if saved == nil then
         return state
     end
@@ -127,9 +138,9 @@ function Storage.load(characterName)
     return state
 end
 
--- Writes a character's collection. Returns true if it was saved.
-function Storage.save(characterName, state)
-    local ok = PersistentDB:SetStructuredData(keyFor(characterName), {
+-- Writes the collection under a key. Returns true if it was saved.
+function Storage.save(key, state)
+    local ok = PersistentDB:SetStructuredData(key, {
         version = state.version,
         credits = state.credits,
         xpPool = state.xpPool,
@@ -138,7 +149,7 @@ function Storage.save(characterName, state)
         stats = state.stats,
     })
     if not ok then
-        log("save FAILED for", characterName)
+        log("save FAILED for", key)
     end
     return ok
 end
