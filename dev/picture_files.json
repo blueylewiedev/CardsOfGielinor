@@ -1,7 +1,13 @@
 {
- "_note": "The wiki file to use as the site picture of a card (card id: file name without 'File:', or a list of names to try in turn), where the card's own name does not find the right one. Read by python dev/build_site.py --files.",
+ "_note": "The wiki file to use as the site picture of a card (card id: file name without 'File:', or a list of names to try in turn), where the card's own name does not find the right one. Read by python dev/build_site.py --files. Seeds list their '<name> N detail.png' from 5 down: the highest numbered one shows the most seeds.",
  "abyssal_prowler": "Abyssal Prowler pet.png",
- "acting_guildmaster_reiniger": "Associate Reiniger.png",
+ "acorn": [
+  "Acorn 5 detail.png",
+  "Acorn 4 detail.png",
+  "Acorn 3 detail.png",
+  "Acorn 2 detail.png"
+ ],
+ "acting_guildmaster_reiniger": "Acting Guildmaster Reiniger.png",
  "adamant_ceremonial_sword": [
   "Adamant ceremonial sword V detail.png",
   "Adamant ceremonial sword I detail.png",
@@ -16,55 +22,404 @@
  ],
  "adv_pickpocketing_trainer": "Advanced pickpocketing trainer.png",
  "agent_004": "Agent 004.png",
+ "aloe_seed": [
+  "Aloe seed 5 detail.png",
+  "Aloe seed 4 detail.png",
+  "Aloe seed 3 detail.png",
+  "Aloe seed 2 detail.png"
+ ],
  "andrew_gower": "Andrew.png",
  "angry_giant_rat": "Angry giant rat (A Soul's Bane).png",
+ "apple_tree_seed": [
+  "Apple tree seed 5 detail.png",
+  "Apple tree seed 4 detail.png",
+  "Apple tree seed 3 detail.png",
+  "Apple tree seed 2 detail.png"
+ ],
+ "arbuck_seed": [
+  "Arbuck seed 5 detail.png",
+  "Arbuck seed 4 detail.png",
+  "Arbuck seed 3 detail.png",
+  "Arbuck seed 2 detail.png"
+ ],
  "archaeologist": "Archaeologist (1).png",
- "archer": "Archer (Ardougne).png",
+ "archer": "Archer (Lost City).png",
  "argonite_knife": "Off-hand argonite knife detail.png",
- "azzanadra": "Azzanadra (deity).png",
+ "argway_seed": [
+  "Argway seed 5 detail.png",
+  "Argway seed 4 detail.png",
+  "Argway seed 3 detail.png",
+  "Argway seed 2 detail.png"
+ ],
+ "asgarnian_seed": [
+  "Asgarnian seed 5 detail.png",
+  "Asgarnian seed 4 detail.png",
+  "Asgarnian seed 3 detail.png",
+  "Asgarnian seed 2 detail.png"
+ ],
+ "avantoe_seed": [
+  "Avantoe seed 5 detail.png",
+  "Avantoe seed 4 detail.png",
+  "Avantoe seed 3 detail.png",
+  "Avantoe seed 2 detail.png"
+ ],
+ "avocado_seed": [
+  "Avocado seed 5 detail.png",
+  "Avocado seed 4 detail.png",
+  "Avocado seed 3 detail.png",
+  "Avocado seed 2 detail.png"
+ ],
+ "azzanadra": "Azzanadra (Hardmode).png",
  "baby_troll": "Baby Troll pet.png",
+ "banana_tree_seed": [
+  "Banana tree seed 5 detail.png",
+  "Banana tree seed 4 detail.png",
+  "Banana tree seed 3 detail.png",
+  "Banana tree seed 2 detail.png"
+ ],
+ "barberry_seed": [
+  "Barberry seed 5 detail.png",
+  "Barberry seed 4 detail.png",
+  "Barberry seed 3 detail.png",
+  "Barberry seed 2 detail.png"
+ ],
+ "barley_seed": [
+  "Barley seed 5 detail.png",
+  "Barley seed 4 detail.png",
+  "Barley seed 3 detail.png",
+  "Barley seed 2 detail.png"
+ ],
  "bell": "Bell (Flashback).png",
+ "bittercap_mushroom_spore": [
+  "Bittercap mushroom spore 5 detail.png",
+  "Bittercap mushroom spore 4 detail.png",
+  "Bittercap mushroom spore 3 detail.png",
+  "Bittercap mushroom spore 2 detail.png"
+ ],
  "black_soporith_moth": "Black soporith moth detail.png",
  "blazehound": "Blazehound adult.png",
+ "blindweed_seed": [
+  "Blindweed seed 5 detail.png",
+  "Blindweed seed 4 detail.png",
+  "Blindweed seed 3 detail.png",
+  "Blindweed seed 2 detail.png"
+ ],
+ "blisterberry_seed": [
+  "Blisterberry seed 5 detail.png",
+  "Blisterberry seed 4 detail.png",
+  "Blisterberry seed 3 detail.png",
+  "Blisterberry seed 2 detail.png"
+ ],
  "blisterwood_crossbow": "Blisterwood stake-thrower crossbow detail.png",
  "bloodpouncer": "Adult bloodpouncer.png",
+ "bloodweed_seed": [
+  "Bloodweed seed 5 detail.png",
+  "Bloodweed seed 4 detail.png",
+  "Bloodweed seed 3 detail.png",
+  "Bloodweed seed 2 detail.png"
+ ],
+ "blue_blossom_seed": [
+  "Blue blossom seed 5 detail.png",
+  "Blue blossom seed 4 detail.png",
+  "Blue blossom seed 3 detail.png",
+  "Blue blossom seed 2 detail.png"
+ ],
+ "bogwart_spore": [
+  "Bogwart spore 5 detail.png",
+  "Bogwart spore 4 detail.png",
+  "Bogwart spore 3 detail.png",
+  "Bogwart spore 2 detail.png"
+ ],
  "broav": "Broav pet.png",
- "bulldog": "Bulldog puppy (white) pet.png",
+ "buckthorn_seed": [
+  "Buckthorn seed 5 detail.png",
+  "Buckthorn seed 4 detail.png",
+  "Buckthorn seed 3 detail.png",
+  "Buckthorn seed 2 detail.png"
+ ],
+ "bulldog": "Bulldog (white) pet.png",
+ "butterfly_flower_seed": [
+  "Butterfly flower seed 5 detail.png",
+  "Butterfly flower seed 4 detail.png",
+  "Butterfly flower seed 3 detail.png",
+  "Butterfly flower seed 2 detail.png"
+ ],
+ "cabbage_seed": [
+  "Cabbage seed 5 detail.png",
+  "Cabbage seed 4 detail.png",
+  "Cabbage seed 3 detail.png",
+  "Cabbage seed 2 detail.png"
+ ],
+ "cactus_seed": [
+  "Cactus seed 5 detail.png",
+  "Cactus seed 4 detail.png",
+  "Cactus seed 3 detail.png",
+  "Cactus seed 2 detail.png"
+ ],
+ "cadantine_seed": [
+  "Cadantine seed 5 detail.png",
+  "Cadantine seed 4 detail.png",
+  "Cadantine seed 3 detail.png",
+  "Cadantine seed 2 detail.png"
+ ],
+ "cadavaberry_seed": [
+  "Cadavaberry seed 5 detail.png",
+  "Cadavaberry seed 4 detail.png",
+  "Cadavaberry seed 3 detail.png",
+  "Cadavaberry seed 2 detail.png"
+ ],
+ "calquat_tree_seed": [
+  "Calquat tree seed 5 detail.png",
+  "Calquat tree seed 4 detail.png",
+  "Calquat tree seed 3 detail.png",
+  "Calquat tree seed 2 detail.png"
+ ],
+ "carambola_seed": [
+  "Carambola seed 5 detail.png",
+  "Carambola seed 4 detail.png",
+  "Carambola seed 3 detail.png",
+  "Carambola seed 2 detail.png"
+ ],
  "cardinal": "Cardinal (blue).png",
- "cat": "Pet kitten (white and black) pet.png",
+ "cat": "Pet cat (white and black) pet.png",
+ "cave_nightshade_seed": [
+  "Cave nightshade seed 5 detail.png",
+  "Cave nightshade seed 4 detail.png",
+  "Cave nightshade seed 3 detail.png",
+  "Cave nightshade seed 2 detail.png"
+ ],
+ "cave_potato_seed": [
+  "Cave potato seed 5 detail.png",
+  "Cave potato seed 4 detail.png",
+  "Cave potato seed 3 detail.png",
+  "Cave potato seed 2 detail.png"
+ ],
  "chris": "Chris (Evil Dave's Big Day Out).png",
+ "ciku_seed": [
+  "Ciku seed 5 detail.png",
+  "Ciku seed 4 detail.png",
+  "Ciku seed 3 detail.png",
+  "Ciku seed 2 detail.png"
+ ],
  "clockwork_cat": "Clockwork cat pet.png",
+ "cocoaberry_seed": [
+  "Cocoaberry seed 5 detail.png",
+  "Cocoaberry seed 4 detail.png",
+  "Cocoaberry seed 3 detail.png",
+  "Cocoaberry seed 2 detail.png"
+ ],
+ "coins": "Coins 10000 detail.png",
  "corruption_beast": "Corruption Beast.png",
  "coshing_volunteer": "Coshing volunteer (bearded).png",
+ "crystal_acorn": [
+  "Crystal acorn 5 detail.png",
+  "Crystal acorn 4 detail.png",
+  "Crystal acorn 3 detail.png",
+  "Crystal acorn 2 detail.png"
+ ],
  "crystalflecked_sandstone": "Crystal-flecked sandstone (ore) detail.png",
- "customs_officer": "Customs officer.png",
- "dalmatian": "Dalmatian puppy (black) pet.png",
+ "curry_tree_seed": [
+  "Curry tree seed 5 detail.png",
+  "Curry tree seed 4 detail.png",
+  "Curry tree seed 3 detail.png",
+  "Curry tree seed 2 detail.png"
+ ],
+ "customs_officer": "Customs Officer (Rocking Out).png",
+ "dalmatian": "Dalmatian (black) pet.png",
  "darren_lightfinger": "Darren Lightfinger (4).png",
- "death_lotus_rogue": "Death Lotus rogue (female).png",
+ "death_lotus_rogue": "Death Lotus rogue (Elite Dungeons).png",
  "decaying_lumbridge_guard": "Decaying Lumbridge guard (regular, 1).png",
  "decaying_varrock_guard": "Decaying Varrock guard (regular, 1).png",
+ "delphinium_seed": [
+  "Delphinium seed 5 detail.png",
+  "Delphinium seed 4 detail.png",
+  "Delphinium seed 3 detail.png",
+  "Delphinium seed 2 detail.png"
+ ],
+ "devils_snare_seed": [
+  "Devil's snare seed 5 detail.png",
+  "Devil's snare seed 4 detail.png",
+  "Devil's snare seed 3 detail.png",
+  "Devil's snare seed 2 detail.png"
+ ],
  "divine_impling": "Divine impling.png",
+ "dragonfruit_seed": [
+  "Dragonfruit seed 5 detail.png",
+  "Dragonfruit seed 4 detail.png",
+  "Dragonfruit seed 3 detail.png",
+  "Dragonfruit seed 2 detail.png"
+ ],
+ "dwarf_weed_seed": [
+  "Dwarf weed seed 5 detail.png",
+  "Dwarf weed seed 4 detail.png",
+  "Dwarf weed seed 3 detail.png",
+  "Dwarf weed seed 2 detail.png"
+ ],
+ "dwellberry_seed": [
+  "Dwellberry seed 5 detail.png",
+  "Dwellberry seed 4 detail.png",
+  "Dwellberry seed 3 detail.png",
+  "Dwellberry seed 2 detail.png"
+ ],
+ "edicap_mushroom_spore": [
+  "Edicap mushroom spore 5 detail.png",
+  "Edicap mushroom spore 4 detail.png",
+  "Edicap mushroom spore 3 detail.png",
+  "Edicap mushroom spore 2 detail.png"
+ ],
  "eek": "Eek pet.png",
+ "elder_seed": [
+  "Elder seed 5 detail.png",
+  "Elder seed 4 detail.png",
+  "Elder seed 3 detail.png",
+  "Elder seed 2 detail.png"
+ ],
+ "enriched_snapdragon_seed": [
+  "Enriched snapdragon seed 5 detail.png",
+  "Enriched snapdragon seed 4 detail.png",
+  "Enriched snapdragon seed 3 detail.png",
+  "Enriched snapdragon seed 2 detail.png"
+ ],
  "ernie": "Ernie NPC.png",
+ "erzille_seed": [
+  "Erzille seed 5 detail.png",
+  "Erzille seed 4 detail.png",
+  "Erzille seed 3 detail.png",
+  "Erzille seed 2 detail.png"
+ ],
+ "evil_turnip_seed": [
+  "Evil turnip seed 5 detail.png",
+  "Evil turnip seed 4 detail.png",
+  "Evil turnip seed 3 detail.png",
+  "Evil turnip seed 2 detail.png"
+ ],
  "examiner": "Examiner (blonde).png",
+ "exuberry_seed": [
+  "Exuberry seed 5 detail.png",
+  "Exuberry seed 4 detail.png",
+  "Exuberry seed 3 detail.png",
+  "Exuberry seed 2 detail.png"
+ ],
  "fairy_trader": "Fairy trader (green).png",
  "fatal_tzekhaarythurkot": "Fatal TzekHaar-Yt-HurKot (typeless).png",
+ "featherfoil_seed": [
+  "Featherfoil seed 5 detail.png",
+  "Featherfoil seed 4 detail.png",
+  "Featherfoil seed 3 detail.png",
+  "Featherfoil seed 2 detail.png"
+ ],
+ "fellstalk_seed": [
+  "Fellstalk seed 5 detail.png",
+  "Fellstalk seed 4 detail.png",
+  "Fellstalk seed 3 detail.png",
+  "Fellstalk seed 2 detail.png"
+ ],
  "fire_drake": "Fire Drake adult.png",
+ "fireberry_seed": [
+  "Fireberry seed 5 detail.png",
+  "Fireberry seed 4 detail.png",
+  "Fireberry seed 3 detail.png",
+  "Fireberry seed 2 detail.png"
+ ],
  "fishbowl": "Fishbowl (orange fish) pet.png",
+ "fly_trap_seed": [
+  "Fly trap seed 5 detail.png",
+  "Fly trap seed 4 detail.png",
+  "Fly trap seed 3 detail.png",
+  "Fly trap seed 2 detail.png"
+ ],
  "fort_guard": "Fort Guard (1).png",
  "freezy": "Freezy pet.png",
  "ganodermic_runt": "Gandermic runt.png",
- "giant_crab": "Giant crab (brown and green) pet.png",
+ "giant_crab": "Baby giant crab (brown and green) pet.png",
  "giant_frog": "Giantfrog.png",
+ "gissel_mushroom_spore": [
+  "Gissel mushroom spore 5 detail.png",
+  "Gissel mushroom spore 4 detail.png",
+  "Gissel mushroom spore 3 detail.png",
+  "Gissel mushroom spore 2 detail.png"
+ ],
+ "gloomberry_seed": [
+  "Gloomberry seed 5 detail.png",
+  "Gloomberry seed 4 detail.png",
+  "Gloomberry seed 3 detail.png",
+  "Gloomberry seed 2 detail.png"
+ ],
  "glowing_ember": "Glowing Ember pet.png",
+ "godly_grapevine_seed": [
+  "Godly grapevine seed 5 detail.png",
+  "Godly grapevine seed 4 detail.png",
+  "Godly grapevine seed 3 detail.png",
+  "Godly grapevine seed 2 detail.png"
+ ],
+ "golden_dragonfruit_seed": [
+  "Golden dragonfruit seed 5 detail.png",
+  "Golden dragonfruit seed 4 detail.png",
+  "Golden dragonfruit seed 3 detail.png",
+  "Golden dragonfruit seed 2 detail.png"
+ ],
  "golden_gnome": "Golden gnome pet.png",
- "greyhound": "Greyhound puppy (light brown) pet.png",
- "head_chef": "Head chef (2015).png",
- "hebe": "Statue of Hebe.png",
- "hellcat": "Hell-kitten pet.png",
+ "gout_tuber": [
+  "Gout tuber 5 detail.png",
+  "Gout tuber 4 detail.png",
+  "Gout tuber 3 detail.png",
+  "Gout tuber 2 detail.png"
+ ],
+ "grapevine_seed": [
+  "Grapevine seed 5 detail.png",
+  "Grapevine seed 4 detail.png",
+  "Grapevine seed 3 detail.png",
+  "Grapevine seed 2 detail.png"
+ ],
+ "green_blossom_seed": [
+  "Green blossom seed 5 detail.png",
+  "Green blossom seed 4 detail.png",
+  "Green blossom seed 3 detail.png",
+  "Green blossom seed 2 detail.png"
+ ],
+ "greyhound": "Greyhound (light brown) pet.png",
+ "guam_seed": [
+  "Guam seed 5 detail.png",
+  "Guam seed 4 detail.png",
+  "Guam seed 3 detail.png",
+  "Guam seed 2 detail.png"
+ ],
+ "guarana_seed": [
+  "Guarana seed 5 detail.png",
+  "Guarana seed 4 detail.png",
+  "Guarana seed 3 detail.png",
+  "Guarana seed 2 detail.png"
+ ],
+ "hammerstone_seed": [
+  "Hammerstone seed 5 detail.png",
+  "Hammerstone seed 4 detail.png",
+  "Hammerstone seed 3 detail.png",
+  "Hammerstone seed 2 detail.png"
+ ],
+ "harmony_moss_seed": [
+  "Harmony moss seed 5 detail.png",
+  "Harmony moss seed 4 detail.png",
+  "Harmony moss seed 3 detail.png",
+  "Harmony moss seed 2 detail.png"
+ ],
+ "harralander_seed": [
+  "Harralander seed 5 detail.png",
+  "Harralander seed 4 detail.png",
+  "Harralander seed 3 detail.png",
+  "Harralander seed 2 detail.png"
+ ],
+ "head_chef": "Head chef.png",
+ "hebe": "Adrasteia (Twilight of the Gods).png",
+ "hellcat": "Hellcat pet.png",
  "hermit_crab": "Hermit crab pet.png",
  "hole_in_the": "Wall beast.png",
  "infested_axe": "Infested Axe.png",
+ "irit_seed": [
+  "Irit seed 5 detail.png",
+  "Irit seed 4 detail.png",
+  "Irit seed 3 detail.png",
+  "Irit seed 2 detail.png"
+ ],
  "iron_ceremonial_sword": [
   "Iron ceremonial sword V detail.png",
   "Iron ceremonial sword I detail.png",
@@ -77,11 +432,149 @@
   "Iron ceremonial sword IX detail.png",
   "Iron ceremonial sword X detail.png"
  ],
+ "jade_vine_seed": [
+  "Jade vine seed 5 detail.png",
+  "Jade vine seed 4 detail.png",
+  "Jade vine seed 3 detail.png",
+  "Jade vine seed 2 detail.png"
+ ],
+ "jangerberry_seed": [
+  "Jangerberry seed 5 detail.png",
+  "Jangerberry seed 4 detail.png",
+  "Jangerberry seed 3 detail.png",
+  "Jangerberry seed 2 detail.png"
+ ],
+ "jitterberry_seed": [
+  "Jitterberry seed 5 detail.png",
+  "Jitterberry seed 4 detail.png",
+  "Jitterberry seed 3 detail.png",
+  "Jitterberry seed 2 detail.png"
+ ],
  "jungle_gorilla": "Jungle gorilla (adult).png",
+ "jute_seed": [
+  "Jute seed 5 detail.png",
+  "Jute seed 4 detail.png",
+  "Jute seed 3 detail.png",
+  "Jute seed 2 detail.png"
+ ],
+ "kalferberry_seed": [
+  "Kalferberry seed 5 detail.png",
+  "Kalferberry seed 4 detail.png",
+  "Kalferberry seed 3 detail.png",
+  "Kalferberry seed 2 detail.png"
+ ],
+ "kelda_seed": [
+  "Kelda seed 5 detail.png",
+  "Kelda seed 4 detail.png",
+  "Kelda seed 3 detail.png",
+  "Kelda seed 2 detail.png"
+ ],
+ "krandorian_seed": [
+  "Krandorian seed 5 detail.png",
+  "Krandorian seed 4 detail.png",
+  "Krandorian seed 3 detail.png",
+  "Krandorian seed 2 detail.png"
+ ],
+ "kwuarm_seed": [
+  "Kwuarm seed 5 detail.png",
+  "Kwuarm seed 4 detail.png",
+  "Kwuarm seed 3 detail.png",
+  "Kwuarm seed 2 detail.png"
+ ],
+ "lampenflora_seed": [
+  "Lampenflora seed 5 detail.png",
+  "Lampenflora seed 4 detail.png",
+  "Lampenflora seed 3 detail.png",
+  "Lampenflora seed 2 detail.png"
+ ],
+ "lantadyme_seed": [
+  "Lantadyme seed 5 detail.png",
+  "Lantadyme seed 4 detail.png",
+  "Lantadyme seed 3 detail.png",
+  "Lantadyme seed 2 detail.png"
+ ],
+ "lergberry_seed": [
+  "Lergberry seed 5 detail.png",
+  "Lergberry seed 4 detail.png",
+  "Lergberry seed 3 detail.png",
+  "Lergberry seed 2 detail.png"
+ ],
+ "limpwurt_seed": [
+  "Limpwurt seed 5 detail.png",
+  "Limpwurt seed 4 detail.png",
+  "Limpwurt seed 3 detail.png",
+  "Limpwurt seed 2 detail.png"
+ ],
+ "liverwort_seed": [
+  "Liverwort seed 5 detail.png",
+  "Liverwort seed 4 detail.png",
+  "Liverwort seed 3 detail.png",
+  "Liverwort seed 2 detail.png"
+ ],
  "lucien": "Lucien (rejuvenated).png",
  "luma": "Luma pet.png",
  "lumbridge_guide": "Lumbridge Sage.png",
- "martin_the_master_gardener": "Martin the Master Gardener (2015).png",
+ "luminous_snaggler_seed": [
+  "Luminous snaggler seed 5 detail.png",
+  "Luminous snaggler seed 4 detail.png",
+  "Luminous snaggler seed 3 detail.png",
+  "Luminous snaggler seed 2 detail.png"
+ ],
+ "lychee_seed": [
+  "Lychee seed 5 detail.png",
+  "Lychee seed 4 detail.png",
+  "Lychee seed 3 detail.png",
+  "Lychee seed 2 detail.png"
+ ],
+ "lycopus_seed": [
+  "Lycopus seed 5 detail.png",
+  "Lycopus seed 4 detail.png",
+  "Lycopus seed 3 detail.png",
+  "Lycopus seed 2 detail.png"
+ ],
+ "magebane_seed": [
+  "Magebane seed 5 detail.png",
+  "Magebane seed 4 detail.png",
+  "Magebane seed 3 detail.png",
+  "Magebane seed 2 detail.png"
+ ],
+ "magic_seed": [
+  "Magic seed 5 detail.png",
+  "Magic seed 4 detail.png",
+  "Magic seed 3 detail.png",
+  "Magic seed 2 detail.png"
+ ],
+ "mango_seed": [
+  "Mango seed 5 detail.png",
+  "Mango seed 4 detail.png",
+  "Mango seed 3 detail.png",
+  "Mango seed 2 detail.png"
+ ],
+ "maple_seed": [
+  "Maple seed 5 detail.png",
+  "Maple seed 4 detail.png",
+  "Maple seed 3 detail.png",
+  "Maple seed 2 detail.png"
+ ],
+ "marigold_seed": [
+  "Marigold seed 5 detail.png",
+  "Marigold seed 4 detail.png",
+  "Marigold seed 3 detail.png",
+  "Marigold seed 2 detail.png"
+ ],
+ "marrentill_seed": [
+  "Marrentill seed 5 detail.png",
+  "Marrentill seed 4 detail.png",
+  "Marrentill seed 3 detail.png",
+  "Marrentill seed 2 detail.png"
+ ],
+ "martin_the_master_gardener": "Martin the Master Gardener.png",
+ "meloberry_seed": [
+  "Meloberry seed 5 detail.png",
+  "Meloberry seed 4 detail.png",
+  "Meloberry seed 3 detail.png",
+  "Meloberry seed 2 detail.png"
+ ],
  "mithril_ceremonial_sword": [
   "Mithril ceremonial sword V detail.png",
   "Mithril ceremonial sword I detail.png",
@@ -94,7 +587,43 @@
   "Mithril ceremonial sword IX detail.png",
   "Mithril ceremonial sword X detail.png"
  ],
+ "money_tree_seed": [
+  "Money tree seed 5 detail.png",
+  "Money tree seed 4 detail.png",
+  "Money tree seed 3 detail.png",
+  "Money tree seed 2 detail.png"
+ ],
  "monk_of_chaos": "Monk of chaos (female).png",
+ "morchella_mushroom_spore": [
+  "Morchella mushroom spore 5 detail.png",
+  "Morchella mushroom spore 4 detail.png",
+  "Morchella mushroom spore 3 detail.png",
+  "Morchella mushroom spore 2 detail.png"
+ ],
+ "mournberry_seed": [
+  "Mournberry seed 5 detail.png",
+  "Mournberry seed 4 detail.png",
+  "Mournberry seed 3 detail.png",
+  "Mournberry seed 2 detail.png"
+ ],
+ "mourning_lily_seed": [
+  "Mourning lily seed 5 detail.png",
+  "Mourning lily seed 4 detail.png",
+  "Mourning lily seed 3 detail.png",
+  "Mourning lily seed 2 detail.png"
+ ],
+ "musaberry_seed": [
+  "Musaberry seed 5 detail.png",
+  "Musaberry seed 4 detail.png",
+  "Musaberry seed 3 detail.png",
+  "Musaberry seed 2 detail.png"
+ ],
+ "nasturtium_seed": [
+  "Nasturtium seed 5 detail.png",
+  "Nasturtium seed 4 detail.png",
+  "Nasturtium seed 3 detail.png",
+  "Nasturtium seed 2 detail.png"
+ ],
  "ninja_impling": "Ninja impling.png",
  "offhand_iron_ceremonial_sword": [
   "Off-hand iron ceremonial sword V detail.png",
@@ -144,16 +673,136 @@
   "Off-hand rune ceremonial sword IX detail.png",
   "Off-hand rune ceremonial sword X detail.png"
  ],
+ "onion_seed": [
+  "Onion seed 5 detail.png",
+  "Onion seed 4 detail.png",
+  "Onion seed 3 detail.png",
+  "Onion seed 2 detail.png"
+ ],
+ "orange_tree_seed": [
+  "Orange tree seed 5 detail.png",
+  "Orange tree seed 4 detail.png",
+  "Orange tree seed 3 detail.png",
+  "Orange tree seed 2 detail.png"
+ ],
+ "orchid_seed_pink": [
+  "Orchid seed (pink) 5 detail.png",
+  "Orchid seed (pink) 4 detail.png",
+  "Orchid seed (pink) 3 detail.png",
+  "Orchid seed (pink) 2 detail.png"
+ ],
+ "orchid_seed_yellow": [
+  "Orchid seed (yellow) 5 detail.png",
+  "Orchid seed (yellow) 4 detail.png",
+  "Orchid seed (yellow) 3 detail.png",
+  "Orchid seed (yellow) 2 detail.png"
+ ],
+ "palm_tree_seed": [
+  "Palm tree seed 5 detail.png",
+  "Palm tree seed 4 detail.png",
+  "Palm tree seed 3 detail.png",
+  "Palm tree seed 2 detail.png"
+ ],
+ "papaya_tree_seed": [
+  "Papaya tree seed 5 detail.png",
+  "Papaya tree seed 4 detail.png",
+  "Papaya tree seed 3 detail.png",
+  "Papaya tree seed 2 detail.png"
+ ],
  "pet_of_autumn": "Pet of Autumn pet.png",
  "pet_of_spring": "Pet of Spring pet.png",
  "pet_of_summer": "Pet of Summer pet.png",
  "pet_of_winter": "Pet of Winter pet.png",
+ "pineapple_seed": [
+  "Pineapple seed 5 detail.png",
+  "Pineapple seed 4 detail.png",
+  "Pineapple seed 3 detail.png",
+  "Pineapple seed 2 detail.png"
+ ],
+ "pink_rose_seed": [
+  "Pink rose seed 5 detail.png",
+  "Pink rose seed 4 detail.png",
+  "Pink rose seed 3 detail.png",
+  "Pink rose seed 2 detail.png"
+ ],
  "platypus": "Baby platypus (brown) pet.png",
+ "poison_ivy_seed": [
+  "Poison ivy seed 5 detail.png",
+  "Poison ivy seed 4 detail.png",
+  "Poison ivy seed 3 detail.png",
+  "Poison ivy seed 2 detail.png"
+ ],
+ "potato_cactus_seed": [
+  "Potato cactus seed 5 detail.png",
+  "Potato cactus seed 4 detail.png",
+  "Potato cactus seed 3 detail.png",
+  "Potato cactus seed 2 detail.png"
+ ],
+ "potato_seed": [
+  "Potato seed 5 detail.png",
+  "Potato seed 4 detail.png",
+  "Potato seed 3 detail.png",
+  "Potato seed 2 detail.png"
+ ],
+ "prickly_pear_seed": [
+  "Prickly pear seed 5 detail.png",
+  "Prickly pear seed 4 detail.png",
+  "Prickly pear seed 3 detail.png",
+  "Prickly pear seed 2 detail.png"
+ ],
  "prime_colossus": "Prime Colossus Mk III.png",
- "purple_cat": "Pet kitten (purple) pet.png",
+ "purple_cat": "Pet cat (purple) pet.png",
  "queen_ellamaria": "Ellamaria.png",
+ "ranarr_seed": [
+  "Ranarr seed 5 detail.png",
+  "Ranarr seed 4 detail.png",
+  "Ranarr seed 3 detail.png",
+  "Ranarr seed 2 detail.png"
+ ],
+ "red_blossom_seed": [
+  "Red blossom seed 5 detail.png",
+  "Red blossom seed 4 detail.png",
+  "Red blossom seed 3 detail.png",
+  "Red blossom seed 2 detail.png"
+ ],
+ "red_rose_seed": [
+  "Red rose seed 5 detail.png",
+  "Red rose seed 4 detail.png",
+  "Red rose seed 3 detail.png",
+  "Red rose seed 2 detail.png"
+ ],
+ "redberry_seed": [
+  "Redberry seed 5 detail.png",
+  "Redberry seed 4 detail.png",
+  "Redberry seed 3 detail.png",
+  "Redberry seed 2 detail.png"
+ ],
+ "reed_seed": [
+  "Reed seed 5 detail.png",
+  "Reed seed 4 detail.png",
+  "Reed seed 3 detail.png",
+  "Reed seed 2 detail.png"
+ ],
  "remy": "Remy pet.png",
- "richie": "Richie (Red) pet.png",
+ "richie": "Richie (NPC).png",
+ "rosaberry_seed": [
+  "Rosaberry seed 5 detail.png",
+  "Rosaberry seed 4 detail.png",
+  "Rosaberry seed 3 detail.png",
+  "Rosaberry seed 2 detail.png"
+ ],
+ "rosemary_seed": [
+  "Rosemary seed 5 detail.png",
+  "Rosemary seed 4 detail.png",
+  "Rosemary seed 3 detail.png",
+  "Rosemary seed 2 detail.png"
+ ],
+ "rumberry_seed": [
+  "Rumberry seed 5 detail.png",
+  "Rumberry seed 4 detail.png",
+  "Rumberry seed 3 detail.png",
+  "Rumberry seed 2 detail.png"
+ ],
  "rune_ceremonial_sword": [
   "Rune ceremonial sword V detail.png",
   "Rune ceremonial sword I detail.png",
@@ -167,25 +816,265 @@
   "Rune ceremonial sword X detail.png"
  ],
  "rune_guardian": "Rune guardian pet.png",
+ "sagewort_seed": [
+  "Sagewort seed 5 detail.png",
+  "Sagewort seed 4 detail.png",
+  "Sagewort seed 3 detail.png",
+  "Sagewort seed 2 detail.png"
+ ],
+ "samaden_seed": [
+  "Samaden seed 5 detail.png",
+  "Samaden seed 4 detail.png",
+  "Samaden seed 3 detail.png",
+  "Samaden seed 2 detail.png"
+ ],
  "santar_spawnling": "San'tar spawnling pet.png",
- "sapping_glacyte": "Sapping glacyte (Extinction).png",
+ "sapping_glacyte": "Sapping glacyte.png",
  "searing_flame": "Searing Flame pet.png",
  "shadow_drake": "Shadow Drake adult.png",
+ "shengo_seed": [
+  "Shengo seed 5 detail.png",
+  "Shengo seed 4 detail.png",
+  "Shengo seed 3 detail.png",
+  "Shengo seed 2 detail.png"
+ ],
  "sir_owen": "Sir owen.png",
  "skeletal_horror": "Skeletal Horror.png",
- "soul_obelisk": "Soul Obelisk.png",
+ "smoulderberry_seed": [
+  "Smoulderberry seed 5 detail.png",
+  "Smoulderberry seed 4 detail.png",
+  "Smoulderberry seed 3 detail.png",
+  "Smoulderberry seed 2 detail.png"
+ ],
+ "snapdragon_seed": [
+  "Snapdragon seed 5 detail.png",
+  "Snapdragon seed 4 detail.png",
+  "Snapdragon seed 3 detail.png",
+  "Snapdragon seed 2 detail.png"
+ ],
+ "snape_grass_seed": [
+  "Snape grass seed 5 detail.png",
+  "Snape grass seed 4 detail.png",
+  "Snape grass seed 3 detail.png",
+  "Snape grass seed 2 detail.png"
+ ],
+ "snowdrop_seed": [
+  "Snowdrop seed 5 detail.png",
+  "Snowdrop seed 4 detail.png",
+  "Snowdrop seed 3 detail.png",
+  "Snowdrop seed 2 detail.png"
+ ],
+ "soul_obelisk": "Soul obelisk (Rasial).png",
+ "sourberry_seed": [
+  "Sourberry seed 5 detail.png",
+  "Sourberry seed 4 detail.png",
+  "Sourberry seed 3 detail.png",
+  "Sourberry seed 2 detail.png"
+ ],
+ "spirit_seed": [
+  "Spirit seed 5 detail.png",
+  "Spirit seed 4 detail.png",
+  "Spirit seed 3 detail.png",
+  "Spirit seed 2 detail.png"
+ ],
+ "spirit_weed_seed": [
+  "Spirit weed seed 5 detail.png",
+  "Spirit weed seed 4 detail.png",
+  "Spirit weed seed 3 detail.png",
+  "Spirit weed seed 2 detail.png"
+ ],
+ "squiffberry_seed": [
+  "Squiffberry seed 5 detail.png",
+  "Squiffberry seed 4 detail.png",
+  "Squiffberry seed 3 detail.png",
+  "Squiffberry seed 2 detail.png"
+ ],
+ "starbloom_flower_seed": [
+  "Starbloom flower seed 5 detail.png",
+  "Starbloom flower seed 4 detail.png",
+  "Starbloom flower seed 3 detail.png",
+  "Starbloom flower seed 2 detail.png"
+ ],
+ "stinkshroom_spore": [
+  "Stinkshroom spore 5 detail.png",
+  "Stinkshroom spore 4 detail.png",
+  "Stinkshroom spore 3 detail.png",
+  "Stinkshroom spore 2 detail.png"
+ ],
+ "stoneberry_seed": [
+  "Stoneberry seed 5 detail.png",
+  "Stoneberry seed 4 detail.png",
+  "Stoneberry seed 3 detail.png",
+  "Stoneberry seed 2 detail.png"
+ ],
+ "stormberry_seed": [
+  "Stormberry seed 5 detail.png",
+  "Stormberry seed 4 detail.png",
+  "Stormberry seed 3 detail.png",
+  "Stormberry seed 2 detail.png"
+ ],
+ "strawberry_seed": [
+  "Strawberry seed 5 detail.png",
+  "Strawberry seed 4 detail.png",
+  "Strawberry seed 3 detail.png",
+  "Strawberry seed 2 detail.png"
+ ],
+ "sunchoke_seed": [
+  "Sunchoke seed 5 detail.png",
+  "Sunchoke seed 4 detail.png",
+  "Sunchoke seed 3 detail.png",
+  "Sunchoke seed 2 detail.png"
+ ],
+ "sweetcorn_seed": [
+  "Sweetcorn seed 5 detail.png",
+  "Sweetcorn seed 4 detail.png",
+  "Sweetcorn seed 3 detail.png",
+  "Sweetcorn seed 2 detail.png"
+ ],
+ "tarromin_seed": [
+  "Tarromin seed 5 detail.png",
+  "Tarromin seed 4 detail.png",
+  "Tarromin seed 3 detail.png",
+  "Tarromin seed 2 detail.png"
+ ],
  "terrier": "Terrier puppy (black) pet.png",
+ "toadflax_seed": [
+  "Toadflax seed 5 detail.png",
+  "Toadflax seed 4 detail.png",
+  "Toadflax seed 3 detail.png",
+  "Toadflax seed 2 detail.png"
+ ],
+ "tomato_seed": [
+  "Tomato seed 5 detail.png",
+  "Tomato seed 4 detail.png",
+  "Tomato seed 3 detail.png",
+  "Tomato seed 2 detail.png"
+ ],
+ "tombshroom_spore": [
+  "Tombshroom spore 5 detail.png",
+  "Tombshroom spore 4 detail.png",
+  "Tombshroom spore 3 detail.png",
+  "Tombshroom spore 2 detail.png"
+ ],
  "tooth_creature": "Healthy tooth creature.png",
  "tormented_demon": "Tormented Demon.png",
+ "torstol_seed": [
+  "Torstol seed 5 detail.png",
+  "Torstol seed 4 detail.png",
+  "Torstol seed 3 detail.png",
+  "Torstol seed 2 detail.png"
+ ],
  "twisted_firestarter": "Twisted Firestarter pet.png",
- "tzekhaarmej_disciple": "TzekHaar-Mej disciple (Extinction).png",
+ "tzekhaarmej_disciple": "TzekHaar-Mej Disciple.png",
+ "ugune_seed": [
+  "Ugune seed 5 detail.png",
+  "Ugune seed 4 detail.png",
+  "Ugune seed 3 detail.png",
+  "Ugune seed 2 detail.png"
+ ],
+ "valerian_seed": [
+  "Valerian seed 5 detail.png",
+  "Valerian seed 4 detail.png",
+  "Valerian seed 3 detail.png",
+  "Valerian seed 2 detail.png"
+ ],
+ "vine_seed": [
+  "Vine seed 5 detail.png",
+  "Vine seed 4 detail.png",
+  "Vine seed 3 detail.png",
+  "Vine seed 2 detail.png"
+ ],
  "waddles": "Waddles pet.png",
  "wall_beast": "Wall beast.png",
  "warborn_behemoth": "Warborn behemoth adult.png",
  "warming_flames": "Warming Flame pet.png",
+ "watermelon_seed": [
+  "Watermelon seed 5 detail.png",
+  "Watermelon seed 4 detail.png",
+  "Watermelon seed 3 detail.png",
+  "Watermelon seed 2 detail.png"
+ ],
+ "wendlewick_seed": [
+  "Wendlewick seed 5 detail.png",
+  "Wendlewick seed 4 detail.png",
+  "Wendlewick seed 3 detail.png",
+  "Wendlewick seed 2 detail.png"
+ ],
+ "wergali_seed": [
+  "Wergali seed 5 detail.png",
+  "Wergali seed 4 detail.png",
+  "Wergali seed 3 detail.png",
+  "Wergali seed 2 detail.png"
+ ],
+ "white_lily_seed": [
+  "White lily seed 5 detail.png",
+  "White lily seed 4 detail.png",
+  "White lily seed 3 detail.png",
+  "White lily seed 2 detail.png"
+ ],
+ "white_rose_seed": [
+  "White rose seed 5 detail.png",
+  "White rose seed 4 detail.png",
+  "White rose seed 3 detail.png",
+  "White rose seed 2 detail.png"
+ ],
+ "white_tree_shoot": [
+  "White tree shoot 5 detail.png",
+  "White tree shoot 4 detail.png",
+  "White tree shoot 3 detail.png",
+  "White tree shoot 2 detail.png"
+ ],
+ "whiteberry_seed": [
+  "Whiteberry seed 5 detail.png",
+  "Whiteberry seed 4 detail.png",
+  "Whiteberry seed 3 detail.png",
+  "Whiteberry seed 2 detail.png"
+ ],
+ "wildblood_seed": [
+  "Wildblood seed 5 detail.png",
+  "Wildblood seed 4 detail.png",
+  "Wildblood seed 3 detail.png",
+  "Wildblood seed 2 detail.png"
+ ],
  "wilderness_sword": "Wilderness sword 4 detail.png",
+ "willow_seed": [
+  "Willow seed 5 detail.png",
+  "Willow seed 4 detail.png",
+  "Willow seed 3 detail.png",
+  "Willow seed 2 detail.png"
+ ],
  "wily_cat": "Wily cat (white and black) pet.png",
+ "winters_grip_seed": [
+  "Winter's grip seed 5 detail.png",
+  "Winter's grip seed 4 detail.png",
+  "Winter's grip seed 3 detail.png",
+  "Winter's grip seed 2 detail.png"
+ ],
  "wizards_tower_master_mage": "Wizards' Tower master mage (1).png",
+ "woad_seed": [
+  "Woad seed 5 detail.png",
+  "Woad seed 4 detail.png",
+  "Woad seed 3 detail.png",
+  "Woad seed 2 detail.png"
+ ],
+ "wormwood_seed": [
+  "Wormwood seed 5 detail.png",
+  "Wormwood seed 4 detail.png",
+  "Wormwood seed 3 detail.png",
+  "Wormwood seed 2 detail.png"
+ ],
+ "yanillian_seed": [
+  "Yanillian seed 5 detail.png",
+  "Yanillian seed 4 detail.png",
+  "Yanillian seed 3 detail.png",
+  "Yanillian seed 2 detail.png"
+ ],
+ "yew_seed": [
+  "Yew seed 5 detail.png",
+  "Yew seed 4 detail.png",
+  "Yew seed 3 detail.png",
+  "Yew seed 2 detail.png"
+ ],
  "zamorakian_cultist": "Zamorakian cultist (female).png",
  "zamorakian_ritual_keeper": "Zamorakian ritual keeper (male).png"
 }
