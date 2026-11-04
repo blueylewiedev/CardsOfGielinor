@@ -428,8 +428,8 @@ These are guides, not laws: the maintainer can change a rarity that does not fee
 | Signal | Common | Uncommon | Rare | Epic | Legendary |
 | --- | --- | --- | --- | --- | --- |
 | **Level needed** (a skill level, or a combat level for gear) | 1-39 | 40-69 | 70-89 | 90+ | never |
-| **Grand Exchange price** (the infobox's Exchange line, for one item) | under 50k | 50k+ | 1M+ | 10M+ | 100M+ |
-| **Rarest drop rate** (of any monster that drops it, 1 in N) | under 1 in 25 | 1 in 25 to 99 | 1 in 100 to 999 | 1 in 1,000 to 2,499 | 1 in 2,500 or rarer |
+| **Grand Exchange price** (the infobox's Exchange line, for one item) | under 50k | 50k+ | 1M+ | 10M+ | 50M+ |
+| **Most common drop rate** (of the monster it is easiest to get from, 1 in N) | under 1 in 25 | 1 in 25 to 99 | 1 in 100 to 999 | 1 in 1,000 to 2,499 | 1 in 2,500 or rarer |
 
 Also:
 
@@ -437,6 +437,12 @@ Also:
   about how rare it is. Legendary comes from the price, the drop rate, pets and discontinued items.
 - **The level needed** is the level to make the item, to plant its seed, to gather it (logs, fish and ore) or to
   clean it (a grimy herb), or the level to wear or wield it.
+- **A drop rate only counts as far as the price supports it.** The rarity it gives is held to the rarity of
+  the item's price, plus one step once the price is 50k or more, so an item nobody wants stays low however
+  rarely it drops (the corrupt dragon weapons drop at 1 in 28,672 and sell for a few thousand coins). An item
+  with no Grand Exchange price is not held.
+- **An item a shop sells ignores its drop rate**: mind runes, ores and basic staves drop from monsters, but
+  anyone can buy them. The shops are in `dev/shop_items.json` (`python dev/wiki_cards.py --shops`).
 - **Pets** are legendary, however they are obtained. They are very hard to get.
 - **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
 - **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and
@@ -444,7 +450,8 @@ Also:
 - An item with none of these (cheap, no level, no drops) is **common**.
 - Members-only does not change rarity.
 - Being the rarest drop of a boss does not matter by itself, only the actual drop rate. Use the rate from the
-  wiki's drop table, and the rarest of them if several monsters drop the item.
+  wiki's drop table, and the most common of them if several monsters drop the item: the easiest way to get it
+  is what counts.
 
 Examples: clean lantadyme costs about 3k (common) but needs level 73 (rare), so it is **rare**. An Armadyl
 chestplate drops at 1 in 384 (rare) and costs about 4.8M (rare), so it is **rare**. A godsword shard drops at
@@ -454,12 +461,12 @@ The wiki tool suggests a rarity from the level needed, the Grand Exchange price,
 discontinued items, and lists what it used in the notes.
 - **Level:** from the Recipe infobox (only recipes that make the item; the easiest one if there are
   several) and, for gear, from the Bonuses box's wear requirement. The highest wins. An item no recipe makes
-  gets the level to plant it (a seed), to gather it (the logs, fishing and mining infoboxes) or to clean it (a
-  grimy herb). The skills they
-  name go in the `skills` tag.
+  gets the level to plant it (a seed), to gather it (the logs, fishing and ore infoboxes; an ore's infobox
+  only names its rock, so the sentence "requires level 90 Mining" beside it is read) or to clean it (a grimy
+  herb). The skills they name go in the `skills` tag.
 - **Price:** the wiki's own Grand Exchange price (`{{GEP}}`).
 - **Drop rate:** the wiki's item pages do not list it, so give the tool the monster pages with
-  `--drops "Kree'arra"`. It keeps the rarest rate it has read for each item (`dev/wiki_cache/drops.json`)
+  `--drops "Kree'arra"`. It keeps the most common rate it has read for each item (`dev/wiki_cache/drops.json`)
   and uses it for any item that drops there. An item that drops from a page you have not given it has
   no drop rate, so check those by hand.
   `--all-bosses` does this for every boss named in the tables of the wiki's Bosses page before its Quest bosses
