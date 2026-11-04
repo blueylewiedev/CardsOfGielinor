@@ -1122,7 +1122,7 @@ RARITIES = ["common", "uncommon", "rare", "epic", "legendary"]
 # (the level needed gives at most epic: how hard an item is to use says little about how rare it is,
 # so legendary comes from the price, the drop rate, pets and discontinued items)
 LEVEL_BANDS = [(90, "epic"), (70, "rare"), (40, "uncommon")]    # level needed
-PRICE_BANDS = [(100_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
+PRICE_BANDS = [(50_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
 DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
 PET_CATEGORY = re.compile(r"\bpets?$")
 DISCONTINUED_CATEGORY = re.compile(r"discontinued|unobtainable")
@@ -1136,11 +1136,15 @@ def band(value, bands):
     return "common"
 
 
-def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False):
+def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False):
     """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
-    (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its rarest drop
-    rate of 1 in N; any can be None when not known. Pets and discontinued items are legendary.
-    Otherwise the highest rarity any known signal gives wins (a level gives epic at most)."""
+    (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its most common drop
+    rate of 1 in N, `shop` whether a shop sells it; any can be None when not known. Pets and
+    discontinued items are legendary. Otherwise the highest rarity any known signal gives wins (a
+    level gives epic at most), with two limits on the drop rate: an item a shop sells ignores it
+    (anyone can buy a mind rune, whatever monsters drop it), and one with a price is held to the
+    rarity of that price, plus one step once the price is 50k or more (the corrupt dragon weapons
+    drop at 1 in 28,672 and sell for a few thousand coins)."""
     given = []
     if pet:
         given.append(("legendary", "a pet"))
@@ -1150,8 +1154,16 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
         given.append((band(level, LEVEL_BANDS), f"level {level}"))
     if price is not None:
         given.append((band(price, PRICE_BANDS), f"GE price {price:,}"))
-    if drop is not None:
-        given.append((band(drop, DROP_BANDS), f"drop rate 1/{drop:,}"))
+    if drop is not None and shop:
+        given.append(("common", f"sold in a shop, so drop rate 1/{drop:,} is ignored"))
+    elif drop is not None:
+        rarity, held = band(drop, DROP_BANDS), ""
+        if price is not None:
+            worth = RARITIES.index(band(price, PRICE_BANDS))
+            limit = worth + 1 if worth >= 1 else 0
+            if RARITIES.index(rarity) > limit:
+                rarity, held = RARITIES[limit], ", held down by its price"
+        given.append((rarity, f"drop rate 1/{drop:,}{held}"))
     if not given:
         return "common", ["no signal"]
     best = max(RARITIES.index(r) for r, _ in given)
@@ -1204,22 +1216,37 @@ def seed_requirements(text, skill_words):
     return ([word] if word in skill_words else []), (int(found.group()) if found else None)
 
 
-# What gets an item when nothing makes it: the infobox that gives the level (and the skill that gets it).
+# What gets an item when nothing makes it: the infobox that shows it (and the skill that gets it).
 GATHER_INFOBOXES = (("Infobox logs", "woodcutting"), ("Infobox Logs", "woodcutting"), ("Fishing info", "fishing"),
-                    ("Mining info", "mining"), ("Infobox ore", "mining"))
+                    ("Mining info", "mining"), ("Infobox ore", "mining"), ("Infobox Ore", "mining"),
+                    ("Infobox Dungeoneering ore", "mining"))
 HERB_CLEANING = re.compile(r"cleaned?,? requiring level (\d+) \[\[Herblore", re.I)
 
 
 def gather_requirements(text, skill_words):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
-    the logs, fish or ore on its page ("Infobox logs": level 90 Woodcutting), or for a grimy herb the
-    level to clean it (a sentence, "cleaned, requiring level 91 Herblore"). ([], None) if neither."""
+    the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
+    infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
+    beside it: "requires level 90 [[Mining]]" (the same skill; any other skill in the text is
+    something else), or "no [[Mining]] requirement", which is level 1. For a grimy herb it is the
+    level to clean it, "cleaned, requiring level 91 Herblore". ([], None) if none."""
+    text = text or ""
     for name, skill in GATHER_INFOBOXES:
-        _, inside = find_template(text or "", [name])
-        level = re.search(r"\d+", plain(template_fields(inside).get("level", ""))) if inside else None
-        if level and skill in skill_words:
-            return [skill], int(level.group())
-    cleaned = HERB_CLEANING.search(text or "")
+        _, inside = find_template(text, [name])
+        if inside is None or skill not in skill_words:
+            continue
+        levels = [int(m.group()) for key, value in template_fields(inside).items()
+                  if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m]
+        if not levels:
+            said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+\[\[" + skill
+                             + r"(?:\|[^\]]*)?\]\]", text, re.I)
+            if said:
+                levels = [int(said.group(1))]
+            elif re.search(r"\bno\s+\[\[" + skill + r"\]\]\s+requirement", text, re.I):
+                levels = [1]
+        if levels:
+            return [skill], min(levels)
+    cleaned = HERB_CLEANING.search(text)
     if cleaned and "herblore" in skill_words:
         return ["herblore"], int(cleaned.group(1))
     return [], None
@@ -1274,25 +1301,26 @@ def drop_n(value):
 
 
 def drop_rates(text):
-    """{ item name (lower case): N } from the DropsLine templates of a page, N the rarest (largest)
-    of its rates there. Quantities, notes and the lines with no rate are ignored."""
+    """{ item name (lower case): N } from the DropsLine templates of a page, N the most common
+    (smallest) of its rates there. Quantities, notes and the lines with no rate are ignored."""
     rates = {}
     for match in re.finditer(r"\{\{\s*DropsLine\s*\|", text or ""):
         _, inside = find_template(text[match.start():], ["DropsLine"])
         fields = template_fields(inside or "")
         name, n = plain(fields.get("name", "")).lower(), drop_n(fields.get("rarity", ""))
         if name and n:
-            rates[name] = max(rates.get(name, 0), n)
+            rates[name] = min(rates.get(name, n), n)
     return rates
 
 
 def remember_drops(pages):
-    """Adds the drop rates of these pages to dev/wiki_cache/drops.json (keeping the rarest rate of
-    each item over everything read) and returns all of it, { name: N }."""
+    """Adds the drop rates of these pages to dev/wiki_cache/drops.json (keeping the most common rate
+    of each item over everything read: the easiest way to get it is what counts) and returns all
+    of it, { name: N }."""
     known = json.loads(DROPS.read_text(encoding="utf-8")) if DROPS.exists() else {}
     for page in pages.values():
         for name, n in drop_rates(page.get("text", "")).items():
-            known[name] = max(known.get(name, 0), round(n, 1))
+            known[name] = min(known.get(name, round(n, 1)), round(n, 1))
     DROPS.parent.mkdir(parents=True, exist_ok=True)
     DROPS.write_text(json.dumps(known, indent=1, sort_keys=True), encoding="utf-8")
     return known
@@ -1363,6 +1391,23 @@ def write_shop_items(items):
     lines = [f"  {json.dumps(name, ensure_ascii=False)}: {json.dumps(items[name], ensure_ascii=False)}"
              for name in sorted(items)]
     SHOP_ITEMS.write_bytes(("{\n" + ",\n".join(lines) + "\n}\n").encode("utf-8"))
+
+
+_shop_items = None
+
+
+def shop_items():
+    """What the shops sell (dev/shop_items.json, see fetch_shops), by item name in lower case; read once."""
+    global _shop_items
+    if _shop_items is None:
+        _shop_items = json.loads(SHOP_ITEMS.read_text(encoding="utf-8")) if SHOP_ITEMS.exists() else {}
+    return _shop_items
+
+
+def sold_in_shop(name):
+    """Whether a shop sells an item of this name (with or without a bracket after it)."""
+    items = shop_items()
+    return name.lower() in items or strip_bracket(name).lower() in items
 
 
 def fetch_shops(wiki, refresh):
@@ -1449,10 +1494,14 @@ COMBAT_STYLE_WORDS = {"melee": "melee_gear", "ranged": "ranged_gear", "magic": "
 
 
 def gear_requirements(bonuses, skill_words):
-    """What wearing an item takes, from its Infobox Bonuses `requirements` ({{sc|attack|70}}):
-    (skills, level). The level is the highest one asked for, None if there is none."""
+    """What wearing an item takes, from its Infobox Bonuses `requirements` ({{sc|attack|70}}, or
+    "60 {{Skill clickpic|Attack}}, 40 {{Skill clickpic|Strength}}"): (skills, level). The level is the
+    highest one asked for, None if there is none."""
     skills, levels = [], []
-    for skill, level in re.findall(r"\{\{\s*sc\s*\|\s*([A-Za-z]+)\s*\|\s*(\d+)", bonuses.get("requirements", "")):
+    text = bonuses.get("requirements", "")
+    found = re.findall(r"\{\{\s*sc\s*\|\s*([A-Za-z]+)\s*\|\s*(\d+)", text)
+    found += [(skill, level) for level, skill in re.findall(r"(\d+)\s*\{\{\s*Skill clickpic\s*\|\s*([A-Za-z]+)", text, re.I)]
+    for skill, level in found:
         if skill.lower() in skill_words:
             if skill.lower() not in skills:
                 skills.append(skill.lower())
@@ -1574,7 +1623,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
 
     categories = [c.lower() for c in page.get("categories", [])]
     rarity, why = item_rarity(
-        level=level, price=price, drop=round(drop) if drop else None,
+        level=level, price=price, drop=round(drop) if drop else None, shop=sold_in_shop(name),
         pet=any(PET_CATEGORY.search(c) for c in categories),
         discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
     notes.append("rarity is a guess: " + ", ".join(why))
