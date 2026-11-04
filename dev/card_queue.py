@@ -25,7 +25,8 @@ candidate back in the Card Builder, then press Done again.
 A location or NPC category word that an added card uses and core/cards.lua does not list yet is
 added there too, as dev/add_tag_words.lua does, so a new word doesn't stop the plugin loading. Any
 other word that isn't listed is only reported (item categories go in their group by hand; regions,
-skills and membership are fixed lists, so there it is a typo). Afterwards run lua dev/check_cards.lua
+skills and membership are fixed lists, so there it is a typo). The wiki page an added card came from
+goes in dev/wiki_pages.json (see dev/wiki_pages.py). Afterwards run lua dev/check_cards.lua
 and reload the plugin to check the cards load, then commit.
 """
 
@@ -36,6 +37,8 @@ import re
 import sqlite3
 import time
 from pathlib import Path
+
+import wiki_pages
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "dev" / ".card_queue_state.json"
@@ -228,7 +231,7 @@ def entries_with_state(db_path, state):
 def process(db_path, dry_run=False):
     state = load_state()
     ids = all_ids()
-    added, to_tag = 0, {}
+    added, to_tag, pages = 0, {}, {}
     for key, entry, record in entries_with_state(db_path, state):
         if record is not None and record.get("status") == "done":
             if record.get("words_pending"):
@@ -246,6 +249,7 @@ def process(db_path, dry_run=False):
                 added += 1
                 to_tag[key] = entry
                 print(message)
+                pages[entry["id"]] = entry.get("page")
         if status == "failed" and (record is None or record.get("reason") != reason):
             print(f"FAILED {key[len(KEY_PREFIX):]} {entry['id']}: {reason}  (python dev/card_queue.py --db ... --list)")
         if not dry_run:
@@ -256,6 +260,7 @@ def process(db_path, dry_run=False):
             state[key] = keep
     if not dry_run:
         save_state(state)
+        wiki_pages.record(pages)
     if to_tag:
         try:
             add_tag_words(list(to_tag.values()), dry_run)
