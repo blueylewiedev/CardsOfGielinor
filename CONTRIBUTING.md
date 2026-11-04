@@ -427,12 +427,16 @@ These are guides, not laws: the maintainer can change a rarity that does not fee
 
 | Signal | Common | Uncommon | Rare | Epic | Legendary |
 | --- | --- | --- | --- | --- | --- |
-| **Level needed** (a skill level, or a combat level for gear) | 1-24 | 25-49 | 50-69 | 70-89 | 90+ |
+| **Level needed** (a skill level, or a combat level for gear) | 1-39 | 40-69 | 70-89 | 90+ | never |
 | **Grand Exchange price** (the infobox's Exchange line, for one item) | under 50k | 50k+ | 1M+ | 10M+ | 100M+ |
 | **Rarest drop rate** (of any monster that drops it, 1 in N) | under 1 in 25 | 1 in 25 to 99 | 1 in 100 to 999 | 1 in 1,000 to 2,499 | 1 in 2,500 or rarer |
 
 Also:
 
+- **A level alone never makes a card legendary**, only epic at most: how hard an item is to use says little
+  about how rare it is. Legendary comes from the price, the drop rate, pets and discontinued items.
+- **The level needed** is the level to make the item, to plant its seed, to gather it (logs, fish and ore) or to
+  clean it (a grimy herb), or the level to wear or wield it.
 - **Pets** are legendary, however they are obtained. They are very hard to get.
 - **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
 - **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and
@@ -442,14 +446,16 @@ Also:
 - Being the rarest drop of a boss does not matter by itself, only the actual drop rate. Use the rate from the
   wiki's drop table, and the rarest of them if several monsters drop the item.
 
-Examples: clean lantadyme costs about 3k (common) but needs level 73 (epic), so it is **epic**. An Armadyl
+Examples: clean lantadyme costs about 3k (common) but needs level 73 (rare), so it is **rare**. An Armadyl
 chestplate drops at 1 in 384 (rare) and costs about 4.8M (rare), so it is **rare**. A godsword shard drops at
 1 in 768 (rare) and costs about 118k (uncommon), so it is **rare**.
 
 The wiki tool suggests a rarity from the level needed, the Grand Exchange price, the drop rate, pets and
 discontinued items, and lists what it used in the notes.
 - **Level:** from the Recipe infobox (only recipes that make the item; the easiest one if there are
-  several) and, for gear, from the Bonuses box's wear requirement. The highest wins. The skills they
+  several) and, for gear, from the Bonuses box's wear requirement. The highest wins. An item no recipe makes
+  gets the level to plant it (a seed), to gather it (the logs, fishing and mining infoboxes) or to clean it (a
+  grimy herb). The skills they
   name go in the `skills` tag.
 - **Price:** the wiki's own Grand Exchange price (`{{GEP}}`).
 - **Drop rate:** the wiki's item pages do not list it, so give the tool the monster pages with

@@ -1113,7 +1113,9 @@ def name_and_desc(page, fields, notes, versions_merge=False, places=()):
 # ---------------------------------------------------------------------------------------------
 
 RARITIES = ["common", "uncommon", "rare", "epic", "legendary"]
-LEVEL_BANDS = [(90, "legendary"), (70, "epic"), (50, "rare"), (25, "uncommon")]    # level needed
+# (the level needed gives at most epic: how hard an item is to use says little about how rare it is,
+# so legendary comes from the price, the drop rate, pets and discontinued items)
+LEVEL_BANDS = [(90, "epic"), (70, "rare"), (40, "uncommon")]    # level needed
 PRICE_BANDS = [(100_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
 DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
 PET_CATEGORY = re.compile(r"\bpets?$")
@@ -1132,7 +1134,7 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
     """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
     (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its rarest drop
     rate of 1 in N; any can be None when not known. Pets and discontinued items are legendary.
-    Otherwise the highest rarity any known signal gives wins."""
+    Otherwise the highest rarity any known signal gives wins (a level gives epic at most)."""
     given = []
     if pet:
         given.append(("legendary", "a pet"))
@@ -1182,15 +1184,39 @@ def seed_patch(text, allowed):
 
 def seed_requirements(text, skill_words):
     """What planting a seed takes, from the Infobox Seed on its page: (skills, level). The skill is
-    the one in brackets after what it grows ("Arbuck (Farming)"), Farming if there is none."""
+    the one in brackets after what it grows ("Arbuck (Farming)"), else Farming: when there is no
+    bracket, or the bracket only tells the wiki's pages apart ("Potato cactus (Plant)")."""
     _, inside = find_template(text or "", ["Infobox Seed"])
     if not inside:
         return [], None
     fields = template_fields(inside)
     found = re.search(r"\d+", plain(fields.get("level", "")))
-    skill = re.search(r"\(([A-Za-z]+)\)", plain(fields.get("grown", "")))
-    word = (skill.group(1) if skill else "farming").lower()
+    bracket = re.search(r"\(([A-Za-z]+)\)", plain(fields.get("grown", "")))
+    word = bracket.group(1).lower() if bracket else "farming"
+    if word not in skill_words:
+        word = "farming"
     return ([word] if word in skill_words else []), (int(found.group()) if found else None)
+
+
+# What gets an item when nothing makes it: the infobox that gives the level (and the skill that gets it).
+GATHER_INFOBOXES = (("Infobox logs", "woodcutting"), ("Infobox Logs", "woodcutting"), ("Fishing info", "fishing"),
+                    ("Mining info", "mining"), ("Infobox ore", "mining"))
+HERB_CLEANING = re.compile(r"cleaned?,? requiring level (\d+) \[\[Herblore", re.I)
+
+
+def gather_requirements(text, skill_words):
+    """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
+    the logs, fish or ore on its page ("Infobox logs": level 90 Woodcutting), or for a grimy herb the
+    level to clean it (a sentence, "cleaned, requiring level 91 Herblore"). ([], None) if neither."""
+    for name, skill in GATHER_INFOBOXES:
+        _, inside = find_template(text or "", [name])
+        level = re.search(r"\d+", plain(template_fields(inside).get("level", ""))) if inside else None
+        if level and skill in skill_words:
+            return [skill], int(level.group())
+    cleaned = HERB_CLEANING.search(text or "")
+    if cleaned and "herblore" in skill_words:
+        return ["herblore"], int(cleaned.group(1))
+    return [], None
 
 
 def recipe_requirements(text, titles, skill_words):
@@ -1439,14 +1465,21 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     if "novelty" in found:
         worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
     grown_with, grown_level = seed_requirements(page.get("text", ""), set(words["skills"]))
-    if grown_with and not made_with:
-        made_with, level = grown_with, grown_level
+    # (the level to plant or gather it also counts when a recipe that makes it gives no level: the
+    # Banana tree seed has one that names Farming and no level)
+    if grown_with and (not made_with or level is None):
+        made_with, level = list(made_with) + [w for w in grown_with if w not in made_with], grown_level
+    gathered_with, gathered_level = gather_requirements(page.get("text", ""), set(words["skills"]))
+    if gathered_with and (not made_with or level is None):
+        made_with, level = list(made_with) + [w for w in gathered_with if w not in made_with], gathered_level
     skills = list(made_with) + [w for w in worn_with if w not in made_with]
     for s in words["skills"]:
         if s not in skills and any(c.lower() in (s, s + " items") for c in page.get("categories", [])):
             skills.append(s)
     if grown_with and made_with == grown_with:
         notes.append("planted with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
+    elif gathered_with and made_with == gathered_with:
+        notes.append("gathered or cleaned with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
     elif made_with:
         notes.append("made with " + ", ".join(made_with) + (f" (level {level})" if level else ""))
     elif not worn_with and "novelty" not in found:
