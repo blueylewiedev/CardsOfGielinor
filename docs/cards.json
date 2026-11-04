@@ -8940,7 +8940,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 337,
    "img": "img/waddles.png",
-   "imgPage": "File:Waddles.png"
+   "imgPage": "File:Waddles pet.png"
   },
   {
    "id": "wall",
@@ -12842,7 +12842,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 493
+   "order": 493,
+   "img": "img/bulldog.png",
+   "imgPage": "File:Bulldog puppy (white) pet.png"
   },
   {
    "id": "cat",
@@ -12861,7 +12863,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 494
+   "order": 494,
+   "img": "img/cat.png",
+   "imgPage": "File:Pet kitten (white and black) pet.png"
   },
   {
    "id": "dalmatian",
@@ -12880,7 +12884,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 495
+   "order": 495,
+   "img": "img/dalmatian.png",
+   "imgPage": "File:Dalmatian puppy (black) pet.png"
   },
   {
    "id": "greyhound",
@@ -12899,7 +12905,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 496
+   "order": 496,
+   "img": "img/greyhound.png",
+   "imgPage": "File:Greyhound puppy (light brown) pet.png"
   },
   {
    "id": "sheepdog",
@@ -12939,7 +12947,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 498
+   "order": 498,
+   "img": "img/terrier.png",
+   "imgPage": "File:Terrier puppy (black) pet.png"
   },
   {
    "id": "dwarf_2",
@@ -18732,7 +18742,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 732
+   "order": 732,
+   "img": "img/iron_ceremonial_sword.png",
+   "imgPage": "File:Iron ceremonial sword V detail.png"
   },
   {
    "id": "havensilver_longsword",
@@ -19430,7 +19442,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 757
+   "order": 757,
+   "img": "img/offhand_iron_ceremonial_sword.png",
+   "imgPage": "File:Off-hand iron ceremonial sword V detail.png"
   },
   {
    "id": "silverlight",
@@ -24203,7 +24217,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 939
+   "order": 939,
+   "img": "img/lumbridge_guide.png",
+   "imgPage": "File:Lumbridge Sage.png"
   },
   {
    "id": "cook",
@@ -24387,7 +24403,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 946
+   "order": 946,
+   "img": "img/giant_frog.png",
+   "imgPage": "File:Giantfrog.png"
   },
   {
    "id": "cave_slime",
@@ -25173,7 +25191,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 977,
    "img": "img/ernie.png",
-   "imgPage": "File:Ernie chathead.png"
+   "imgPage": "File:Ernie NPC.png"
   },
   {
    "id": "father_lawrence",
@@ -26492,7 +26510,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 1025,
    "img": "img/abyssal_prowler.png",
-   "imgPage": "File:Abyssal Prowler.png"
+   "imgPage": "File:Abyssal Prowler pet.png"
   },
   {
    "id": "adv_pickpocketing_trainer",
@@ -26520,7 +26538,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1026
+   "order": 1026,
+   "img": "img/adv_pickpocketing_trainer.png",
+   "imgPage": "File:Advanced pickpocketing trainer.png"
   },
   {
    "id": "agrithnana",
@@ -26645,7 +26665,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1031
+   "order": 1031,
+   "img": "img/andrew_gower.png",
+   "imgPage": "File:Andrew.png"
   },
   {
    "id": "angry_bear",
@@ -26697,7 +26719,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1033
+   "order": 1033,
+   "img": "img/angry_giant_rat.png",
+   "imgPage": "File:Angry giant rat (A Soul's Bane).png"
   },
   {
    "id": "angry_goblin",
@@ -26834,7 +26858,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1038
+   "order": 1038,
+   "img": "img/archer.png",
+   "imgPage": "File:Archer (Ardougne).png"
   },
   {
    "id": "armoured_phantom",
@@ -27182,7 +27208,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1051
+   "order": 1051,
+   "img": "img/bell.png",
+   "imgPage": "File:Bell (Flashback).png"
   },
   {
    "id": "benny_snow_imp",
@@ -27529,7 +27557,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1064
+   "order": 1064,
+   "img": "img/cardinal.png",
+   "imgPage": "File:Cardinal (blue).png"
   },
   {
    "id": "carthalo",
@@ -27752,7 +27782,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1072
+   "order": 1072,
+   "img": "img/chris.png",
+   "imgPage": "File:Chris (Evil Dave's Big Day Out).png"
   },
   {
    "id": "claiborne",
@@ -28066,7 +28098,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1084
+   "order": 1084,
+   "img": "img/corruption_beast.png",
+   "imgPage": "File:Corruption Beast.png"
   },
   {
    "id": "coshing_volunteer",
@@ -28094,7 +28128,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1085
+   "order": 1085,
+   "img": "img/coshing_volunteer.png",
+   "imgPage": "File:Coshing volunteer (bearded).png"
   },
   {
    "id": "crunchy",
@@ -28169,7 +28205,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1088
+   "order": 1088,
+   "img": "img/customs_officer.png",
+   "imgPage": "File:Customs officer.png"
   },
   {
    "id": "darrel",
@@ -28252,7 +28290,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 1091,
    "img": "img/darren_lightfinger.png",
-   "imgPage": "File:Darren Lightfinger chathead.png"
+   "imgPage": "File:Darren Lightfinger (4).png"
   },
   {
    "id": "darve",
@@ -28858,7 +28896,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1114
+   "order": 1114,
+   "img": "img/examiner.png",
+   "imgPage": "File:Examiner (blonde).png"
   },
   {
    "id": "fairy_fixit",
@@ -29154,7 +29194,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1125
+   "order": 1125,
+   "img": "img/fort_guard.png",
+   "imgPage": "File:Fort Guard (1).png"
   },
   {
    "id": "fungal_mage",
@@ -29245,7 +29287,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1128
+   "order": 1128,
+   "img": "img/ganodermic_runt.png",
+   "imgPage": "File:Gandermic runt.png"
   },
   {
    "id": "gerdi",
@@ -37366,7 +37410,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 1439
+   "order": 1439,
+   "img": "img/giant_crab.png",
+   "imgPage": "File:Giant crab (brown and green) pet.png"
   },
   {
    "id": "hellcat",
@@ -37387,7 +37433,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1440,
    "img": "img/hellcat.png",
-   "imgPage": "File:Hellcat.png"
+   "imgPage": "File:Hell-kitten pet.png"
   },
   {
    "id": "purple_cat",
@@ -37408,7 +37454,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1441,
    "img": "img/purple_cat.png",
-   "imgPage": "File:Purple cat.png"
+   "imgPage": "File:Pet kitten (purple) pet.png"
   },
   {
    "id": "squirrel",
@@ -37451,7 +37497,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 1443
+   "order": 1443,
+   "img": "img/wily_cat.png",
+   "imgPage": "File:Wily cat (white and black) pet.png"
   },
   {
    "id": "santar_spawnling",
@@ -37475,7 +37523,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1444,
    "img": "img/santar_spawnling.png",
-   "imgPage": "File:San'tar spawnling.png"
+   "imgPage": "File:San'tar spawnling pet.png"
   },
   {
    "id": "fishbowl",
@@ -37499,7 +37547,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1445,
    "img": "img/fishbowl.png",
-   "imgPage": "File:Fishbowl.png"
+   "imgPage": "File:Fishbowl (orange fish) pet.png"
   },
   {
    "id": "eek",
@@ -37519,7 +37567,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1446,
    "img": "img/eek.png",
-   "imgPage": "File:Eek.png"
+   "imgPage": "File:Eek pet.png"
   },
   {
    "id": "rune_guardian",
@@ -37541,7 +37589,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1447,
    "img": "img/rune_guardian.png",
-   "imgPage": "File:Rune guardian.png"
+   "imgPage": "File:Rune guardian pet.png"
   },
   {
    "id": "pet_of_autumn",
@@ -37562,7 +37610,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1448,
    "img": "img/pet_of_autumn.png",
-   "imgPage": "File:Pet of Autumn.png"
+   "imgPage": "File:Pet of Autumn pet.png"
   },
   {
    "id": "pet_of_spring",
@@ -37583,7 +37631,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1449,
    "img": "img/pet_of_spring.png",
-   "imgPage": "File:Pet of Spring.png"
+   "imgPage": "File:Pet of Spring pet.png"
   },
   {
    "id": "pet_of_summer",
@@ -37604,7 +37652,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1450,
    "img": "img/pet_of_summer.png",
-   "imgPage": "File:Pet of Summer.png"
+   "imgPage": "File:Pet of Summer pet.png"
   },
   {
    "id": "pet_of_winter",
@@ -37625,7 +37673,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1451,
    "img": "img/pet_of_winter.png",
-   "imgPage": "File:Pet of Winter.png"
+   "imgPage": "File:Pet of Winter pet.png"
   },
   {
    "id": "freezy",
@@ -37649,7 +37697,7 @@
    "file": "deck/npcs/general.lua",
    "order": 1452,
    "img": "img/freezy.png",
-   "imgPage": "File:Freezy.png"
+   "imgPage": "File:Freezy pet.png"
   },
   {
    "id": "postie_pete",
@@ -41175,7 +41223,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 1591
+   "order": 1591,
+   "img": "img/adamant_ceremonial_sword.png",
+   "imgPage": "File:Adamant ceremonial sword V detail.png"
   },
   {
    "id": "adamant_longsword",
@@ -41915,7 +41965,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 1618
+   "order": 1618,
+   "img": "img/mithril_ceremonial_sword.png",
+   "imgPage": "File:Mithril ceremonial sword V detail.png"
   },
   {
    "id": "oh_adamant_ceremonial_sword",
@@ -41941,7 +41993,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 1619
+   "order": 1619,
+   "img": "img/oh_adamant_ceremonial_sword.png",
+   "imgPage": "File:Off-hand adamant ceremonial sword V detail.png"
   },
   {
    "id": "oh_mithril_ceremonial_sword",
@@ -41967,7 +42021,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 1620
+   "order": 1620,
+   "img": "img/oh_mithril_ceremonial_sword.png",
+   "imgPage": "File:Off-hand mithril ceremonial sword V detail.png"
   },
   {
    "id": "adamant_off_hand_scimitar",
@@ -46099,7 +46155,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1771
+   "order": 1771,
+   "img": "img/hole_in_the.png",
+   "imgPage": "File:Wall beast.png"
   },
   {
    "id": "captain_harlan",
@@ -46429,7 +46487,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1783
+   "order": 1783,
+   "img": "img/queen_ellamaria.png",
+   "imgPage": "File:Ellamaria.png"
   },
   {
    "id": "head_chef",
@@ -46460,7 +46520,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 1784,
    "img": "img/head_chef.png",
-   "imgPage": "File:Head chef.png"
+   "imgPage": "File:Head chef (2015).png"
   },
   {
    "id": "straven",
@@ -46655,7 +46715,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 1791,
    "img": "img/martin_the_master_gardener.png",
-   "imgPage": "File:Martin the Master Gardener.png"
+   "imgPage": "File:Martin the Master Gardener (2015).png"
   },
   {
    "id": "relomia_emissary_of_sliske",
@@ -46813,7 +46873,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 1797,
    "img": "img/acting_guildmaster_reiniger.png",
-   "imgPage": "File:Acting Guildmaster Reiniger.png"
+   "imgPage": "File:Associate Reiniger.png"
   },
   {
    "id": "agrith_naar",
@@ -47587,7 +47647,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1827
+   "order": 1827,
+   "img": "img/decaying_lumbridge_guard.png",
+   "imgPage": "File:Decaying Lumbridge guard (regular, 1).png"
   },
   {
    "id": "decaying_varrock_guard",
@@ -47614,7 +47676,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1828
+   "order": 1828,
+   "img": "img/decaying_varrock_guard.png",
+   "imgPage": "File:Decaying Varrock guard (regular, 1).png"
   },
   {
    "id": "delrith",
@@ -47896,7 +47960,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1839
+   "order": 1839,
+   "img": "img/fatal_tzekhaarythurkot.png",
+   "imgPage": "File:Fatal TzekHaar-Yt-HurKot (typeless).png"
   },
   {
    "id": "fred_2",
@@ -48148,7 +48214,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1849
+   "order": 1849,
+   "img": "img/hebe.png",
+   "imgPage": "File:Statue of Hebe.png"
   },
   {
    "id": "hellhound_summoned",
@@ -48350,7 +48418,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1857
+   "order": 1857,
+   "img": "img/infested_axe.png",
+   "imgPage": "File:Infested Axe.png"
   },
   {
    "id": "jelly_soul_wars",
@@ -48634,7 +48704,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1868
+   "order": 1868,
+   "img": "img/monk_of_chaos.png",
+   "imgPage": "File:Monk of chaos (female).png"
   },
   {
    "id": "moonstone_obelisk",
@@ -49159,7 +49231,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1887
+   "order": 1887,
+   "img": "img/skeletal_horror.png",
+   "imgPage": "File:Skeletal Horror.png"
   },
   {
    "id": "smoulders_the_revenger",
@@ -49204,7 +49278,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1889
+   "order": 1889,
+   "img": "img/soul_obelisk.png",
+   "imgPage": "File:Soul Obelisk.png"
   },
   {
    "id": "tanglefoot",
@@ -49316,7 +49392,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1893
+   "order": 1893,
+   "img": "img/tormented_demon.png",
+   "imgPage": "File:Tormented Demon.png"
   },
   {
    "id": "torrential_waterfiend",
@@ -49454,7 +49532,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 1898,
    "img": "img/tzekhaarmej_disciple.png",
-   "imgPage": "File:TzekHaar-Mej Disciple.png"
+   "imgPage": "File:TzekHaar-Mej disciple (Extinction).png"
   },
   {
    "id": "tzekhaartokxil",
@@ -49824,7 +49902,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1912
+   "order": 1912,
+   "img": "img/zamorakian_cultist.png",
+   "imgPage": "File:Zamorakian cultist (female).png"
   },
   {
    "id": "zamorakian_hound_master",
@@ -49894,7 +49974,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 1915
+   "order": 1915,
+   "img": "img/zamorakian_ritual_keeper.png",
+   "imgPage": "File:Zamorakian ritual keeper (male).png"
   },
   {
    "id": "dark_wizard_undercity",
@@ -50074,7 +50156,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 1922
+   "order": 1922,
+   "img": "img/death_lotus_rogue.png",
+   "imgPage": "File:Death Lotus rogue (female).png"
   },
   {
    "id": "elite_black_knight",
@@ -51958,7 +52042,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 1995
+   "order": 1995,
+   "img": "img/archaeologist.png",
+   "imgPage": "File:Archaeologist (1).png"
   },
   {
    "id": "estate_agent",
@@ -52013,7 +52099,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 1997
+   "order": 1997,
+   "img": "img/divine_impling.png",
+   "imgPage": "File:Divine impling.png"
   },
   {
    "id": "dragon_impling",
@@ -52089,7 +52177,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2000
+   "order": 2000,
+   "img": "img/ninja_impling.png",
+   "imgPage": "File:Ninja impling.png"
   },
   {
    "id": "zombie_impling",
@@ -52234,7 +52324,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2006,
    "img": "img/sapping_glacyte.png",
-   "imgPage": "File:Sapping glacyte.png"
+   "imgPage": "File:Sapping glacyte (Extinction).png"
   },
   {
    "id": "steel_dragon",
@@ -52376,7 +52466,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2012,
    "img": "img/clockwork_cat.png",
-   "imgPage": "File:Clockwork cat.png"
+   "imgPage": "File:Clockwork cat pet.png"
   },
   {
    "id": "banner_carrier",
@@ -52425,7 +52515,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2014,
    "img": "img/platypus.png",
-   "imgPage": "File:Platypus.png"
+   "imgPage": "File:Baby platypus (brown) pet.png"
   },
   {
    "id": "tooth_creature",
@@ -52449,7 +52539,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2015,
    "img": "img/tooth_creature.png",
-   "imgPage": "File:Tooth creature.png"
+   "imgPage": "File:Healthy tooth creature.png"
   },
   {
    "id": "baby_troll",
@@ -52473,7 +52563,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2016,
    "img": "img/baby_troll.png",
-   "imgPage": "File:Baby Troll.png"
+   "imgPage": "File:Baby Troll pet.png"
   },
   {
    "id": "vulture",
@@ -56709,7 +56799,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 2178
+   "order": 2178,
+   "img": "img/oh_rune_ceremonial_sword.png",
+   "imgPage": "File:Off-hand rune ceremonial sword V detail.png"
   },
   {
    "id": "rune_ceremonial_sword",
@@ -56735,7 +56827,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 2179
+   "order": 2179,
+   "img": "img/rune_ceremonial_sword.png",
+   "imgPage": "File:Rune ceremonial sword V detail.png"
   },
   {
    "id": "dragon_scimitar",
@@ -58789,7 +58883,7 @@
    "file": "deck/items/weapons/thrown.lua",
    "order": 2255,
    "img": "img/argonite_knife.png",
-   "imgPage": "File:Argonite knife.png"
+   "imgPage": "File:Off-hand argonite knife detail.png"
   },
   {
    "id": "black_chinchompa",
@@ -60884,7 +60978,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 2329
+   "order": 2329,
+   "img": "img/fairy_trader.png",
+   "imgPage": "File:Fairy trader (green).png"
   },
   {
    "id": "hazeel",
@@ -60967,7 +61063,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 2332,
    "img": "img/remy.png",
-   "imgPage": "File:Remy.png"
+   "imgPage": "File:Remy pet.png"
   },
   {
    "id": "soul_esswraith",
@@ -61188,7 +61284,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 2340
+   "order": 2340,
+   "img": "img/wizards_tower_master_mage.png",
+   "imgPage": "File:Wizards' Tower master mage (1).png"
   },
   {
    "id": "zaromark_sliver",
@@ -61834,7 +61932,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2365,
    "img": "img/black_soporith_moth.png",
-   "imgPage": "File:Black soporith moth.png"
+   "imgPage": "File:Black soporith moth detail.png"
   },
   {
    "id": "enakhra",
@@ -61932,7 +62030,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2369,
    "img": "img/luma.png",
-   "imgPage": "File:Luma.png"
+   "imgPage": "File:Luma pet.png"
   },
   {
    "id": "warborn_behemoth",
@@ -61954,7 +62052,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2370
+   "order": 2370,
+   "img": "img/warborn_behemoth.png",
+   "imgPage": "File:Warborn behemoth adult.png"
   },
   {
    "id": "blazehound",
@@ -61976,7 +62076,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2371
+   "order": 2371,
+   "img": "img/blazehound.png",
+   "imgPage": "File:Blazehound adult.png"
   },
   {
    "id": "bloodpouncer",
@@ -61998,7 +62100,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2372
+   "order": 2372,
+   "img": "img/bloodpouncer.png",
+   "imgPage": "File:Adult bloodpouncer.png"
   },
   {
    "id": "prime_colossus",
@@ -62017,7 +62121,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2373
+   "order": 2373,
+   "img": "img/prime_colossus.png",
+   "imgPage": "File:Prime Colossus Mk III.png"
   },
   {
    "id": "prototype_colossus",
@@ -62085,7 +62191,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2376
+   "order": 2376,
+   "img": "img/fire_drake.png",
+   "imgPage": "File:Fire Drake adult.png"
   },
   {
    "id": "shadow_drake",
@@ -62107,7 +62215,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2377
+   "order": 2377,
+   "img": "img/shadow_drake.png",
+   "imgPage": "File:Shadow Drake adult.png"
   },
   {
    "id": "jungle_gorilla",
@@ -62129,7 +62239,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2378
+   "order": 2378,
+   "img": "img/jungle_gorilla.png",
+   "imgPage": "File:Jungle gorilla (adult).png"
   },
   {
    "id": "hermit_crab",
@@ -62156,7 +62268,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2379,
    "img": "img/hermit_crab.png",
-   "imgPage": "File:Hermit crab.png"
+   "imgPage": "File:Hermit crab pet.png"
   },
   {
    "id": "broav",
@@ -62181,7 +62293,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2380,
    "img": "img/broav.png",
-   "imgPage": "File:Broav.png"
+   "imgPage": "File:Broav pet.png"
   },
   {
    "id": "glowing_ember",
@@ -62205,7 +62317,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2381,
    "img": "img/glowing_ember.png",
-   "imgPage": "File:Glowing Ember.png"
+   "imgPage": "File:Glowing Ember pet.png"
   },
   {
    "id": "searing_flame",
@@ -62229,7 +62341,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2382,
    "img": "img/searing_flame.png",
-   "imgPage": "File:Searing Flame.png"
+   "imgPage": "File:Searing Flame pet.png"
   },
   {
    "id": "twisted_firestarter",
@@ -62253,7 +62365,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2383,
    "img": "img/twisted_firestarter.png",
-   "imgPage": "File:Twisted Firestarter.png"
+   "imgPage": "File:Twisted Firestarter pet.png"
   },
   {
    "id": "warming_flames",
@@ -62275,7 +62387,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2384
+   "order": 2384,
+   "img": "img/warming_flames.png",
+   "imgPage": "File:Warming Flame pet.png"
   },
   {
    "id": "lucien",
@@ -62297,7 +62411,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2385
+   "order": 2385,
+   "img": "img/lucien.png",
+   "imgPage": "File:Lucien (rejuvenated).png"
   },
   {
    "id": "general_khazard",
@@ -63501,7 +63617,7 @@
    "file": "deck/items/raw_materials/ores.lua",
    "order": 2432,
    "img": "img/crystalflecked_sandstone.png",
-   "imgPage": "File:Crystal-flecked sandstone.png"
+   "imgPage": "File:Crystal-flecked sandstone (ore) detail.png"
   },
   {
    "id": "calcified_fungus",
@@ -65642,7 +65758,9 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 2514
+   "order": 2514,
+   "img": "img/wilderness_sword.png",
+   "imgPage": "File:Wilderness sword 4 detail.png"
   },
   {
    "id": "profound_decorative_sword",
@@ -68211,7 +68329,9 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 2606
+   "order": 2606,
+   "img": "img/blisterwood_crossbow.png",
+   "imgPage": "File:Blisterwood stake-thrower crossbow detail.png"
   },
   {
    "id": "chaotic_crossbow",
@@ -70702,7 +70822,7 @@
    "file": "deck/npcs/misthalin.lua",
    "order": 2694,
    "img": "img/richie.png",
-   "imgPage": "File:Richie.png"
+   "imgPage": "File:Richie (Red) pet.png"
   },
   {
    "id": "tzkalzuk",
@@ -71665,7 +71785,7 @@
    "file": "deck/npcs/general.lua",
    "order": 2733,
    "img": "img/golden_gnome.png",
-   "imgPage": "File:Golden Gnome.png"
+   "imgPage": "File:Golden gnome pet.png"
   },
   {
    "id": "azzanadra",
@@ -71687,7 +71807,9 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 2734
+   "order": 2734,
+   "img": "img/azzanadra.png",
+   "imgPage": "File:Azzanadra (deity).png"
   },
   {
    "id": "armadyl",
