@@ -446,6 +446,13 @@ Also:
   with no Grand Exchange price is not held.
 - **An item a shop sells ignores its drop rate**: mind runes, ores and basic staves drop from monsters, but
   anyone can buy them. The shops are in `dev/shop_items.json` (`python dev/wiki_cards.py --shops`).
+- **An item with no level and no shop is rated by where it drops.** If nothing gives a level (no recipe,
+  gathering, planting or wearing) and no shop sells it, it is only got from what drops it, so the easiest
+  live source decides (the one that is least trouble to reach). The monster's **combat level** gives
+  uncommon from 70, rare from 100 and epic from 150, and a level the source asks for (Slayer to kill it,
+  Hunter to catch it, Thieving to steal from it) uses the level table above. The higher of the two counts,
+  epic at most. Fury shark drops only from the Lava strykewyrm (combat 115, Slayer 94), so it is **epic**.
+  Historical sources, and rewards, shop stock and prizes that hand an item over indirectly, are left out.
 - **Pets** are legendary, however they are obtained. They are very hard to get.
 - **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
 - **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and
@@ -465,10 +472,14 @@ discontinued items, and lists what it used in the notes.
 - **Level:** from the Recipe infobox (only recipes that make the item; the easiest one if there are
   several) and, for gear, from the Bonuses box's wear requirement. The highest wins. An item no recipe makes
   gets the level to plant it (a seed), to gather it (the logs, fishing and ore infoboxes; an ore's infobox
-  only names its rock, so the sentence "requires level 90 Mining" beside it is read) or to clean it (a grimy
-  herb). The skills they name go in the `skills` tag.
+  only names its rock, so the sentence "requires level 90 Mining" beside it is read) or to grow it (a grimy
+  herb: its Farming level). Only how an item is **obtained** counts, never what it is used for: the Smithing
+  level to smelt corrupted ore, or the Herblore level to clean a herb, is not read. The skills they name go
+  in the `skills` tag.
 - **Price:** the wiki's own Grand Exchange price (`{{GEP}}`).
-- **Drop rate:** the wiki's item pages do not list it, so give the tool the monster pages with
+- **Drop rate:** the table of drop sources on an item's page is not in the page's text, so
+  `python dev/wiki_cards.py --item-drops` reads it from the wiki's dropsline bucket for every item card (the most
+  common and the rarest rate of each, kept in `dev/drop_items.json`). Without that, give the tool the monster pages with
   `--drops "Kree'arra"`. It keeps the most common rate it has read for each item (`dev/wiki_cache/drops.json`)
   and uses it for any item that drops there. An item that drops from a page you have not given it has
   no drop rate, so check those by hand.

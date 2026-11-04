@@ -73,6 +73,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     cached in dev/wiki_cache/buckets/ (a bucket is only asked for once). Makes no
                     candidates and does not change the remembered categories. e.g.
                     python dev/wiki_cards.py --bucket Dropsline --bucket "Infobox seed"
+  --item-drops      where each item card drops and how often, from the wiki's dropsline bucket (the table
+                    a page's "Drop sources" shows, which is not in its text): for each item the most
+                    common and the rarest rate and how many lines. 40 items to a request (resumes if the
+                    request limit stops it), kept in dev/wiki_cache/buckets/dropsline_rows.json and
+                    written reduced to dev/drop_items.json, which is committed. Asked for once;
+                    --refresh asks again. The item names come from docs/cards.json. Makes no candidates.
   --shops           what the wiki's shops sell, from its storeline bucket: for each item the cheapest
                     price in coins, how many shops sell it, whether any never runs out and whether
                     they are all members only. Read 5,000 rows to a request (resumes if the request
@@ -1122,6 +1128,9 @@ RARITIES = ["common", "uncommon", "rare", "epic", "legendary"]
 # (the level needed gives at most epic: how hard an item is to use says little about how rare it is,
 # so legendary comes from the price, the drop rate, pets and discontinued items)
 LEVEL_BANDS = [(90, "epic"), (70, "rare"), (40, "uncommon")]    # level needed
+# (the combat level of the monster an item drops from, for an item with no other way to gauge it: a level
+# that asks for a skill, Slayer to kill it for one, uses LEVEL_BANDS; both give epic at most)
+COMBAT_BANDS = [(150, "epic"), (100, "rare"), (70, "uncommon")]
 PRICE_BANDS = [(50_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
 DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
 PET_CATEGORY = re.compile(r"\bpets?$")
@@ -1136,10 +1145,12 @@ def band(value, bands):
     return "common"
 
 
-def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False):
+def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False, source=None):
     """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
     (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its most common drop
-    rate of 1 in N, `shop` whether a shop sells it; any can be None when not known. Pets and
+    rate of 1 in N, `shop` whether a shop sells it, `source` the easiest monster or other source it drops
+    from, as {"combat": its combat level, "req": the level it asks for} (for an item with no `level`
+    and no shop, which is only got from what drops it); any can be None when not known. Pets and
     discontinued items are legendary. Otherwise the highest rarity any known signal gives wins (a
     level gives epic at most), with two limits on the drop rate: an item a shop sells ignores it
     (anyone can buy a mind rune, whatever monsters drop it), and one with a price is held to the
@@ -1164,6 +1175,11 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
             if RARITIES.index(rarity) > limit:
                 rarity, held = RARITIES[limit], ", held down by its price"
         given.append((rarity, f"drop rate 1/{drop:,}{held}"))
+    if source:
+        tier = max(RARITIES.index(band(source.get("combat") or 0, COMBAT_BANDS)),
+                   RARITIES.index(band(source.get("req") or 0, LEVEL_BANDS)))
+        parts = [f"{key} {source[key]}" for key in ("combat", "req") if source.get(key)]
+        given.append((RARITIES[tier], "easiest drop source: " + ", ".join(parts)))
     if not given:
         return "common", ["no signal"]
     best = max(RARITIES.index(r) for r, _ in given)
@@ -1220,16 +1236,34 @@ def seed_requirements(text, skill_words):
 GATHER_INFOBOXES = (("Infobox logs", "woodcutting"), ("Infobox Logs", "woodcutting"), ("Fishing info", "fishing"),
                     ("Mining info", "mining"), ("Infobox ore", "mining"), ("Infobox Ore", "mining"),
                     ("Infobox Dungeoneering ore", "mining"))
-HERB_CLEANING = re.compile(r"cleaned?,? requiring level (\d+) \[\[Herblore", re.I)
+# How a grimy herb's page words the level to grow it: "at level 50 Farming", "[[Farming]] level of 26",
+# "with 67 [[Farming]]", "requiring farming level 65" (the skill may be a link, or "Dungeoneering/Farming|Farming").
+_FARMING = r"(?:\[\[)?(?:[^\]|\[]+\|)?Farming(?:\]\])?"
+FARMING_LEVEL = (re.compile(r"level\s+(\d+)\s+" + _FARMING, re.I), re.compile(_FARMING + r"\s+level\s+of\s+(\d+)", re.I),
+                 re.compile(r"\bwith\s+(?:a\s+)?(\d+)\s+" + _FARMING, re.I), re.compile(r"\bfarming\s+level\s+(\d+)", re.I))
 
 
-def gather_requirements(text, skill_words):
+def farming_level(text):
+    """The Farming level to grow a herb, from the sentence of its page about planting, growing or
+    harvesting it, or None."""
+    for sentence in re.split(r"(?<=[.!?])\s+|\n", text or ""):
+        if re.search(r"seed|grown|harvest|plant", sentence, re.I):
+            for pattern in FARMING_LEVEL:
+                found = pattern.search(sentence)
+                if found:
+                    return int(found.group(1))
+    return None
+
+
+def gather_requirements(text, skill_words, categories=()):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
     the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
-    beside it: "requires level 90 [[Mining]]" (the same skill; any other skill in the text is
-    something else), or "no [[Mining]] requirement", which is level 1. For a grimy herb it is the
-    level to clean it, "cleaned, requiring level 91 Herblore". ([], None) if none."""
+    beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
+    other skill in the text is something else), or "no Mining requirement", which is level 1. For a
+    grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
+    not the Herblore level to clean it, which is a use. Only how an item is obtained counts, never what
+    it is used for (the Smithing level to smelt corrupted ore). ([], None) if none."""
     text = text or ""
     for name, skill in GATHER_INFOBOXES:
         _, inside = find_template(text, [name])
@@ -1238,17 +1272,18 @@ def gather_requirements(text, skill_words):
         levels = [int(m.group()) for key, value in template_fields(inside).items()
                   if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m]
         if not levels:
-            said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+\[\[" + skill
-                             + r"(?:\|[^\]]*)?\]\]", text, re.I)
+            said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?" + skill
+                             + r"\b", text, re.I)
             if said:
                 levels = [int(said.group(1))]
-            elif re.search(r"\bno\s+\[\[" + skill + r"\]\]\s+requirement", text, re.I):
+            elif re.search(r"\bno\s+(?:\[\[)?" + skill + r"(?:\]\])?\s+requirement", text, re.I):
                 levels = [1]
         if levels:
             return [skill], min(levels)
-    cleaned = HERB_CLEANING.search(text)
-    if cleaned and "herblore" in skill_words:
-        return ["herblore"], int(cleaned.group(1))
+    if "Herbs" in categories and "farming" in skill_words:
+        level = farming_level(text)
+        if level is not None:
+            return ["farming"], level
     return [], None
 
 
@@ -1440,6 +1475,177 @@ def fetch_shops(wiki, refresh):
     return state["items"]
 
 
+DROP_ITEMS = ROOT / "dev" / "drop_items.json"      # where items drop and how often, reduced (committed)
+SITE_CARDS = ROOT / "docs" / "cards.json"          # the deck as the site has it: the item names to ask about
+DROP_BATCH = 40                                    # item names asked for in one request of the dropsline bucket
+DROPLINE_ROWS = 5000                               # rows of it a request returns at most
+RATE = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*/\s*(\d[\d,]*(?:\.\d+)?)")
+
+
+def rarity_ns(text):
+    """The N (1 in N) of every rate in a dropsline's "Rarity": "Always" is 1, "1/9.72" is 9.72, a range
+    ("1/30.7-1/28.9") gives both ends, "5%" is 20. A name ("Rare", "Varies") gives none."""
+    text = plain(str(text or ""))
+    if re.fullmatch(r"\s*always\s*", text, re.I):
+        return [1.0]
+    ns = []
+    for top, bottom in RATE.findall(text):
+        try:
+            ns.append(float(bottom.replace(",", "")) / float(top.replace(",", "")))
+        except (ValueError, ZeroDivisionError):
+            pass
+    ns += [100 / float(p) for p in re.findall(r"(\d+(?:\.\d+)?)\s*%", text) if float(p) > 0]
+    return ns
+
+
+def historical_source(name):
+    """Whether a dropline's source is one the wiki hides by default ("WildyWyrm (2011, historical)")."""
+    return bool(re.search(r"historical|non-permanent", name or "", re.I))
+
+
+def dropline_kept(row):
+    """The part of a dropline row worth keeping: (item name in lower case, [source, rarity, kinds, levels]),
+    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level"."""
+    name = plain(str(row.get("item_name") or "")).lower()
+    try:
+        line = json.loads(row.get("drop_json") or "{}")
+    except ValueError:
+        return None
+    if not name:
+        return None
+    return name, [str(row.get("page_name") or ""), str(line.get("Rarity") or ""), line.get("Drop type"), line.get("Drop level")]
+
+
+# Kinds of source that hand an item over indirectly: a reward, a shop's stock, a Squeal of Fortune or
+# Treasure Hunter prize, a search. A chest that gives 1,497 in 1,500 says nothing about how hard the item is
+# to get, so these are left out.
+INDIRECT_KINDS = {"reward", "store", "sof", "th", "search"}
+
+
+def source_difficulty(kinds, groups):
+    """(tier, combat level, requirement) of one source: a monster's combat level (COMBAT_BANDS) and the
+    highest level any other kind asks for (Slayer to kill it, Hunter to catch it; LEVEL_BANDS), the tier
+    the higher of the two (0 common to 3 epic). The lowest level of a kind is used (a source with
+    several versions). None for a source that gives no level."""
+    combat, req = None, None
+    for kind, group in zip(kinds, groups):
+        numbers = [n for n in (group if isinstance(group, list) else [group]) if isinstance(n, (int, float))]
+        if numbers and isinstance(kind, str):
+            if kind == "combat":
+                combat = min(numbers)
+            else:
+                req = max(req or 0, min(numbers))
+    if combat is None and req is None:
+        return None
+    tier = max(RARITIES.index(band(combat or 0, COMBAT_BANDS)), RARITIES.index(band(req or 0, LEVEL_BANDS)))
+    return tier, combat, req
+
+
+def reduce_drops(rows):
+    """{ item name in lower case: {"common": the most common rate's N, "rarest": the rarest rate's N,
+    "sources": how many lines, "levels": the lowest level any source asks, by kind, "easy": the easiest
+    source's {"combat", "req"} (see source_difficulty)} } from the lines
+    kept for each item (dropline_kept). Sources the wiki hides (historical_source) and indirect ones
+    (INDIRECT_KINDS) are left out. A line's
+    "Drop level" is a list of levels for each kind in its "Drop type": [[85], [65]] with ["combat",
+    "slayer"] is a monster of combat level 85 that needs Slayer 65 to kill."""
+    items = {}
+    for name, lines in rows.items():
+        for source, rarity, kinds, groups in lines:
+            if historical_source(source) or (isinstance(kinds, list) and kinds and set(kinds) <= INDIRECT_KINDS):
+                continue
+            item = items.setdefault(name, {"common": None, "rarest": None, "sources": 0})
+            item["sources"] += 1
+            ns = rarity_ns(rarity)
+            if ns:
+                low, high = round(min(ns), 1), round(max(ns), 1)
+                item["common"] = low if item["common"] is None else min(item["common"], low)
+                item["rarest"] = high if item["rarest"] is None else max(item["rarest"], high)
+            if isinstance(kinds, list) and isinstance(groups, list):
+                hard = source_difficulty(kinds, groups)
+                if hard and ("easy" not in item or hard[0] < item["_tier"]):
+                    item["_tier"] = hard[0]
+                    item["easy"] = {key: value for key, value in (("combat", hard[1]), ("req", hard[2])) if value}
+                for kind, group in zip(kinds, groups):
+                    numbers = [n for n in (group if isinstance(group, list) else [group]) if isinstance(n, (int, float))]
+                    if numbers and isinstance(kind, str):
+                        levels = item.setdefault("levels", {})
+                        levels[kind] = min(levels.get(kind, min(numbers)), min(numbers))
+    for item in items.values():
+        item.pop("_tier", None)
+    return items
+
+
+def write_drop_items(items):
+    """dev/drop_items.json, one item to a line in name order (a whole number written as one)."""
+    def tidy(item):
+        return {k: (int(v) if isinstance(v, float) and v == int(v) else v) for k, v in item.items()}
+    lines = [f"  {json.dumps(name, ensure_ascii=False)}: {json.dumps(tidy(items[name]))}" for name in sorted(items)]
+    DROP_ITEMS.write_bytes(("{\n" + ",\n".join(lines) + "\n}\n").encode("utf-8"))
+
+
+def fetch_item_drops(wiki, names, refresh):
+    """Where each of these items drops and how often, from the dropsline bucket (the table the wiki's
+    "Drop sources" shows on an item's page, which is not in the page's text), `DROP_BATCH` names to a
+    request and more requests for a batch with more than `DROPLINE_ROWS` rows. The lines worth keeping
+    (dropline_kept: source, rate, kinds and levels) are in dev/wiki_cache/buckets/dropsline_rows.json,
+    with the names done, so a run the request limit stops carries on, and a rule about what to keep
+    or count (reduce_drops) can change without asking again. The reduced result is written to
+    dev/drop_items.json. Returns (the items, whether every name was asked)."""
+    state = None if refresh else read_cache("buckets", "dropsline_rows")
+    if state is None:
+        state = {"asked": [], "rows": {}}
+    asked = set(state["asked"])
+    todo = [name for name in names if name not in asked]
+    print(f"{len(names)} items, {len(todo)} still to ask about")
+    for start in range(0, len(todo), DROP_BATCH):
+        batch = todo[start:start + DROP_BATCH]
+        either = ", ".join("{'item_name', " + json.dumps(name, ensure_ascii=False) + "}" for name in batch)
+        found, offset = {}, 0
+        while True:
+            answer = wiki.get({"action": "bucket", "query": (
+                f"bucket('dropsline').select('item_name', 'page_name', 'drop_json').where(bucket.Or({either}))"
+                f".limit({DROPLINE_ROWS}).offset({offset}).run()")})
+            if answer is None:
+                print("request limit reached: run again to carry on")
+                return reduce_drops(state["rows"]), False
+            rows = answer.get("bucket", [])
+            for row in rows:
+                kept = dropline_kept(row)
+                if kept:
+                    found.setdefault(kept[0], []).append(kept[1])
+            offset += len(rows)
+            if len(rows) < DROPLINE_ROWS:
+                break
+        state["rows"].update(found)
+        state["asked"] += batch
+        write_cache("buckets", "dropsline_rows", state)
+        print(f"  {len(state['asked'])} of {len(names)} items asked, {len(state['rows'])} with a source")
+    items = reduce_drops(state["rows"])
+    write_drop_items(items)
+    return items, True
+
+
+_drop_items = None
+
+
+def drop_items():
+    """Where items drop (dev/drop_items.json, see fetch_item_drops), by item name in lower case; read once."""
+    global _drop_items
+    if _drop_items is None:
+        _drop_items = json.loads(DROP_ITEMS.read_text(encoding="utf-8")) if DROP_ITEMS.exists() else {}
+    return _drop_items
+
+
+def common_drop(name, drops=None):
+    """N for an item's most common drop rate: from every source the wiki lists (dev/drop_items.json), else
+    from the monster pages read (`drops`, dev/wiki_cache/drops.json). None if neither knows one."""
+    item = drop_items().get(name.lower())
+    if item and item.get("common"):
+        return item["common"]
+    return (drops or {}).get(name.lower())
+
+
 GEP_BATCH = 25       # prices asked for in one request
 GEP_MARK = "@@"      # put round each answer so they can be told apart
 
@@ -1593,7 +1799,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # Banana tree seed has one that names Farming and no level)
     if grown_with and (not made_with or level is None):
         made_with, level = list(made_with) + [w for w in grown_with if w not in made_with], grown_level
-    gathered_with, gathered_level = gather_requirements(page.get("text", ""), set(words["skills"]))
+    gathered_with, gathered_level = gather_requirements(page.get("text", ""), set(words["skills"]),
+                                                        page.get("categories", []))
     if gathered_with and (not made_with or level is None):
         made_with, level = list(made_with) + [w for w in gathered_with if w not in made_with], gathered_level
     skills = list(made_with) + [w for w in worn_with if w not in made_with]
@@ -1622,8 +1829,12 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         tags["membership"] = membership
 
     categories = [c.lower() for c in page.get("categories", [])]
+    sold = sold_in_shop(name)
+    # (an item that no recipe, gathering, planting or wearing gives a level for, and that no shop sells, is only
+    # got from what drops it: how hard the easiest source is to reach says how hard the item is to get)
+    easiest = (drop_items().get(name.lower()) or {}).get("easy") if level is None and not sold else None
     rarity, why = item_rarity(
-        level=level, price=price, drop=round(drop) if drop else None, shop=sold_in_shop(name),
+        level=level, price=price, drop=round(drop) if drop else None, shop=sold, source=easiest,
         pet=any(PET_CATEGORY.search(c) for c in categories),
         discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
     notes.append("rarity is a guess: " + ", ".join(why))
@@ -2713,11 +2924,19 @@ def main():
     parser.add_argument("--subcategories", action="append", default=[])
     parser.add_argument("--bucket", action="append", default=[])
     parser.add_argument("--shops", action="store_true")
+    parser.add_argument("--item-drops", action="store_true")
     args = parser.parse_args()
     if args.subcategories:
         return show_subcategories(args)
     if args.bucket:
         return show_buckets(args)
+    if args.item_drops:
+        wiki = make_wiki(args)
+        cards = json.loads(SITE_CARDS.read_text(encoding="utf-8"))["cards"]
+        names = sorted({card["name"] for card in cards if card["kind"] == "item"})
+        items, done = fetch_item_drops(wiki, names, args.refresh)
+        print(f"{len(items)} items with a source{'' if done else ' so far'}; {args.max_requests - wiki.left} requests made")
+        return 0
     if args.shops:
         wiki = make_wiki(args)
         items = fetch_shops(wiki, args.refresh)
@@ -2856,7 +3075,7 @@ def main():
         if page is None:
             continue
         made, reason = candidate(page, names, words, prices.get(price_names.get(title)),
-                                drops.get((pages[title].get('title') or title).lower()))
+                                common_drop(pages[title].get('title') or title, drops))
         if made is not None:
             made["sources"] = candidate_sources(made, sources[title], filters, words)
             if not made["sources"]:
