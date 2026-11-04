@@ -13,6 +13,7 @@
 -- Lua console with log().
 
 local Storage = require("core/storage")
+local Identity = require("core/identity")
 local Earning = require("core/earning")
 local PackWindow = require("ui/packwindow")
 local Viewer = require("ui/viewer")
@@ -28,6 +29,15 @@ if not devLoaded then
     Dev = nil
 end
 
+-- The dev copy and a released copy of the plugin share one PersistentDB, so the dev copy keeps
+-- its collections under their own keys.
+if Dev ~= nil then
+    Storage.setProfileSuffix("-dev")
+end
+
+-- Starts looking for the tracking id (see core/identity.lua).
+Identity.start(Dev ~= nil)
+
 -- True while the development tools are in use (see applyDevTools below).
 local function devOn()
     return Dev ~= nil and Dev.active
@@ -37,7 +47,7 @@ end
 -- changes are pending, so frequent changes such as XP gains do not save every tick.
 local SAVE_INTERVAL_TICKS = 10
 
--- Set while a character is logged in: { name = "...", state = <collection> }
+-- Set while a character is logged in: { name = "...", key = "<storage key>", state = <collection> }
 local session = nil
 local ticksSinceSave = 0
 local ticksSinceLoad = 0
@@ -62,18 +72,19 @@ end
 -- Saves the current collection if it has unsaved changes.
 local function saveSession()
     if session ~= nil and session.state.dirty then
-        if Storage.save(session.name, session.state) then
+        if Storage.save(session.key, session.state) then
             session.state.dirty = false
         end
     end
 end
 
--- Loads the collection for a newly logged-in character.
-local function startSession(name)
-    session = { name = name, state = Storage.load(name) }
+-- Loads the collection for a newly logged-in character. profile comes from Identity.profile.
+local function startSession(profile)
+    session = { name = profile.name, key = profile.key, state = Storage.load(profile.key) }
     ticksSinceSave = 0
     ticksSinceLoad = 0
-    log("loaded collection for", name, "- credits:", session.state.credits,
+    log("loaded collection for", profile.name, "(" .. profile.key .. ", " .. profile.how .. ") - credits:",
+        session.state.credits,
         "unique cards:", Storage.countUniqueOwned(session.state),
         "variants:", Storage.countVariantsOwned(session.state))
 
@@ -96,9 +107,9 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
     SettingsPage.refresh()
     Hub.refresh()
     if session == nil then
-        local name = currentCharacterName()
-        if name ~= nil then
-            startSession(name)
+        local profile = Identity.profile(currentCharacterName())
+        if profile ~= nil then
+            startSession(profile)
         end
         return
     end
@@ -130,6 +141,7 @@ end)
 Event.GameStateChanged.Subscribe("cardcollector_state", function(stateEvent)
     if stateEvent.newState == GameState.LOGINSCREEN or stateEvent.newState == GameState.LOBBY then
         endSession()
+        Identity.reset()
     end
 end)
 
