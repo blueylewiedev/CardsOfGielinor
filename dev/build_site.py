@@ -38,6 +38,7 @@ PET PICTURES. A pet's File:<name>.png is its tiny inventory icon (about 30 pixel
 enlarge. The wiki also has File:<name> (pet).png, the pet as it walks about, at a usable size:
     python dev/build_site.py --pets       fetch those for the pet cards (once each; what the wiki does not
                                           have is remembered), keep them like the item pictures, process them
+Pets whose file is named otherwise are listed in dev/pet_pictures.json.
 """
 
 import argparse
@@ -58,6 +59,7 @@ IMAGES_JSON = IMG / "images.json"
 CARDS_JSON = DOCS / "cards.json"
 IMAGE_WIDTH = 160           # the NPC thumbnails' width in pixels (the cards show them at about 120)
 RAW = ROOT / "dev" / "wiki_cache" / "img_raw"    # the item pictures as the wiki has them (not committed)
+PET_FILES = ROOT / "dev" / "pet_pictures.json"   # { pet card id: the wiki file to use }
 RAW_WIDTH = 480             # an item picture wider than this is asked for scaled down to it
 LOOKUP_BATCH = 50           # file titles per API request (the most the API allows)
 WIKI_PAGE = "https://runescape.wiki/w/"
@@ -647,7 +649,9 @@ def fetch_hires(cards, wiki, images):
 def fetch_pets(cards, wiki, images):
     """Replaces the small picture of each pet card with the wiki's "<name> (pet).png" where there is
     one, saved at full size in RAW and processed like an item's. Each file is looked up once: the
-    ones the wiki has not got are remembered in images["pets_none"] and not asked for again."""
+    ones the wiki has not got are remembered in images["pets_none"] and not asked for again.
+    A pet whose file has another name is listed in dev/pet_pictures.json (card id: file name)."""
+    names = json.loads(PET_FILES.read_text(encoding="utf-8")) if PET_FILES.exists() else {}
     have = images.setdefault("cards", {})
     none = images.setdefault("pets_none", {})
     todo = []
@@ -658,7 +662,7 @@ def fetch_pets(cards, wiki, images):
         if entry and entry.get("pet"):
             continue
         name = re.sub(r"\s*\([^)]*\)$", "", card.get("name") or card["id"]).strip()
-        file = f"{name} (pet).png"
+        file = names.get(card["id"]) or f"{name} (pet).png"
         if none.get(card["id"]) == file:
             continue
         todo.append((card, file))
