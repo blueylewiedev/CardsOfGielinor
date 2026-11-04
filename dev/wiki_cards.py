@@ -1257,11 +1257,13 @@ def farming_level(text):
 
 def gather_requirements(text, skill_words, categories=()):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
-    the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
+    the logs, fish or ore on its page (the main catch's `level`: a version has level1, level2..., and
+    a fish's swarm and whirlpool versions catch it far below its level). An ore's
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
     beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
     other skill in the text is something else), or "no Mining requirement", which is level 1. For a
-    grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
+    fish with no infobox of its own (a page in the category Fish) it is the sentence "requires level 95
+    Fishing to catch". For a grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
     not the Herblore level to clean it, which is a use. Only how an item is obtained counts, never what
     it is used for (the Smithing level to smelt corrupted ore). ([], None) if none."""
     text = text or ""
@@ -1269,8 +1271,12 @@ def gather_requirements(text, skill_words, categories=()):
         _, inside = find_template(text, [name])
         if inside is None or skill not in skill_words:
             continue
-        levels = [int(m.group()) for key, value in template_fields(inside).items()
-                  if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m]
+        found = {key: int(m.group()) for key, value in template_fields(inside).items()
+                 if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m}
+        # (the main catch: a fish's page has a version for each spot and the swarm and whirlpool ones, which
+        # catch it far below its level, so the first version's level, else the plain `level`, not the lowest)
+        main = found.get("level1", found.get("level", min(found.values()) if found else None))
+        levels = [main] if main is not None else []
         if not levels:
             said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?" + skill
                              + r"\b", text, re.I)
@@ -1279,7 +1285,12 @@ def gather_requirements(text, skill_words, categories=()):
             elif re.search(r"\bno\s+(?:\[\[)?" + skill + r"(?:\]\])?\s+requirement", text, re.I):
                 levels = [1]
         if levels:
-            return [skill], min(levels)
+            return [skill], levels[0]
+    if "Fish" in categories and "fishing" in skill_words:
+        # (a fish with no infobox of its own: Raw tiger shark "requires level 95 Fishing to catch")
+        said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?Fishing\b", text, re.I)
+        if said:
+            return ["fishing"], int(said.group(1))
     if "Herbs" in categories and "farming" in skill_words:
         level = farming_level(text)
         if level is not None:
@@ -1505,7 +1516,9 @@ def historical_source(name):
 
 def dropline_kept(row):
     """The part of a dropline row worth keeping: (item name in lower case, [source, rarity, kinds, levels]),
-    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level"."""
+    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level". The
+    rarity is the line's "Rarity" followed by its alternative rates ("Alt Rarities": the Camel staff's
+    1/10,000 is 1/1,940 on a Slayer task, shown as the range 1/10,000-1/1,940), all of which count."""
     name = plain(str(row.get("item_name") or "")).lower()
     try:
         line = json.loads(row.get("drop_json") or "{}")
@@ -1513,7 +1526,13 @@ def dropline_kept(row):
         return None
     if not name:
         return None
-    return name, [str(row.get("page_name") or ""), str(line.get("Rarity") or ""), line.get("Drop type"), line.get("Drop level")]
+    rarity = str(line.get("Rarity") or "")
+    alternatives = [str(a.get("text") or "") for a in line.get("Alt Rarities") or [] if isinstance(a, dict)]
+    if not alternatives and line.get("Alt Rarity"):
+        alternatives = [str(line["Alt Rarity"])]
+    if alternatives and not re.fullmatch(r"\s*always\s*", rarity, re.I):
+        rarity = " ".join([rarity] + alternatives)
+    return name, [str(row.get("page_name") or ""), rarity, line.get("Drop type"), line.get("Drop level")]
 
 
 # Kinds of source that hand an item over indirectly: a reward, a shop's stock, a Squeal of Fortune or
