@@ -33,6 +33,11 @@ no internet, so it can be tuned and run again as often as wanted:
     python dev/build_site.py --hires      fetch the full size pictures of the items that only have a
                                           small thumbnail (once; the same politeness), then process them
     python dev/build_site.py --process    process the saved full size pictures again (no internet)
+
+PET PICTURES. A pet's File:<name>.png is its tiny inventory icon (about 30 pixels), far too small to
+enlarge. The wiki also has File:<name> (pet).png, the pet as it walks about, at a usable size:
+    python dev/build_site.py --pets       fetch those for the pet cards (once each; what the wiki does not
+                                          have is remembered), keep them like the item pictures, process them
 """
 
 import argparse
@@ -579,7 +584,7 @@ def process_all(cards, images):
     done = turned = 0
     for card in cards:
         entry = images.get("cards", {}).get(card["id"])
-        if (card.get("kind") or "npc") != "item" or not entry or not entry.get("raw"):
+        if not entry or not entry.get("raw"):
             continue
         note = process_card(card, entry)
         if note is not None:
@@ -639,6 +644,63 @@ def fetch_hires(cards, wiki, images):
     print(f"{got} fetched, {copied} copied")
 
 
+def fetch_pets(cards, wiki, images):
+    """Replaces the small picture of each pet card with the wiki's "<name> (pet).png" where there is
+    one, saved at full size in RAW and processed like an item's. Each file is looked up once: the
+    ones the wiki has not got are remembered in images["pets_none"] and not asked for again."""
+    have = images.setdefault("cards", {})
+    none = images.setdefault("pets_none", {})
+    todo = []
+    for card in cards:
+        if "pet" not in ((card.get("tags") or {}).get("category") or []):
+            continue
+        entry = have.get(card["id"])
+        if entry and entry.get("pet"):
+            continue
+        name = re.sub(r"\s*\([^)]*\)$", "", card.get("name") or card["id"]).strip()
+        file = f"{name} (pet).png"
+        if none.get(card["id"]) == file:
+            continue
+        todo.append((card, file))
+    print(f"{len(todo)} pet cards to look up")
+    RAW.mkdir(parents=True, exist_ok=True)
+    got = 0
+    for start in range(0, len(todo), LOOKUP_BATCH):
+        batch = todo[start:start + LOOKUP_BATCH]
+        found = look_up(wiki, ["File:" + file for _, file in batch], RAW_WIDTH)
+        if found is None:
+            print("request limit reached: run again to carry on")
+            break
+        for card, file in batch:
+            hit = found.get("File:" + file)
+            if not hit:
+                none[card["id"]] = file
+                print(f"  {card['id']}: the wiki has no {file}")
+                continue
+            title, url, mime = hit[:3]
+            data = download(wiki, url)
+            if data is None:
+                print("request limit reached: run again to carry on")
+                write_images(images)
+                print(f"{got} pet pictures saved")
+                return
+            suffix = ".gif" if "gif" in mime else (".jpg" if "jpeg" in mime else ".png")
+            old = have.get(card["id"])
+            entry = {"file": card["id"] + suffix, "title": title, "name": card.get("name") or card["id"],
+                     "raw": card["id"] + suffix, "pet": True}
+            (RAW / entry["raw"]).write_bytes(data)
+            if old and old.get("file") and old["file"] != entry["file"] and (IMG / old["file"]).exists():
+                (IMG / old["file"]).unlink()
+            have[card["id"]] = entry
+            process_card(card, entry)
+            images.get("missing", {}).pop(card["id"], None)
+            none.pop(card["id"], None)
+            got += 1
+        write_images(images)
+    write_images(images)
+    print(f"{got} pet pictures saved")
+
+
 def make_wiki(args):
     sys.path.insert(0, str(ROOT / "dev"))
     import wiki_cards
@@ -656,13 +718,14 @@ def main():
     parser.add_argument("--images", action="store_true", help="fetch the pictures not saved yet from the wiki")
     parser.add_argument("--refresh-images", action="store_true", help="with --images: look every card's picture up again")
     parser.add_argument("--hires", action="store_true", help="fetch the full size pictures of the items that only have a thumbnail, then process them")
+    parser.add_argument("--pets", action="store_true", help="fetch the full size '<name> (pet).png' picture of each pet card, then process it")
     parser.add_argument("--process", action="store_true", help="process the saved full size item pictures again (no internet)")
     parser.add_argument("--contact", default="", help="how the wiki's admins can reach you (added to the User-Agent)")
     parser.add_argument("--max-requests", type=int, default=200, help="the most requests a run of --images makes (each picture is one, plus one per 50 looked up)")
     parser.add_argument("--check", action="store_true", help="only check that docs/cards.json is up to date")
     args = parser.parse_args()
 
-    if args.hires or args.process:
+    if args.hires or args.process or args.pets:
         cards, _, errors = load_deck()
         if errors:
             raise SystemExit("Cannot read the deck:\n  " + "\n  ".join(errors))
@@ -671,7 +734,12 @@ def main():
             wiki = make_wiki(args)
             fetch_hires(cards, wiki, images)
             print(f"{args.max_requests - wiki.left} requests made")
-        process_all(cards, images)
+        if args.pets:
+            wiki = make_wiki(args)
+            fetch_pets(cards, wiki, images)
+            print(f"{args.max_requests - wiki.left} requests made")
+        else:
+            process_all(cards, images)
     elif args.images:
         cards, _, errors = load_deck()
         if errors:
