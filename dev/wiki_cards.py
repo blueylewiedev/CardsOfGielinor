@@ -73,6 +73,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     cached in dev/wiki_cache/buckets/ (a bucket is only asked for once). Makes no
                     candidates and does not change the remembered categories. e.g.
                     python dev/wiki_cards.py --bucket Dropsline --bucket "Infobox seed"
+  --shops           what the wiki's shops sell, from its storeline bucket: for each item the cheapest
+                    price in coins, how many shops sell it, whether any never runs out and whether
+                    they are all members only. Read 5,000 rows to a request (resumes if the request
+                    limit stops it), kept in dev/wiki_cache/buckets/storeline.json and written
+                    reduced to dev/shop_items.json, which is committed (an item a shop sells is not
+                    rare). Asked for once; --refresh asks again. Makes no candidates.
 
 The categories, regions and pages asked for are remembered (dev/wiki_cache/sources.json), and the
 candidates are made from all of them each run, from the cache, so asking for more adds to the
@@ -1318,6 +1324,75 @@ def linked_pages(text, until=None):
         if title and ":" not in title and title not in titles:
             titles.append(title)
     return titles
+
+
+SHOP_ITEMS = ROOT / "dev" / "shop_items.json"      # what the shops sell, reduced (committed: see fetch_shops)
+STORELINE_ROWS = 5000                               # rows of the storeline bucket asked for in one request
+
+
+def shop_price(text):
+    """A shop's price as a whole number of coins ("1,500" is 1500), or None for words ("not", "free")."""
+    text = (text or "").strip().replace(",", "")
+    return int(text) if re.fullmatch(r"\d+", text) else None
+
+
+def fold_storeline(items, row):
+    """Adds one row of the storeline bucket to `items`: { item name in lower case: {"price": the
+    cheapest, "shops": how many sell it, "infinite": whether any never runs out, "members": whether
+    every one is members only} }. Rows of shops that are gone, and prices in anything but coins
+    (RuneCoins, tokens, points), are left out. A price of 0 is a free starter item (Tutorial Island's
+    bronze dagger), not what the item costs: it counts as a shop but not as the price."""
+    if row.get("is_historical"):
+        return
+    name = plain(str(row.get("sold_item") or "")).lower()
+    currency = row.get("store_currency") or []
+    currency = [currency] if isinstance(currency, str) else currency
+    price = shop_price(str(row.get("store_sell_price") or ""))
+    if not name or "coins" not in [str(c).lower() for c in currency] or price is None:
+        return
+    item = items.setdefault(name, {"price": None, "shops": 0, "infinite": False, "members": True})
+    if price > 0:
+        item["price"] = price if item["price"] is None else min(item["price"], price)
+    item["shops"] += 1
+    item["infinite"] = item["infinite"] or bool(row.get("store_stock_infinite"))
+    item["members"] = item["members"] and bool(row.get("is_members_only"))
+
+
+def write_shop_items(items):
+    """dev/shop_items.json, one item to a line in name order, so a change shows only that item."""
+    lines = [f"  {json.dumps(name, ensure_ascii=False)}: {json.dumps(items[name], ensure_ascii=False)}"
+             for name in sorted(items)]
+    SHOP_ITEMS.write_bytes(("{\n" + ",\n".join(lines) + "\n}\n").encode("utf-8"))
+
+
+def fetch_shops(wiki, refresh):
+    """What the shops sell (see fold_storeline), from the storeline bucket, 5,000 rows to a request.
+    Only the columns the rarity rules need are asked for, and each row is folded into its item and
+    dropped, so what is kept is a record per item, not the rows. The work so far is kept in
+    dev/wiki_cache/buckets/storeline.json (with the offset, so a run the request limit stops carries
+    on), and a finished read is written to dev/shop_items.json. Returns the items."""
+    state = None if refresh else read_cache("buckets", "storeline")
+    if state is None:
+        state = {"complete": False, "offset": 0, "rows": 0, "items": {}}
+    while not state["complete"]:
+        answer = wiki.get({"action": "bucket", "query": (
+            "bucket('storeline').select('sold_item', 'store_sell_price', 'store_currency', 'store_stock_infinite',"
+            " 'is_members_only', 'is_historical')"
+            f".orderBy('sold_item', 'asc').limit({STORELINE_ROWS}).offset({state['offset']}).run()")})
+        if answer is None:
+            print("request limit reached: run again to carry on")
+            break
+        rows = answer.get("bucket", [])
+        for row in rows:
+            fold_storeline(state["items"], row)
+        state["offset"] += len(rows)
+        state["rows"] += len(rows)
+        state["complete"] = len(rows) < STORELINE_ROWS
+        write_cache("buckets", "storeline", state)
+        print(f"  {state['rows']} rows read, {len(state['items'])} items on sale")
+    if state["complete"]:
+        write_shop_items(state["items"])
+    return state["items"]
 
 
 GEP_BATCH = 25       # prices asked for in one request
@@ -2588,11 +2663,17 @@ def main():
     parser.add_argument("--all-bosses", action="store_true")
     parser.add_argument("--subcategories", action="append", default=[])
     parser.add_argument("--bucket", action="append", default=[])
+    parser.add_argument("--shops", action="store_true")
     args = parser.parse_args()
     if args.subcategories:
         return show_subcategories(args)
     if args.bucket:
         return show_buckets(args)
+    if args.shops:
+        wiki = make_wiki(args)
+        items = fetch_shops(wiki, args.refresh)
+        print(f"{len(items)} items on sale in coins; {args.max_requests - wiki.left} requests made")
+        return 0
     if args.all_bosses:
         args.drops_from.append("Bosses")
         args.until = args.until or "Quest bosses"
