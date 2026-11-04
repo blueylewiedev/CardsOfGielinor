@@ -692,10 +692,12 @@ local function suggestNames(registry, label, npcName)
     end
 end
 
--- Logs whether each card's NPC (or item) can be resolved by the game.
+-- Logs each card whose NPC (or item) cannot be resolved by the game, then how many were checked.
 -- Run this once on a developer world, then fix any NOT FOUND by renaming the card's id to
--- the config name, or by setting `npc` (or `item`) in its art entry.
+-- the config name, or by setting `npc` (or `item`) in its art entry. The cards that are found
+-- are not logged one by one: there are thousands, and they bury everything else in the console.
 function Cards.checkArtNames()
+    local notFound = 0
     for _, card in ipairs(Cards.list) do
         local art = Cards.getArt(card)
         local isItem = Cards.kindOf(card) == "item"
@@ -707,9 +709,8 @@ function Cards.checkArtNames()
             return id.NPC[name]
         end)
         local valid = isItem and Cards.isValidObjId(value) or (not isItem and Cards.isValidNpcId(value))
-        if ok and valid then
-            log("art: ok", card.id, name, "->", tostring(value))
-        else
+        if not (ok and valid) then
+            notFound = notFound + 1
             log("art: NOT FOUND", card.id, name, "->", tostring(value))
             if isItem then
                 suggestNames(id.Obj, "item", name)
@@ -718,6 +719,7 @@ function Cards.checkArtNames()
             end
         end
     end
+    log("art: checked", #Cards.list, "cards,", notFound, "not found")
 end
 
 return Cards
