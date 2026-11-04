@@ -4,7 +4,8 @@
 Usage:  python build_release.py <plugin folder> <output folder>
 
 Copies the plugin folder to the output folder, leaving out the development tools (the `dev`
-folder) and anything that is not part of the plugin (notes, backups, test files). The plugin
+folder), the card browser website (the `docs` folder, which GitHub Pages serves and the plugin
+never reads) and anything that is not part of the plugin (notes, backups, test files). The plugin
 checks for `dev/dev.lua` when it starts, so without that folder it runs as the released version.
 """
 import shutil
@@ -12,7 +13,7 @@ import sys
 from pathlib import Path
 
 # Folders and file types that never go into the release.
-LEFT_OUT_FOLDERS = {"dev", ".git", "__pycache__", "notes"}
+LEFT_OUT_FOLDERS = {"dev", "docs", ".git", "__pycache__", "notes"}
 LEFT_OUT_SUFFIXES = {".md", ".bak", ".py", ".pyc"}
 
 
@@ -32,9 +33,10 @@ def main():
                 if name in LEFT_OUT_FOLDERS or Path(name).suffix in LEFT_OUT_SUFFIXES]
 
     shutil.copytree(source, target, ignore=ignore)
-    if (target / "dev").exists():
-        print("The dev folder is still in the release!")
-        return 1
+    for folder in ("dev", "docs"):
+        if (target / folder).exists():
+            print(f"The {folder} folder is still in the release!")
+            return 1
     print("Release written to", target)
     for path in sorted(target.rglob("*")):
         if path.is_file():
