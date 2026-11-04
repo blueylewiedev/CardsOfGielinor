@@ -32,7 +32,7 @@ Set.cards = {
         tags = { regions = { "kandarin" }, category = { "weapon", "melee_gear", "minigame", "tool" }, membership = { "p2p" } },
     },
     {
-        id = "good_locator", name = "Good locator", kind = "item", rarity = "rare",
+        id = "good_locator", name = "Good locator", kind = "item", rarity = "uncommon",
         desc = "Helps me to get to useful resources.",
         art = { item = "MOB_REWARD_LOCATOR3", cam = { yaw = -7.80, dist = 525, fov = 25, ty = -20, tx = 20 } },
         tags = { skills = { "divination" }, category = { "tool" }, membership = { "p2p" } },
@@ -50,7 +50,7 @@ Set.cards = {
         tags = { skills = { "divination" }, category = { "tool" }, membership = { "p2p" } },
     },
     {
-        id = "superior_locator", name = "Superior locator", kind = "item", rarity = "epic",
+        id = "superior_locator", name = "Superior locator", kind = "item", rarity = "rare",
         desc = "Helps me to get to useful resources.",
         art = { item = "MOB_REWARD_LOCATOR4", cam = { yaw = -7.68, pitch = 1.04, dist = 359, fov = 35, ty = -10, tx = 18 } },
         tags = { skills = { "divination" }, category = { "tool" }, membership = { "p2p" } },
@@ -62,19 +62,19 @@ Set.cards = {
         tags = { regions = { "kandarin" }, category = { "tool" }, membership = { "p2p" } },
     },
     {
-        id = "sacred_clay_butterfly_net", name = "Sacred clay butterfly net", kind = "item", rarity = "rare",
+        id = "sacred_clay_butterfly_net", name = "Sacred clay butterfly net", kind = "item", rarity = "uncommon",
         desc = "Your sacred clay tool has transformed into a butterfly net.",
         art = { item = "SC_REWARD_BUTTERFLY_NET", cam = { yaw = -8.02, dist = 698, fov = 35, ty = 39, tx = 10 } },
         tags = { skills = { "hunter" }, category = { "minigame", "tool" }, membership = { "p2p" } },
     },
     {
-        id = "volatile_clay_butterfly_net", name = "Volatile clay butterfly net", kind = "item", rarity = "rare",
+        id = "volatile_clay_butterfly_net", name = "Volatile clay butterfly net", kind = "item", rarity = "uncommon",
         desc = "Your volatile tool wants to catch some butterflies.",
         art = { item = "SC_REWARD_VOLATILE_BUTTERFLY_NET", cam = { yaw = -6.06, dist = 768, fov = 35, ty = 4, tx = 14 } },
         tags = { skills = { "hunter" }, category = { "tool", "minigame" }, membership = { "p2p" } },
     },
     {
-        id = "inferno_adze", name = "Inferno adze", kind = "item", rarity = "legendary",
+        id = "inferno_adze", name = "Inferno adze", kind = "item", rarity = "epic",
         desc = "Danger: risk of fire.",
         art = { item = "FIREDUP_ADZE", cam = { yaw = -7.36, dist = 577, fov = 35, ty = 32, tx = -3 } },
         tags = { skills = { "firemaking", "mining" }, category = { "tool", "minigame" }, membership = { "p2p" } },
@@ -98,7 +98,7 @@ Set.cards = {
         tags = { skills = { "farming" }, category = { "weapon", "melee_gear", "sword", "quest_item", "tool" }, membership = { "p2p" } },
     },
     {
-        id = "opal_machete", name = "Opal machete", kind = "item", rarity = "common",
+        id = "opal_machete", name = "Opal machete", kind = "item", rarity = "rare",
         desc = "A jungle specific slashing device.",
         art = { item = "MACHETTE_OPAL", cam = { yaw = -1.13, dist = 296, fov = 45 } },
         tags = { skills = { "woodcutting" }, category = { "weapon", "melee_gear", "sword", "tool" }, membership = { "p2p" } },

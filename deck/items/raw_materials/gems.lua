@@ -8,7 +8,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "p2p" } },
     },
     {
-        id = "onyx_dust", name = "Onyx dust", kind = "item", rarity = "rare",
+        id = "onyx_dust", name = "Onyx dust", kind = "item", rarity = "common",
         desc = "Fine dust of an onyx gem, can be transmuted into an uncut onyx.",
         art = { item = "ONYX_DUST", cam = { yaw = 1.20, pitch = 1.40, dist = 525, fov = 20 } },
         tags = { category = { "raw_material" }, membership = { "p2p" } },
@@ -26,13 +26,13 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "uncut_dragonstone", name = "Uncut dragonstone", kind = "item", rarity = "rare",
+        id = "uncut_dragonstone", name = "Uncut dragonstone", kind = "item", rarity = "uncommon",
         desc = "An uncut dragonstone. Used in Crafting.",
         art = { item = "UNCUT_DRAGONSTONE", cam = { yaw = 7.00, pitch = 1.55, dist = 918, fov = 15 } },
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "p2p" } },
     },
     {
-        id = "uncut_emerald", name = "Uncut emerald", kind = "item", rarity = "uncommon",
+        id = "uncut_emerald", name = "Uncut emerald", kind = "item", rarity = "common",
         desc = "An uncut emerald. Used in Crafting.",
         art = { item = "UNCUT_EMERALD", cam = { yaw = 0.60, pitch = -1.55, dist = 603, fov = 20 } },
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
@@ -80,7 +80,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
     },
     {
-        id = "uncut_ruby", name = "Uncut ruby", kind = "item", rarity = "uncommon",
+        id = "uncut_ruby", name = "Uncut ruby", kind = "item", rarity = "common",
         desc = "An uncut ruby. Used in Crafting.",
         art = { item = "UNCUT_RUBY", cam = { yaw = 0.80, pitch = -1.55, dist = 525, fov = 20 } },
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
@@ -92,7 +92,7 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "raw_material", "gem" }, membership = { "f2p" } },
     },
     { id = "kharidib", name = "Kharid-ib", kind = "item", rarity = "common", desc = "A flawless diamond with a stylised Kharidian heart shape.", art = { item = "OZAN2_DIAMOND", cam = { yaw = -0.40, pitch = 1.45, dist = 525, fov = 20 } }, tags = { category = { "quest_item" }, membership = { "p2p" } } },
-    { id = "red_jewel", name = "Red jewel", kind = "item", rarity = "common", desc = "It gives off a faint red glow.", art = { item = "KHARSHAI_REDJEWEL", cam = { yaw = -0.80, pitch = 1.00, dist = 525, fov = 15 } }, tags = { category = { "quest_item", "fashion" }, membership = { "p2p" } } },
+    { id = "red_jewel", name = "Red jewel", kind = "item", rarity = "epic", desc = "It gives off a faint red glow.", art = { item = "KHARSHAI_REDJEWEL", cam = { yaw = -0.80, pitch = 1.00, dist = 525, fov = 15 } }, tags = { category = { "quest_item", "fashion" }, membership = { "p2p" } } },
 }
 
 return Set
