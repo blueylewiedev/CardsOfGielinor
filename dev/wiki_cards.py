@@ -1262,7 +1262,8 @@ def gather_requirements(text, skill_words, categories=()):
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
     beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
     other skill in the text is something else), or "no Mining requirement", which is level 1. For a
-    grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
+    fish with no infobox of its own (a page in the category Fish) it is the sentence "requires level 95
+    Fishing to catch". For a grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
     not the Herblore level to clean it, which is a use. Only how an item is obtained counts, never what
     it is used for (the Smithing level to smelt corrupted ore). ([], None) if none."""
     text = text or ""
@@ -1285,6 +1286,11 @@ def gather_requirements(text, skill_words, categories=()):
                 levels = [1]
         if levels:
             return [skill], levels[0]
+    if "Fish" in categories and "fishing" in skill_words:
+        # (a fish with no infobox of its own: Raw tiger shark "requires level 95 Fishing to catch")
+        said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?Fishing\b", text, re.I)
+        if said:
+            return ["fishing"], int(said.group(1))
     if "Herbs" in categories and "farming" in skill_words:
         level = farming_level(text)
         if level is not None:
