@@ -1184,14 +1184,17 @@ def seed_patch(text, allowed):
 
 def seed_requirements(text, skill_words):
     """What planting a seed takes, from the Infobox Seed on its page: (skills, level). The skill is
-    the one in brackets after what it grows ("Arbuck (Farming)"), Farming if there is none."""
+    the one in brackets after what it grows ("Arbuck (Farming)"), else Farming: when there is no
+    bracket, or the bracket only tells the wiki's pages apart ("Potato cactus (Plant)")."""
     _, inside = find_template(text or "", ["Infobox Seed"])
     if not inside:
         return [], None
     fields = template_fields(inside)
     found = re.search(r"\d+", plain(fields.get("level", "")))
-    skill = re.search(r"\(([A-Za-z]+)\)", plain(fields.get("grown", "")))
-    word = (skill.group(1) if skill else "farming").lower()
+    bracket = re.search(r"\(([A-Za-z]+)\)", plain(fields.get("grown", "")))
+    word = bracket.group(1).lower() if bracket else "farming"
+    if word not in skill_words:
+        word = "farming"
     return ([word] if word in skill_words else []), (int(found.group()) if found else None)
 
 
@@ -1462,11 +1465,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     if "novelty" in found:
         worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
     grown_with, grown_level = seed_requirements(page.get("text", ""), set(words["skills"]))
-    if grown_with and not made_with:
-        made_with, level = grown_with, grown_level
+    # (the level to plant or gather it also counts when a recipe that makes it gives no level: the
+    # Banana tree seed has one that names Farming and no level)
+    if grown_with and (not made_with or level is None):
+        made_with, level = list(made_with) + [w for w in grown_with if w not in made_with], grown_level
     gathered_with, gathered_level = gather_requirements(page.get("text", ""), set(words["skills"]))
-    if gathered_with and not made_with:
-        made_with, level = gathered_with, gathered_level
+    if gathered_with and (not made_with or level is None):
+        made_with, level = list(made_with) + [w for w in gathered_with if w not in made_with], gathered_level
     skills = list(made_with) + [w for w in worn_with if w not in made_with]
     for s in words["skills"]:
         if s not in skills and any(c.lower() in (s, s + " items") for c in page.get("categories", [])):
