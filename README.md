@@ -49,13 +49,13 @@ each region's set has its own version.
 | | Meat | Not started | |
 | | Herbs | Complete | |
 | | Logs | Complete | |
-| | Ores | Not started | |
+| | Ores | Complete | |
 | | Bones | Not started | |
 | | Hides | Not started | |
-| | Gems | Not started | |
+| | Gems | Complete | |
 | **Processed materials** | Bars | Not started | |
 | | Planks | Not started | |
-| **Seeds** | | Not started | |
+| **Seeds** | | Complete | |
 | **Runes** | | Complete | |
 | **Tools** | | Not started | Pickaxes, hatchets, spades and the like |
 | **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
@@ -96,7 +96,7 @@ each region's set has its own version.
 | | Bolts | Not started | |
 | | Other (spikes) | Not started | |
 | **Decoration** | | In progress | |
-| **Currency** | | Not started | |
+| **Currency** | | In Progress | |
 | **Quest items** | | Not started | |
 | **Craftable** | | Not started | |
 | **Pocket items** | | Not started | |
