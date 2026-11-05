@@ -1864,6 +1864,14 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     if made_with and "ingredient" in category and "raw_material" in category:
         category = ["processed_material" if word == "raw_material" else word for word in category]
         tags["category"] = category
+    # (an intermediate: no category says what it is, a recipe makes it and the page has the table of the recipes that
+    # use it (Uses material list), as the Dry rabbit sandwich, made of bread and rabbit and used to make a rabbit
+    # sandwich. Not being in Food or Drinks is how we know it is not usable as it is)
+    if not category and made_with and "Uses material list" in page.get("text", ""):
+        category = ["processed_material", "ingredient"]
+        tags["category"] = category
+        notes[:] = [n for n in notes if not n.startswith("no category found")]
+        notes.append("an intermediate (made by a recipe, used by others): processed material and ingredient, check it")
     worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
     if "novelty" in found:
         worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
