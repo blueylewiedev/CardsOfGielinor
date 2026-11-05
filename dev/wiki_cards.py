@@ -875,7 +875,7 @@ FOOD_NAME_KINDS = (
     (re.compile(r"\bpies?\b(?! (dish|shell))"), "baked_goods"),
     (re.compile(r"^(?!.*\b(?:potato|dough|oil|sauce)\b).*"
                 r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky|carne|chompy|"
-                r"rabbit|pekin|eeligator|snail)\b"), "meat"),
+                r"rabbit|pekin|eeligator|snail|spider|snake)\b"), "meat"),
     (re.compile(r"\b(cakes?|cheesecake|bread|biscuits?|cookies?|muffins?|tarts?|buns?|rolls?|scones?|doughnuts?|pastry|"
                 r"baguette|croissant|waffles?|flatbread)\b"), "baked_goods"),
     (re.compile(r"\b(potato|potatoes|fruit|berry|berries|apples?|bananas?|oranges?|lemons?|limes?|pineapples?|"
@@ -1834,16 +1834,32 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (a pie no category says is food: Raw admiral pie has only Items and Recipes)
         if not found and FOOD_NAME_KINDS[1][0].search(strip_bracket(name).lower()):
             found.append("food")
-        # (a food no category says the kind of: the name often does. Not an ingredient, which is decided below: in
-        # Cooking with no category of its own that says food, it is one)
+        # (bait, swamp paste and fish offcuts are used up by what they do: consumable, not food)
+        if re.search(r"\b(bait|swamp paste|fish offcuts)$", strip_bracket(name).lower()):
+            found = ["consumable"]
+            notes.append("looks like a consumable (bait, swamp paste): check it")
+        # (dough is made to be baked, not eaten: an intermediate, a processed ingredient)
+        if "food" in found and re.search(r"\bdough\b", strip_bracket(name).lower()):
+            found = ["processed_material", "ingredient"] + [
+                w for w in found if w not in ("food", "meal", "baked_goods", "fruit_veg", "fish", "meat")]
+            notes.append("dough: a processed ingredient, not food: check it")
+        # (a food no category says the kind of: the wiki's Produce is fruit and vegetables, else the name often says.
+        # Not an ingredient, which is decided below: in Cooking with no category of its own that says food, it is one)
         if ("food" in found and (INGREDIENT_CATEGORY not in page.get("categories", []) or "food" in explicit)
                 and not {"meal", "baked_goods", "fruit_veg", "fish", "meat"} & set(found)):
             lowered = strip_bracket(name).lower()
-            for pattern, kind in FOOD_NAME_KINDS:
-                if pattern.search(lowered):
-                    found.append(kind)
-                    notes.append(f"food kind {kind} taken from the name: check it")
-                    break
+            if "Produce" in page.get("categories", []):
+                found.append("fruit_veg")
+            else:
+                for pattern, kind in FOOD_NAME_KINDS:
+                    if pattern.search(lowered):
+                        found.append(kind)
+                        notes.append(f"food kind {kind} taken from the name: check it")
+                        break
+                else:
+                    # (nothing says the kind: most of what is left is a dish, so suggest meal and say it is a guess)
+                    found.append("meal")
+                    notes.append("food kind not found: meal is a guess, check it")
         # (a raw meat or fish is a raw material, not food: raw_materials/meat or fish. A pie or a meal with meat in its
         # name is not)
         raw_kind = ("meat" if "meat" in found and "fish" not in found
@@ -1855,7 +1871,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (any other food named raw or uncooked, or a part-made pie, is raw_food in place of its kind: a raw pie, a raw
         # soup, a raw potato. An ingredient is not: that is decided below)
         if "food" in found:
-            if RAW_NAME.search(name.lower()) or (PART_NAME.search(name.lower()) and "baked_goods" in found):
+            if (RAW_NAME.search(name.lower()) or "Uncooked food" in page.get("categories", [])
+                    or (PART_NAME.search(name.lower()) and "baked_goods" in found)):
                 kinds = ("meal", "baked_goods", "fruit_veg")
                 found = [w for w in found if w not in kinds] + ["raw_food"]
                 notes.append("raw food: not cooked yet: check it")
@@ -1869,6 +1886,10 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             and plain(fields.get("equipable", "")).lower() != "yes"):
         found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_food", "raw_material", "ingredient")]
         notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")
+    # (mined and nothing says what it is: sandstone, granite, rune essence. A raw material, but check it)
+    if not found and "Mining" in page.get("categories", []) and plain(fields.get("equipable", "")).lower() != "yes":
+        found = ["raw_material"]
+        notes.append("filed under Mining: a raw material, check it is not treasure or a tool")
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):
