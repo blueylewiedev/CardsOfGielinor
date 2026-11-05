@@ -37,7 +37,7 @@ each region's set has its own version.
 
 | Type | Section | Status | Notes |
 | --- | --- | --- | --- |
-| **Food** | Fish (cooked) | In progress | |
+| **Food** | Fish (cooked) | Complete | |
 | | Meat | Not started | |
 | | Meals | Not started | |
 | | Baked goods | Not started | |
@@ -45,10 +45,10 @@ each region's set has its own version.
 | | Drinks | Not started | |
 | **Potions** | | Not started | |
 | **Flasks** | | Not started | |
-| **Raw materials** | Fish | In progress | |
+| **Raw materials** | Fish | Complete | |
 | | Meat | Not started | |
-| | Herbs | In progress | |
-| | Logs | In progress | |
+| | Herbs | Complete | |
+| | Logs | Complete | |
 | | Ores | Not started | |
 | | Bones | Not started | |
 | | Hides | Not started | |
@@ -56,11 +56,11 @@ each region's set has its own version.
 | **Processed materials** | Bars | Not started | |
 | | Planks | Not started | |
 | **Seeds** | | Not started | |
-| **Runes** | | In progress | |
+| **Runes** | | Complete | |
 | **Tools** | | Not started | Pickaxes, hatchets, spades and the like |
-| **Weapons** | Melee | Not started | One row per kind below if you want to track them separately |
-| | Ranged | Not started | |
-| | Magic | Not started | |
+| **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
+| | Ranged | Complete | |
+| | Magic | Complete | |
 | | Necromancy | Not started | |
 | **Armour: melee** | Helmet | Not started | |
 | | Body | Not started | |
