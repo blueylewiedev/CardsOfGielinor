@@ -877,8 +877,11 @@ FOOD_NAME_KINDS = (
 )
 
 # An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
-# cream). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
+# flour). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
+# The category is wide, though: lobster, pies, ales and bananas are in it as well. So an item whose other
+# categories already make it a food, a drink or a fish, or that is worn, is not an ingredient.
 INGREDIENT_CATEGORY = "Cooking"
+NOT_AN_INGREDIENT = {"food", "meal", "baked_goods", "fruit_veg", "fish", "meat", "drink"}
 
 # A wiki category that says an item is a cosmetic (an override, only worn for its looks): it is
 # tagged fashion, and nothing else, as the Contributing guide says.
@@ -1769,6 +1772,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         notes.append(f"{len(ids)} item ids listed; using the first")
     name, desc = name_and_desc(page, fields, notes)
 
+    explicit = set()        # (the words the wiki's own categories give, not the Disassembly ones: see the ingredient below)
     found = list(SLOT_WORDS.get(plain(bonuses.get("slot", "")).lower(), []))
     style = plain(bonuses.get("style", "")).lower()
     if "ammunition" in found:
@@ -1798,10 +1802,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         kinds = [plain(template_fields(disassembly or "").get("category", ""))]
         for category in page.get("categories", []) + [k for k in kinds if k]:
             name_part = category.lower().removeprefix("disassemble category/")
+            before = len(found)
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
             found += ITEM_EXACT_CATEGORY_WORDS.get(category.lower(), [])
+            if category in page.get("categories", []) and not category.lower().startswith("disassemble category/"):
+                explicit.update(found[before:])
         # (a drink is not food: a page in both Food and Drinks is a drink)
         if "drink" in found:
             found = [w for w in found if w != "food"]
@@ -1814,12 +1821,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
                     found.append(kind)
                     notes.append(f"food kind {kind} taken from the name: check it")
                     break
-    # (an ingredient is cooked with, not eaten: raw_material and ingredient, and not food or a kind of it. Raw fish
-    # and meat in the same category stay what they are)
-    if INGREDIENT_CATEGORY in page.get("categories", []) and not {"fish", "meat"} & set(found):
-        found = ["raw_material", "ingredient"] + [w for w in found if w not in
-                                                  ("food", "meal", "baked_goods", "fruit_veg", "raw_material", "ingredient")]
-        notes.append("an ingredient (wiki category Cooking): check it is not food too")
+    # (an ingredient is cooked with, not eaten: in the category Cooking with no category of its own that makes it a food
+    # or a drink (the Disassembly one calls barley and sweetcorn "food", which is only what they disassemble into), and
+    # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and not NOT_AN_INGREDIENT & explicit
+            and plain(fields.get("equipable", "")).lower() != "yes"):
+        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_material", "ingredient")]
+        notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):
@@ -1852,6 +1860,10 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
+    # (an ingredient a recipe makes, butter or flour, is processed; yeast or an egg that nothing makes is raw)
+    if made_with and "ingredient" in category and "raw_material" in category:
+        category = ["processed_material" if word == "raw_material" else word for word in category]
+        tags["category"] = category
     worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
     if "novelty" in found:
         worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
