@@ -857,6 +857,10 @@ ITEM_CATEGORY_WORDS = {
     "pocket slot items": ["pocket"],
 }
 
+# An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
+# cream). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
+INGREDIENT_CATEGORY = "Cooking"
+
 # A wiki category that says an item is a cosmetic (an override, only worn for its looks): it is
 # tagged fashion, and nothing else, as the Contributing guide says.
 COSMETIC_CATEGORY = re.compile(r"\bcosmetic|\boverride")
@@ -1778,6 +1782,11 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
+    # (an ingredient is cooked with, not eaten: raw_material and ingredient, and not food. Raw fish and meat
+    # in the same category stay what they are)
+    if INGREDIENT_CATEGORY in page.get("categories", []) and not {"fish", "meat"} & set(found):
+        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_material", "ingredient")]
+        notes.append("an ingredient (wiki category Cooking): check it is not food too")
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):

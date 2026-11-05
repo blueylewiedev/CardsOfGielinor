@@ -248,6 +248,8 @@ Cards.itemTagGroups = {
             words = { "gem" } },
         { title = "Herbs", requires = { "raw_material", "processed_material" },
             words = { "herb" } },
+        { title = "Ingredients", requires = { "raw_material", "processed_material" },
+            words = { "ingredient" } },
         { title = "Fish and meat", requires = { "raw_material", "food" },
             words = { "fish", "meat" } },
     },

@@ -552,7 +552,9 @@ need it.
 **Choosing a category for an item.** Say what it is used for: `raw_material` for something that is
 gathered and then made into something else (logs, a herb), `processed_material` for something made
 from that (planks, bars), `craftable` for weapons and armour that can be crafted and are not only dropped, 
-and `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. 
+`ingredient` (with `raw_material`, or `processed_material` for one made from something) for what is
+cooked with and not eaten (yeast, butter, cream: the wiki's category Cooking), and `food`, `drink`, `potion`,
+`tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. 
 Something that is worn, wielded or fired is tagged with what it is: `weapon`, `armour`, `jewellery`,
 `pocket` (the pocket slot) or `ammunition`. Each of those opens a last choice in the tag picker: the kind 
 of weapon (`sword`, `longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
@@ -571,8 +573,9 @@ Some words have more to say about the kind, and open their own choice once the w
   `magic_gear`, `necromancy_gear` or `hybrid_gear` (the wiki's "class" of the item). The words end in
   `_gear` so they are not mistaken for the skills of the same names.
 - `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `log`, `ore`, `bone`,
-  `hide`, `herb` and `gem`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the grimy one
-  is the raw material, cleaning it with Herblore makes it a processed one) and `gem` (a cut gem).
+  `hide`, `herb`, `gem` and `ingredient`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the
+  grimy one is the raw material, cleaning it with Herblore makes it a processed one), `gem` (a cut gem) and
+  `ingredient`. An ingredient goes in `deck/items/raw_materials/ingredients.lua`.
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)
@@ -608,7 +611,7 @@ to guess.
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
 - `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
-- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `raw_material`: `log`, `ore`, `bone`, `hide`, `herb`, `gem`, `ingredient`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 

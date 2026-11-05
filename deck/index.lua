@@ -48,6 +48,7 @@ return {
     "deck/items/decoration",
     "deck/items/raw_materials/ores",
     "deck/items/raw_materials/gems",
+    "deck/items/raw_materials/ingredients",
     "deck/items/processed_materials/gems",
     "deck/items/processed_materials/herbs",
     "deck/items/consumable",
