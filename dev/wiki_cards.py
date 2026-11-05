@@ -857,6 +857,25 @@ ITEM_CATEGORY_WORDS = {
     "pocket slot items": ["pocket"],
 }
 
+# Item category words suggested by a wiki category's whole name, not a word of it ("Fruit" but not "Fruit tree
+# seeds"): the kind of food. A pie is baked goods; soups, pizzas and the gnome and Dorgeshuun dishes are meals.
+ITEM_EXACT_CATEGORY_WORDS = {
+    "pie": ["food", "baked_goods"], "pizza": ["food", "meal"], "soups": ["food", "meal"],
+    "gnome cooking": ["food", "meal"], "dorgeshuun cuisine": ["food", "meal"],
+    "fruit": ["food", "fruit_veg"], "cabbages": ["food", "fruit_veg"], "dungeoneering potatoes": ["food", "fruit_veg"],
+}
+
+# The kind of a food whose wiki categories do not say it, from its name (checked in order; the note says to
+# check it): meat first (bacon cheesecake is meat), then baked goods, then fruit and vegetables.
+FOOD_NAME_KINDS = (
+    (re.compile(r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky)\b"), "meat"),
+    (re.compile(r"\b(cakes?|cheesecake|bread|biscuits?|cookies?|muffins?|tarts?|buns?|rolls?|scones?|doughnuts?|pastry|"
+                r"baguette|croissant|waffles?|flatbread)\b"), "baked_goods"),
+    (re.compile(r"\b(potato|potatoes|fruit|berry|berries|apples?|bananas?|oranges?|lemons?|limes?|pineapples?|"
+                r"cabbages?|onions?|tomato(es)?|carrots?|pumpkins?|salad|vegetables?|mushrooms?|corn|pears?|grapes?|"
+                r"peach(es)?|melons?)\b"), "fruit_veg"),
+)
+
 # An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
 # cream). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
 INGREDIENT_CATEGORY = "Cooking"
@@ -1782,10 +1801,24 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
-    # (an ingredient is cooked with, not eaten: raw_material and ingredient, and not food. Raw fish and meat
-    # in the same category stay what they are)
+            found += ITEM_EXACT_CATEGORY_WORDS.get(category.lower(), [])
+        # (a drink is not food: a page in both Food and Drinks is a drink)
+        if "drink" in found:
+            found = [w for w in found if w != "food"]
+        # (a food no category says the kind of: the name often does. Not an ingredient: that is decided below)
+        if ("food" in found and INGREDIENT_CATEGORY not in page.get("categories", [])
+                and not {"meal", "baked_goods", "fruit_veg", "fish", "meat"} & set(found)):
+            lowered = strip_bracket(name).lower()
+            for pattern, kind in FOOD_NAME_KINDS:
+                if pattern.search(lowered):
+                    found.append(kind)
+                    notes.append(f"food kind {kind} taken from the name: check it")
+                    break
+    # (an ingredient is cooked with, not eaten: raw_material and ingredient, and not food or a kind of it. Raw fish
+    # and meat in the same category stay what they are)
     if INGREDIENT_CATEGORY in page.get("categories", []) and not {"fish", "meat"} & set(found):
-        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_material", "ingredient")]
+        found = ["raw_material", "ingredient"] + [w for w in found if w not in
+                                                  ("food", "meal", "baked_goods", "fruit_veg", "raw_material", "ingredient")]
         notes.append("an ingredient (wiki category Cooking): check it is not food too")
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}

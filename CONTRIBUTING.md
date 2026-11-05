@@ -575,7 +575,9 @@ Some words have more to say about the kind, and open their own choice once the w
 - `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `log`, `ore`, `bone`,
   `hide`, `herb`, `gem` and `ingredient`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the
   grimy one is the raw material, cleaning it with Herblore makes it a processed one), `gem` (a cut gem) and
-  `ingredient`. An ingredient goes in `deck/items/raw_materials/ingredients.lua`.
+  `ingredient`. An ingredient goes in `deck/items/raw_materials/ingredients.lua`. Food goes in
+  `deck/items/food/` by kind: `meals.lua` (soups, pizzas, dishes), `baked_goods.lua` (pies, bread),
+  `fruit_veg.lua`, `meat.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`.
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)

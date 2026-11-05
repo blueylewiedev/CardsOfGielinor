@@ -2163,7 +2163,8 @@ end
 -- The deck files to try for an item, best first: in the folder for its first category word
 -- (raw_materials, the word in the plural; as it is is tried too), the file named
 -- for its second category word (weapons/scimitars) or for the wiki category it came from
--- (raw_materials/logs), then that folder's general file, then deck/items/general. `sources` are
+-- (raw_materials/logs), then that folder's general file, then the category's own file (deck/items/runes), then
+-- deck/items/general. `sources` are
 -- the wiki categories the candidate came from ("Logs").
 function Builder.itemDeckNames(category, sources)
     local names = {}
@@ -2194,10 +2195,20 @@ function Builder.itemDeckNames(category, sources)
                         names[#names + 1] = "deck/items/" .. folder .. "/" .. form
                     end
                 end
+                -- Cooked food is filed as "cooked_<kind>" (food/cooked_fish).
+                if first == "food" then
+                    for _, form in ipairs(pluralFirst("cooked_" .. kind)) do
+                        names[#names + 1] = "deck/items/food/" .. form
+                    end
+                end
             end
         end
         for _, folder in ipairs(folders) do
             names[#names + 1] = "deck/items/" .. folder .. "/general"
+        end
+        -- A category with one file of its own, not a folder (deck/items/runes.lua, quest_items.lua, drinks.lua).
+        for _, folder in ipairs(folders) do
+            names[#names + 1] = "deck/items/" .. folder
         end
     end
     names[#names + 1] = "deck/items/general"
