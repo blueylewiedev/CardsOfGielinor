@@ -580,7 +580,9 @@ Some words have more to say about the kind, and open their own choice once the w
   suggests it for an intermediate: an item no category classifies that a recipe makes and other recipes use (a
   dry rabbit sandwich, made of bread and rabbit and used to make a rabbit sandwich). Food goes in
   `deck/items/food/` by kind: `meals.lua` (soups, pizzas, dishes), `baked_goods.lua` (pies, bread),
-  `fruit_veg.lua`, `meat.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`.
+  `fruit_veg.lua`, `meat.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`. A raw meat (named
+  raw or uncooked, or in the wiki's Uncooked food) is `raw_material, meat`, not food, and goes in
+  `deck/items/raw_materials/meat.lua`; the cooked meat is `food, meat`.
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)

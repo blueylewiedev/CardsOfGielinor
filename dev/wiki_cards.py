@@ -837,6 +837,7 @@ ITEM_CATEGORY_WORDS = {
     "potion": ["potion"], "seeds": ["seed"], "jewellery": ["jewellery"], "quest items": ["quest_item"],
     "arrows": ["ammunition", "arrow"], "bolts": ["ammunition", "bolt"], "dagger": ["dagger"], "daggers": ["dagger"],
     "scimitar": ["scimitar"], "scimitars": ["scimitar"], "longsword": ["sword"], "sword": ["sword"],
+    "ceremonial swords": ["sword"], "darts": ["thrown"], "javelins": ["thrown"],
     "2h sword": ["two_handed_sword"], "two-handed swords": ["two_handed_sword"], "battleaxe": ["axe"],
     "battleaxes": ["axe"], "mace": ["mace"], "maces": ["mace"], "spear": ["spear"], "spears": ["spear"],
     "halberd": ["halberd"], "halberds": ["halberd"], "whip": ["whip"], "claws": ["claw"], "shortbow": ["shortbow"],
@@ -868,13 +869,19 @@ ITEM_EXACT_CATEGORY_WORDS = {
 # The kind of a food whose wiki categories do not say it, from its name (checked in order; the note says to
 # check it): meat first (bacon cheesecake is meat), then baked goods, then fruit and vegetables.
 FOOD_NAME_KINDS = (
-    (re.compile(r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky)\b"), "meat"),
+    (re.compile(r"^(?!.*\b(?:sandwich|wrap|stew|soup|pie|pizza|potato|dough|oil|sauce)\b).*"
+                r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky|carne|chompy|"
+                r"rabbit|pekin|eeligator|snail)\b"), "meat"),
     (re.compile(r"\b(cakes?|cheesecake|bread|biscuits?|cookies?|muffins?|tarts?|buns?|rolls?|scones?|doughnuts?|pastry|"
                 r"baguette|croissant|waffles?|flatbread)\b"), "baked_goods"),
     (re.compile(r"\b(potato|potatoes|fruit|berry|berries|apples?|bananas?|oranges?|lemons?|limes?|pineapples?|"
                 r"cabbages?|onions?|tomato(es)?|carrots?|pumpkins?|salad|vegetables?|mushrooms?|corn|pears?|grapes?|"
                 r"peach(es)?|melons?)\b"), "fruit_veg"),
 )
+
+# A raw meat: named raw or uncooked, or in the wiki's Uncooked food. It is a raw material (raw_materials/meat.lua),
+# not food, as the cooked meat is.
+RAW_NAME = re.compile(r"\b(raw|uncooked)\b")
 
 # An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
 # flour). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
@@ -906,7 +913,8 @@ WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "
 # kind: "Adamant claws" is a claw. In order, as "2h sword" must come before "sword".
 WEAPON_NAME_KINDS = [
     (r"\b2h swords?$", "two_handed_sword"), (r"\bclaws?$", "claw"), (r"\bdaggers?$", "dagger"),
-    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?$|\brapiers?$", "sword"),
+    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?(?: [ivx]+)?$|\brapiers?$", "sword"),
+    (r"\b(?:darts?|javelins?|knife|knives|throwing (?:axes?|knives))$", "thrown"),
     (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|mauls?|flails?)$", "mace"),
     (r"\b(?:spears?|hastas?|warspears?|lances?)$", "spear"), (r"\bhalberds?$", "halberd"),
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
@@ -1812,8 +1820,9 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (a drink is not food: a page in both Food and Drinks is a drink)
         if "drink" in found:
             found = [w for w in found if w != "food"]
-        # (a food no category says the kind of: the name often does. Not an ingredient: that is decided below)
-        if ("food" in found and INGREDIENT_CATEGORY not in page.get("categories", [])
+        # (a food no category says the kind of: the name often does. Not an ingredient, which is decided below: in
+        # Cooking with no category of its own that says food, it is one)
+        if ("food" in found and (INGREDIENT_CATEGORY not in page.get("categories", []) or "food" in explicit)
                 and not {"meal", "baked_goods", "fruit_veg", "fish", "meat"} & set(found)):
             lowered = strip_bracket(name).lower()
             for pattern, kind in FOOD_NAME_KINDS:
@@ -1821,6 +1830,14 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
                     found.append(kind)
                     notes.append(f"food kind {kind} taken from the name: check it")
                     break
+        # (a raw meat is a raw material, not food: raw_materials/meat. A pie or a meal with meat in its name is not)
+        if ("meat" in found and not {"meal", "baked_goods", "fruit_veg", "fish"} & set(found)
+                and ("Uncooked food" in page.get("categories", []) or RAW_NAME.search(name.lower()))):
+            found = ["raw_material"] + [w for w in found if w not in ("food", "raw_material")]
+            notes.append("raw meat: a raw material, not food: check it")
+        # (an herb is not food, though the Disassembly box may call it that)
+        if "herb" in found:
+            found = [w for w in found if w != "food"]
     # (an ingredient is cooked with, not eaten: in the category Cooking with no category of its own that makes it a food
     # or a drink (the Disassembly one calls barley and sweetcorn "food", which is only what they disassemble into), and
     # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
