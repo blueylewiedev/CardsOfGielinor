@@ -235,7 +235,7 @@ Cards.itemTagGroups = {
         { title = "Combat style", requires = { "weapon", "armour", "jewellery", "ammunition" },
             words = { "melee_gear", "ranged_gear", "magic_gear", "necromancy_gear", "hybrid_gear" } },
         { title = "What kind of food", requires = "food",
-            words = { "meal", "baked_goods", "fruit_veg" } },
+            words = { "meal", "baked_goods", "fruit_veg", "raw_food" } },
         { title = "What kind of raw material", requires = "raw_material",
             words = { "log", "ore", "bone", "hide" } },
         { title = "What kind of processed material", requires = "processed_material",

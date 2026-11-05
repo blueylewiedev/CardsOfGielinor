@@ -572,7 +572,7 @@ Some words have more to say about the kind, and open their own choice once the w
 - `weapon`, `armour`, `jewellery` or `ammunition` open the **combat style**: `melee_gear`, `ranged_gear`,
   `magic_gear`, `necromancy_gear` or `hybrid_gear` (the wiki's "class" of the item). The words end in
   `_gear` so they are not mistaken for the skills of the same names.
-- `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `log`, `ore`, `bone`,
+- `food` opens `meal`, `baked_goods`, `fruit_veg` and `raw_food`; `raw_material` opens `log`, `ore`, `bone`,
   `hide`, `herb`, `gem` and `ingredient`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the
   grimy one is the raw material, cleaning it with Herblore makes it a processed one), `gem` (a cut gem) and
   `ingredient`. An ingredient goes in `deck/items/raw_materials/ingredients.lua`, or
@@ -580,9 +580,13 @@ Some words have more to say about the kind, and open their own choice once the w
   suggests it for an intermediate: an item no category classifies that a recipe makes and other recipes use (a
   dry rabbit sandwich, made of bread and rabbit and used to make a rabbit sandwich). Food goes in
   `deck/items/food/` by kind: `meals.lua` (soups, pizzas, dishes), `baked_goods.lua` (pies, bread),
-  `fruit_veg.lua`, `meat.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`. A raw meat (named
-  raw or uncooked, or in the wiki's Uncooked food) is `raw_material, meat`, not food, and goes in
-  `deck/items/raw_materials/meat.lua`; the cooked meat is `food, meat`.
+  `fruit_veg.lua`, `meat.lua`, `raw_food.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`.
+  Sandwiches, wraps, stews and soups are meals and pies are baked goods, whatever is in them. A raw pie or cake
+  (or one only part made) is `food, raw_food`. A raw meat or fish (named raw or uncooked, or in the wiki's
+  Uncooked food) is `raw_material, meat` or `raw_material, fish`, not food, and goes in
+  `deck/items/raw_materials/meat.lua` or `fish.lua`; the cooked one is `food, meat` or `food, fish`. Urns
+  (cooking, mining and the rest) are `consumable`, and a quest item with no file of its kind goes in
+  `deck/items/quest_items.lua`.
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)

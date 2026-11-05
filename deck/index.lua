@@ -48,6 +48,7 @@ return {
     "deck/items/food/meat",
     "deck/items/food/meals",
     "deck/items/food/baked_goods",
+    "deck/items/food/raw_food",
     "deck/items/food/fruit_veg",
     "deck/items/drinks",
     "deck/items/decoration",

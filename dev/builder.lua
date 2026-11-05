@@ -2203,6 +2203,12 @@ function Builder.itemDeckNames(category, sources)
                 end
             end
         end
+        -- A quest item with no file for its kind (a quest weapon) goes in quest_items.lua.
+        for _, word in ipairs(category) do
+            if word == "quest_item" then
+                names[#names + 1] = "deck/items/quest_items"
+            end
+        end
         for _, folder in ipairs(folders) do
             names[#names + 1] = "deck/items/" .. folder .. "/general"
         end
