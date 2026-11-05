@@ -581,8 +581,9 @@ Some words have more to say about the kind, and open their own choice once the w
   dry rabbit sandwich, made of bread and rabbit and used to make a rabbit sandwich). Food goes in
   `deck/items/food/` by kind: `meals.lua` (soups, pizzas, dishes), `baked_goods.lua` (pies, bread),
   `fruit_veg.lua`, `meat.lua`, `raw_food.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`.
-  Sandwiches, wraps, stews and soups are meals and pies are baked goods, whatever is in them. A raw pie or cake
-  (or one only part made) is `food, raw_food`. A raw meat or fish (named raw or uncooked, or in the wiki's
+  Sandwiches, wraps, stews and soups are meals and pies are baked goods, whatever is in them. Any other food
+  named raw or uncooked that is not an ingredient (a raw pie, soup or potato, or a pie only part made) is
+  `food, raw_food`. A raw meat or fish (named raw or uncooked, or in the wiki's
   Uncooked food) is `raw_material, meat` or `raw_material, fish`, not food, and goes in
   `deck/items/raw_materials/meat.lua` or `fish.lua`; the cooked one is `food, meat` or `food, fish`. Urns
   (cooking, mining and the rest) are `consumable`, and a quest item with no file of its kind goes in

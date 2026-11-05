@@ -1852,12 +1852,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
                 and ("Uncooked food" in page.get("categories", []) or RAW_NAME.search(name.lower()))):
             found = ["raw_material"] + [w for w in found if w not in ("food", "raw_material")]
             notes.append(f"raw {raw_kind}: a raw material, not food: check it")
-        # (a raw or part-made pie or cake is raw_food, not baked goods)
-        if "baked_goods" in found:
-            bare = strip_bracket(name).lower()
-            if RAW_NAME.search(bare) or PART_NAME.search(bare):
-                found = ["raw_food" if w == "baked_goods" else w for w in found]
-                notes.append("raw food: a pie or cake that is not cooked yet: check it")
+        # (any other food named raw or uncooked, or a part-made pie, is raw_food in place of its kind: a raw pie, a raw
+        # soup, a raw potato. An ingredient is not: that is decided below)
+        if "food" in found:
+            if RAW_NAME.search(name.lower()) or (PART_NAME.search(name.lower()) and "baked_goods" in found):
+                kinds = ("meal", "baked_goods", "fruit_veg")
+                found = [w for w in found if w not in kinds] + ["raw_food"]
+                notes.append("raw food: not cooked yet: check it")
         # (an herb is not food, though the Disassembly box may call it that)
         if "herb" in found:
             found = [w for w in found if w != "food"]
@@ -1866,7 +1867,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
     if (INGREDIENT_CATEGORY in page.get("categories", []) and not NOT_AN_INGREDIENT & explicit
             and plain(fields.get("equipable", "")).lower() != "yes"):
-        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_material", "ingredient")]
+        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_food", "raw_material", "ingredient")]
         notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
