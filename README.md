@@ -61,7 +61,7 @@ each region's set has its own version.
 | **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
 | | Ranged | Complete | |
 | | Magic | Complete | |
-| | Necromancy | Not started | |
+| | Necromancy | Complete | |
 | **Armour: melee** | Helmet | Not started | |
 | | Body | Not started | |
 | | Legs | Not started | |
