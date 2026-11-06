@@ -346,7 +346,7 @@ UPGRADE_TITLE = re.compile(r"\s\+\s*\d+$")
 # of another page), augmented, golden and lucky versions of a weapon, off-hand thrown weapons
 # (an off-hand dart or knife is the same item), Abyssal crossbows (copies of the plain crossbow
 # tiers) and "Mk. 5" upgrades of a weapon.
-WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\([^)]*\)\s*$|^(augmented|golden|lucky)\s"
+WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\((?!tier \d+\))[^)]*\)\s*$|^(augmented|golden|lucky)\s"
                          r"|^off-hand .*(dart|knife|throwing axe|javelin|chakram|glaive|stake)$"
                          r"|^(off-hand )?abyssal .* crossbow$|\sMk\.? ?\d+$", re.I)
 
