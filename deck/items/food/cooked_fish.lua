@@ -271,6 +271,90 @@ Set.cards = {
         art = { item = "DORGESH_STEAMED_POND_LOACH", cam = { pitch = 1.55, fov = 40, ty = -20 } },
         tags = { regions = { "misthalin" }, category = { "food", "fish", "minigame" }, membership = { "p2p" } },
     },
+    {
+        id = "dusk_eel", name = "Dusk eel", kind = "item", rarity = "common",
+        desc = "It still doesn't look very appetising.",
+        art = { item = "RAND_FISH_3", cam = { pitch = 1.55, dist = 397, fov = 60, ty = -11, tx = 22 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "giant_flatfish", name = "Giant flatfish", kind = "item", rarity = "common",
+        desc = "Wow this fish is giant and very, very flat.",
+        art = { item = "RAND_FISH_4", cam = { pitch = 1.55, dist = 397, fov = 60, ty = 8, tx = 10 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "heim_crab", name = "Heim crab", kind = "item", rarity = "common",
+        desc = "It's not looking so snappy now it's cooked!",
+        art = { item = "RAND_FISH_1", cam = { pitch = 1.04, dist = 361, fov = 60, ty = -11, tx = 17 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "raw_heim_crab", name = "Raw heim crab", kind = "item", rarity = "common",
+        desc = "I should try cooking this.",
+        art = { item = "RAND_RAW_FISH_1", cam = { pitch = 1.55, dist = 397, fov = 60, ty = 11, tx = 25 } },
+        tags = { regions = { "daemonheim" }, skills = { "fishing", "dungeoneering" }, category = { "fish", "raw_material" }, membership = { "f2p" } },
+    },
+    {
+        id = "raw_redeye", name = "Raw red-eye", kind = "item", rarity = "common",
+        desc = "I should try cooking this.",
+        art = { item = "RAND_RAW_FISH_2", cam = { yaw = 0.12, pitch = 1.55, dist = 361, fov = 60, ty = -14, tx = 16 } },
+        tags = { regions = { "daemonheim" }, skills = { "fishing", "dungeoneering" }, category = { "raw_material", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "redeye", name = "Red-eye", kind = "item", rarity = "common",
+        desc = "I wonder why they call it a Red-eye. Its eyes don't look very red!",
+        art = { item = "RAND_FISH_2", cam = { pitch = 1.55, dist = 361, fov = 60, ty = -20, tx = 10 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "bouldabass", name = "Bouldabass", kind = "item", rarity = "uncommon",
+        desc = "This should make quite the meal!",
+        art = { item = "RAND_FISH_7", cam = { pitch = 1.55, dist = 361, fov = 60, ty = 7, tx = 20 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "p2p" } },
+    },
+    {
+        id = "shortfinned_eel", name = "Short-finned eel", kind = "item", rarity = "uncommon",
+        desc = "This looks only slightly more appetising than a dusk eel.",
+        art = { item = "RAND_FISH_5", cam = { yaw = -0.84, pitch = 1.55, dist = 361, fov = 60, ty = 24, tx = 3 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "web_snipper", name = "Web snipper", kind = "item", rarity = "uncommon",
+        desc = "I'd better be careful eating this.",
+        art = { item = "RAND_FISH_6", cam = { pitch = 1.55, dist = 361, fov = 60, ty = -1, tx = 10 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
+    },
+    {
+        id = "blue_crab", name = "Blue crab", kind = "item", rarity = "rare",
+        desc = "I'd better mind the pincers when eating that, they could take my eye out.",
+        art = { item = "RAND_FISH_9", cam = { pitch = 1.55, dist = 361, fov = 60, ty = 7, tx = 37 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "p2p" } },
+    },
+    {
+        id = "salve_eel", name = "Salve eel", kind = "item", rarity = "rare",
+        desc = "This looks only so slightly more tasty than one of those short-finned eels.",
+        art = { item = "RAND_FISH_8", cam = { yaw = -0.03, pitch = 1.55, dist = 361, fov = 60, ty = 31, tx = 20 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "p2p" } },
+    },
+    {
+        id = "cave_moray", name = "Cave moray", kind = "item", rarity = "epic",
+        desc = "It should make quite the feast.",
+        art = { item = "RAND_FISH_10", cam = { pitch = 1.55, dist = 361, fov = 60, ty = 0, tx = 10 } },
+        tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "p2p" } },
+    },
+    {
+        id = "caviar", name = "Caviar", kind = "item", rarity = "common",
+        desc = "Caviar, or expensive fishy eggs.",
+        art = { item = "BRUT_CAVIAR", cam = { yaw = -0.02, pitch = 0.92, dist = 154, fov = 60, ty = -19, tx = 4 } },
+        tags = { skills = { "cooking" }, category = { "food" }, membership = { "p2p" } },
+    },
+    {
+        id = "roe", name = "Roe", kind = "item", rarity = "common",
+        desc = "Roe, or cheap fishy eggs.",
+        art = { item = "BRUT_ROE", cam = { yaw = -0.40, pitch = 1.55, dist = 154, fov = 60, ty = -20, tx = 5 } },
+        tags = { regions = { "kandarin" }, skills = { "cooking" }, category = { "food", "fish" }, membership = { "p2p" } },
+    },
 }
 
 return Set

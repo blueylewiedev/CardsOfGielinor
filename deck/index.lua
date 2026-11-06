@@ -44,6 +44,7 @@ return {
     "deck/items/raw_materials/logs",
     "deck/items/runes",
     "deck/items/raw_materials/fish",
+    "deck/items/raw_materials/meat",
     "deck/items/food/cooked_fish",
     "deck/items/food/meat",
     "deck/items/food/meals",
@@ -90,5 +91,9 @@ return {
     "deck/items/weapons/defenders",
     "deck/items/weapons/mauls",
 
+    -- Armours (By equipment slot, the combat style is a tag)
+    "deck/items/armours/back",
+
+    -- Cosmetics
     "deck/items/fashions/general",
 }

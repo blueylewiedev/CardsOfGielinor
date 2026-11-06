@@ -133,6 +133,15 @@ Set.cards = {
         art = { item = "GIANT_MOTH_BUTTERFLY_NET", cam = { yaw = -3.98, pitch = 0.83, dist = 698, fov = 45, ty = 50, tx = -57 } },
         tags = { regions = { "havenhythe" }, skills = { "hunter" }, category = { "tool" }, membership = { "p2p" } },
     },
+    { id = "pie_dish", name = "Pie dish", kind = "item", rarity = "common", desc = "Deceptively pie shaped.", art = { item = "PIEDISH", cam = { pitch = 0.55, dist = 273, ty = 19 } }, tags = { skills = { "crafting" }, category = { "tool" }, membership = { "f2p" } } },
+    { id = "tea_flask", name = "Tea flask", kind = "item", rarity = "common", desc = "You can put nice, hot tea in it.", art = { item = "TOL_TEA", cam = { yaw = 0.03, pitch = 0.29, dist = 225, ty = 50, tx = -21 } }, tags = { regions = { "kandarin" }, category = { "tool" }, membership = { "p2p" } } },
+    { id = "bowl", name = "Bowl", kind = "item", rarity = "common", desc = "Useful for mixing things.", art = { item = "BOWL_EMPTY", cam = { yaw = -5.31, pitch = 0.65, dist = 330, ty = 53 } }, tags = { skills = { "crafting" }, category = { "tool" }, membership = { "f2p" } } },
+    { id = "cake_tin", name = "Cake tin", kind = "item", rarity = "common", desc = "Useful for baking cakes.", art = { item = "CAKE_TIN", cam = { yaw = 0.45, pitch = 0.51, dist = 273, ty = 25, tx = -2 } }, tags = { skills = { "cooking" }, category = { "tool" }, membership = { "f2p" } } },
+    { id = "empty_pot", name = "Empty pot", kind = "item", rarity = "common", desc = "This pot is empty.", art = { item = "POT_EMPTY", cam = { yaw = 0.70, pitch = 0.56, dist = 483, ty = 90, tx = 7 } }, tags = { skills = { "crafting", "cooking" }, category = { "tool" }, membership = { "f2p" } } },
+    { id = "pestle_and_mortar", name = "Pestle and mortar", kind = "item", rarity = "common", desc = "I can grind things for potions in this.", art = { item = "PESTLE_AND_MORTAR", cam = { yaw = 0.18, pitch = 0.68, dist = 273, ty = 17, tx = 23 } }, tags = { skills = { "cooking", "herblore" }, category = { "tool" }, membership = { "f2p" } } },
+    { id = "waterskin_0", name = "Waterskin (0)", kind = "item", rarity = "common", desc = "A completely empty waterskin - you'll need to fill it up.", art = { item = "WATER_SKIN0", cam = { yaw = 0.45, pitch = 0.42, dist = 225, ty = 47 } }, tags = { category = { "tool" }, membership = { "p2p" } } },
+    { id = "cocktail_glass", name = "Cocktail glass", kind = "item", rarity = "common", desc = "For sipping cocktails.", art = { item = "COCKTAIL_GLASS_EMPTY", cam = { yaw = 0.87, pitch = 0.60, dist = 205, fov = 60, ty = 53, tx = -2 } }, tags = { category = { "tool" }, membership = { "p2p" } } },
+    { id = "cocktail_shaker", name = "Cocktail shaker", kind = "item", rarity = "common", desc = "Used for mixing cocktails.", art = { item = "COCKTAIL_SHAKER", cam = { yaw = 0.60, pitch = 0.22, dist = 273, fov = 60, ty = 105, tx = 5 } }, tags = { category = { "tool" }, membership = { "p2p" } } },
 }
 
 return Set
