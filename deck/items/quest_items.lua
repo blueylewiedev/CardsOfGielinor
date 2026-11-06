@@ -17,6 +17,7 @@ Set.cards = {
     { id = "dried_thistle", name = "Dried thistle", kind = "item", rarity = "common", desc = "It'll be easier to grind now.", art = { item = "EADGAR_DRIED_TROLL_THISTLE", cam = { yaw = 0.37, pitch = 0.86, dist = 525, fov = 25, ty = 123, tx = 19 } }, tags = { skills = { "cooking" }, category = { "quest_item" }, membership = { "p2p" } } },
     { id = "ground_cod", name = "Ground cod", kind = "item", rarity = "common", desc = "A smelly paste.", art = { item = "HUNDRED_PIRATE_GROUND_COD", cam = { yaw = -0.43, pitch = 1.07, dist = 525, fov = 25, ty = -11, tx = 9 } }, tags = { skills = { "cooking", "magic" }, category = { "quest_item" }, membership = { "p2p" } } },
     { id = "ground_crab_meat", name = "Ground crab meat", kind = "item", rarity = "common", desc = "A smelly paste.", art = { item = "HUNDRED_PIRATE_GROUND_GIANT_CRAB_MEAT", cam = { yaw = 1.18, pitch = 1.07, dist = 525, fov = 25, ty = -3, tx = -2 } }, tags = { skills = { "cooking", "magic" }, category = { "quest_item" }, membership = { "p2p" } } },
+    { id = "ancient_bones_restless_ghost", name = "Ancient bones (Restless Ghost)", kind = "item", rarity = "common", desc = "Bones are for burying.", art = { item = "RESTLESS_BONES", cam = { pitch = 1.27, ty = -9, tx = 30 } }, tags = { regions = { "misthalin" }, category = { "raw_material", "bone", "quest_item" }, membership = { "f2p" } } },
 }
 
 return Set
