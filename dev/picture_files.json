@@ -20,8 +20,44 @@
   "Adamant ceremonial sword IX detail.png",
   "Adamant ceremonial sword X detail.png"
  ],
+ "adrenaline_flask": [
+  "Adrenaline flask (6) detail.png",
+  "Adrenaline flask (6).png"
+ ],
+ "adrenaline_potion": [
+  "Adrenaline potion (4) detail.png",
+  "Adrenaline potion (4).png"
+ ],
+ "adrenaline_renewal_flask": [
+  "Adrenaline renewal flask (6) detail.png",
+  "Adrenaline renewal flask (6).png"
+ ],
+ "adrenaline_renewal_potion": [
+  "Adrenaline renewal potion (4) detail.png",
+  "Adrenaline renewal potion (4).png"
+ ],
  "adv_pickpocketing_trainer": "Advanced pickpocketing trainer.png",
  "agent_004": "Agent 004.png",
+ "aggression_flask": [
+  "Aggression flask (6) detail.png",
+  "Aggression flask (6).png"
+ ],
+ "aggression_potion": [
+  "Aggression potion (4) detail.png",
+  "Aggression potion (4).png"
+ ],
+ "aggroverload": [
+  "Aggroverload (4) detail.png",
+  "Aggroverload (4).png"
+ ],
+ "agility_flask": [
+  "Agility flask (6) detail.png",
+  "Agility flask (6).png"
+ ],
+ "agility_potion": [
+  "Agility potion (4) detail.png",
+  "Agility potion (4).png"
+ ],
  "aloe_seed": [
   "Aloe seed 5 detail.png",
   "Aloe seed 4 detail.png",
@@ -30,6 +66,30 @@
  ],
  "andrew_gower": "Andrew.png",
  "angry_giant_rat": "Angry giant rat (A Soul's Bane).png",
+ "antifire": [
+  "Antifire (4) detail.png",
+  "Antifire (4).png"
+ ],
+ "antifire_flask": [
+  "Antifire flask (6) detail.png",
+  "Antifire flask (6).png"
+ ],
+ "antipoison": [
+  "Antipoison (4) detail.png",
+  "Antipoison (4).png"
+ ],
+ "antipoison_flask": [
+  "Antipoison++ flask (6) detail.png",
+  "Antipoison++ flask (6).png"
+ ],
+ "antipoison_plusplus": [
+  "Antipoison++ (4) detail.png",
+  "Antipoison++ (4).png"
+ ],
+ "antisanguine_flask": [
+  "Antisanguine flask (6) detail.png",
+  "Antisanguine flask (6).png"
+ ],
  "apple_tree_seed": [
   "Apple tree seed 5 detail.png",
   "Apple tree seed 4 detail.png",
@@ -43,6 +103,14 @@
   "Arbuck seed 2 detail.png"
  ],
  "archaeologist": "Archaeologist (1).png",
+ "archaeology_flask": [
+  "Archaeology flask (6) detail.png",
+  "Archaeology flask (6).png"
+ ],
+ "archaeology_potion": [
+  "Archaeology potion (4) detail.png",
+  "Archaeology potion (4).png"
+ ],
  "archer": "Archer (Lost City).png",
  "argonite_knife": "Off-hand argonite knife detail.png",
  "argway_seed": [
@@ -56,6 +124,14 @@
   "Asgarnian seed 4 detail.png",
   "Asgarnian seed 3 detail.png",
   "Asgarnian seed 2 detail.png"
+ ],
+ "attack_flask": [
+  "Attack flask (6) detail.png",
+  "Attack flask (6).png"
+ ],
+ "attack_potion": [
+  "Attack potion (4) detail.png",
+  "Attack potion (4).png"
  ],
  "avantoe_seed": [
   "Avantoe seed 5 detail.png",
@@ -130,6 +206,10 @@
   "Bogwart spore 3 detail.png",
   "Bogwart spore 2 detail.png"
  ],
+ "brightfire_potion": [
+  "Brightfire potion (4) detail.png",
+  "Brightfire potion (4).png"
+ ],
  "broav": "Broav pet.png",
  "buckthorn_seed": [
   "Buckthorn seed 5 detail.png",
@@ -174,6 +254,14 @@
   "Calquat tree seed 3 detail.png",
   "Calquat tree seed 2 detail.png"
  ],
+ "camouflage_flask": [
+  "Camouflage flask (6) detail.png",
+  "Camouflage flask (6).png"
+ ],
+ "camouflage_potion": [
+  "Camouflage potion (4) detail.png",
+  "Camouflage potion (4).png"
+ ],
  "carambola_seed": [
   "Carambola seed 5 detail.png",
   "Carambola seed 4 detail.png",
@@ -194,6 +282,14 @@
   "Cave potato seed 3 detail.png",
   "Cave potato seed 2 detail.png"
  ],
+ "charming_potion": [
+  "Charming potion (4) detail.png",
+  "Charming potion (4).png"
+ ],
+ "charming_potion_flask": [
+  "Charming potion flask (6) detail.png",
+  "Charming potion flask (6).png"
+ ],
  "chris": "Chris (Evil Dave's Big Day Out).png",
  "ciku_seed": [
   "Ciku seed 5 detail.png",
@@ -209,8 +305,36 @@
   "Cocoaberry seed 2 detail.png"
  ],
  "coins": "Coins 10000 detail.png",
+ "combat_flask": [
+  "Combat flask (6) detail.png",
+  "Combat flask (6).png"
+ ],
+ "combat_potion": [
+  "Combat potion (4) detail.png",
+  "Combat potion (4).png"
+ ],
+ "compost_potion": [
+  "Compost potion (4) detail.png",
+  "Compost potion (4).png"
+ ],
+ "cooking_flask": [
+  "Cooking flask (6) detail.png",
+  "Cooking flask (6).png"
+ ],
+ "cooking_potion": [
+  "Cooking potion (4) detail.png",
+  "Cooking potion (4).png"
+ ],
  "corruption_beast": "Corruption Beast.png",
  "coshing_volunteer": "Coshing volunteer (bearded).png",
+ "crafting_flask": [
+  "Crafting flask (6) detail.png",
+  "Crafting flask (6).png"
+ ],
+ "crafting_potion": [
+  "Crafting potion (4) detail.png",
+  "Crafting potion (4).png"
+ ],
  "crystal_acorn": [
   "Crystal acorn 5 detail.png",
   "Crystal acorn 4 detail.png",
@@ -230,6 +354,14 @@
  "death_lotus_rogue": "Death Lotus rogue (Elite Dungeons).png",
  "decaying_lumbridge_guard": "Decaying Lumbridge guard (regular, 1).png",
  "decaying_varrock_guard": "Decaying Varrock guard (regular, 1).png",
+ "defence_flask": [
+  "Defence flask (6) detail.png",
+  "Defence flask (6).png"
+ ],
+ "defence_potion": [
+  "Defence potion (4) detail.png",
+  "Defence potion (4).png"
+ ],
  "delphinium_seed": [
   "Delphinium seed 5 detail.png",
   "Delphinium seed 4 detail.png",
@@ -241,6 +373,14 @@
   "Devil's snare seed 4 detail.png",
   "Devil's snare seed 3 detail.png",
   "Devil's snare seed 2 detail.png"
+ ],
+ "divination_flask": [
+  "Divination flask (6) detail.png",
+  "Divination flask (6).png"
+ ],
+ "divination_potion": [
+  "Divination potion (4) detail.png",
+  "Divination potion (4).png"
  ],
  "divine_impling": "Divine impling.png",
  "dragonfruit_seed": [
@@ -268,11 +408,31 @@
   "Edicap mushroom spore 2 detail.png"
  ],
  "eek": "Eek pet.png",
+ "elder_overload_potion": [
+  "Elder overload potion (4) detail.png",
+  "Elder overload potion (4).png"
+ ],
+ "elder_overload_salve": [
+  "Elder overload salve (4) detail.png",
+  "Elder overload salve (4).png"
+ ],
  "elder_seed": [
   "Elder seed 5 detail.png",
   "Elder seed 4 detail.png",
   "Elder seed 3 detail.png",
   "Elder seed 2 detail.png"
+ ],
+ "energy_flask": [
+  "Energy flask (6) detail.png",
+  "Energy flask (6).png"
+ ],
+ "energy_potion": [
+  "Energy potion (4) detail.png",
+  "Energy potion (4).png"
+ ],
+ "enhanced_replenishment_potion": [
+  "Enhanced replenishment potion (4) detail.png",
+  "Enhanced replenishment potion (4).png"
  ],
  "enriched_snapdragon_seed": [
   "Enriched snapdragon seed 5 detail.png",
@@ -294,6 +454,130 @@
   "Evil turnip seed 2 detail.png"
  ],
  "examiner": "Examiner (blonde).png",
+ "extended_super_antifire": [
+  "Extended super antifire (4) detail.png",
+  "Extended super antifire (4).png"
+ ],
+ "extended_super_antifire_flask": [
+  "Extended super antifire flask (6) detail.png",
+  "Extended super antifire flask (6).png"
+ ],
+ "extreme_antisanguine": [
+  "Extreme antisanguine (4) detail.png",
+  "Extreme antisanguine (4).png"
+ ],
+ "extreme_attack": [
+  "Extreme attack (4) detail.png",
+  "Extreme attack (4).png"
+ ],
+ "extreme_attack_flask": [
+  "Extreme attack flask (6) detail.png",
+  "Extreme attack flask (6).png"
+ ],
+ "extreme_battlemages_potion": [
+  "Extreme battlemage's potion (4) detail.png",
+  "Extreme battlemage's potion (4).png"
+ ],
+ "extreme_brawlers_potion": [
+  "Extreme brawler's potion (4) detail.png",
+  "Extreme brawler's potion (4).png"
+ ],
+ "extreme_cooking_flask": [
+  "Extreme cooking flask (6) detail.png",
+  "Extreme cooking flask (6).png"
+ ],
+ "extreme_cooking_potion": [
+  "Extreme cooking potion (4) detail.png",
+  "Extreme cooking potion (4).png"
+ ],
+ "extreme_defence": [
+  "Extreme defence (4) detail.png",
+  "Extreme defence (4).png"
+ ],
+ "extreme_defence_flask": [
+  "Extreme defence flask (6) detail.png",
+  "Extreme defence flask (6).png"
+ ],
+ "extreme_divination": [
+  "Extreme divination (4) detail.png",
+  "Extreme divination (4).png"
+ ],
+ "extreme_divination_flask": [
+  "Extreme divination flask (6) detail.png",
+  "Extreme divination flask (6).png"
+ ],
+ "extreme_hunter": [
+  "Extreme hunter (4) detail.png",
+  "Extreme hunter (4).png"
+ ],
+ "extreme_hunter_flask": [
+  "Extreme hunter flask (6) detail.png",
+  "Extreme hunter flask (6).png"
+ ],
+ "extreme_invention": [
+  "Extreme invention (4) detail.png",
+  "Extreme invention (4).png"
+ ],
+ "extreme_invention_flask": [
+  "Extreme invention flask (6) detail.png",
+  "Extreme invention flask (6).png"
+ ],
+ "extreme_magic": [
+  "Extreme magic (4) detail.png",
+  "Extreme magic (4).png"
+ ],
+ "extreme_magic_flask": [
+  "Extreme magic flask (6) detail.png",
+  "Extreme magic flask (6).png"
+ ],
+ "extreme_necromancy": [
+  "Extreme necromancy (4) detail.png",
+  "Extreme necromancy (4).png"
+ ],
+ "extreme_necromancy_flask": [
+  "Extreme necromancy flask (6) detail.png",
+  "Extreme necromancy flask (6).png"
+ ],
+ "extreme_prayer": [
+  "Extreme prayer (4) detail.png",
+  "Extreme prayer (4).png"
+ ],
+ "extreme_prayer_flask": [
+  "Extreme prayer flask (6) detail.png",
+  "Extreme prayer flask (6).png"
+ ],
+ "extreme_ranging": [
+  "Extreme ranging (4) detail.png",
+  "Extreme ranging (4).png"
+ ],
+ "extreme_ranging_flask": [
+  "Extreme ranging flask (6) detail.png",
+  "Extreme ranging flask (6).png"
+ ],
+ "extreme_runecrafting": [
+  "Extreme runecrafting (4) detail.png",
+  "Extreme runecrafting (4).png"
+ ],
+ "extreme_runecrafting_flask": [
+  "Extreme runecrafting flask (6) detail.png",
+  "Extreme runecrafting flask (6).png"
+ ],
+ "extreme_sharpshooters_potion": [
+  "Extreme sharpshooter's potion (4) detail.png",
+  "Extreme sharpshooter's potion (4).png"
+ ],
+ "extreme_strength": [
+  "Extreme strength (4) detail.png",
+  "Extreme strength (4).png"
+ ],
+ "extreme_strength_flask": [
+  "Extreme strength flask (6) detail.png",
+  "Extreme strength flask (6).png"
+ ],
+ "extreme_warmasters_potion": [
+  "Extreme warmaster's potion (4) detail.png",
+  "Extreme warmaster's potion (4).png"
+ ],
  "exuberry_seed": [
   "Exuberry seed 5 detail.png",
   "Exuberry seed 4 detail.png",
@@ -322,6 +606,22 @@
   "Fireberry seed 2 detail.png"
  ],
  "fishbowl": "Fishbowl (orange fish) pet.png",
+ "fishing_flask": [
+  "Fishing flask (6) detail.png",
+  "Fishing flask (6).png"
+ ],
+ "fishing_potion": [
+  "Fishing potion (4) detail.png",
+  "Fishing potion (4).png"
+ ],
+ "fletching_flask": [
+  "Fletching flask (6) detail.png",
+  "Fletching flask (6).png"
+ ],
+ "fletching_potion": [
+  "Fletching potion (4) detail.png",
+  "Fletching potion (4).png"
+ ],
  "fly_trap_seed": [
   "Fly trap seed 5 detail.png",
   "Fly trap seed 4 detail.png",
@@ -346,6 +646,10 @@
   "Gloomberry seed 2 detail.png"
  ],
  "glowing_ember": "Glowing Ember pet.png",
+ "goblin_potion": [
+  "Goblin potion (4) detail.png",
+  "Goblin potion (4).png"
+ ],
  "godly_grapevine_seed": [
   "Godly grapevine seed 5 detail.png",
   "Godly grapevine seed 4 detail.png",
@@ -364,6 +668,26 @@
   "Gout tuber 4 detail.png",
   "Gout tuber 3 detail.png",
   "Gout tuber 2 detail.png"
+ ],
+ "grand_attack_potion": [
+  "Grand attack potion (4) detail.png",
+  "Grand attack potion (4).png"
+ ],
+ "grand_defence_potion": [
+  "Grand defence potion (4) detail.png",
+  "Grand defence potion (4).png"
+ ],
+ "grand_magic_potion": [
+  "Grand magic potion (4) detail.png",
+  "Grand magic potion (4).png"
+ ],
+ "grand_ranging_potion": [
+  "Grand ranging potion (4) detail.png",
+  "Grand ranging potion (4).png"
+ ],
+ "grand_strength_potion": [
+  "Grand strength potion (4) detail.png",
+  "Grand strength potion (4).png"
  ],
  "grapevine_seed": [
   "Grapevine seed 5 detail.png",
@@ -390,6 +714,26 @@
   "Guarana seed 3 detail.png",
   "Guarana seed 2 detail.png"
  ],
+ "guthix_balance": [
+  "Guthix balance (4) detail.png",
+  "Guthix balance (4).png"
+ ],
+ "guthix_balance_flask": [
+  "Guthix balance flask (6) detail.png",
+  "Guthix balance flask (6).png"
+ ],
+ "guthix_rest": [
+  "Guthix rest (4) detail.png",
+  "Guthix rest (4).png"
+ ],
+ "guthix_rest_flask": [
+  "Guthix rest flask (6) detail.png",
+  "Guthix rest flask (6).png"
+ ],
+ "guthixs_gift_flask": [
+  "Guthix's gift flask (6) detail.png",
+  "Guthix's gift flask (6).png"
+ ],
  "hammerstone_seed": [
   "Hammerstone seed 5 detail.png",
   "Hammerstone seed 4 detail.png",
@@ -408,12 +752,44 @@
   "Harralander seed 3 detail.png",
   "Harralander seed 2 detail.png"
  ],
+ "harvest_flask": [
+  "Harvest flask (6) detail.png",
+  "Harvest flask (6).png"
+ ],
+ "harvest_potion": [
+  "Harvest potion (4) detail.png",
+  "Harvest potion (4).png"
+ ],
  "head_chef": "Head chef.png",
  "hebe": "Adrasteia (Twilight of the Gods).png",
  "hellcat": "Hellcat pet.png",
  "hermit_crab": "Hermit crab pet.png",
  "hole_in_the": "Wall beast.png",
+ "holy_aggroverload": [
+  "Holy aggroverload (4) detail.png",
+  "Holy aggroverload (4).png"
+ ],
+ "holy_overload_potion": [
+  "Holy overload potion (4) detail.png",
+  "Holy overload potion (4).png"
+ ],
+ "hunter_flask": [
+  "Hunter flask (6) detail.png",
+  "Hunter flask (6).png"
+ ],
+ "hunter_potion": [
+  "Hunter potion (4) detail.png",
+  "Hunter potion (4).png"
+ ],
  "infested_axe": "Infested Axe.png",
+ "invention_flask": [
+  "Invention flask (6) detail.png",
+  "Invention flask (6).png"
+ ],
+ "invention_potion": [
+  "Invention potion (4) detail.png",
+  "Invention potion (4).png"
+ ],
  "irit_seed": [
   "Irit seed 5 detail.png",
   "Irit seed 4 detail.png",
@@ -449,6 +825,30 @@
   "Jitterberry seed 4 detail.png",
   "Jitterberry seed 3 detail.png",
   "Jitterberry seed 2 detail.png"
+ ],
+ "juju_cooking_flask": [
+  "Juju cooking flask (6) detail.png",
+  "Juju cooking flask (6).png"
+ ],
+ "juju_farming_flask": [
+  "Juju farming flask (6) detail.png",
+  "Juju farming flask (6).png"
+ ],
+ "juju_fishing_flask": [
+  "Juju fishing flask (6) detail.png",
+  "Juju fishing flask (6).png"
+ ],
+ "juju_hunter_flask": [
+  "Juju hunter flask (6) detail.png",
+  "Juju hunter flask (6).png"
+ ],
+ "juju_mining_flask": [
+  "Juju mining flask (6) detail.png",
+  "Juju mining flask (6).png"
+ ],
+ "juju_woodcutting_flask": [
+  "Juju woodcutting flask (6) detail.png",
+  "Juju woodcutting flask (6).png"
  ],
  "jungle_gorilla": "Jungle gorilla (adult).png",
  "jute_seed": [
@@ -538,6 +938,22 @@
   "Magebane seed 3 detail.png",
   "Magebane seed 2 detail.png"
  ],
+ "magic_essence": [
+  "Magic essence (4) detail.png",
+  "Magic essence (4).png"
+ ],
+ "magic_essence_flask": [
+  "Magic essence flask (6) detail.png",
+  "Magic essence flask (6).png"
+ ],
+ "magic_flask": [
+  "Magic flask (6) detail.png",
+  "Magic flask (6).png"
+ ],
+ "magic_potion": [
+  "Magic potion (4) detail.png",
+  "Magic potion (4).png"
+ ],
  "magic_seed": [
   "Magic seed 5 detail.png",
   "Magic seed 4 detail.png",
@@ -574,6 +990,14 @@
   "Meloberry seed 4 detail.png",
   "Meloberry seed 3 detail.png",
   "Meloberry seed 2 detail.png"
+ ],
+ "mining_flask": [
+  "Mining flask (6) detail.png",
+  "Mining flask (6).png"
+ ],
+ "mining_potion": [
+  "Mining potion (4) detail.png",
+  "Mining potion (4).png"
  ],
  "mithril_ceremonial_sword": [
   "Mithril ceremonial sword V detail.png",
@@ -623,6 +1047,14 @@
   "Nasturtium seed 4 detail.png",
   "Nasturtium seed 3 detail.png",
   "Nasturtium seed 2 detail.png"
+ ],
+ "necromancy_flask": [
+  "Necromancy flask (6) detail.png",
+  "Necromancy flask (6).png"
+ ],
+ "necromancy_potion": [
+  "Necromancy potion (4) detail.png",
+  "Necromancy potion (4).png"
  ],
  "ninja_impling": "Ninja impling.png",
  "offhand_iron_ceremonial_sword": [
@@ -697,6 +1129,14 @@
   "Orchid seed (yellow) 3 detail.png",
   "Orchid seed (yellow) 2 detail.png"
  ],
+ "overload": [
+  "Overload (4) detail.png",
+  "Overload (4).png"
+ ],
+ "overload_flask": [
+  "Overload flask (6) detail.png",
+  "Overload flask (6).png"
+ ],
  "palm_tree_seed": [
   "Palm tree seed 5 detail.png",
   "Palm tree seed 4 detail.png",
@@ -708,6 +1148,46 @@
   "Papaya tree seed 4 detail.png",
   "Papaya tree seed 3 detail.png",
   "Papaya tree seed 2 detail.png"
+ ],
+ "perfect_juju_agility_flask": [
+  "Perfect juju agility flask (6) detail.png",
+  "Perfect juju agility flask (6).png"
+ ],
+ "perfect_juju_dungeoneering_flask": [
+  "Perfect juju dungeoneering flask (6) detail.png",
+  "Perfect juju dungeoneering flask (6).png"
+ ],
+ "perfect_juju_farming_flask": [
+  "Perfect juju farming flask (6) detail.png",
+  "Perfect juju farming flask (6).png"
+ ],
+ "perfect_juju_fishing_flask": [
+  "Perfect juju fishing flask (6) detail.png",
+  "Perfect juju fishing flask (6).png"
+ ],
+ "perfect_juju_herblore_flask": [
+  "Perfect juju herblore flask (6) detail.png",
+  "Perfect juju herblore flask (6).png"
+ ],
+ "perfect_juju_mining_flask": [
+  "Perfect juju mining flask (6) detail.png",
+  "Perfect juju mining flask (6).png"
+ ],
+ "perfect_juju_prayer_flask": [
+  "Perfect juju prayer flask (6) detail.png",
+  "Perfect juju prayer flask (6).png"
+ ],
+ "perfect_juju_smithing_flask": [
+  "Perfect juju smithing flask (6) detail.png",
+  "Perfect juju smithing flask (6).png"
+ ],
+ "perfect_juju_woodcutting_flask": [
+  "Perfect juju woodcutting flask (6) detail.png",
+  "Perfect juju woodcutting flask (6).png"
+ ],
+ "perfect_plus_potion": [
+  "Perfect plus potion (4) detail.png",
+  "Perfect plus potion (4).png"
  ],
  "pet_of_autumn": "Pet of Autumn pet.png",
  "pet_of_spring": "Pet of Spring pet.png",
@@ -744,6 +1224,22 @@
   "Potato seed 3 detail.png",
   "Potato seed 2 detail.png"
  ],
+ "prayer_flask": [
+  "Prayer flask (6) detail.png",
+  "Prayer flask (6).png"
+ ],
+ "prayer_potion": [
+  "Prayer potion (4) detail.png",
+  "Prayer potion (4).png"
+ ],
+ "prayer_renewal": [
+  "Prayer renewal (4) detail.png",
+  "Prayer renewal (4).png"
+ ],
+ "prayer_renewal_flask": [
+  "Prayer renewal flask (6) detail.png",
+  "Prayer renewal flask (6).png"
+ ],
  "prickly_pear_seed": [
   "Prickly pear seed 5 detail.png",
   "Prickly pear seed 4 detail.png",
@@ -758,6 +1254,14 @@
   "Ranarr seed 4 detail.png",
   "Ranarr seed 3 detail.png",
   "Ranarr seed 2 detail.png"
+ ],
+ "ranging_flask": [
+  "Ranging flask (6) detail.png",
+  "Ranging flask (6).png"
+ ],
+ "ranging_potion": [
+  "Ranging potion (4) detail.png",
+  "Ranging potion (4).png"
  ],
  "red_blossom_seed": [
   "Red blossom seed 5 detail.png",
@@ -784,7 +1288,23 @@
   "Reed seed 3 detail.png",
   "Reed seed 2 detail.png"
  ],
+ "relicyms_balm": [
+  "Relicym's balm (4) detail.png",
+  "Relicym's balm (4).png"
+ ],
+ "relicyms_balm_flask": [
+  "Relicym's balm flask (6) detail.png",
+  "Relicym's balm flask (6).png"
+ ],
  "remy": "Remy pet.png",
+ "restore_flask": [
+  "Restore flask (6) detail.png",
+  "Restore flask (6).png"
+ ],
+ "restore_potion": [
+  "Restore potion (4) detail.png",
+  "Restore potion (4).png"
+ ],
  "richie": "Richie (NPC).png",
  "rosaberry_seed": [
   "Rosaberry seed 5 detail.png",
@@ -817,6 +1337,14 @@
   "Rune ceremonial sword X detail.png"
  ],
  "rune_guardian": "Rune guardian pet.png",
+ "runecrafting_flask": [
+  "Runecrafting flask (6) detail.png",
+  "Runecrafting flask (6).png"
+ ],
+ "runecrafting_potion": [
+  "Runecrafting potion (4) detail.png",
+  "Runecrafting potion (4).png"
+ ],
  "sagewort_seed": [
   "Sagewort seed 5 detail.png",
   "Sagewort seed 4 detail.png",
@@ -831,8 +1359,32 @@
   "Samaden seed 2 detail.png"
  ],
  "sandstone": "Sandstone (10kg) detail.png",
+ "sanfew_serum": [
+  "Sanfew serum (4) detail.png",
+  "Sanfew serum (4).png"
+ ],
+ "sanfew_serum_flask": [
+  "Sanfew serum flask (6) detail.png",
+  "Sanfew serum flask (6).png"
+ ],
  "santar_spawnling": "San'tar spawnling pet.png",
  "sapping_glacyte": "Sapping glacyte.png",
+ "saradomin_brew": [
+  "Saradomin brew (4) detail.png",
+  "Saradomin brew (4).png"
+ ],
+ "saradomin_brew_flask": [
+  "Saradomin brew flask (6) detail.png",
+  "Saradomin brew flask (6).png"
+ ],
+ "saradomins_blessing_flask": [
+  "Saradomin's blessing flask (6) detail.png",
+  "Saradomin's blessing flask (6).png"
+ ],
+ "scentless_flask": [
+  "Scentless flask (6) detail.png",
+  "Scentless flask (6).png"
+ ],
  "searing_flame": "Searing Flame pet.png",
  "shadow_drake": "Shadow Drake adult.png",
  "shengo_seed": [
@@ -875,6 +1427,14 @@
   "Sourberry seed 3 detail.png",
   "Sourberry seed 2 detail.png"
  ],
+ "spirit_attraction_flask": [
+  "Spirit attraction flask (6) detail.png",
+  "Spirit attraction flask (6).png"
+ ],
+ "spirit_attraction_potion": [
+  "Spirit attraction potion (4) detail.png",
+  "Spirit attraction potion (4).png"
+ ],
  "spirit_seed": [
   "Spirit seed 5 detail.png",
   "Spirit seed 4 detail.png",
@@ -887,11 +1447,23 @@
   "Spirit weed seed 3 detail.png",
   "Spirit weed seed 2 detail.png"
  ],
+ "spiritual_prayer_potion": [
+  "Spiritual prayer potion (4) detail.png",
+  "Spiritual prayer potion (4).png"
+ ],
  "squiffberry_seed": [
   "Squiffberry seed 5 detail.png",
   "Squiffberry seed 4 detail.png",
   "Squiffberry seed 3 detail.png",
   "Squiffberry seed 2 detail.png"
+ ],
+ "stamina_flask": [
+  "Stamina flask (6) detail.png",
+  "Stamina flask (6).png"
+ ],
+ "stamina_potion": [
+  "Stamina potion (4) detail.png",
+  "Stamina potion (4).png"
  ],
  "starbloom_flower_seed": [
   "Starbloom flower seed 5 detail.png",
@@ -923,11 +1495,227 @@
   "Strawberry seed 3 detail.png",
   "Strawberry seed 2 detail.png"
  ],
+ "strength_flask": [
+  "Strength flask (6) detail.png",
+  "Strength flask (6).png"
+ ],
+ "strength_potion": [
+  "Strength potion (4) detail.png",
+  "Strength potion (4).png"
+ ],
+ "summoning_flask": [
+  "Summoning flask (6) detail.png",
+  "Summoning flask (6).png"
+ ],
+ "summoning_potion": [
+  "Summoning potion (4) detail.png",
+  "Summoning potion (4).png"
+ ],
+ "summoning_renewal": [
+  "Summoning renewal (4) detail.png",
+  "Summoning renewal (4).png"
+ ],
+ "summoning_renewal_flask": [
+  "Summoning renewal flask (6) detail.png",
+  "Summoning renewal flask (6).png"
+ ],
  "sunchoke_seed": [
   "Sunchoke seed 5 detail.png",
   "Sunchoke seed 4 detail.png",
   "Sunchoke seed 3 detail.png",
   "Sunchoke seed 2 detail.png"
+ ],
+ "super_adrenaline_flask": [
+  "Super adrenaline flask (6) detail.png",
+  "Super adrenaline flask (6).png"
+ ],
+ "super_adrenaline_potion": [
+  "Super adrenaline potion (4) detail.png",
+  "Super adrenaline potion (4).png"
+ ],
+ "super_antifire": [
+  "Super antifire (4) detail.png",
+  "Super antifire (4).png"
+ ],
+ "super_antifire_flask": [
+  "Super antifire flask (6) detail.png",
+  "Super antifire flask (6).png"
+ ],
+ "super_antipoison": [
+  "Super antipoison (4) detail.png",
+  "Super antipoison (4).png"
+ ],
+ "super_antipoison_flask": [
+  "Super antipoison flask (6) detail.png",
+  "Super antipoison flask (6).png"
+ ],
+ "super_antisanguine": [
+  "Super antisanguine (4) detail.png",
+  "Super antisanguine (4).png"
+ ],
+ "super_antisanguine_flask": [
+  "Super antisanguine flask (6) detail.png",
+  "Super antisanguine flask (6).png"
+ ],
+ "super_attack": [
+  "Super attack (4) detail.png",
+  "Super attack (4).png"
+ ],
+ "super_attack_flask": [
+  "Super attack flask (6) detail.png",
+  "Super attack flask (6).png"
+ ],
+ "super_cooking_flask": [
+  "Super cooking flask (6) detail.png",
+  "Super cooking flask (6).png"
+ ],
+ "super_cooking_potion": [
+  "Super cooking potion (4) detail.png",
+  "Super cooking potion (4).png"
+ ],
+ "super_defence": [
+  "Super defence (4) detail.png",
+  "Super defence (4).png"
+ ],
+ "super_defence_flask": [
+  "Super defence flask (6) detail.png",
+  "Super defence flask (6).png"
+ ],
+ "super_divination": [
+  "Super divination (4) detail.png",
+  "Super divination (4).png"
+ ],
+ "super_divination_flask": [
+  "Super divination flask (6) detail.png",
+  "Super divination flask (6).png"
+ ],
+ "super_energy": [
+  "Super energy (4) detail.png",
+  "Super energy (4).png"
+ ],
+ "super_energy_flask": [
+  "Super energy flask (6) detail.png",
+  "Super energy flask (6).png"
+ ],
+ "super_fishing_flask": [
+  "Super fishing flask (6) detail.png",
+  "Super fishing flask (6).png"
+ ],
+ "super_fishing_potion": [
+  "Super fishing potion (4) detail.png",
+  "Super fishing potion (4).png"
+ ],
+ "super_guthix_brew_flask": [
+  "Super Guthix brew flask (6) detail.png",
+  "Super Guthix brew flask (6).png"
+ ],
+ "super_guthix_rest": [
+  "Super Guthix rest (4) detail.png",
+  "Super Guthix rest (4).png"
+ ],
+ "super_hunter": [
+  "Super hunter (4) detail.png",
+  "Super hunter (4).png"
+ ],
+ "super_hunter_flask": [
+  "Super hunter flask (6) detail.png",
+  "Super hunter flask (6).png"
+ ],
+ "super_invention": [
+  "Super invention (4) detail.png",
+  "Super invention (4).png"
+ ],
+ "super_invention_flask": [
+  "Super invention flask (6) detail.png",
+  "Super invention flask (6).png"
+ ],
+ "super_magic_flask": [
+  "Super magic flask (6) detail.png",
+  "Super magic flask (6).png"
+ ],
+ "super_magic_potion": [
+  "Super magic potion (4) detail.png",
+  "Super magic potion (4).png"
+ ],
+ "super_mining_flask": [
+  "Super mining flask (6) detail.png",
+  "Super mining flask (6).png"
+ ],
+ "super_mining_potion": [
+  "Super mining potion (4) detail.png",
+  "Super mining potion (4).png"
+ ],
+ "super_necromancy": [
+  "Super necromancy (4) detail.png",
+  "Super necromancy (4).png"
+ ],
+ "super_necromancy_flask": [
+  "Super necromancy flask (6) detail.png",
+  "Super necromancy flask (6).png"
+ ],
+ "super_prayer": [
+  "Super prayer (4) detail.png",
+  "Super prayer (4).png"
+ ],
+ "super_prayer_flask": [
+  "Super prayer flask (6) detail.png",
+  "Super prayer flask (6).png"
+ ],
+ "super_ranging_flask": [
+  "Super ranging flask (6) detail.png",
+  "Super ranging flask (6).png"
+ ],
+ "super_ranging_potion": [
+  "Super ranging potion (4) detail.png",
+  "Super ranging potion (4).png"
+ ],
+ "super_restore": [
+  "Super restore (4) detail.png",
+  "Super restore (4).png"
+ ],
+ "super_restore_flask": [
+  "Super restore flask (6) detail.png",
+  "Super restore flask (6).png"
+ ],
+ "super_runecrafting": [
+  "Super runecrafting (4) detail.png",
+  "Super runecrafting (4).png"
+ ],
+ "super_runecrafting_flask": [
+  "Super runecrafting flask (6) detail.png",
+  "Super runecrafting flask (6).png"
+ ],
+ "super_saradomin_brew": [
+  "Super Saradomin brew (4) detail.png",
+  "Super Saradomin brew (4).png"
+ ],
+ "super_saradomin_brew_flask": [
+  "Super Saradomin brew flask (6) detail.png",
+  "Super Saradomin brew flask (6).png"
+ ],
+ "super_strength": [
+  "Super strength (4) detail.png",
+  "Super strength (4).png"
+ ],
+ "super_strength_flask": [
+  "Super strength flask (6) detail.png",
+  "Super strength flask (6).png"
+ ],
+ "super_woodcutting_flask": [
+  "Super woodcutting flask (6) detail.png",
+  "Super woodcutting flask (6).png"
+ ],
+ "super_woodcutting_potion": [
+  "Super woodcutting potion (4) detail.png",
+  "Super woodcutting potion (4).png"
+ ],
+ "super_zamorak_brew": [
+  "Super Zamorak brew (4) detail.png",
+  "Super Zamorak brew (4).png"
+ ],
+ "super_zamorak_brew_flask": [
+  "Super Zamorak brew flask (6) detail.png",
+  "Super Zamorak brew flask (6).png"
  ],
  "sweetcorn_seed": [
   "Sweetcorn seed 5 detail.png",
@@ -998,6 +1786,18 @@
   "Watermelon seed 3 detail.png",
   "Watermelon seed 2 detail.png"
  ],
+ "weapon_poison": [
+  "Weapon poison (4) detail.png",
+  "Weapon poison (4).png"
+ ],
+ "weapon_poison_plusplusplus": [
+  "Weapon poison+++ (4) detail.png",
+  "Weapon poison+++ (4).png"
+ ],
+ "weapon_poisonplusplusplus_flask": [
+  "Weapon poison+++ flask (6) detail.png",
+  "Weapon poison+++ flask (6).png"
+ ],
  "wendlewick_seed": [
   "Wendlewick seed 5 detail.png",
   "Wendlewick seed 4 detail.png",
@@ -1061,6 +1861,14 @@
   "Woad seed 3 detail.png",
   "Woad seed 2 detail.png"
  ],
+ "woodcutting_flask": [
+  "Woodcutting flask (6) detail.png",
+  "Woodcutting flask (6).png"
+ ],
+ "woodcutting_potion": [
+  "Woodcutting potion (4) detail.png",
+  "Woodcutting potion (4).png"
+ ],
  "wormwood_seed": [
   "Wormwood seed 5 detail.png",
   "Wormwood seed 4 detail.png",
@@ -1079,6 +1887,18 @@
   "Yew seed 3 detail.png",
   "Yew seed 2 detail.png"
  ],
+ "zamorak_brew": [
+  "Zamorak brew (4) detail.png",
+  "Zamorak brew (4).png"
+ ],
+ "zamorak_brew_flask": [
+  "Zamorak brew flask (6) detail.png",
+  "Zamorak brew flask (6).png"
+ ],
  "zamorakian_cultist": "Zamorakian cultist (female).png",
- "zamorakian_ritual_keeper": "Zamorakian ritual keeper (male).png"
+ "zamorakian_ritual_keeper": "Zamorakian ritual keeper (male).png",
+ "zamoraks_favour_flask": [
+  "Zamorak's favour flask (6) detail.png",
+  "Zamorak's favour flask (6).png"
+ ]
 }

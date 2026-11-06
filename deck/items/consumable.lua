@@ -79,7 +79,12 @@ Set.cards = {
         art = { item = "URNS_COOKING6_RUNE", cam = { pitch = 0.52, dist = 330, ty = 58, tx = 2 } },
         tags = { skills = { "crafting", "cooking" }, category = { "consumable" }, membership = { "p2p" } },
     },
-    { id = "numbing_root", name = "Numbing root", kind = "item", rarity = "epic", desc = "This could numb my wounds.", art = { item = "MOLE2_ROOTS_CONSUMABLE", cam = { yaw = 0.80, pitch = 0.89, dist = 273, fov = 60, ty = 12, tx = 5 } }, tags = { regions = { "asgarnia" }, category = { "consumable" }, membership = { "f2p" } } },
+    {
+        id = "numbing_root", name = "Numbing root", kind = "item", rarity = "epic",
+        desc = "This could numb my wounds.",
+        art = { item = "MOLE2_ROOTS_CONSUMABLE", cam = { yaw = 0.80, pitch = 0.89, dist = 273, fov = 60, ty = 12, tx = 5 } },
+        tags = { regions = { "asgarnia" }, category = { "consumable" }, membership = { "f2p" } },
+    },
 }
 
 return Set

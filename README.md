@@ -43,21 +43,21 @@ each region's set has its own version.
 | | Baked goods | Complete | |
 | | Fruit and vegetables | Complete | |
 | | Drinks | Complete | |
-| **Potions** | | Not started | |
-| **Flasks** | | Not started | |
+| **Potions** | | Complete | |
+| **Flasks** | | Complete | |
 | **Raw materials** | Fish | Complete | |
 | | Meat | Complete | |
 | | Herbs | Complete | |
 | | Logs | Complete | |
 | | Ores | Complete | |
-| | Bones | Not started | |
-| | Hides | Not started | |
+| | Bones | Complete | |
+| | Hides | Complete | |
 | | Gems | Complete | |
-| **Processed materials** | Bars | Not started | |
-| | Planks | Not started | |
+| **Processed materials** | Bars | Complete | |
+| | Planks | Complete | |
 | **Seeds** | | Complete | |
 | **Runes** | | Complete | |
-| **Tools** | | Not started | Pickaxes, hatchets, spades and the like |
+| **Tools** | | In Progress | Pickaxes, hatchets, spades and the like |
 | **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
 | | Ranged | Complete | |
 | | Magic | Complete | |
@@ -97,13 +97,12 @@ each region's set has its own version.
 | | Other (spikes) | Not started | |
 | **Decoration** | | In progress | |
 | **Currency** | | In Progress | |
-| **Quest items** | | Not started | |
-| **Craftable** | | Not started | |
+| **Quest items** | | In Progress | |
 | **Pocket items** | | Not started | |
-| **Fashion** | | Not started | |
-| **Treasure Trails** | | Not started | |
-| **Slayer drops** | | Not started | |
-| **Minigame items** | | Not started | |
+| **Fashion** | | In Progress | |
+| **Treasure Trails** | | In Progress | |
+| **Slayer drops** | | In Progress | |
+| **Minigame items** | | In Progress | |
 | **General (other)** | | In progress | Cards that fit none of the above |
 
 ## Licence

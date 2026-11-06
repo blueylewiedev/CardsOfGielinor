@@ -52,6 +52,8 @@ return {
     "deck/items/food/raw_food",
     "deck/items/food/fruit_veg",
     "deck/items/drinks",
+    "deck/items/potions",
+    "deck/items/potions/flasks",
     "deck/items/decoration",
     "deck/items/raw_materials/ores",
     "deck/items/raw_materials/bones",

@@ -872,6 +872,7 @@ ITEM_EXACT_CATEGORY_WORDS = {
     "gnome cooking": ["food", "meal"], "dorgeshuun cuisine": ["food", "meal"],
     "fruit": ["food", "fruit_veg"], "cabbages": ["food", "fruit_veg"], "dungeoneering potatoes": ["food", "fruit_veg"],
     "useless items": ["junk"], "burnt food": ["junk"],
+    "potion flasks": ["potion", "flask"],
 }
 
 # The kinds of raw or processed material (the words that follow raw_material or processed_material).
@@ -1026,6 +1027,84 @@ def only_in_cutscenes(page, fields):
     return all("cutscene" in v.lower() for v in locations)
 
 
+# A potion has a version for each dose, "(1)" to "(4)" (a flask "(1)" to "(6)"), and the card is the full one: 4 doses, or
+# 6 for a flask, or the most there are if it has no such version. A 2-dose mix and an unfinished potion have no card.
+DOSE_VERSION = re.compile(r"\((\d+)\)")
+DOSE_CATEGORIES = {"Potions", "Potion flasks"}
+SKIPPED_POTIONS = (
+    ({"Barbarian mixes"}, "a 2-dose mix: no card"),
+)
+UNFINISHED_POTION = re.compile(r"\(unf\)$|\bunfinished\b", re.I)
+
+
+# A potion's examine text counts its doses ("4 doses of super attack potion.", "A 6 dose flask of overload potion.", "Restores
+# stats. 4 doses."), which a card should not: the rest is the description ("Super attack potion.", "A flask of overload
+# potion.", "Restores stats.").
+DOSE_WORDS = r"(?:\d+|one|two|three|four|five|six|several|fewer|more|many)"
+DOSE_TRAILING = re.compile(r"\s+\d+\s+doses?\.?$", re.I)
+DOSE_LEADING = re.compile(r"^\s*" + DOSE_WORDS + r"\s+doses?\s+(?:of\s+)?(?:the\s+)?", re.I)
+DOSE_INLINE = re.compile(r"\b\d+[- ]doses?\s+", re.I)
+
+
+def without_doses(desc):
+    """A potion's examine text without the number of doses, as a sentence; unchanged if it has no such count."""
+    rest = DOSE_INLINE.sub("", DOSE_LEADING.sub("", DOSE_TRAILING.sub("", desc.strip()), count=1))
+    if rest == desc.strip() or not rest.strip():
+        return desc
+    rest = rest.strip()
+    return rest[0].upper() + rest[1:]
+
+
+FLASK_HOLDS = re.compile(r"\bdoses? of (?:the )?\[\[([^\]|#{}]+)", re.I)
+
+
+def flask_potion_titles(page):
+    """The titles of the potion a flask holds, most likely first: the page the flask's text links to ("six doses of
+    [[Juju cooking potion]]"), then the flask's name without "flask", with and without "potion"."""
+    titles = []
+    found = FLASK_HOLDS.search(page.get("text", ""))
+    if found:
+        titles.append(found.group(1).strip())
+    base = re.sub(r"\s+flask$", "", page.get("title", ""), flags=re.I)
+    titles += [base, base + " potion"]
+    return [t[0].upper() + t[1:] for t in dict.fromkeys(t for t in titles if t)]
+
+
+def flask_potion(page):
+    """The cached page of the potion a flask holds, or None. A flask has no recipe of its own: the potion's recipe is
+    what it takes to make."""
+    for title in flask_potion_titles(page):
+        held = read_cache("pages", title)
+        categories = held.get("categories", []) if held else []
+        # (a potion's page: in Potions or one of its kinds (Juju potions), not the skill page "Cooking")
+        if held and not held.get("missing") and "Potion flasks" not in categories and any("otions" in c for c in categories):
+            return held
+    return None
+
+
+def dose_fields(page, fields):
+    """(the item infobox's fields with the card's dose as version 1, that dose), for a potion with a version for each
+    dose; (the fields, None) for anything else."""
+    if not DOSE_CATEGORIES & set(page.get("categories", [])):
+        return fields, None
+    doses = {}
+    for key, value in fields.items():
+        number = re.fullmatch(r"version(\d+)", key)
+        found = DOSE_VERSION.fullmatch(plain(value).strip()) if number else None
+        if found:
+            doses[number.group(1)] = int(found.group(1))
+    if len(doses) < 2:
+        return fields, None
+    wanted = 6 if "Potion flasks" in page.get("categories", []) else 4
+    dose = wanted if wanted in doses.values() else max(doses.values())
+    index = next(i for i, d in doses.items() if d == dose)
+    chosen = dict(fields)
+    for key in ("version", "name", "id", "examine", "value"):
+        if key + index in fields:
+            chosen[key + "1"] = fields[key + index]
+    return chosen, dose
+
+
 def candidate(page, names, words, price=None, drop=None):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
     `price` is the item's Grand Exchange price, if it was fetched."""
@@ -1063,7 +1142,21 @@ def candidate(page, names, words, price=None, drop=None):
         if treasure_hunter_item(text, item_fields, page.get("categories", [])):
             return None, SKIPPED_TREASURE_HUNTER
         _, bonuses = find_template(text, ["Infobox Bonuses"])
-        return item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
+        for skipped_categories, reason in SKIPPED_POTIONS:
+            if skipped_categories & set(page.get("categories", [])):
+                return None, reason
+        if DOSE_CATEGORIES & set(page.get("categories", [])) and UNFINISHED_POTION.search(page.get("title", "")):
+            return None, "an unfinished potion: no card unless it has a use of its own (add it by hand)"
+        item_fields, dose = dose_fields(page, item_fields)
+        made, reason = item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
+        if made is not None and DOSE_CATEGORIES & set(page.get("categories", [])):
+            made["desc"] = without_doses(made["desc"])
+            if re.search(r"\bdoses?\b", made["desc"], re.I):
+                made["notes"].append("the description still mentions doses: reword it")
+        if made is not None and dose:
+            made["name"] = re.sub(r"\s*\(\d+\)$", "", made["name"])
+            made["notes"].append(f"the {dose}-dose version is the card's (its id and price)")
+        return made, reason
     return None, "no NPC or item infobox"
 
 
@@ -1864,6 +1957,9 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (a drink is not food: a page in both Food and Drinks is a drink)
         if "drink" in found:
             found = [w for w in found if w != "food"]
+        # (nor is a potion, though its infobox says it can be eaten (drunk))
+        if "potion" in found:
+            found = [w for w in found if w not in ("food", "meal", "baked_goods", "fruit_veg", "raw_food")]
         # (a pie dish is a tool and a pie shell is made to be filled, neither is a pie, though the wiki files them under Pie)
         if re.search(r"\bpie (dish|shell)\b", strip_bracket(name).lower()):
             found = [w for w in found if w not in ("food", "baked_goods")]
@@ -1983,6 +2079,19 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
+    # (a potion flask has no recipe: the potion it holds has, so the skills and level are that potion's)
+    if not made_with and "Potion flasks" in page.get("categories", []):
+        holds = flask_potion(page)
+        if holds is not None:
+            made_with, level = recipe_requirements(
+                holds.get("text", ""), [holds["title"], strip_bracket(holds["title"]), holds["title"] + " potion", page["title"]]
+                + flask_potion_titles(page), set(words["skills"]))
+            if made_with:
+                notes.append(f"made with {holds['title']}'s recipe: its skills and level")
+        # (the potion's page is not here (a Juju or Guthix one): a flask of a potion is Herblore's, and the level is unknown)
+        if not made_with and "herblore" in words["skills"]:
+            made_with = ["herblore"]
+            notes.append("a potion flask: made with Herblore, but the potion's level was not found: check it")
     # (an ingredient a recipe makes, butter or flour, is processed; yeast or an egg that nothing makes is raw)
     if made_with and "ingredient" in category and "raw_material" in category:
         category = ["processed_material" if word == "raw_material" else word for word in category]
@@ -3251,6 +3360,12 @@ def main():
     if args.count:
         return show_count(titles, sources, args, wiki)
     pages = fetch_pages(wiki, titles, args.refresh)
+    # (the potion each potion flask holds gives its skills and level; it is read here, not made a candidate)
+    held = [t for page in pages.values() if page and "Potion flasks" in page.get("categories", [])
+            and flask_potion(page) is None
+            for t in flask_potion_titles(page) if t not in pages and read_cache("pages", t) is None]
+    if held:
+        fetch_pages(wiki, list(dict.fromkeys(held)), False)
     drop_titles = list(args.drops)
     for list_title in args.drops_from:
         listed = fetch_pages(wiki, [list_title], args.refresh).get(list_title)
@@ -3269,8 +3384,8 @@ def main():
     if drop_titles:
         print(f"Drop rates for {len(drops)} items are kept in {DROPS.relative_to(ROOT)}")
     # The Grand Exchange price of each item page, by asking the wiki for {{GEP|name}}.
-    price_names = {title: price_name(template_fields(find_template(pages[title]["text"], ["Infobox Item"])[1] or ""),
-                                     title)
+    price_names = {title: price_name(dose_fields(pages[title], template_fields(
+                       find_template(pages[title]["text"], ["Infobox Item"])[1] or ""))[0], title)
                    for title in titles if title in pages and "Infobox Item" in pages[title].get("text", "")}
     prices = fetch_prices(wiki, [n for n in price_names.values() if n], args.refresh) if price_names else {}
 

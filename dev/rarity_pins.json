@@ -8,6 +8,10 @@
     "rarity": "uncommon",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
   },
+  "blessed_flask": {
+    "rarity": "legendary",
+    "why": "Legendary as reviewed: Herblore and Crafting 118, but a level gives at most epic"
+  },
   "corrupt_morrigans_javelin": {
     "rarity": "rare",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
@@ -84,6 +88,38 @@
     "rarity": "rare",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
   },
+  "poison_bomb": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_acceleration": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_feats": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_masterstroke": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_opportunity": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_sorcery": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_vitality": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "primal_portion": {
+    "rarity": "epic",
+    "why": "only from a Primal feast, Cooking 115"
+  },
   "profound_decorative_sword": {
     "rarity": "epic",
     "why": "hundreds of hours to obtain, which the wiki data does not show"
@@ -112,6 +148,10 @@
     "rarity": "uncommon",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
   },
+  "sticky_bomb": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
   "superior_morrigans_javelin": {
     "rarity": "legendary",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
@@ -136,6 +176,10 @@
     "rarity": "epic",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
   },
+  "vulnerability_bomb": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
   "water_battlestaff": {
     "rarity": "uncommon",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
@@ -143,9 +187,5 @@
   "zuriels_staff": {
     "rarity": "epic",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
-  },
-  "primal_portion": {
-    "rarity": "epic",
-    "why": "only from a Primal feast, Cooking 115"
   }
 }
