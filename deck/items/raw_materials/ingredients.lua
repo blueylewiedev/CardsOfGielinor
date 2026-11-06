@@ -2,7 +2,7 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "autumn_sqirk", name = "Autumn sq'irk", kind = "item", rarity = "uncommon",
+        id = "autumn_sqirk", name = "Autumn sq'irk", kind = "item", rarity = "common",
         desc = "A slightly sq'irky, I mean quirky, fruit.",
         art = { item = "OSMAN_SQUIRK_AUTUMN", cam = { yaw = -0.72, pitch = 0.80, ty = 45, tx = 11 } },
         tags = { regions = { "kharidian_desert" }, skills = { "thieving" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
@@ -14,13 +14,13 @@ Set.cards = {
         tags = { skills = { "cooking" }, category = { "raw_material", "ingredient" }, membership = { "f2p" } },
     },
     {
-        id = "the_stuff", name = "The Stuff", kind = "item", rarity = "common",
+        id = "the_stuff", name = "The Stuff", kind = "item", rarity = "rare",
         desc = "Apparently good for brewing.",
         art = { item = "BREW_HYPER_YEAST", cam = { yaw = -0.93, pitch = 0.73, dist = 248, ty = 1, tx = 5 } },
         tags = { skills = { "cooking" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
     },
     {
-        id = "golden_watermelon", name = "Golden watermelon", kind = "item", rarity = "common",
+        id = "golden_watermelon", name = "Golden watermelon", kind = "item", rarity = "uncommon",
         desc = "An especially juicy watermelon.",
         art = { item = "GOLDEN_WATERMELON", cam = { yaw = -0.78, pitch = 0.96, dist = 273, fov = 60, ty = 37, tx = 16 } },
         tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
@@ -38,7 +38,7 @@ Set.cards = {
         tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
     },
     {
-        id = "calquat_fruit", name = "Calquat fruit", kind = "item", rarity = "common",
+        id = "calquat_fruit", name = "Calquat fruit", kind = "item", rarity = "rare",
         desc = "This is the largest fruit I've ever seen.",
         art = { item = "CALQUAT_FRUIT", cam = { yaw = 0.40, pitch = 0.05, dist = 330, fov = 60, ty = 133, tx = 5 } },
         tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
@@ -50,7 +50,7 @@ Set.cards = {
         tags = { skills = { "cooking", "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
     },
     {
-        id = "coconut", name = "Coconut", kind = "item", rarity = "common",
+        id = "coconut", name = "Coconut", kind = "item", rarity = "uncommon",
         desc = "It's a coconut.",
         art = { item = "COCONUT", cam = { yaw = 0.57, pitch = 0.40, dist = 300, fov = 60, ty = 93, tx = 5 } },
         tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
@@ -59,7 +59,7 @@ Set.cards = {
     { id = "grapes", name = "Grapes", kind = "item", rarity = "common", desc = "Good grapes for wine making.", art = { item = "GRAPES", cam = { yaw = 1.04, pitch = 1.03, dist = 169, fov = 60, ty = -10, tx = 8 } }, tags = { skills = { "cooking", "farming" }, category = { "raw_material", "ingredient" }, membership = { "f2p" } } },
     { id = "mort_myre_pear", name = "Mort myre pear", kind = "item", rarity = "common", desc = "A pear picked from a dying bush in Mort Myre.", art = { item = "MORTMYREPEAR", cam = { yaw = -0.72, pitch = 0.55, dist = 225, fov = 60, ty = 54, tx = 1 } }, tags = { regions = { "morytania" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } } },
     { id = "neem_drupe", name = "Neem drupe", kind = "item", rarity = "common", desc = "A natural fungicide can be squeezed out of this fruit.", art = { item = "POLYPORE_NEEM_DRUPE", cam = { yaw = -1.98, pitch = -0.01, dist = 140, fov = 60, ty = 44, tx = -4 } }, tags = { category = { "raw_material", "ingredient" }, membership = { "p2p" } } },
-    { id = "poison_ivy_berries", name = "Poison ivy berries", kind = "item", rarity = "common", desc = "They look sweet and juicy, but only a fool would eat them.", art = { item = "POISONIVY_BERRIES", cam = { yaw = 0.82, pitch = 0.99, dist = 186, fov = 60, ty = -8, tx = 12 } }, tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } } },
+    { id = "poison_ivy_berries", name = "Poison ivy berries", kind = "item", rarity = "uncommon", desc = "They look sweet and juicy, but only a fool would eat them.", art = { item = "POISONIVY_BERRIES", cam = { yaw = 0.82, pitch = 0.99, dist = 186, fov = 60, ty = -8, tx = 12 } }, tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } } },
     { id = "red_onion", name = "Red onion", kind = "item", rarity = "common", desc = "A strong smelling red onion.", art = { item = "RED_ONION", cam = { yaw = -0.77, pitch = -0.24, dist = 116, fov = 60, ty = 30, tx = 20 } }, tags = { skills = { "cooking", "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } } },
     { id = "spring_sqirk", name = "Spring sq'irk", kind = "item", rarity = "common", desc = "A slightly sq'irky, I mean quirky, fruit.", art = { item = "OSMAN_SQUIRK_SPRING", cam = { yaw = -0.38, pitch = 0.41, dist = 225, fov = 60, ty = 56, tx = 12 } }, tags = { regions = { "kharidian_desert" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } } },
     { id = "summer_sqirk", name = "Summer sq'irk", kind = "item", rarity = "common", desc = "A slightly sq'irky, I mean quirky, fruit.", art = { item = "OSMAN_SQUIRK_SUMMER", cam = { yaw = -0.46, pitch = 0.78, dist = 248, fov = 60, ty = 43, tx = 18 } }, tags = { regions = { "kharidian_desert" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } } },

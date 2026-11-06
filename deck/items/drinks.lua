@@ -362,7 +362,7 @@ Set.cards = {
         tags = { skills = { "cooking" }, category = { "drink" }, membership = { "p2p" } },
     },
     {
-        id = "blurberry_special", name = "Blurberry Special", kind = "item", rarity = "uncommon",
+        id = "blurberry_special", name = "Blurberry Special", kind = "item", rarity = "rare",
         desc = "Looks good... smells strong.",
         art = { item = "BLURBERRY_SPECIAL", cam = { yaw = 0.59, pitch = 0.59, dist = 225, fov = 60, ty = 71, tx = 5 } },
         tags = { regions = { "kandarin" }, skills = { "cooking" }, category = { "drink" }, membership = { "p2p" } },

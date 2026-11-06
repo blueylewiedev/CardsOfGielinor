@@ -368,7 +368,7 @@ Set.cards = {
         tags = { regions = { "havenhythe" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
     },
     {
-        id = "malachis_tooth", name = "Malachi's tooth", kind = "item", rarity = "epic",
+        id = "malachis_tooth", name = "Malachi's tooth", kind = "item", rarity = "legendary",
         desc = "An ornate crossbow that once belonged to house Ghrazi.",
         art = { item = "RANGED_GHRAZI_CROSSBOW_T95", cam = { yaw = -0.21, pitch = 0.08, dist = 273, ty = 42, tx = -0 } },
         tags = { regions = { "havenhythe" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },

@@ -22,6 +22,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     off-hand). Cosmetic recolours and the upgrades (Adamant scimitar + 1, + 2) are
                     left out: the plain weapon has the card. Fetched over several runs, like a
                     region; --count says how many pages. e.g.  --weapons melee --count
+  --links-from TITLE
+                    every page a list page links to, as if each was given with --page (and remembered
+                    the same way): for a kind of item the wiki has no category for, such as the metal
+                    bars on "Bars". Like --drops-from, a page of tables takes each row's name (its
+                    second cell) and any other page takes every link; --until HEADING stops at a
+                    heading. One request for the list page. Preview what it takes with --list first
   --list            with --weapons (or other sources): print the pages each would fetch, one per line
                     (weapons with their tier and damage type, lowest tier first), and stop: no pages
                     are fetched and nothing is remembered. For deciding what to leave out. The tier
@@ -868,6 +874,15 @@ ITEM_EXACT_CATEGORY_WORDS = {
     "useless items": ["junk"], "burnt food": ["junk"],
 }
 
+# The kinds of raw or processed material (the words that follow raw_material or processed_material).
+MATERIAL_KINDS = {"log", "ore", "bone", "hide", "bar", "plank", "clay"}
+
+# Items named "... bar" or "... plank" are those kinds of processed material, when filed under what makes them.
+MATERIAL_NAMES = (
+    (r"\bbars?$", "bar", {"Metals", "Smithing", "Recipes using Smithing"}),
+    (r"\bplanks?$", "plank", {"Recipes using Construction", "Construction", "Fort Forinthry"}),
+)
+
 # An item with no use in the game: what a failed recipe leaves (a jug of bad wine, burnt food) and what the wiki calls
 # useless. Junk is all it is.
 JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
@@ -1441,6 +1456,9 @@ def linked_pages(text, until=None):
         for row in re.split(r"^\|-.*$", text, flags=re.M)[1:]:
             cells = [line[1:].strip() for line in row.splitlines() if re.match(r"\|(?![-}+])", line)]
             link = re.fullmatch(r"\[\[([^\[\]|]+)(?:\|[^\[\]]*)?\]\]", cells[1]) if len(cells) > 1 else None
+            # (a name made with the plink template, {{plink|Bronze bar}}, as the Bars page does; what follows it, an
+            # amount like "x 5", is not part of the name)
+            link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[1]) if len(cells) > 1 else None)
             if link:
                 targets.append(link.group(1))
     else:
@@ -1836,6 +1854,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             found += ITEM_EXACT_CATEGORY_WORDS.get(category.lower(), [])
             if category in page.get("categories", []) and not category.lower().startswith("disassemble category/"):
                 explicit.update(found[before:])
+        # (the kind of material a page's own categories give (Hides, Bones and ashes) wins over the one its Disassembly
+        # box gives, which is only what it disassembles into: a hide disassembles into logs, a batwing into planks)
+        own_kinds = explicit & MATERIAL_KINDS
+        if own_kinds:
+            found = [w for w in found if w not in MATERIAL_KINDS or w in own_kinds]
+            if "raw_material" in explicit and "processed_material" not in explicit:
+                found = [w for w in found if w != "processed_material"]
         # (a drink is not food: a page in both Food and Drinks is a drink)
         if "drink" in found:
             found = [w for w in found if w != "food"]
@@ -1914,6 +1939,18 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     if not found and "Mining" in page.get("categories", []) and plain(fields.get("equipable", "")).lower() != "yes":
         found = ["raw_material"]
         notes.append("filed under Mining: a raw material, check it is not treasure or a tool")
+    # (a metal bar or a plank: named "... bar" or "... plank" and filed under the skill that makes it. Nothing else says
+    # so: the wiki has no category of bars or planks, and a bar's Disassembly box says planks. A processed material and
+    # that kind, whatever else the categories guessed (a refined plank is only an intermediate, a bar only an
+    # ingredient, there); only what it is for (a quest, a minigame) is kept)
+    material_name = strip_bracket(name).lower()
+    for name_pattern, material_kind, material_categories in MATERIAL_NAMES:
+        if (re.search(name_pattern, material_name) and not {"food", "drink"} & set(found)
+                and material_categories & set(page.get("categories", []))):
+            found = ["processed_material", material_kind] + [
+                w for w in found if w in ("quest_item", "minigame", "treasure_trail", "slayer_drop", "discontinued")]
+            notes.append(f"a {material_kind}: a processed material and a {material_kind}: check it")
+            break
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):
@@ -3086,6 +3123,7 @@ def main():
     parser.add_argument("--forget", action="store_true")
     parser.add_argument("--drops", action="append", default=[])
     parser.add_argument("--drops-from", action="append", default=[])
+    parser.add_argument("--links-from", action="append", default=[])
     parser.add_argument("--until", default="")
     parser.add_argument("--all-bosses", action="store_true")
     parser.add_argument("--subcategories", action="append", default=[])
@@ -3113,15 +3151,30 @@ def main():
         args.drops_from.append("Bosses")
         args.until = args.until or "Quest bosses"
     if (not args.category and not args.region and not args.weapons and not args.page and not args.drops
-            and not args.drops_from and not SOURCES.exists()):
+            and not args.drops_from and not args.links_from and not SOURCES.exists()):
         print(__doc__)
         return 1
+    # (the pages a list page links to are asked for like --page ones, so they are remembered the same way)
+    wiki = None
+    for list_title in args.links_from:
+        wiki = wiki or make_wiki(args)
+        listed = fetch_pages(wiki, [list_title], args.refresh).get(list_title)
+        if listed is None or listed.get("missing"):
+            print(f'The page "{list_title}" could not be read: no pages taken from it')
+            continue
+        try:
+            linked = linked_pages(listed.get("text", ""), args.until)
+        except ValueError as problem:
+            print(f'"{list_title}": {problem}, so nothing was taken from it')
+            continue
+        print(f'"{list_title}" links {len(linked)} pages' + (f' before "{args.until}"' if args.until else ""))
+        args.page += [t for t in linked if t not in args.page]
     categories, regions, weapons, page_titles = remembered_sources(args)
     if not categories and not regions and not weapons and not page_titles and not args.drops and not args.drops_from:
         print("Nothing to fetch: give --category, --region, --weapons or --page.")
         return 1
 
-    wiki = make_wiki(args)
+    wiki = wiki or make_wiki(args)
     print("From:", ", ".join([source_label(c) for c in categories] + [source_label(r, True) for r in regions]
                              + ["Weapons: " + source_label(w) for w in weapons]
                              + [f'page "{p}"' for p in page_titles]))
