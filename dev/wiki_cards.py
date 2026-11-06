@@ -1055,14 +1055,30 @@ def without_doses(desc):
     return rest[0].upper() + rest[1:]
 
 
-def flask_potion(title):
-    """The cached page of the potion a flask holds ("Adrenaline flask": "Adrenaline potion"; "Super attack flask": "Super
-    attack"), or None. A flask has no recipe of its own: the potion's recipe is what it takes to make."""
-    base = re.sub(r"\s+flask$", "", title, flags=re.I)
-    for name in (base, base + " potion"):
-        page = read_cache("pages", name)
-        if page and "Potions" in page.get("categories", []) and "Potion flasks" not in page.get("categories", []):
-            return page
+FLASK_HOLDS = re.compile(r"\bdoses? of (?:the )?\[\[([^\]|#{}]+)", re.I)
+
+
+def flask_potion_titles(page):
+    """The titles of the potion a flask holds, most likely first: the page the flask's text links to ("six doses of
+    [[Juju cooking potion]]"), then the flask's name without "flask", with and without "potion"."""
+    titles = []
+    found = FLASK_HOLDS.search(page.get("text", ""))
+    if found:
+        titles.append(found.group(1).strip())
+    base = re.sub(r"\s+flask$", "", page.get("title", ""), flags=re.I)
+    titles += [base, base + " potion"]
+    return [t[0].upper() + t[1:] for t in dict.fromkeys(t for t in titles if t)]
+
+
+def flask_potion(page):
+    """The cached page of the potion a flask holds, or None. A flask has no recipe of its own: the potion's recipe is
+    what it takes to make."""
+    for title in flask_potion_titles(page):
+        held = read_cache("pages", title)
+        categories = held.get("categories", []) if held else []
+        # (a potion's page: in Potions or one of its kinds (Juju potions), not the skill page "Cooking")
+        if held and not held.get("missing") and "Potion flasks" not in categories and any("otions" in c for c in categories):
+            return held
     return None
 
 
@@ -2065,10 +2081,11 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
                                            set(words["skills"]))
     # (a potion flask has no recipe: the potion it holds has, so the skills and level are that potion's)
     if not made_with and "Potion flasks" in page.get("categories", []):
-        holds = flask_potion(page["title"])
+        holds = flask_potion(page)
         if holds is not None:
             made_with, level = recipe_requirements(
-                holds.get("text", ""), [holds["title"], strip_bracket(holds["title"]), page["title"]], set(words["skills"]))
+                holds.get("text", ""), [holds["title"], strip_bracket(holds["title"]), holds["title"] + " potion", page["title"]]
+                + flask_potion_titles(page), set(words["skills"]))
             if made_with:
                 notes.append(f"made with {holds['title']}'s recipe: its skills and level")
         # (the potion's page is not here (a Juju or Guthix one): a flask of a potion is Herblore's, and the level is unknown)
@@ -3343,6 +3360,12 @@ def main():
     if args.count:
         return show_count(titles, sources, args, wiki)
     pages = fetch_pages(wiki, titles, args.refresh)
+    # (the potion each potion flask holds gives its skills and level; it is read here, not made a candidate)
+    held = [t for page in pages.values() if page and "Potion flasks" in page.get("categories", [])
+            and flask_potion(page) is None
+            for t in flask_potion_titles(page) if t not in pages and read_cache("pages", t) is None]
+    if held:
+        fetch_pages(wiki, list(dict.fromkeys(held)), False)
     drop_titles = list(args.drops)
     for list_title in args.drops_from:
         listed = fetch_pages(wiki, [list_title], args.refresh).get(list_title)
