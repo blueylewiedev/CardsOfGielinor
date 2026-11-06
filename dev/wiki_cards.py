@@ -865,7 +865,12 @@ ITEM_EXACT_CATEGORY_WORDS = {
     "pie": ["food", "baked_goods"], "pizza": ["food", "meal"], "soups": ["food", "meal"],
     "gnome cooking": ["food", "meal"], "dorgeshuun cuisine": ["food", "meal"],
     "fruit": ["food", "fruit_veg"], "cabbages": ["food", "fruit_veg"], "dungeoneering potatoes": ["food", "fruit_veg"],
+    "useless items": ["junk"], "burnt food": ["junk"],
 }
+
+# An item with no use in the game: what a failed recipe leaves (a jug of bad wine, burnt food) and what the wiki calls
+# useless. Junk is all it is.
+JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
 
 # The kind of a food whose wiki categories do not say it, from its name (checked in order; the note says to
 # check it): meals (a sandwich, wrap, stew or soup, whatever is in it), then pies (baked goods, whatever is in them),
@@ -1834,6 +1839,10 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (a pie no category says is food: Raw admiral pie has only Items and Recipes)
         if not found and FOOD_NAME_KINDS[1][0].search(strip_bracket(name).lower()):
             found.append("food")
+        # (junk is all it is: a failed recipe, burnt food, what the wiki calls useless)
+        if "junk" in found or JUNK_NAME.search(strip_bracket(name).lower() + " " + name.lower()):
+            found = ["junk"]
+            notes.append("junk: no use in the game: check it")
         # (bait, swamp paste and fish offcuts are used up by what they do: consumable, not food)
         if re.search(r"\b(bait|swamp paste|fish offcuts)$", strip_bracket(name).lower()):
             found = ["consumable"]
@@ -1882,7 +1891,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # (an ingredient is cooked with, not eaten: in the category Cooking with no category of its own that makes it a food
     # or a drink (the Disassembly one calls barley and sweetcorn "food", which is only what they disassemble into), and
     # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
-    if (INGREDIENT_CATEGORY in page.get("categories", []) and not NOT_AN_INGREDIENT & explicit
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and not NOT_AN_INGREDIENT & explicit
             and plain(fields.get("equipable", "")).lower() != "yes"):
         found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_food", "raw_material", "ingredient")]
         notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")

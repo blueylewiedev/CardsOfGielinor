@@ -222,7 +222,8 @@ Cards.itemTagGroups = {
     category = {
         { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
             "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", "consumable",
-            "armour", "jewellery", "pocket", "ammunition", "fashion", "novelty", "treasure_trail", "slayer_drop", "minigame", "discontinued" } },
+            "armour", "jewellery", "pocket", "ammunition", "fashion", "novelty", "treasure_trail", "slayer_drop", "minigame", "discontinued",
+            "junk" } },
         { title = "What kind of weapon", requires = "weapon",
             words = { "dagger", "defender", "sword", "scimitar", "two_handed_sword", "axe", "mace", "maul", "spear", "halberd",
                 "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book" } },

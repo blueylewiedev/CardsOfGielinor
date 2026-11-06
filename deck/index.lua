@@ -62,6 +62,7 @@ return {
     "deck/items/seeds",
     "deck/items/tools",
     "deck/items/quest_items",
+    "deck/items/junk",
     "deck/items/treasure_trails",
     "deck/items/novelties",
 

@@ -587,8 +587,9 @@ Some words have more to say about the kind, and open their own choice once the w
   named raw or uncooked that is not an ingredient (a raw pie, soup or potato, or a pie only part made) is
   `food, raw_food`. A raw meat or fish (named raw or uncooked, or in the wiki's
   Uncooked food) is `raw_material, meat` or `raw_material, fish`, not food, and goes in
-  `deck/items/raw_materials/meat.lua` or `fish.lua`; the cooked one is `food, meat` or `food, fish`. Urns
-  (cooking, mining and the rest) are `consumable`, and a quest item with no file of its kind goes in
+  `deck/items/raw_materials/meat.lua` or `fish.lua`; the cooked one is `food, meat` or `food, fish`. Junk, an
+  item with no use in the game (a jug of bad wine, burnt food, what the wiki calls useless), is `junk` alone
+  and goes in `deck/items/junk.lua`. Urns (cooking, mining and the rest) are `consumable`, and a quest item with no file of its kind goes in
   `deck/items/quest_items.lua`.
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
