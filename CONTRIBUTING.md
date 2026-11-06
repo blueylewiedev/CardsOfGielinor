@@ -126,7 +126,9 @@ For a kind of item the wiki has no category for, `--links-from "Bars"` takes eve
 was given with `--page`, and remembered the same way): the metal bars, whose list is the tables on the Bars page.
 `--list` shows what it would take before anything is fetched, and `--until HEADING` stops at a heading. A name that ends in
 "bar" and is filed under Metals or Smithing is suggested as `processed_material, bar`, in
-`deck/items/processed_materials/bars.lua`.
+`deck/items/processed_materials/bars.lua`; one that ends in "plank" or "planks" and is filed under Construction
+(the Sawmill page lists them: `--links-from "Sawmill"`) as `processed_material, plank`, in
+`deck/items/processed_materials/planks.lua`.
 
 Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
 at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in

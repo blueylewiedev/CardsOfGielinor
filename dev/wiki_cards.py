@@ -877,6 +877,12 @@ ITEM_EXACT_CATEGORY_WORDS = {
 # The kinds of raw or processed material (the words that follow raw_material or processed_material).
 MATERIAL_KINDS = {"log", "ore", "bone", "hide", "bar", "plank", "clay"}
 
+# Items named "... bar" or "... plank" are those kinds of processed material, when filed under what makes them.
+MATERIAL_NAMES = (
+    (r"\bbars?$", "bar", {"Metals", "Smithing", "Recipes using Smithing"}),
+    (r"\bplanks?$", "plank", {"Recipes using Construction", "Construction", "Fort Forinthry"}),
+)
+
 # An item with no use in the game: what a failed recipe leaves (a jug of bad wine, burnt food) and what the wiki calls
 # useless. Junk is all it is.
 JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
@@ -1452,7 +1458,7 @@ def linked_pages(text, until=None):
             link = re.fullmatch(r"\[\[([^\[\]|]+)(?:\|[^\[\]]*)?\]\]", cells[1]) if len(cells) > 1 else None
             # (a name made with the plink template, {{plink|Bronze bar}}, as the Bars page does; what follows it, an
             # amount like "x 5", is not part of the name)
-            link = link or (re.match(r"\{\{plinkp?\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[1]) if len(cells) > 1 else None)
+            link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[1]) if len(cells) > 1 else None)
             if link:
                 targets.append(link.group(1))
     else:
@@ -1933,15 +1939,18 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     if not found and "Mining" in page.get("categories", []) and plain(fields.get("equipable", "")).lower() != "yes":
         found = ["raw_material"]
         notes.append("filed under Mining: a raw material, check it is not treasure or a tool")
-    # (a metal bar: named "... bar" and filed under Metals or Smithing. Nothing else says so: the wiki has no
-    # category of bars, and a bar's Disassembly box says planks. A processed material and a bar, whatever else the
-    # categories guessed; only what it is for (a quest, a minigame) is kept)
-    bar_name = strip_bracket(name).lower()
-    if (re.search(r"\bbars?$", bar_name) and not {"food", "drink"} & set(found)
-            and {"Metals", "Smithing", "Recipes using Smithing"} & set(page.get("categories", []))):
-        found = ["processed_material", "bar"] + [
-            w for w in found if w in ("quest_item", "minigame", "treasure_trail", "slayer_drop", "discontinued")]
-        notes.append("a metal bar: a processed material and a bar: check it")
+    # (a metal bar or a plank: named "... bar" or "... plank" and filed under the skill that makes it. Nothing else says
+    # so: the wiki has no category of bars or planks, and a bar's Disassembly box says planks. A processed material and
+    # that kind, whatever else the categories guessed (a refined plank is only an intermediate, a bar only an
+    # ingredient, there); only what it is for (a quest, a minigame) is kept)
+    material_name = strip_bracket(name).lower()
+    for name_pattern, material_kind, material_categories in MATERIAL_NAMES:
+        if (re.search(name_pattern, material_name) and not {"food", "drink"} & set(found)
+                and material_categories & set(page.get("categories", []))):
+            found = ["processed_material", material_kind] + [
+                w for w in found if w in ("quest_item", "minigame", "treasure_trail", "slayer_drop", "discontinued")]
+            notes.append(f"a {material_kind}: a processed material and a {material_kind}: check it")
+            break
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):
