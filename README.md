@@ -38,15 +38,15 @@ each region's set has its own version.
 | Type | Section | Status | Notes |
 | --- | --- | --- | --- |
 | **Food** | Fish (cooked) | Complete | |
-| | Meat | Not started | |
-| | Meals | Not started | |
-| | Baked goods | Not started | |
-| | Fruit and vegetables | Not started | |
-| | Drinks | Not started | |
+| | Meat | Complete | |
+| | Meals | Complete | |
+| | Baked goods | Complete | |
+| | Fruit and vegetables | Complete | |
+| | Drinks | Complete | |
 | **Potions** | | Not started | |
 | **Flasks** | | Not started | |
 | **Raw materials** | Fish | Complete | |
-| | Meat | Not started | |
+| | Meat | Complete | |
 | | Herbs | Complete | |
 | | Logs | Complete | |
 | | Ores | Complete | |
