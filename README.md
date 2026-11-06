@@ -37,30 +37,30 @@ each region's set has its own version.
 
 | Type | Section | Status | Notes |
 | --- | --- | --- | --- |
-| **Food** | Fish (cooked) | In progress | |
-| | Meat | Not started | |
-| | Meals | Not started | |
-| | Baked goods | Not started | |
-| | Fruit and vegetables | Not started | |
-| | Drinks | Not started | |
+| **Food** | Fish (cooked) | Complete | |
+| | Meat | Complete | |
+| | Meals | Complete | |
+| | Baked goods | Complete | |
+| | Fruit and vegetables | Complete | |
+| | Drinks | Complete | |
 | **Potions** | | Not started | |
 | **Flasks** | | Not started | |
-| **Raw materials** | Fish | In progress | |
-| | Meat | Not started | |
-| | Herbs | In progress | |
-| | Logs | In progress | |
-| | Ores | Not started | |
+| **Raw materials** | Fish | Complete | |
+| | Meat | Complete | |
+| | Herbs | Complete | |
+| | Logs | Complete | |
+| | Ores | Complete | |
 | | Bones | Not started | |
 | | Hides | Not started | |
-| | Gems | Not started | |
+| | Gems | Complete | |
 | **Processed materials** | Bars | Not started | |
 | | Planks | Not started | |
-| **Seeds** | | Not started | |
-| **Runes** | | In progress | |
+| **Seeds** | | Complete | |
+| **Runes** | | Complete | |
 | **Tools** | | Not started | Pickaxes, hatchets, spades and the like |
-| **Weapons** | Melee | Not started | One row per kind below if you want to track them separately |
-| | Ranged | Not started | |
-| | Magic | Not started | |
+| **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
+| | Ranged | Complete | |
+| | Magic | Complete | |
 | | Necromancy | Not started | |
 | **Armour: melee** | Helmet | Not started | |
 | | Body | Not started | |
@@ -96,7 +96,7 @@ each region's set has its own version.
 | | Bolts | Not started | |
 | | Other (spikes) | Not started | |
 | **Decoration** | | In progress | |
-| **Currency** | | Not started | |
+| **Currency** | | In Progress | |
 | **Quest items** | | Not started | |
 | **Craftable** | | Not started | |
 | **Pocket items** | | Not started | |
