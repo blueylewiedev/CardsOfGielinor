@@ -837,6 +837,8 @@ ITEM_CATEGORY_WORDS = {
     "potion": ["potion"], "seeds": ["seed"], "jewellery": ["jewellery"], "quest items": ["quest_item"],
     "arrows": ["ammunition", "arrow"], "bolts": ["ammunition", "bolt"], "dagger": ["dagger"], "daggers": ["dagger"],
     "scimitar": ["scimitar"], "scimitars": ["scimitar"], "longsword": ["sword"], "sword": ["sword"],
+    "ceremonial swords": ["sword"], "darts": ["thrown"], "javelins": ["thrown"],
+    "defenders": ["defender"], "defender": ["defender"], "urns": ["consumable"],
     "2h sword": ["two_handed_sword"], "two-handed swords": ["two_handed_sword"], "battleaxe": ["axe"],
     "battleaxes": ["axe"], "mace": ["mace"], "maces": ["mace"], "spear": ["spear"], "spears": ["spear"],
     "halberd": ["halberd"], "halberds": ["halberd"], "whip": ["whip"], "claws": ["claw"], "shortbow": ["shortbow"],
@@ -857,6 +859,54 @@ ITEM_CATEGORY_WORDS = {
     "pocket slot items": ["pocket"],
 }
 
+# Item category words suggested by a wiki category's whole name, not a word of it ("Fruit" but not "Fruit tree
+# seeds"): the kind of food. A pie is baked goods; soups, pizzas and the gnome and Dorgeshuun dishes are meals.
+ITEM_EXACT_CATEGORY_WORDS = {
+    "pie": ["food", "baked_goods"], "pizza": ["food", "meal"], "soups": ["food", "meal"],
+    "gnome cooking": ["food", "meal"], "dorgeshuun cuisine": ["food", "meal"],
+    "fruit": ["food", "fruit_veg"], "cabbages": ["food", "fruit_veg"], "dungeoneering potatoes": ["food", "fruit_veg"],
+    "useless items": ["junk"], "burnt food": ["junk"],
+}
+
+# An item with no use in the game: what a failed recipe leaves (a jug of bad wine, burnt food) and what the wiki calls
+# useless. Junk is all it is.
+JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
+
+# The kind of a food whose wiki categories do not say it, from its name (checked in order; the note says to
+# check it): meals (a sandwich, wrap, stew or soup, whatever is in it), then pies (baked goods, whatever is in them),
+# then cheesecakes (baked goods, bacon or not), then meat, then baked goods, then fruit and vegetables.
+FOOD_NAME_KINDS = (
+    (re.compile(r"\b(sandwich(es)?|wraps?|stews?|soups?)\b"), "meal"),
+    (re.compile(r"\bpies?\b(?! (dish|shell))"), "baked_goods"),
+    (re.compile(r"\bcheesecakes?\b"), "baked_goods"),
+    (re.compile(r"^(?!.*\b(?:potato|dough|oil|sauce)\b).*"
+                r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky|carne|chompy|"
+                r"rabbit|pekin|eeligator|snail|spider|snake)\b"), "meat"),
+    (re.compile(r"\b(cakes?|cheesecake|bread|biscuits?|cookies?|muffins?|tarts?|buns?|rolls?|scones?|doughnuts?|pastry|"
+                r"baguette|croissant|waffles?|flatbread)\b"), "baked_goods"),
+    (re.compile(r"\b(potato|potatoes|fruit|berry|berries|apples?|bananas?|oranges?|lemons?|limes?|pineapples?|"
+                r"cabbages?|onions?|tomato(es)?|carrots?|pumpkins?|salad|vegetables?|mushrooms?|corn|pears?|grapes?|"
+                r"peach(es)?|melons?)\b"), "fruit_veg"),
+)
+
+# A raw meat or fish: named raw or uncooked, or in the wiki's Uncooked food. It is a raw material
+# (raw_materials/meat.lua, raw_materials/fish.lua), not food, as the cooked one is. A raw pie or cake (or one
+# only part made) is raw_food, in food/raw_food.lua, not baked goods.
+RAW_NAME = re.compile(r"\b(raw|uncooked)\b")
+PART_NAME = re.compile(r"^part\b")
+DOUGH_NAME = re.compile(r"\bdough\b")
+# (an item named raw or uncooked that is an ingredient, not a dish: raw dough is decided elsewhere, and raw meat and
+# fish are raw materials)
+RAW_INGREDIENT_NAME = re.compile(r"\b(raw|uncooked) (meat|fish|chicken|beef|bacon|rabbit|shrimps?|anchovies|sardine|herring|"
+                                 r"dough)\b")
+
+# An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
+# flour). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
+# The category is wide, though: lobster, pies, ales and bananas are in it as well. So an item whose other
+# categories already make it a food, a drink or a fish, or that is worn, is not an ingredient.
+INGREDIENT_CATEGORY = "Cooking"
+NOT_AN_INGREDIENT = {"food", "meal", "baked_goods", "fruit_veg", "fish", "meat", "drink"}
+
 # A wiki category that says an item is a cosmetic (an override, only worn for its looks): it is
 # tagged fashion, and nothing else, as the Contributing guide says.
 COSMETIC_CATEGORY = re.compile(r"\bcosmetic|\boverride")
@@ -875,12 +925,15 @@ NOVELTY_PAGES = {"tambourine", "mega-phonus", "rubber turkey", "off-hand rubber 
 
 
 WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd", "whip",
-                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book"}
+                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book",
+                     "defender"}
 # The kind of a weapon from its name (the last word), for a weapon whose wiki categories name no
 # kind: "Adamant claws" is a claw. In order, as "2h sword" must come before "sword".
 WEAPON_NAME_KINDS = [
     (r"\b2h swords?$", "two_handed_sword"), (r"\bclaws?$", "claw"), (r"\bdaggers?$", "dagger"),
-    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?$|\brapiers?$", "sword"),
+    (r"\bdefenders?$", "defender"),
+    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?(?: [ivx]+)?$|\brapiers?$", "sword"),
+    (r"\b(?:darts?|javelins?|knife|knives|throwing (?:axes?|knives))$", "thrown"),
     (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|mauls?|flails?)$", "mace"),
     (r"\b(?:spears?|hastas?|warspears?|lances?)$", "spear"), (r"\bhalberds?$", "halberd"),
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
@@ -1746,6 +1799,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         notes.append(f"{len(ids)} item ids listed; using the first")
     name, desc = name_and_desc(page, fields, notes)
 
+    explicit = set()        # (the words the wiki's own categories give, not the Disassembly ones: see the ingredient below)
     found = list(SLOT_WORDS.get(plain(bonuses.get("slot", "")).lower(), []))
     style = plain(bonuses.get("style", "")).lower()
     if "ammunition" in found:
@@ -1775,9 +1829,91 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         kinds = [plain(template_fields(disassembly or "").get("category", ""))]
         for category in page.get("categories", []) + [k for k in kinds if k]:
             name_part = category.lower().removeprefix("disassemble category/")
+            before = len(found)
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
+            found += ITEM_EXACT_CATEGORY_WORDS.get(category.lower(), [])
+            if category in page.get("categories", []) and not category.lower().startswith("disassemble category/"):
+                explicit.update(found[before:])
+        # (a drink is not food: a page in both Food and Drinks is a drink)
+        if "drink" in found:
+            found = [w for w in found if w != "food"]
+        # (a pie dish is a tool and a pie shell is made to be filled, neither is a pie, though the wiki files them under Pie)
+        if re.search(r"\bpie (dish|shell)\b", strip_bracket(name).lower()):
+            found = [w for w in found if w not in ("food", "baked_goods")]
+            if re.search(r"\bpie dish\b", strip_bracket(name).lower()):
+                found.append("tool")
+        # (a pie no category says is food: Raw admiral pie has only Items and Recipes)
+        if not found and FOOD_NAME_KINDS[1][0].search(strip_bracket(name).lower()):
+            found.append("food")
+        # (junk is all it is: a failed recipe, burnt food, what the wiki calls useless)
+        if "junk" in found or JUNK_NAME.search(strip_bracket(name).lower() + " " + name.lower()):
+            found = ["junk"]
+            notes.append("junk: no use in the game: check it")
+        # (bait, swamp paste and fish offcuts are used up by what they do: consumable, not food)
+        if re.search(r"\b(bait|swamp paste|fish offcuts)$", strip_bracket(name).lower()):
+            found = ["consumable"]
+            notes.append("looks like a consumable (bait, swamp paste): check it")
+        # (dough is made to be baked, not eaten: an intermediate, a processed ingredient)
+        if "food" in found and re.search(r"\bdough\b", strip_bracket(name).lower()):
+            found = ["processed_material", "ingredient"] + [
+                w for w in found if w not in ("food", "meal", "baked_goods", "fruit_veg", "fish", "meat")]
+            notes.append("dough: a processed ingredient, not food: check it")
+        # (a food no category says the kind of: the wiki's Produce is fruit and vegetables, else the name often says.
+        # Not an ingredient, which is decided below: in Cooking with no category of its own that says food, it is one)
+        if ("food" in found and (INGREDIENT_CATEGORY not in page.get("categories", []) or "food" in explicit)
+                and not {"meal", "baked_goods", "fruit_veg", "fish", "meat"} & set(found)):
+            lowered = strip_bracket(name).lower()
+            if "Produce" in page.get("categories", []):
+                found.append("fruit_veg")
+            else:
+                for pattern, kind in FOOD_NAME_KINDS:
+                    if pattern.search(lowered):
+                        found.append(kind)
+                        notes.append(f"food kind {kind} taken from the name: check it")
+                        break
+                else:
+                    # (nothing says the kind: most of what is left is a dish, so suggest meal and say it is a guess)
+                    found.append("meal")
+                    notes.append("food kind not found: meal is a guess, check it")
+        # (a raw meat or fish is a raw material, not food: raw_materials/meat or fish. A pie or a meal with meat in its
+        # name is not)
+        raw_kind = ("meat" if "meat" in found and "fish" not in found
+                    else "fish" if "fish" in found and "meat" not in found else None)
+        if (raw_kind and not {"meal", "baked_goods", "fruit_veg"} & set(found)
+                and ("Uncooked food" in page.get("categories", []) or RAW_NAME.search(name.lower()))):
+            found = ["raw_material"] + [w for w in found if w not in ("food", "raw_material")]
+            notes.append(f"raw {raw_kind}: a raw material, not food: check it")
+        # (any other food named raw or uncooked, or a part-made pie, is raw_food in place of its kind: a raw pie, a raw
+        # soup, a raw potato. An ingredient is not: that is decided below)
+        if "food" in found:
+            if (RAW_NAME.search(name.lower()) or "Uncooked food" in page.get("categories", [])
+                    or (PART_NAME.search(name.lower()) and "baked_goods" in found)):
+                kinds = ("meal", "baked_goods", "fruit_veg")
+                found = [w for w in found if w not in kinds] + ["raw_food"]
+                notes.append("raw food: not cooked yet: check it")
+        # (an herb is not food, though the Disassembly box may call it that)
+        if "herb" in found:
+            found = [w for w in found if w != "food"]
+    # (an ingredient is cooked with, not eaten: in the category Cooking with no category of its own that makes it a food
+    # or a drink (the Disassembly one calls barley and sweetcorn "food", which is only what they disassemble into), and
+    # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
+    # (a dish named raw or uncooked, with no category of its own that says what it is, is raw_food: Uncooked cake)
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and not found
+            and RAW_NAME.search(name.lower()) and not DOUGH_NAME.search(name.lower())
+            and not RAW_INGREDIENT_NAME.search(strip_bracket(name).lower())
+            and plain(fields.get("equipable", "")).lower() != "yes"):
+        found = ["food", "raw_food"]
+        notes.append("raw food: not cooked yet: check it")
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and "raw_food" not in found
+            and not NOT_AN_INGREDIENT & explicit and plain(fields.get("equipable", "")).lower() != "yes"):
+        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_food", "raw_material", "ingredient")]
+        notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")
+    # (mined and nothing says what it is: sandstone, granite, rune essence. A raw material, but check it)
+    if not found and "Mining" in page.get("categories", []) and plain(fields.get("equipable", "")).lower() != "yes":
+        found = ["raw_material"]
+        notes.append("filed under Mining: a raw material, check it is not treasure or a tool")
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):
@@ -1810,6 +1946,18 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
+    # (an ingredient a recipe makes, butter or flour, is processed; yeast or an egg that nothing makes is raw)
+    if made_with and "ingredient" in category and "raw_material" in category:
+        category = ["processed_material" if word == "raw_material" else word for word in category]
+        tags["category"] = category
+    # (an intermediate: no category says what it is, a recipe makes it and the page has the table of the recipes that
+    # use it (Uses material list), as the Dry rabbit sandwich, made of bread and rabbit and used to make a rabbit
+    # sandwich. Not being in Food or Drinks is how we know it is not usable as it is)
+    if not category and made_with and "Uses material list" in page.get("text", ""):
+        category = ["processed_material", "ingredient"]
+        tags["category"] = category
+        notes[:] = [n for n in notes if not n.startswith("no category found")]
+        notes.append("an intermediate (made by a recipe, used by others): processed material and ingredient, check it")
     worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
     if "novelty" in found:
         worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
