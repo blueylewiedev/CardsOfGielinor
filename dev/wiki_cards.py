@@ -346,7 +346,7 @@ UPGRADE_TITLE = re.compile(r"\s\+\s*\d+$")
 # of another page), augmented, golden and lucky versions of a weapon, off-hand thrown weapons
 # (an off-hand dart or knife is the same item), Abyssal crossbows (copies of the plain crossbow
 # tiers) and "Mk. 5" upgrades of a weapon.
-WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\([^)]*\)\s*$|^(augmented|golden|lucky)\s"
+WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\((?!tier \d+\))[^)]*\)\s*$|^(augmented|golden|lucky)\s"
                          r"|^off-hand .*(dart|knife|throwing axe|javelin|chakram|glaive|stake)$"
                          r"|^(off-hand )?abyssal .* crossbow$|\sMk\.? ?\d+$", re.I)
 
@@ -955,6 +955,8 @@ WEAPON_NAME_KINDS = [
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
     (r"\bcrossbows?$", "crossbow"), (r"\b(?:battle)?(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
     (r"\borbs?$|^orb of\b", "orb"), (r"\b(?:spell)?books?$|\bbook of magic$|\btome\b", "book"),
+    # (a necromancer's off hand: the lantern is a conduit to the Underworld, the guard (an armguard) a siphon)
+    (r"\blanterns?$", "lantern"), (r"\bguards?$", "siphon"),
 ]
 
 
@@ -1552,6 +1554,8 @@ def linked_pages(text, until=None):
             # (a name made with the plink template, {{plink|Bronze bar}}, as the Bars page does; what follows it, an
             # amount like "x 5", is not part of the name)
             link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[1]) if len(cells) > 1 else None)
+            # (a table with no picture cell, as on the Necromancy weapons page, has the name in its first cell)
+            link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[0]) if cells else None)
             if link:
                 targets.append(link.group(1))
     else:

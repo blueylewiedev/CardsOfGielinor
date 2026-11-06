@@ -247,6 +247,9 @@ Set.cards = {
         art = { item = "RAND_BAR_10", cam = { yaw = -3.50, pitch = 0.93, dist = 248, ty = -33, tx = 132 } },
         tags = { regions = { "daemonheim" }, skills = { "smithing", "dungeoneering" }, category = { "processed_material", "bar" }, membership = { "p2p" } },
     },
+    { id = "lesser_ensouled_bar", name = "Lesser ensouled bar", kind = "item", rarity = "common", desc = "A low-tier amalgamation of different metals, imbued with underworld energy.", art = { item = "LESSER_ENSOULED_BAR", cam = { yaw = -0.96, pitch = 0.93, dist = 248, ty = -4, tx = 5 } }, tags = { skills = { "necromancy", "smithing" }, category = { "processed_material", "bar" }, membership = { "p2p" } } },
+    { id = "ensouled_bar", name = "Ensouled bar", kind = "item", rarity = "uncommon", desc = "A mid-tier amalgamation of different metals, imbued with underworld energy.", art = { item = "ENSOULED_BAR", cam = { yaw = -0.96, pitch = 0.93, dist = 248, ty = -4, tx = 5 } }, tags = { skills = { "necromancy", "smithing" }, category = { "processed_material", "bar" }, membership = { "p2p" } } },
+    { id = "greater_ensouled_bar", name = "Greater ensouled bar", kind = "item", rarity = "rare", desc = "A high-tier amalgamation of different materials, imbued with underworld energy.", art = { item = "GREATER_ENSOULED_BAR", cam = { yaw = -0.96, pitch = 0.93, dist = 248, ty = -4, tx = 5 } }, tags = { skills = { "necromancy", "smithing" }, category = { "processed_material", "bar" }, membership = { "p2p" } } },
 }
 
 return Set
