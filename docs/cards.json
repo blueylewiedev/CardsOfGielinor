@@ -13302,7 +13302,9 @@
    },
    "collection": "Items: General",
    "file": "deck/items/general.lua",
-   "order": 508
+   "order": 508,
+   "img": "img/great_white_shark_bait.png",
+   "imgPage": "File:Great white shark bait detail.png"
   },
   {
    "id": "extra_spicy_crunchies",
@@ -13320,7 +13322,9 @@
    },
    "collection": "Items: General",
    "file": "deck/items/general.lua",
-   "order": 509
+   "order": 509,
+   "img": "img/extra_spicy_crunchies.png",
+   "imgPage": "File:Extra spicy crunchies detail.png"
   },
   {
    "id": "grimy_guam",
@@ -15605,7 +15609,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 599
+   "order": 599,
+   "img": "img/raw_dusk_eel.png",
+   "imgPage": "File:Raw dusk eel detail.png"
   },
   {
    "id": "raw_giant_flatfish",
@@ -15631,7 +15637,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 600
+   "order": 600,
+   "img": "img/raw_giant_flatfish.png",
+   "imgPage": "File:Raw giant flatfish detail.png"
   },
   {
    "id": "fat_snail",
@@ -15653,7 +15661,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 601
+   "order": 601,
+   "img": "img/fat_snail.png",
+   "imgPage": "File:Fat snail detail.png"
   },
   {
    "id": "lean_snail",
@@ -15675,7 +15685,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 602
+   "order": 602,
+   "img": "img/lean_snail.png",
+   "imgPage": "File:Lean snail detail.png"
   },
   {
    "id": "raw_bear_meat",
@@ -15697,7 +15709,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 603
+   "order": 603,
+   "img": "img/raw_bear_meat.png",
+   "imgPage": "File:Raw bear meat detail.png"
   },
   {
    "id": "raw_beast_meat",
@@ -15720,7 +15734,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 604
+   "order": 604,
+   "img": "img/raw_beast_meat.png",
+   "imgPage": "File:Raw beast meat detail.png"
   },
   {
    "id": "spider_carcass",
@@ -15742,7 +15758,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 605
+   "order": 605,
+   "img": "img/spider_carcass.png",
+   "imgPage": "File:Spider carcass detail.png"
   },
   {
    "id": "crab_meat",
@@ -15761,7 +15779,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 606
+   "order": 606,
+   "img": "img/crab_meat.png",
+   "imgPage": "File:Crab meat detail.png"
   },
   {
    "id": "raw_bacon",
@@ -15780,7 +15800,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 607
+   "order": 607,
+   "img": "img/raw_bacon.png",
+   "imgPage": "File:Raw bacon detail.png"
   },
   {
    "id": "raw_bacon_pile",
@@ -15802,7 +15824,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 608
+   "order": 608,
+   "img": "img/raw_bacon_pile.png",
+   "imgPage": "File:Raw bacon pile detail.png"
   },
   {
    "id": "raw_bacon_stack",
@@ -15824,7 +15848,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 609
+   "order": 609,
+   "img": "img/raw_bacon_stack.png",
+   "imgPage": "File:Raw bacon stack detail.png"
   },
   {
    "id": "raw_beef",
@@ -15846,7 +15872,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 610
+   "order": 610,
+   "img": "img/raw_beef.png",
+   "imgPage": "File:Raw beef detail.png"
   },
   {
    "id": "raw_bird_meat",
@@ -15865,7 +15893,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 611
+   "order": 611,
+   "img": "img/raw_bird_meat.png",
+   "imgPage": "File:Raw bird meat detail.png"
   },
   {
    "id": "raw_chicken",
@@ -15884,7 +15914,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 612
+   "order": 612,
+   "img": "img/raw_chicken.png",
+   "imgPage": "File:Raw chicken detail.png"
   },
   {
    "id": "raw_chompy",
@@ -15903,7 +15935,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 613
+   "order": 613,
+   "img": "img/raw_chompy.png",
+   "imgPage": "File:Raw chompy detail.png"
   },
   {
    "id": "raw_pawya_meat",
@@ -15925,7 +15959,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 614
+   "order": 614,
+   "img": "img/raw_pawya_meat.png",
+   "imgPage": "File:Raw pawya meat detail.png"
   },
   {
    "id": "raw_rabbit",
@@ -15944,7 +15980,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 615
+   "order": 615,
+   "img": "img/raw_rabbit.png",
+   "imgPage": "File:Raw rabbit detail.png"
   },
   {
    "id": "raw_rat_meat",
@@ -15963,7 +16001,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 616
+   "order": 616,
+   "img": "img/raw_rat_meat.png",
+   "imgPage": "File:Raw rat meat detail.png"
   },
   {
    "id": "raw_ugthanki_meat",
@@ -15985,7 +16025,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 617
+   "order": 617,
+   "img": "img/raw_ugthanki_meat.png",
+   "imgPage": "File:Raw ugthanki meat detail.png"
   },
   {
    "id": "raw_undead_beef",
@@ -16007,7 +16049,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 618
+   "order": 618,
+   "img": "img/raw_undead_beef.png",
+   "imgPage": "File:Raw undead beef detail.png"
   },
   {
    "id": "raw_undead_chicken",
@@ -16029,7 +16073,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 619
+   "order": 619,
+   "img": "img/raw_undead_chicken.png",
+   "imgPage": "File:Raw undead chicken detail.png"
   },
   {
    "id": "raw_wolf_meat",
@@ -16048,7 +16094,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 620
+   "order": 620,
+   "img": "img/raw_wolf_meat.png",
+   "imgPage": "File:Raw wolf meat detail.png"
   },
   {
    "id": "raw_yak_meat",
@@ -16070,7 +16118,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 621
+   "order": 621,
+   "img": "img/raw_yak_meat.png",
+   "imgPage": "File:Raw yak meat detail.png"
   },
   {
    "id": "thin_snail",
@@ -16092,7 +16142,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 622
+   "order": 622,
+   "img": "img/thin_snail.png",
+   "imgPage": "File:Thin snail detail.png"
   },
   {
    "id": "anchovies",
@@ -16571,7 +16623,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 642
+   "order": 642,
+   "img": "img/dusk_eel.png",
+   "imgPage": "File:Dusk eel detail.png"
   },
   {
    "id": "giant_flatfish",
@@ -16597,7 +16651,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 643
+   "order": 643,
+   "img": "img/giant_flatfish.png",
+   "imgPage": "File:Giant flatfish detail.png"
   },
   {
    "id": "heim_crab",
@@ -16623,7 +16679,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 644
+   "order": 644,
+   "img": "img/heim_crab.png",
+   "imgPage": "File:Heim crab detail.png"
   },
   {
    "id": "raw_heim_crab",
@@ -16649,7 +16707,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 645
+   "order": 645,
+   "img": "img/raw_heim_crab.png",
+   "imgPage": "File:Raw heim crab detail.png"
   },
   {
    "id": "raw_redeye",
@@ -16675,7 +16735,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 646
+   "order": 646,
+   "img": "img/raw_redeye.png",
+   "imgPage": "File:Raw red-eye detail.png"
   },
   {
    "id": "redeye",
@@ -16701,7 +16763,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 647
+   "order": 647,
+   "img": "img/redeye.png",
+   "imgPage": "File:Red-eye detail.png"
   },
   {
    "id": "caviar",
@@ -16722,7 +16786,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 648
+   "order": 648,
+   "img": "img/caviar.png",
+   "imgPage": "File:Caviar detail.png"
   },
   {
    "id": "roe",
@@ -16747,7 +16813,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 649
+   "order": 649,
+   "img": "img/roe.png",
+   "imgPage": "File:Roe detail.png"
   },
   {
    "id": "cooked_chompy",
@@ -16769,7 +16837,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 650
+   "order": 650,
+   "img": "img/cooked_chompy.png",
+   "imgPage": "File:Cooked chompy detail.png"
   },
   {
    "id": "cooked_eeligator",
@@ -16791,7 +16861,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 651
+   "order": 651,
+   "img": "img/cooked_eeligator.png",
+   "imgPage": "File:Cooked eeligator detail.png"
   },
   {
    "id": "cooked_rabbit",
@@ -16813,7 +16885,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 652
+   "order": 652,
+   "img": "img/cooked_rabbit.png",
+   "imgPage": "File:Cooked rabbit detail.png"
   },
   {
    "id": "cooked_undead_meat",
@@ -16835,7 +16909,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 653
+   "order": 653,
+   "img": "img/cooked_undead_meat.png",
+   "imgPage": "File:Cooked undead meat detail.png"
   },
   {
    "id": "fat_snail_meat",
@@ -16860,7 +16936,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 654
+   "order": 654,
+   "img": "img/fat_snail_meat.png",
+   "imgPage": "File:Fat snail meat detail.png"
   },
   {
    "id": "frog_spawn",
@@ -16882,7 +16960,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 655
+   "order": 655,
+   "img": "img/frog_spawn.png",
+   "imgPage": "File:Frog spawn detail.png"
   },
   {
    "id": "giant_frog_legs",
@@ -16901,7 +16981,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 656
+   "order": 656,
+   "img": "img/giant_frog_legs.png",
+   "imgPage": "File:Giant frog legs detail.png"
   },
   {
    "id": "lean_snail_meat",
@@ -16926,7 +17008,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 657
+   "order": 657,
+   "img": "img/lean_snail_meat.png",
+   "imgPage": "File:Lean snail meat detail.png"
   },
   {
    "id": "spider_on_shaft",
@@ -16948,7 +17032,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 658
+   "order": 658,
+   "img": "img/spider_on_shaft.png",
+   "imgPage": "File:Spider on shaft detail.png"
   },
   {
    "id": "cooked_chicken",
@@ -16970,7 +17056,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 659
+   "order": 659,
+   "img": "img/cooked_chicken.png",
+   "imgPage": "File:Cooked chicken detail.png"
   },
   {
    "id": "cooked_meat",
@@ -16992,7 +17080,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 660
+   "order": 660,
+   "img": "img/cooked_meat.png",
+   "imgPage": "File:Cooked meat detail.png"
   },
   {
    "id": "bacon",
@@ -17014,7 +17104,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 661
+   "order": 661,
+   "img": "img/bacon.png",
+   "imgPage": "File:Bacon detail.png"
   },
   {
    "id": "bacon_pile",
@@ -17036,7 +17128,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 662
+   "order": 662,
+   "img": "img/bacon_pile.png",
+   "imgPage": "File:Bacon pile detail.png"
   },
   {
    "id": "bacon_stack",
@@ -17058,7 +17152,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 663
+   "order": 663,
+   "img": "img/bacon_stack.png",
+   "imgPage": "File:Bacon stack detail.png"
   },
   {
    "id": "cooked_crab_meat",
@@ -17081,7 +17177,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 664
+   "order": 664,
+   "img": "img/cooked_crab_meat.png",
+   "imgPage": "File:Cooked crab meat (1) detail.png"
   },
   {
    "id": "cooked_undead_chicken",
@@ -17103,7 +17201,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 665
+   "order": 665,
+   "img": "img/cooked_undead_chicken.png",
+   "imgPage": "File:Cooked undead chicken detail.png"
   },
   {
    "id": "kebab",
@@ -17122,7 +17222,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 666
+   "order": 666,
+   "img": "img/kebab.png",
+   "imgPage": "File:Kebab detail.png"
   },
   {
    "id": "locust_meat",
@@ -17144,7 +17246,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 667
+   "order": 667,
+   "img": "img/locust_meat.png",
+   "imgPage": "File:Locust meat detail.png"
   },
   {
    "id": "minced_meat",
@@ -17166,7 +17270,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 668
+   "order": 668,
+   "img": "img/minced_meat.png",
+   "imgPage": "File:Minced meat detail.png"
   },
   {
    "id": "poorlycooked_beast_meat",
@@ -17188,7 +17294,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 669
+   "order": 669,
+   "img": "img/poorlycooked_beast_meat.png",
+   "imgPage": "File:Poorly-cooked beast meat detail.png"
   },
   {
    "id": "poorlycooked_bird_meat",
@@ -17210,7 +17318,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 670
+   "order": 670,
+   "img": "img/poorlycooked_bird_meat.png",
+   "imgPage": "File:Poorly-cooked bird meat detail.png"
   },
   {
    "id": "roast_beast_meat",
@@ -17232,7 +17342,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 671
+   "order": 671,
+   "img": "img/roast_beast_meat.png",
+   "imgPage": "File:Roast beast meat detail.png"
   },
   {
    "id": "roast_bird_meat",
@@ -17254,7 +17366,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 672
+   "order": 672,
+   "img": "img/roast_bird_meat.png",
+   "imgPage": "File:Roast bird meat detail.png"
   },
   {
    "id": "roast_rabbit",
@@ -17276,7 +17390,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 673
+   "order": 673,
+   "img": "img/roast_rabbit.png",
+   "imgPage": "File:Roast rabbit detail.png"
   },
   {
    "id": "thin_snail_meat",
@@ -17301,7 +17417,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 674
+   "order": 674,
+   "img": "img/thin_snail_meat.png",
+   "imgPage": "File:Thin snail meat detail.png"
   },
   {
    "id": "ugthanki_meat",
@@ -17326,7 +17444,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 675
+   "order": 675,
+   "img": "img/ugthanki_meat.png",
+   "imgPage": "File:Ugthanki meat detail.png"
   },
   {
    "id": "chilli_con_carne",
@@ -17348,7 +17468,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 676
+   "order": 676,
+   "img": "img/chilli_con_carne.png",
+   "imgPage": "File:Chilli con carne detail.png"
   },
   {
    "id": "choc_ice",
@@ -17370,7 +17492,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 677
+   "order": 677,
+   "img": "img/choc_ice.png",
+   "imgPage": "File:Choc ice detail.png"
   },
   {
    "id": "field_ration",
@@ -17389,7 +17513,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 678
+   "order": 678,
+   "img": "img/field_ration.png",
+   "imgPage": "File:Field ration detail.png"
   },
   {
    "id": "fish_and_chips",
@@ -17411,7 +17537,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 679
+   "order": 679,
+   "img": "img/fish_and_chips.png",
+   "imgPage": "File:Fish and chips detail.png"
   },
   {
    "id": "monkey_bar",
@@ -17433,7 +17561,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 680
+   "order": 680,
+   "img": "img/monkey_bar.png",
+   "imgPage": "File:Monkey bar detail.png"
   },
   {
    "id": "potato_with_butter",
@@ -17455,7 +17585,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 681
+   "order": 681,
+   "img": "img/potato_with_butter.png",
+   "imgPage": "File:Potato with butter detail.png"
   },
   {
    "id": "rabbit_sandwich",
@@ -17477,7 +17609,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 682
+   "order": 682,
+   "img": "img/rabbit_sandwich.png",
+   "imgPage": "File:Rabbit sandwich detail.png"
   },
   {
    "id": "scrambled_egg",
@@ -17499,7 +17633,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 683
+   "order": 683,
+   "img": "img/scrambled_egg.png",
+   "imgPage": "File:Scrambled egg detail.png"
   },
   {
    "id": "spicy_sauce",
@@ -17521,7 +17657,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 684
+   "order": 684,
+   "img": "img/spicy_sauce.png",
+   "imgPage": "File:Spicy sauce detail.png"
   },
   {
    "id": "blue_crab_gissel_potato",
@@ -17546,7 +17684,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 685
+   "order": 685,
+   "img": "img/blue_crab_gissel_potato.png",
+   "imgPage": "File:Blue crab & gissel potato detail.png"
   },
   {
    "id": "bouldabass_edicap_potato",
@@ -17571,7 +17711,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 686
+   "order": 686,
+   "img": "img/bouldabass_edicap_potato.png",
+   "imgPage": "File:Bouldabass & edicap potato detail.png"
   },
   {
    "id": "bouldabass_gissel_potato",
@@ -17596,7 +17738,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 687
+   "order": 687,
+   "img": "img/bouldabass_gissel_potato.png",
+   "imgPage": "File:Bouldabass & gissel potato detail.png"
   },
   {
    "id": "dusk_eel_edicap_potato",
@@ -17622,7 +17766,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 688
+   "order": 688,
+   "img": "img/dusk_eel_edicap_potato.png",
+   "imgPage": "File:Dusk eel & edicap potato detail.png"
   },
   {
    "id": "dusk_eel_gissel_potato",
@@ -17648,7 +17794,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 689
+   "order": 689,
+   "img": "img/dusk_eel_gissel_potato.png",
+   "imgPage": "File:Dusk eel & gissel potato detail.png"
   },
   {
    "id": "dusk_eel_potato",
@@ -17674,7 +17822,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 690
+   "order": 690,
+   "img": "img/dusk_eel_potato.png",
+   "imgPage": "File:Dusk eel potato detail.png"
   },
   {
    "id": "edicap_potato",
@@ -17700,7 +17850,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 691
+   "order": 691,
+   "img": "img/edicap_potato.png",
+   "imgPage": "File:Edicap potato detail.png"
   },
   {
    "id": "flatfish_edicap_potato",
@@ -17726,7 +17878,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 692
+   "order": 692,
+   "img": "img/flatfish_edicap_potato.png",
+   "imgPage": "File:Flatfish & edicap potato detail.png"
   },
   {
    "id": "flatfish_gissel_potato",
@@ -17751,7 +17905,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 693
+   "order": 693,
+   "img": "img/flatfish_gissel_potato.png",
+   "imgPage": "File:Flatfish & gissel potato detail.png"
   },
   {
    "id": "giant_flatfish_potato",
@@ -17777,7 +17933,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 694
+   "order": 694,
+   "img": "img/giant_flatfish_potato.png",
+   "imgPage": "File:Giant flatfish potato detail.png"
   },
   {
    "id": "gissel_potato",
@@ -17803,7 +17961,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 695
+   "order": 695,
+   "img": "img/gissel_potato.png",
+   "imgPage": "File:Gissel potato detail.png"
   },
   {
    "id": "heim_crab_edicap_potato",
@@ -17829,7 +17989,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 696
+   "order": 696,
+   "img": "img/heim_crab_edicap_potato.png",
+   "imgPage": "File:Heim crab & edicap potato detail.png"
   },
   {
    "id": "heim_crab_gissel_potato",
@@ -17855,7 +18017,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 697
+   "order": 697,
+   "img": "img/heim_crab_gissel_potato.png",
+   "imgPage": "File:Heim crab & gissel potato detail.png"
   },
   {
    "id": "heim_crab_potato",
@@ -17881,7 +18045,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 698
+   "order": 698,
+   "img": "img/heim_crab_potato.png",
+   "imgPage": "File:Heim crab potato detail.png"
   },
   {
    "id": "redeye_edicap_potato",
@@ -17907,7 +18073,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 699
+   "order": 699,
+   "img": "img/redeye_edicap_potato.png",
+   "imgPage": "File:Red-eye & edicap potato detail.png"
   },
   {
    "id": "redeye_gissel_potato",
@@ -17933,7 +18101,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 700
+   "order": 700,
+   "img": "img/redeye_gissel_potato.png",
+   "imgPage": "File:Red-eye & gissel potato detail.png"
   },
   {
    "id": "redeye_potato",
@@ -17959,7 +18129,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 701
+   "order": 701,
+   "img": "img/redeye_potato.png",
+   "imgPage": "File:Red-eye potato.png"
   },
   {
    "id": "banana_stew",
@@ -17981,7 +18153,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 702
+   "order": 702,
+   "img": "img/banana_stew.png",
+   "imgPage": "File:Banana stew detail.png"
   },
   {
    "id": "bat_shish",
@@ -18000,7 +18174,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 703
+   "order": 703,
+   "img": "img/bat_shish.png",
+   "imgPage": "File:Bat shish detail.png"
   },
   {
    "id": "cheesetom_batta",
@@ -18022,7 +18198,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 704
+   "order": 704,
+   "img": "img/cheesetom_batta.png",
+   "imgPage": "File:Cheese+tom batta detail.png"
   },
   {
    "id": "chocchip_crunchies",
@@ -18044,7 +18222,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 705
+   "order": 705,
+   "img": "img/chocchip_crunchies.png",
+   "imgPage": "File:Chocchip crunchies detail.png"
   },
   {
    "id": "chocolate_bar",
@@ -18063,7 +18243,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 706
+   "order": 706,
+   "img": "img/chocolate_bar.png",
+   "imgPage": "File:Chocolate bar detail.png"
   },
   {
    "id": "coated_frogs_legs",
@@ -18082,7 +18264,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 707
+   "order": 707,
+   "img": "img/coated_frogs_legs.png",
+   "imgPage": "File:Coated frogs' legs detail.png"
   },
   {
    "id": "eel_sushi",
@@ -18101,7 +18285,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 708
+   "order": 708,
+   "img": "img/eel_sushi.png",
+   "imgPage": "File:Eel sushi detail.png"
   },
   {
    "id": "fillets",
@@ -18123,7 +18309,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 709
+   "order": 709,
+   "img": "img/fillets.png",
+   "imgPage": "File:Fillets detail.png"
   },
   {
    "id": "fingers",
@@ -18145,7 +18333,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 710
+   "order": 710,
+   "img": "img/fingers.png",
+   "imgPage": "File:Fingers detail.png"
   },
   {
    "id": "frogburger",
@@ -18167,7 +18357,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 711
+   "order": 711,
+   "img": "img/frogburger.png",
+   "imgPage": "File:Frogburger detail.png"
   },
   {
    "id": "frogspawn_gumbo",
@@ -18189,7 +18381,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 712
+   "order": 712,
+   "img": "img/frogspawn_gumbo.png",
+   "imgPage": "File:Frogspawn gumbo detail.png"
   },
   {
    "id": "fruit_batta",
@@ -18211,7 +18405,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 713
+   "order": 713,
+   "img": "img/fruit_batta.png",
+   "imgPage": "File:Fruit batta detail.png"
   },
   {
    "id": "green_gloop_soup",
@@ -18233,7 +18429,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 714
+   "order": 714,
+   "img": "img/green_gloop_soup.png",
+   "imgPage": "File:Green gloop soup detail.png"
   },
   {
    "id": "grubs_la_mode",
@@ -18255,7 +18453,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 715
+   "order": 715,
+   "img": "img/grubs_la_mode.png",
+   "imgPage": "File:Grubs à la mode detail.png"
   },
   {
    "id": "king_worm",
@@ -18277,7 +18477,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 716
+   "order": 716,
+   "img": "img/king_worm.png",
+   "imgPage": "File:King worm detail.png"
   },
   {
    "id": "mushrooms",
@@ -18299,7 +18501,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 717
+   "order": 717,
+   "img": "img/mushrooms.png",
+   "imgPage": "File:Mushrooms detail.png"
   },
   {
    "id": "plain_pizza",
@@ -18321,7 +18525,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 718
+   "order": 718,
+   "img": "img/plain_pizza.png",
+   "imgPage": "File:Plain pizza detail.png"
   },
   {
    "id": "roast_frog",
@@ -18343,7 +18549,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 719
+   "order": 719,
+   "img": "img/roast_frog.png",
+   "imgPage": "File:Roast frog detail.png"
   },
   {
    "id": "spicy_crunchies",
@@ -18368,7 +18576,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 720
+   "order": 720,
+   "img": "img/spicy_crunchies.png",
+   "imgPage": "File:Spicy crunchies detail.png"
   },
   {
    "id": "spicy_stew",
@@ -18390,7 +18600,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 721
+   "order": 721,
+   "img": "img/spicy_stew.png",
+   "imgPage": "File:Spicy stew detail.png"
   },
   {
    "id": "square_sandwich",
@@ -18413,7 +18625,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 722
+   "order": 722,
+   "img": "img/square_sandwich.png",
+   "imgPage": "File:Square sandwich detail.png"
   },
   {
    "id": "stew",
@@ -18435,7 +18649,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 723
+   "order": 723,
+   "img": "img/stew.png",
+   "imgPage": "File:Stew detail.png"
   },
   {
    "id": "toad_batta",
@@ -18460,7 +18676,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 724
+   "order": 724,
+   "img": "img/toad_batta.png",
+   "imgPage": "File:Toad batta detail.png"
   },
   {
    "id": "toad_crunchies",
@@ -18485,7 +18703,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 725
+   "order": 725,
+   "img": "img/toad_crunchies.png",
+   "imgPage": "File:Toad crunchies detail.png"
   },
   {
    "id": "triangle_sandwich",
@@ -18508,7 +18728,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 726
+   "order": 726,
+   "img": "img/triangle_sandwich.png",
+   "imgPage": "File:Triangle sandwich detail.png"
   },
   {
    "id": "veg_ball",
@@ -18533,7 +18755,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 727
+   "order": 727,
+   "img": "img/veg_ball.png",
+   "imgPage": "File:Veg ball detail.png"
   },
   {
    "id": "vegetable_batta",
@@ -18558,7 +18782,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 728
+   "order": 728,
+   "img": "img/vegetable_batta.png",
+   "imgPage": "File:Vegetable batta detail.png"
   },
   {
    "id": "worm_batta",
@@ -18583,7 +18809,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 729
+   "order": 729,
+   "img": "img/worm_batta.png",
+   "imgPage": "File:Worm batta detail.png"
   },
   {
    "id": "worm_crunchies",
@@ -18608,7 +18836,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 730
+   "order": 730,
+   "img": "img/worm_crunchies.png",
+   "imgPage": "File:Worm crunchies detail.png"
   },
   {
    "id": "worm_hole",
@@ -18633,7 +18863,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 731
+   "order": 731,
+   "img": "img/worm_hole.png",
+   "imgPage": "File:Worm hole detail.png"
   },
   {
    "id": "pot_of_cream",
@@ -18655,7 +18887,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 732
+   "order": 732,
+   "img": "img/pot_of_cream.png",
+   "imgPage": "File:Pot of cream detail.png"
   },
   {
    "id": "apple_pie",
@@ -18678,7 +18912,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 733
+   "order": 733,
+   "img": "img/apple_pie.png",
+   "imgPage": "File:Apple pie detail.png"
   },
   {
    "id": "baguette",
@@ -18697,7 +18933,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 734
+   "order": 734,
+   "img": "img/baguette.png",
+   "imgPage": "File:Baguette detail.png"
   },
   {
    "id": "biscuits",
@@ -18720,7 +18958,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 735
+   "order": 735,
+   "img": "img/biscuits.png",
+   "imgPage": "File:Biscuits detail.png"
   },
   {
    "id": "blueberry_pie",
@@ -18743,7 +18983,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 736
+   "order": 736,
+   "img": "img/blueberry_pie.png",
+   "imgPage": "File:Blueberry pie detail.png"
   },
   {
    "id": "celebration_cake",
@@ -18762,7 +19004,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 737
+   "order": 737,
+   "img": "img/celebration_cake.png",
+   "imgPage": "File:Celebration cake detail.png"
   },
   {
    "id": "cheesecake",
@@ -18785,7 +19029,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 738
+   "order": 738,
+   "img": "img/cheesecake.png",
+   "imgPage": "File:Cheesecake detail.png"
   },
   {
    "id": "chocolate_cake_new_varrock",
@@ -18807,7 +19053,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 739
+   "order": 739,
+   "img": "img/chocolate_cake_new_varrock.png",
+   "imgPage": "File:Chocolate cake (New Varrock) detail.png"
   },
   {
    "id": "dwarven_rock_cake",
@@ -18830,7 +19078,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 740
+   "order": 740,
+   "img": "img/dwarven_rock_cake.png",
+   "imgPage": "File:Dwarven rock cake detail.png"
   },
   {
    "id": "garden_pie",
@@ -18852,7 +19102,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 741
+   "order": 741,
+   "img": "img/garden_pie.png",
+   "imgPage": "File:Garden pie detail.png"
   },
   {
    "id": "meat_pie",
@@ -18874,7 +19126,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 742
+   "order": 742,
+   "img": "img/meat_pie.png",
+   "imgPage": "File:Meat pie detail.png"
   },
   {
    "id": "mint_cake",
@@ -18893,7 +19147,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 743
+   "order": 743,
+   "img": "img/mint_cake.png",
+   "imgPage": "File:Mint cake detail.png"
   },
   {
    "id": "redberry_pie",
@@ -18916,7 +19172,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 744
+   "order": 744,
+   "img": "img/redberry_pie.png",
+   "imgPage": "File:Redberry pie detail.png"
   },
   {
    "id": "roll",
@@ -18939,7 +19197,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 745
+   "order": 745,
+   "img": "img/roll.png",
+   "imgPage": "File:Roll detail.png"
   },
   {
    "id": "spinach_roll",
@@ -18958,7 +19218,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 746
+   "order": 746,
+   "img": "img/spinach_roll.png",
+   "imgPage": "File:Spinach roll detail.png"
   },
   {
    "id": "vanilla_cheesecake",
@@ -18980,7 +19242,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 747
+   "order": 747,
+   "img": "img/vanilla_cheesecake.png",
+   "imgPage": "File:Vanilla cheesecake detail.png"
   },
   {
    "id": "bread",
@@ -19002,7 +19266,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 748
+   "order": 748,
+   "img": "img/bread.png",
+   "imgPage": "File:Bread detail.png"
   },
   {
    "id": "cream_tea",
@@ -19024,7 +19290,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 749
+   "order": 749,
+   "img": "img/cream_tea.png",
+   "imgPage": "File:Cream tea detail.png"
   },
   {
    "id": "skewered_beast",
@@ -19046,7 +19314,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 750
+   "order": 750,
+   "img": "img/skewered_beast.png",
+   "imgPage": "File:Skewered beast detail.png"
   },
   {
    "id": "raw_cave_potato",
@@ -19072,7 +19342,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 751
+   "order": 751,
+   "img": "img/raw_cave_potato.png",
+   "imgPage": "File:Raw cave potato detail.png"
   },
   {
    "id": "raw_potato",
@@ -19095,7 +19367,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 752
+   "order": 752,
+   "img": "img/raw_potato.png",
+   "imgPage": "File:Raw potato detail.png"
   },
   {
    "id": "uncooked_egg",
@@ -19117,7 +19391,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 753
+   "order": 753,
+   "img": "img/uncooked_egg.png",
+   "imgPage": "File:Uncooked egg detail.png"
   },
   {
    "id": "uncooked_pizza",
@@ -19139,7 +19415,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 754
+   "order": 754,
+   "img": "img/uncooked_pizza.png",
+   "imgPage": "File:Uncooked pizza detail.png"
   },
   {
    "id": "uncooked_stew",
@@ -19161,7 +19439,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 755
+   "order": 755,
+   "img": "img/uncooked_stew.png",
+   "imgPage": "File:Uncooked stew detail.png"
   },
   {
    "id": "raw_batta",
@@ -19186,7 +19466,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 756
+   "order": 756,
+   "img": "img/raw_batta.png",
+   "imgPage": "File:Raw batta detail.png"
   },
   {
    "id": "raw_garden_pie",
@@ -19208,7 +19490,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 757
+   "order": 757,
+   "img": "img/raw_garden_pie.png",
+   "imgPage": "File:Raw garden pie detail.png"
   },
   {
    "id": "raw_mud_pie",
@@ -19230,7 +19514,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 758
+   "order": 758,
+   "img": "img/raw_mud_pie.png",
+   "imgPage": "File:Raw mud pie detail.png"
   },
   {
    "id": "uncooked_apple_pie",
@@ -19252,7 +19538,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 759
+   "order": 759,
+   "img": "img/uncooked_apple_pie.png",
+   "imgPage": "File:Uncooked apple pie detail.png"
   },
   {
    "id": "uncooked_berry_pie",
@@ -19274,7 +19562,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 760
+   "order": 760,
+   "img": "img/uncooked_berry_pie.png",
+   "imgPage": "File:Uncooked berry pie detail.png"
   },
   {
    "id": "uncooked_blueberry_pie",
@@ -19296,7 +19586,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 761
+   "order": 761,
+   "img": "img/uncooked_blueberry_pie.png",
+   "imgPage": "File:Uncooked blueberry pie detail.png"
   },
   {
    "id": "uncooked_meat_pie",
@@ -19318,7 +19610,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 762
+   "order": 762,
+   "img": "img/uncooked_meat_pie.png",
+   "imgPage": "File:Uncooked meat pie detail.png"
   },
   {
    "id": "baked_potato",
@@ -19339,7 +19633,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 763
+   "order": 763,
+   "img": "img/baked_potato.png",
+   "imgPage": "File:Baked potato detail.png"
   },
   {
    "id": "cooked_sweetcorn",
@@ -19361,7 +19657,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 764
+   "order": 764,
+   "img": "img/cooked_sweetcorn.png",
+   "imgPage": "File:Cooked sweetcorn detail.png"
   },
   {
    "id": "edible_seaweed",
@@ -19379,7 +19677,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 765
+   "order": 765,
+   "img": "img/edible_seaweed.png",
+   "imgPage": "File:Edible seaweed detail.png"
   },
   {
    "id": "evil_turnip_2",
@@ -19401,7 +19701,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 766
+   "order": 766,
+   "img": "img/evil_turnip_2.png",
+   "imgPage": "File:Evil turnip detail.png"
   },
   {
    "id": "mango",
@@ -19423,7 +19725,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 767
+   "order": 767,
+   "img": "img/mango.png",
+   "imgPage": "File:Mango detail.png"
   },
   {
    "id": "monkey_nuts",
@@ -19446,7 +19750,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 768
+   "order": 768,
+   "img": "img/monkey_nuts.png",
+   "imgPage": "File:Monkey nuts detail.png"
   },
   {
    "id": "baked_cave_potato",
@@ -19472,7 +19778,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 769
+   "order": 769,
+   "img": "img/baked_cave_potato.png",
+   "imgPage": "File:Baked cave potato detail.png"
   },
   {
    "id": "banana",
@@ -19495,7 +19803,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 770
+   "order": 770,
+   "img": "img/banana.png",
+   "imgPage": "File:Banana detail.png"
   },
   {
    "id": "button_mushroom",
@@ -19517,7 +19827,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 771
+   "order": 771,
+   "img": "img/button_mushroom.png",
+   "imgPage": "File:Button mushroom detail.png"
   },
   {
    "id": "cabbage_draynor_manor",
@@ -19539,7 +19851,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 772
+   "order": 772,
+   "img": "img/cabbage_draynor_manor.png",
+   "imgPage": "File:Cabbage (Draynor Manor) detail.png"
   },
   {
    "id": "chopped_tomato",
@@ -19561,7 +19875,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 773
+   "order": 773,
+   "img": "img/chopped_tomato.png",
+   "imgPage": "File:Chopped tomato detail.png"
   },
   {
    "id": "edicap_mushroom",
@@ -19588,7 +19904,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 774
+   "order": 774,
+   "img": "img/edicap_mushroom.png",
+   "imgPage": "File:Edicap mushroom detail.png"
   },
   {
    "id": "gissel_mushroom",
@@ -19614,7 +19932,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 775
+   "order": 775,
+   "img": "img/gissel_mushroom.png",
+   "imgPage": "File:Gissel mushroom detail.png"
   },
   {
    "id": "papaya_fruit",
@@ -19636,7 +19956,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 776
+   "order": 776,
+   "img": "img/papaya_fruit.png",
+   "imgPage": "File:Papaya fruit detail.png"
   },
   {
    "id": "spicy_tomato",
@@ -19658,7 +19980,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 777
+   "order": 777,
+   "img": "img/spicy_tomato.png",
+   "imgPage": "File:Spicy tomato detail.png"
   },
   {
    "id": "strange_fruit",
@@ -19677,7 +20001,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 778
+   "order": 778,
+   "img": "img/strange_fruit.png",
+   "imgPage": "File:Strange fruit detail.png"
   },
   {
    "id": "strawberry",
@@ -19700,7 +20026,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 779
+   "order": 779,
+   "img": "img/strawberry.png",
+   "imgPage": "File:Strawberry detail.png"
   },
   {
    "id": "white_tree_fruit",
@@ -19726,7 +20054,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 780
+   "order": 780,
+   "img": "img/white_tree_fruit.png",
+   "imgPage": "File:White tree fruit detail.png"
   },
   {
    "id": "cabbage_2",
@@ -19749,7 +20079,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 781
+   "order": 781,
+   "img": "img/cabbage_2.png",
+   "imgPage": "File:Cabbage detail.png"
   },
   {
    "id": "dwellberries",
@@ -19771,7 +20103,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 782
+   "order": 782,
+   "img": "img/dwellberries.png",
+   "imgPage": "File:Dwellberries detail.png"
   },
   {
    "id": "equa_leaves",
@@ -19793,7 +20127,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 783
+   "order": 783,
+   "img": "img/equa_leaves.png",
+   "imgPage": "File:Equa leaves detail.png"
   },
   {
    "id": "lemon",
@@ -19815,7 +20151,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 784
+   "order": 784,
+   "img": "img/lemon.png",
+   "imgPage": "File:Lemon detail.png"
   },
   {
    "id": "lime",
@@ -19834,7 +20172,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 785
+   "order": 785,
+   "img": "img/lime.png",
+   "imgPage": "File:Lime detail.png"
   },
   {
    "id": "onion",
@@ -19857,7 +20197,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 786
+   "order": 786,
+   "img": "img/onion.png",
+   "imgPage": "File:Onion detail.png"
   },
   {
    "id": "orange",
@@ -19879,7 +20221,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 787
+   "order": 787,
+   "img": "img/orange.png",
+   "imgPage": "File:Orange detail.png"
   },
   {
    "id": "tomato",
@@ -19901,7 +20245,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 788
+   "order": 788,
+   "img": "img/tomato.png",
+   "imgPage": "File:Tomato detail.png"
   },
   {
    "id": "watermelon_slice",
@@ -19923,7 +20269,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 789
+   "order": 789,
+   "img": "img/watermelon_slice.png",
+   "imgPage": "File:Watermelon slice detail.png"
   },
   {
    "id": "asgarnian_ale",
@@ -19944,7 +20292,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 790
+   "order": 790,
+   "img": "img/asgarnian_ale.png",
+   "imgPage": "File:Asgarnian ale detail.png"
   },
   {
    "id": "asgarnian_ale_m",
@@ -19965,7 +20315,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 791
+   "order": 791,
+   "img": "img/asgarnian_ale_m.png",
+   "imgPage": "File:Asgarnian ale (m) detail.png"
   },
   {
    "id": "autumn_sqirkjuice",
@@ -19986,7 +20338,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 792
+   "order": 792,
+   "img": "img/autumn_sqirkjuice.png",
+   "imgPage": "File:Autumn sq'irkjuice detail.png"
   },
   {
    "id": "bandits_brew",
@@ -20007,7 +20361,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 793
+   "order": 793,
+   "img": "img/bandits_brew.png",
+   "imgPage": "File:Bandit's brew detail.png"
   },
   {
    "id": "beer",
@@ -20028,7 +20384,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 794
+   "order": 794,
+   "img": "img/beer.png",
+   "imgPage": "File:Beer detail.png"
   },
   {
    "id": "beer_tankard",
@@ -20052,7 +20410,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 795
+   "order": 795,
+   "img": "img/beer_tankard.png",
+   "imgPage": "File:Beer (tankard) detail.png"
   },
   {
    "id": "bottle_of_wine",
@@ -20073,7 +20433,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 796
+   "order": 796,
+   "img": "img/bottle_of_wine.png",
+   "imgPage": "File:Bottle of wine detail.png"
   },
   {
    "id": "braindeath_rum",
@@ -20094,7 +20456,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 797
+   "order": 797,
+   "img": "img/braindeath_rum.png",
+   "imgPage": "File:Braindeath 'rum' detail.png"
   },
   {
    "id": "chocolatey_milk",
@@ -20115,7 +20479,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 798
+   "order": 798,
+   "img": "img/chocolatey_milk.png",
+   "imgPage": "File:Chocolatey milk detail.png"
   },
   {
    "id": "cider",
@@ -20136,7 +20502,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 799
+   "order": 799,
+   "img": "img/cider.png",
+   "imgPage": "File:Cider detail.png"
   },
   {
    "id": "cup_of_milky_tea",
@@ -20157,7 +20525,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 800
+   "order": 800,
+   "img": "img/cup_of_milky_tea.png",
+   "imgPage": "File:Cup of milky tea detail.png"
   },
   {
    "id": "cup_of_tea",
@@ -20175,7 +20545,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 801
+   "order": 801,
+   "img": "img/cup_of_tea.png",
+   "imgPage": "File:Cup of tea detail.png"
   },
   {
    "id": "cup_of_tea_nettle",
@@ -20196,7 +20568,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 802
+   "order": 802,
+   "img": "img/cup_of_tea_nettle.png",
+   "imgPage": "File:Cup of tea (nettle) detail.png"
   },
   {
    "id": "dirty_blast",
@@ -20221,7 +20595,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 803
+   "order": 803,
+   "img": "img/dirty_blast.png",
+   "imgPage": "File:Dirty blast detail.png"
   },
   {
    "id": "dragon_bitter",
@@ -20245,7 +20621,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 804
+   "order": 804,
+   "img": "img/dragon_bitter.png",
+   "imgPage": "File:Dragon bitter detail.png"
   },
   {
    "id": "dragon_bitter_m",
@@ -20266,7 +20644,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 805
+   "order": 805,
+   "img": "img/dragon_bitter_m.png",
+   "imgPage": "File:Dragon bitter (m) detail.png"
   },
   {
    "id": "dwarven_stout",
@@ -20288,7 +20668,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 806
+   "order": 806,
+   "img": "img/dwarven_stout.png",
+   "imgPage": "File:Dwarven stout detail.png"
   },
   {
    "id": "dwarven_stout_m",
@@ -20309,7 +20691,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 807
+   "order": 807,
+   "img": "img/dwarven_stout_m.png",
+   "imgPage": "File:Dwarven stout (m) detail.png"
   },
   {
    "id": "greenmans_ale",
@@ -20330,7 +20714,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 808
+   "order": 808,
+   "img": "img/greenmans_ale.png",
+   "imgPage": "File:Greenman's ale detail.png"
   },
   {
    "id": "grog",
@@ -20351,7 +20737,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 809
+   "order": 809,
+   "img": "img/grog.png",
+   "imgPage": "File:Grog detail.png"
   },
   {
    "id": "jug_of_wine",
@@ -20372,7 +20760,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 810
+   "order": 810,
+   "img": "img/jug_of_wine.png",
+   "imgPage": "File:Jug of wine detail.png"
   },
   {
    "id": "karamjan_rum",
@@ -20394,7 +20784,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 811
+   "order": 811,
+   "img": "img/karamjan_rum.png",
+   "imgPage": "File:Karamjan rum detail.png"
   },
   {
    "id": "kelda_stout",
@@ -20416,7 +20808,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 812
+   "order": 812,
+   "img": "img/kelda_stout.png",
+   "imgPage": "File:Kelda stout detail.png"
   },
   {
    "id": "mature_cider",
@@ -20437,7 +20831,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 813
+   "order": 813,
+   "img": "img/mature_cider.png",
+   "imgPage": "File:Mature cider detail.png"
   },
   {
    "id": "mature_mead",
@@ -20458,7 +20854,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 814
+   "order": 814,
+   "img": "img/mature_mead.png",
+   "imgPage": "File:Mature mead detail.png"
   },
   {
    "id": "mature_pigswill",
@@ -20479,7 +20877,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 815
+   "order": 815,
+   "img": "img/mature_pigswill.png",
+   "imgPage": "File:Mature pigswill detail.png"
   },
   {
    "id": "mead",
@@ -20500,7 +20900,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 816
+   "order": 816,
+   "img": "img/mead.png",
+   "imgPage": "File:Mead detail.png"
   },
   {
    "id": "milky_nettle_tea",
@@ -20521,7 +20923,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 817
+   "order": 817,
+   "img": "img/milky_nettle_tea.png",
+   "imgPage": "File:Milky nettle tea detail.png"
   },
   {
    "id": "nettle_tea",
@@ -20542,7 +20946,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 818
+   "order": 818,
+   "img": "img/nettle_tea.png",
+   "imgPage": "File:Nettle tea detail.png"
   },
   {
    "id": "pigswill",
@@ -20563,7 +20969,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 819
+   "order": 819,
+   "img": "img/pigswill.png",
+   "imgPage": "File:Pigswill detail.png"
   },
   {
    "id": "poison_chalice",
@@ -20584,7 +20992,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 820
+   "order": 820,
+   "img": "img/poison_chalice.png",
+   "imgPage": "File:Poison chalice detail.png"
   },
   {
    "id": "rangers_aid",
@@ -20605,7 +21015,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 821
+   "order": 821,
+   "img": "img/rangers_aid.png",
+   "imgPage": "File:Ranger's aid detail.png"
   },
   {
    "id": "rum_blue",
@@ -20627,7 +21039,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 822
+   "order": 822,
+   "img": "img/rum_blue.png",
+   "imgPage": "File:Rum (blue) detail.png"
   },
   {
    "id": "rum_red",
@@ -20649,7 +21063,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 823
+   "order": 823,
+   "img": "img/rum_red.png",
+   "imgPage": "File:Rum (red) detail.png"
   },
   {
    "id": "spring_sqirkjuice",
@@ -20670,7 +21086,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 824
+   "order": 824,
+   "img": "img/spring_sqirkjuice.png",
+   "imgPage": "File:Spring sq'irkjuice detail.png"
   },
   {
    "id": "squeck_juice",
@@ -20691,7 +21109,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 825
+   "order": 825,
+   "img": "img/squeck_juice.png",
+   "imgPage": "File:Squeck juice detail.png"
   },
   {
    "id": "summer_sqirkjuice",
@@ -20712,7 +21132,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 826
+   "order": 826,
+   "img": "img/summer_sqirkjuice.png",
+   "imgPage": "File:Summer sq'irkjuice detail.png"
   },
   {
    "id": "sundown_stout",
@@ -20733,7 +21155,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 827
+   "order": 827,
+   "img": "img/sundown_stout.png",
+   "imgPage": "File:Sundown Stout detail.png"
   },
   {
    "id": "the_alms_of_death",
@@ -20754,7 +21178,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 828
+   "order": 828,
+   "img": "img/the_alms_of_death.png",
+   "imgPage": "File:The Alms of Death detail.png"
   },
   {
    "id": "wendlewick_ale",
@@ -20775,7 +21201,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 829
+   "order": 829,
+   "img": "img/wendlewick_ale.png",
+   "imgPage": "File:Wendlewick ale detail.png"
   },
   {
    "id": "wendlewick_ale_m",
@@ -20796,7 +21224,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 830
+   "order": 830,
+   "img": "img/wendlewick_ale_m.png",
+   "imgPage": "File:Wendlewick ale (m) detail.png"
   },
   {
    "id": "winter_sqirkjuice",
@@ -20817,7 +21247,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 831
+   "order": 831,
+   "img": "img/winter_sqirkjuice.png",
+   "imgPage": "File:Winter sq'irkjuice detail.png"
   },
   {
    "id": "wizards_mind_bomb",
@@ -20839,7 +21271,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 832
+   "order": 832,
+   "img": "img/wizards_mind_bomb.png",
+   "imgPage": "File:Wizard's mind bomb detail.png"
   },
   {
    "id": "wizards_mind_bomb_m",
@@ -20860,7 +21294,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 833
+   "order": 833,
+   "img": "img/wizards_mind_bomb_m.png",
+   "imgPage": "File:Wizard's mind bomb (m) detail.png"
   },
   {
    "id": "brandy",
@@ -20878,7 +21314,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 834
+   "order": 834,
+   "img": "img/brandy.png",
+   "imgPage": "File:Brandy detail.png"
   },
   {
    "id": "fruit_blast",
@@ -20899,7 +21337,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 835
+   "order": 835,
+   "img": "img/fruit_blast.png",
+   "imgPage": "File:Fruit Blast detail.png"
   },
   {
    "id": "gin",
@@ -20920,7 +21360,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 836
+   "order": 836,
+   "img": "img/gin.png",
+   "imgPage": "File:Gin detail.png"
   },
   {
    "id": "pineapple_punch",
@@ -20944,7 +21386,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 837
+   "order": 837,
+   "img": "img/pineapple_punch.png",
+   "imgPage": "File:Pineapple Punch detail.png"
   },
   {
    "id": "short_green_guy",
@@ -20968,7 +21412,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 838
+   "order": 838,
+   "img": "img/short_green_guy.png",
+   "imgPage": "File:Short Green Guy detail.png"
   },
   {
    "id": "vodka",
@@ -20989,7 +21435,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 839
+   "order": 839,
+   "img": "img/vodka.png",
+   "imgPage": "File:Vodka detail.png"
   },
   {
    "id": "whisky",
@@ -21010,7 +21458,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 840
+   "order": 840,
+   "img": "img/whisky.png",
+   "imgPage": "File:Whisky detail.png"
   },
   {
    "id": "bathus_ore_dungeoneering",
@@ -21863,7 +22313,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 874
+   "order": 874,
+   "img": "img/bucket_of_water.png",
+   "imgPage": "File:Bucket of water detail.png"
   },
   {
    "id": "the_stuff",
@@ -21885,7 +22337,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 875
+   "order": 875,
+   "img": "img/the_stuff.png",
+   "imgPage": "File:The Stuff detail.png"
   },
   {
    "id": "golden_watermelon",
@@ -21907,7 +22361,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 876
+   "order": 876,
+   "img": "img/golden_watermelon.png",
+   "imgPage": "File:Golden watermelon detail.png"
   },
   {
    "id": "heirloom_tomato",
@@ -21929,7 +22385,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 877
+   "order": 877,
+   "img": "img/heirloom_tomato.png",
+   "imgPage": "File:Heirloom tomato detail.png"
   },
   {
    "id": "rainbow_sweetcorn",
@@ -21951,7 +22409,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 878
+   "order": 878,
+   "img": "img/rainbow_sweetcorn.png",
+   "imgPage": "File:Rainbow sweetcorn detail.png"
   },
   {
    "id": "calquat_fruit",
@@ -21973,7 +22433,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 879
+   "order": 879,
+   "img": "img/calquat_fruit.png",
+   "imgPage": "File:Calquat fruit detail.png"
   },
   {
    "id": "cannonball_cabbage",
@@ -21996,7 +22458,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 880
+   "order": 880,
+   "img": "img/cannonball_cabbage.png",
+   "imgPage": "File:Cannonball cabbage detail.png"
   },
   {
    "id": "coconut",
@@ -22018,7 +22482,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 881
+   "order": 881,
+   "img": "img/coconut.png",
+   "imgPage": "File:Coconut detail.png"
   },
   {
    "id": "cooking_apple",
@@ -22041,7 +22507,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 882
+   "order": 882,
+   "img": "img/cooking_apple.png",
+   "imgPage": "File:Cooking apple detail.png"
   },
   {
    "id": "grapes",
@@ -22064,7 +22532,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 883
+   "order": 883,
+   "img": "img/grapes.png",
+   "imgPage": "File:Grapes detail.png"
   },
   {
    "id": "mort_myre_pear",
@@ -22086,7 +22556,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 884
+   "order": 884,
+   "img": "img/mort_myre_pear.png",
+   "imgPage": "File:Mort myre pear detail.png"
   },
   {
    "id": "neem_drupe",
@@ -22105,7 +22577,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 885
+   "order": 885,
+   "img": "img/neem_drupe.png",
+   "imgPage": "File:Neem drupe detail.png"
   },
   {
    "id": "poison_ivy_berries",
@@ -22127,7 +22601,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 886
+   "order": 886,
+   "img": "img/poison_ivy_berries.png",
+   "imgPage": "File:Poison ivy berries detail.png"
   },
   {
    "id": "red_onion",
@@ -22150,7 +22626,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 887
+   "order": 887,
+   "img": "img/red_onion.png",
+   "imgPage": "File:Red onion detail.png"
   },
   {
    "id": "spring_sqirk",
@@ -22172,7 +22650,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 888
+   "order": 888,
+   "img": "img/spring_sqirk.png",
+   "imgPage": "File:Spring sq'irk detail.png"
   },
   {
    "id": "summer_sqirk",
@@ -22194,7 +22674,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 889
+   "order": 889,
+   "img": "img/summer_sqirk.png",
+   "imgPage": "File:Summer sq'irk detail.png"
   },
   {
    "id": "sweet_potato",
@@ -22217,7 +22699,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 890
+   "order": 890,
+   "img": "img/sweet_potato.png",
+   "imgPage": "File:Sweet potato detail.png"
   },
   {
    "id": "watermelon",
@@ -22239,7 +22723,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 891
+   "order": 891,
+   "img": "img/watermelon.png",
+   "imgPage": "File:Watermelon detail.png"
   },
   {
    "id": "white_strawberry",
@@ -22262,7 +22748,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 892
+   "order": 892,
+   "img": "img/white_strawberry.png",
+   "imgPage": "File:White strawberry detail.png"
   },
   {
    "id": "winter_sqirk",
@@ -22281,7 +22769,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 893
+   "order": 893,
+   "img": "img/winter_sqirk.png",
+   "imgPage": "File:Winter sq'irk detail.png"
   },
   {
    "id": "ale_yeast",
@@ -22303,7 +22793,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 894
+   "order": 894,
+   "img": "img/ale_yeast.png",
+   "imgPage": "File:Ale yeast detail.png"
   },
   {
    "id": "barley",
@@ -22326,7 +22818,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 895
+   "order": 895,
+   "img": "img/barley.png",
+   "imgPage": "File:Barley detail.png"
   },
   {
    "id": "bittercap_mushroom",
@@ -22349,7 +22843,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 896
+   "order": 896,
+   "img": "img/bittercap_mushroom.png",
+   "imgPage": "File:Bittercap mushroom detail.png"
   },
   {
    "id": "egg",
@@ -22371,7 +22867,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 897
+   "order": 897,
+   "img": "img/egg.png",
+   "imgPage": "File:Egg detail.png"
   },
   {
    "id": "jug_of_water",
@@ -22394,7 +22892,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 898
+   "order": 898,
+   "img": "img/jug_of_water.png",
+   "imgPage": "File:Jug of water detail.png"
   },
   {
    "id": "palm_leaf",
@@ -22416,7 +22916,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 899
+   "order": 899,
+   "img": "img/palm_leaf.png",
+   "imgPage": "File:Palm leaf detail.png"
   },
   {
    "id": "red_hot_sauce",
@@ -22441,7 +22943,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 900
+   "order": 900,
+   "img": "img/red_hot_sauce.png",
+   "imgPage": "File:Red hot sauce detail.png"
   },
   {
    "id": "redberries",
@@ -22464,7 +22968,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 901
+   "order": 901,
+   "img": "img/redberries.png",
+   "imgPage": "File:Redberries detail.png"
   },
   {
    "id": "spice",
@@ -22487,7 +22993,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 902
+   "order": 902,
+   "img": "img/spice.png",
+   "imgPage": "File:Spice detail.png"
   },
   {
    "id": "sweetcorn",
@@ -22510,7 +23018,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 903
+   "order": 903,
+   "img": "img/sweetcorn.png",
+   "imgPage": "File:Sweetcorn detail.png"
   },
   {
    "id": "curry_leaf",
@@ -22532,7 +23042,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 904
+   "order": 904,
+   "img": "img/curry_leaf.png",
+   "imgPage": "File:Curry leaf detail.png"
   },
   {
    "id": "nuts",
@@ -22551,7 +23063,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 905
+   "order": 905,
+   "img": "img/nuts.png",
+   "imgPage": "File:Nuts detail.png"
   },
   {
    "id": "pineapple",
@@ -22574,7 +23088,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 906
+   "order": 906,
+   "img": "img/pineapple.png",
+   "imgPage": "File:Pineapple detail.png"
   },
   {
    "id": "cup_of_water",
@@ -22596,7 +23112,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 907
+   "order": 907,
+   "img": "img/cup_of_water.png",
+   "imgPage": "File:Cup of water detail.png"
   },
   {
    "id": "bowl_of_water",
@@ -22618,7 +23136,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 908
+   "order": 908,
+   "img": "img/bowl_of_water.png",
+   "imgPage": "File:Bowl of water detail.png"
   },
   {
    "id": "vial_of_water",
@@ -22637,7 +23157,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 909
+   "order": 909,
+   "img": "img/vial_of_water.png",
+   "imgPage": "File:Vial of water detail.png"
   },
   {
    "id": "crushed_gem",
@@ -23159,7 +23681,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 930
+   "order": 930,
+   "img": "img/pot_of_tea_clay.png",
+   "imgPage": "File:Pot of tea (clay) detail.png"
   },
   {
    "id": "pot_of_tea_gold",
@@ -23181,7 +23705,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 931
+   "order": 931,
+   "img": "img/pot_of_tea_gold.png",
+   "imgPage": "File:Pot of tea (gold) detail.png"
   },
   {
    "id": "pot_of_tea_white",
@@ -23203,7 +23729,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 932
+   "order": 932,
+   "img": "img/pot_of_tea_white.png",
+   "imgPage": "File:Pot of tea (white) detail.png"
   },
   {
    "id": "pastry_dough",
@@ -23225,7 +23753,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 933
+   "order": 933,
+   "img": "img/pastry_dough.png",
+   "imgPage": "File:Pastry dough detail.png"
   },
   {
    "id": "pie_shell",
@@ -23247,7 +23777,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 934
+   "order": 934,
+   "img": "img/pie_shell.png",
+   "imgPage": "File:Pie shell detail.png"
   },
   {
    "id": "bread_dough",
@@ -23269,7 +23801,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 935
+   "order": 935,
+   "img": "img/bread_dough.png",
+   "imgPage": "File:Bread dough detail.png"
   },
   {
    "id": "chopped_garlic",
@@ -23291,7 +23825,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 936
+   "order": 936,
+   "img": "img/chopped_garlic.png",
+   "imgPage": "File:Chopped garlic detail.png"
   },
   {
    "id": "chopped_onion",
@@ -23313,7 +23849,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 937
+   "order": 937,
+   "img": "img/chopped_onion.png",
+   "imgPage": "File:Chopped onion detail.png"
   },
   {
    "id": "chopped_tuna",
@@ -23335,7 +23873,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 938
+   "order": 938,
+   "img": "img/chopped_tuna.png",
+   "imgPage": "File:Chopped tuna detail.png"
   },
   {
    "id": "cream_cheese",
@@ -23358,7 +23898,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 939
+   "order": 939,
+   "img": "img/cream_cheese.png",
+   "imgPage": "File:Cream cheese detail.png"
   },
   {
    "id": "egg_and_tomato",
@@ -23381,7 +23923,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 940
+   "order": 940,
+   "img": "img/egg_and_tomato.png",
+   "imgPage": "File:Egg and tomato detail.png"
   },
   {
    "id": "raw_swamp_paste",
@@ -23403,7 +23947,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 941
+   "order": 941,
+   "img": "img/raw_swamp_paste.png",
+   "imgPage": "File:Raw swamp paste detail.png"
   },
   {
    "id": "coconut_open",
@@ -23425,7 +23971,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 942
+   "order": 942,
+   "img": "img/coconut_open.png",
+   "imgPage": "File:Coconut (open) detail.png"
   },
   {
    "id": "coconut_shell",
@@ -23447,7 +23995,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 943
+   "order": 943,
+   "img": "img/coconut_shell.png",
+   "imgPage": "File:Coconut shell detail.png"
   },
   {
    "id": "sliced_mushrooms",
@@ -23469,7 +24019,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 944
+   "order": 944,
+   "img": "img/sliced_mushrooms.png",
+   "imgPage": "File:Sliced mushrooms detail.png"
   },
   {
    "id": "apple_mush",
@@ -23491,7 +24043,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 945
+   "order": 945,
+   "img": "img/apple_mush.png",
+   "imgPage": "File:Apple mush detail.png"
   },
   {
    "id": "barley_malt",
@@ -23513,7 +24067,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 946
+   "order": 946,
+   "img": "img/barley_malt.png",
+   "imgPage": "File:Barley malt detail.png"
   },
   {
    "id": "bucket_of_milk",
@@ -23535,7 +24091,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 947
+   "order": 947,
+   "img": "img/bucket_of_milk.png",
+   "imgPage": "File:Bucket of milk detail.png"
   },
   {
    "id": "dry_rabbit_sandwich",
@@ -23557,7 +24115,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 948
+   "order": 948,
+   "img": "img/dry_rabbit_sandwich.png",
+   "imgPage": "File:Dry rabbit sandwich detail.png"
   },
   {
    "id": "kebab_mix",
@@ -23579,7 +24139,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 949
+   "order": 949,
+   "img": "img/kebab_mix.png",
+   "imgPage": "File:Kebab mix detail.png"
   },
   {
    "id": "onion_tomato",
@@ -23601,7 +24163,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 950
+   "order": 950,
+   "img": "img/onion_tomato.png",
+   "imgPage": "File:Onion & tomato detail.png"
   },
   {
    "id": "pat_of_butter",
@@ -23623,7 +24187,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 951
+   "order": 951,
+   "img": "img/pat_of_butter.png",
+   "imgPage": "File:Pat of butter detail.png"
   },
   {
    "id": "pot_of_flour",
@@ -23645,7 +24211,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 952
+   "order": 952,
+   "img": "img/pot_of_flour.png",
+   "imgPage": "File:Pot of flour detail.png"
   },
   {
    "id": "soda_ash",
@@ -23668,7 +24236,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 953
+   "order": 953,
+   "img": "img/soda_ash.png",
+   "imgPage": "File:Soda ash detail.png"
   },
   {
    "id": "strange_potato",
@@ -23690,7 +24260,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 954
+   "order": 954,
+   "img": "img/strange_potato.png",
+   "imgPage": "File:Strange potato detail.png"
   },
   {
    "id": "unfermented_wine",
@@ -23712,7 +24284,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 955
+   "order": 955,
+   "img": "img/unfermented_wine.png",
+   "imgPage": "File:Unfermented wine detail.png"
   },
   {
    "id": "chocolate_dust",
@@ -23735,7 +24309,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 956
+   "order": 956,
+   "img": "img/chocolate_dust.png",
+   "imgPage": "File:Chocolate dust detail.png"
   },
   {
    "id": "pizza_base",
@@ -23757,7 +24333,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 957
+   "order": 957,
+   "img": "img/pizza_base.png",
+   "imgPage": "File:Pizza base detail.png"
   },
   {
    "id": "biscuit_dough",
@@ -23780,7 +24358,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 958
+   "order": 958,
+   "img": "img/biscuit_dough.png",
+   "imgPage": "File:Biscuit dough detail.png"
   },
   {
    "id": "poison_karambwan",
@@ -23828,7 +24408,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 960
+   "order": 960,
+   "img": "img/cracked_cooking_urn_empty.png",
+   "imgPage": "File:Cracked cooking urn (empty) detail.png"
   },
   {
    "id": "fish_offcuts",
@@ -23853,7 +24435,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 961
+   "order": 961,
+   "img": "img/fish_offcuts.png",
+   "imgPage": "File:Fish offcuts detail.png"
   },
   {
    "id": "fragile_cooking_urn_empty",
@@ -23875,7 +24459,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 962
+   "order": 962,
+   "img": "img/fragile_cooking_urn_empty.png",
+   "imgPage": "File:Fragile cooking urn (empty) detail.png"
   },
   {
    "id": "plain_cooking_urn_empty",
@@ -23897,7 +24483,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 963
+   "order": 963,
+   "img": "img/plain_cooking_urn_empty.png",
+   "imgPage": "File:Plain cooking urn (empty) detail.png"
   },
   {
    "id": "sea_turtle_bait",
@@ -23921,7 +24509,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 964
+   "order": 964,
+   "img": "img/sea_turtle_bait.png",
+   "imgPage": "File:Sea turtle bait detail.png"
   },
   {
    "id": "swamp_paste",
@@ -23942,7 +24532,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 965
+   "order": 965,
+   "img": "img/swamp_paste.png",
+   "imgPage": "File:Swamp paste detail.png"
   },
   {
    "id": "enriched_snapdragon_seed",
@@ -25512,7 +26104,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1028
+   "order": 1028,
+   "img": "img/pie_dish.png",
+   "imgPage": "File:Pie dish detail.png"
   },
   {
    "id": "tea_flask",
@@ -25533,7 +26127,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1029
+   "order": 1029,
+   "img": "img/tea_flask.png",
+   "imgPage": "File:Tea flask detail.png"
   },
   {
    "id": "bowl",
@@ -25554,7 +26150,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1030
+   "order": 1030,
+   "img": "img/bowl.png",
+   "imgPage": "File:Bowl detail.png"
   },
   {
    "id": "cake_tin",
@@ -25575,7 +26173,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1031
+   "order": 1031,
+   "img": "img/cake_tin.png",
+   "imgPage": "File:Cake tin detail.png"
   },
   {
    "id": "empty_pot",
@@ -25597,7 +26197,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1032
+   "order": 1032,
+   "img": "img/empty_pot.png",
+   "imgPage": "File:Empty pot detail.png"
   },
   {
    "id": "pestle_and_mortar",
@@ -25619,7 +26221,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1033
+   "order": 1033,
+   "img": "img/pestle_and_mortar.png",
+   "imgPage": "File:Pestle and mortar detail.png"
   },
   {
    "id": "waterskin_0",
@@ -25637,7 +26241,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1034
+   "order": 1034,
+   "img": "img/waterskin_0.png",
+   "imgPage": "File:Waterskin detail.png"
   },
   {
    "id": "cocktail_glass",
@@ -25655,7 +26261,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1035
+   "order": 1035,
+   "img": "img/cocktail_glass.png",
+   "imgPage": "File:Cocktail glass detail.png"
   },
   {
    "id": "cocktail_shaker",
@@ -25673,7 +26281,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1036
+   "order": 1036,
+   "img": "img/cocktail_shaker.png",
+   "imgPage": "File:Cocktail shaker detail.png"
   },
   {
    "id": "blood_diamond",
@@ -25860,7 +26470,9 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 1045
+   "order": 1045,
+   "img": "img/mystery_meat.png",
+   "imgPage": "File:Mystery meat detail.png"
   },
   {
    "id": "breadcrumbs",
@@ -25881,7 +26493,9 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 1046
+   "order": 1046,
+   "img": "img/breadcrumbs.png",
+   "imgPage": "File:Breadcrumbs detail.png"
   },
   {
    "id": "dried_thistle",
@@ -25902,7 +26516,9 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 1047
+   "order": 1047,
+   "img": "img/dried_thistle.png",
+   "imgPage": "File:Dried thistle detail.png"
   },
   {
    "id": "ground_cod",
@@ -25924,7 +26540,9 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 1048
+   "order": 1048,
+   "img": "img/ground_cod.png",
+   "imgPage": "File:Ground cod detail.png"
   },
   {
    "id": "ground_crab_meat",
@@ -25946,7 +26564,9 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 1049
+   "order": 1049,
+   "img": "img/ground_crab_meat.png",
+   "imgPage": "File:Ground crab meat detail.png"
   },
   {
    "id": "jug_of_bad_wine",
@@ -25967,7 +26587,9 @@
    },
    "collection": "Items: Junk",
    "file": "deck/items/junk.lua",
-   "order": 1050
+   "order": 1050,
+   "img": "img/jug_of_bad_wine.png",
+   "imgPage": "File:Jug of bad wine detail.png"
   },
   {
    "id": "black_2h_crossbow",
@@ -26013,7 +26635,9 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 1052
+   "order": 1052,
+   "img": "img/holy_biscuits.png",
+   "imgPage": "File:Holy biscuits 1 detail.png"
   },
   {
    "id": "purple_sweets",
@@ -26031,7 +26655,9 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 1053
+   "order": 1053,
+   "img": "img/purple_sweets.png",
+   "imgPage": "File:Purple sweets 1 detail.png"
   },
   {
    "id": "offhand_rubber_chicken",
@@ -49193,7 +49819,9 @@
    },
    "collection": "Items: General",
    "file": "deck/items/general.lua",
-   "order": 1929
+   "order": 1929,
+   "img": "img/the_infernal_sauce.png",
+   "imgPage": "File:The Infernal Sauce detail.png"
   },
   {
    "id": "grimy_avantoe",
@@ -50832,7 +51460,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 1992
+   "order": 1992,
+   "img": "img/raw_bouldabass.png",
+   "imgPage": "File:Raw bouldabass detail.png"
   },
   {
    "id": "raw_shortfinned_eel",
@@ -50858,7 +51488,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 1993
+   "order": 1993,
+   "img": "img/raw_shortfinned_eel.png",
+   "imgPage": "File:Raw short-finned eel detail.png"
   },
   {
    "id": "raw_web_snipper",
@@ -50884,7 +51516,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 1994
+   "order": 1994,
+   "img": "img/raw_web_snipper.png",
+   "imgPage": "File:Raw web snipper detail.png"
   },
   {
    "id": "raw_asciatops_meat",
@@ -50909,7 +51543,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 1995
+   "order": 1995,
+   "img": "img/raw_asciatops_meat.png",
+   "imgPage": "File:Raw asciatops meat detail.png"
   },
   {
    "id": "raw_bacon_heap",
@@ -50931,7 +51567,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 1996
+   "order": 1996,
+   "img": "img/raw_bacon_heap.png",
+   "imgPage": "File:Raw bacon heap detail.png"
   },
   {
    "id": "raw_bacon_mound",
@@ -50953,7 +51591,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 1997
+   "order": 1997,
+   "img": "img/raw_bacon_mound.png",
+   "imgPage": "File:Raw bacon mound detail.png"
   },
   {
    "id": "raw_bagrada_rex_meat",
@@ -50978,7 +51618,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 1998
+   "order": 1998,
+   "img": "img/raw_bagrada_rex_meat.png",
+   "imgPage": "File:Raw bagrada rex meat detail.png"
   },
   {
    "id": "raw_corbicula_rex_meat",
@@ -51003,7 +51645,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 1999
+   "order": 1999,
+   "img": "img/raw_corbicula_rex_meat.png",
+   "imgPage": "File:Raw corbicula rex meat detail.png"
   },
   {
    "id": "raw_giant_chinchompa_meat",
@@ -51028,7 +51672,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2000
+   "order": 2000,
+   "img": "img/raw_giant_chinchompa_meat.png",
+   "imgPage": "File:Raw giant chinchompa meat detail.png"
   },
   {
    "id": "raw_giant_kebbit_meat",
@@ -51053,7 +51699,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2001
+   "order": 2001,
+   "img": "img/raw_giant_kebbit_meat.png",
+   "imgPage": "File:Raw giant kebbit meat detail.png"
   },
   {
    "id": "raw_malletops_meat",
@@ -51078,7 +51726,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2002
+   "order": 2002,
+   "img": "img/raw_malletops_meat.png",
+   "imgPage": "File:Raw malletops meat detail.png"
   },
   {
    "id": "raw_oculi_apoterrasaur_meat",
@@ -51103,7 +51753,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2003
+   "order": 2003,
+   "img": "img/raw_oculi_apoterrasaur_meat.png",
+   "imgPage": "File:Raw oculi apoterrasaur meat detail.png"
   },
   {
    "id": "bass",
@@ -51430,7 +52082,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 2016
+   "order": 2016,
+   "img": "img/bouldabass.png",
+   "imgPage": "File:Bouldabass detail.png"
   },
   {
    "id": "shortfinned_eel",
@@ -51456,7 +52110,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 2017
+   "order": 2017,
+   "img": "img/shortfinned_eel.png",
+   "imgPage": "File:Short-finned eel detail.png"
   },
   {
    "id": "web_snipper",
@@ -51482,7 +52138,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 2018
+   "order": 2018,
+   "img": "img/web_snipper.png",
+   "imgPage": "File:Web snipper detail.png"
   },
   {
    "id": "cooked_jubbly",
@@ -51508,7 +52166,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2019
+   "order": 2019,
+   "img": "img/cooked_jubbly.png",
+   "imgPage": "File:Cooked jubbly detail.png"
   },
   {
    "id": "bacon_heap",
@@ -51530,7 +52190,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2020
+   "order": 2020,
+   "img": "img/bacon_heap.png",
+   "imgPage": "File:Bacon heap detail.png"
   },
   {
    "id": "bacon_mound",
@@ -51552,7 +52214,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2021
+   "order": 2021,
+   "img": "img/bacon_mound.png",
+   "imgPage": "File:Bacon mound detail.png"
   },
   {
    "id": "bouldabass_potato",
@@ -51578,7 +52242,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2022
+   "order": 2022,
+   "img": "img/bouldabass_potato.png",
+   "imgPage": "File:Bouldabass potato detail.png"
   },
   {
    "id": "chilli_potato",
@@ -51600,7 +52266,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2023
+   "order": 2023,
+   "img": "img/chilli_potato.png",
+   "imgPage": "File:Chilli potato detail.png"
   },
   {
    "id": "egg_potato",
@@ -51622,7 +52290,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2024
+   "order": 2024,
+   "img": "img/egg_potato.png",
+   "imgPage": "File:Egg potato detail.png"
   },
   {
    "id": "mushroom_potato",
@@ -51644,7 +52314,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2025
+   "order": 2025,
+   "img": "img/mushroom_potato.png",
+   "imgPage": "File:Mushroom potato detail.png"
   },
   {
    "id": "potato_with_cheese",
@@ -51666,7 +52338,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2026
+   "order": 2026,
+   "img": "img/potato_with_cheese.png",
+   "imgPage": "File:Potato with cheese detail.png"
   },
   {
    "id": "shortfin_edicap_potato",
@@ -51692,7 +52366,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2027
+   "order": 2027,
+   "img": "img/shortfin_edicap_potato.png",
+   "imgPage": "File:Short-fin & edicap potato detail.png"
   },
   {
    "id": "shortfin_gissel_potato",
@@ -51718,7 +52394,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2028
+   "order": 2028,
+   "img": "img/shortfin_gissel_potato.png",
+   "imgPage": "File:Short-fin & gissel potato detail.png"
   },
   {
    "id": "shortfin_eel_potato",
@@ -51744,7 +52422,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2029
+   "order": 2029,
+   "img": "img/shortfin_eel_potato.png",
+   "imgPage": "File:Short-fin eel potato.png"
   },
   {
    "id": "snipper_edicap_potato",
@@ -51770,7 +52450,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2030
+   "order": 2030,
+   "img": "img/snipper_edicap_potato.png",
+   "imgPage": "File:Snipper & edicap potato detail.png"
   },
   {
    "id": "snipper_gissel_potato",
@@ -51796,7 +52478,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2031
+   "order": 2031,
+   "img": "img/snipper_gissel_potato.png",
+   "imgPage": "File:Snipper & gissel potato detail.png"
   },
   {
    "id": "tuna_and_corn",
@@ -51818,7 +52502,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2032
+   "order": 2032,
+   "img": "img/tuna_and_corn.png",
+   "imgPage": "File:Tuna and corn detail.png"
   },
   {
    "id": "tuna_potato",
@@ -51840,7 +52526,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2033
+   "order": 2033,
+   "img": "img/tuna_potato.png",
+   "imgPage": "File:Tuna potato detail.png"
   },
   {
    "id": "anchovy_pizza",
@@ -51862,7 +52550,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2034
+   "order": 2034,
+   "img": "img/anchovy_pizza.png",
+   "imgPage": "File:Anchovy pizza detail.png"
   },
   {
    "id": "cheese",
@@ -51884,7 +52574,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2035
+   "order": 2035,
+   "img": "img/cheese.png",
+   "imgPage": "File:Cheese detail.png"
   },
   {
    "id": "chocolate_bomb",
@@ -51909,7 +52601,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2036
+   "order": 2036,
+   "img": "img/chocolate_bomb.png",
+   "imgPage": "File:Chocolate bomb detail.png"
   },
   {
    "id": "cooked_oomlie_wrap",
@@ -51932,7 +52626,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2037
+   "order": 2037,
+   "img": "img/cooked_oomlie_wrap.png",
+   "imgPage": "File:Cooked oomlie wrap detail.png"
   },
   {
    "id": "curry",
@@ -51954,7 +52650,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2038
+   "order": 2038,
+   "img": "img/curry.png",
+   "imgPage": "File:Curry detail.png"
   },
   {
    "id": "juju_gumbo",
@@ -51976,7 +52674,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2039
+   "order": 2039,
+   "img": "img/juju_gumbo.png",
+   "imgPage": "File:Juju gumbo detail.png"
   },
   {
    "id": "meat_pizza",
@@ -51998,7 +52698,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2040
+   "order": 2040,
+   "img": "img/meat_pizza.png",
+   "imgPage": "File:Meat pizza detail.png"
   },
   {
    "id": "pineapple_pizza",
@@ -52020,7 +52722,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2041
+   "order": 2041,
+   "img": "img/pineapple_pizza.png",
+   "imgPage": "File:Pineapple pizza detail.png"
   },
   {
    "id": "tangled_toads_legs",
@@ -52045,7 +52749,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2042
+   "order": 2042,
+   "img": "img/tangled_toads_legs.png",
+   "imgPage": "File:Tangled toads' legs detail.png"
   },
   {
    "id": "chocolate_cheesecake",
@@ -52067,7 +52773,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2043
+   "order": 2043,
+   "img": "img/chocolate_cheesecake.png",
+   "imgPage": "File:Chocolate cheesecake detail.png"
   },
   {
    "id": "fish_pie",
@@ -52090,7 +52798,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2044
+   "order": 2044,
+   "img": "img/fish_pie.png",
+   "imgPage": "File:Fish pie detail.png"
   },
   {
    "id": "lemon_cheesecake",
@@ -52112,7 +52822,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2045
+   "order": 2045,
+   "img": "img/lemon_cheesecake.png",
+   "imgPage": "File:Lemon cheesecake detail.png"
   },
   {
    "id": "slice_of_cake",
@@ -52134,7 +52846,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2046
+   "order": 2046,
+   "img": "img/slice_of_cake.png",
+   "imgPage": "File:Slice of cake detail.png"
   },
   {
    "id": "strawberry_cheesecake",
@@ -52156,7 +52870,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2047
+   "order": 2047,
+   "img": "img/strawberry_cheesecake.png",
+   "imgPage": "File:Strawberry cheesecake detail.png"
   },
   {
    "id": "pitta_bread",
@@ -52178,7 +52894,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2048
+   "order": 2048,
+   "img": "img/pitta_bread.png",
+   "imgPage": "File:Pitta bread detail.png"
   },
   {
    "id": "chocolate_slice",
@@ -52200,7 +52918,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2049
+   "order": 2049,
+   "img": "img/chocolate_slice.png",
+   "imgPage": "File:Chocolate slice detail.png"
   },
   {
    "id": "bacon_cheesecake",
@@ -52222,7 +52942,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2050
+   "order": 2050,
+   "img": "img/bacon_cheesecake.png",
+   "imgPage": "File:Bacon cheesecake detail.png"
   },
   {
    "id": "wrapped_oomlie",
@@ -52245,7 +52967,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2051
+   "order": 2051,
+   "img": "img/wrapped_oomlie.png",
+   "imgPage": "File:Wrapped oomlie detail.png"
   },
   {
    "id": "uncooked_curry",
@@ -52267,7 +52991,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2052
+   "order": 2052,
+   "img": "img/uncooked_curry.png",
+   "imgPage": "File:Uncooked curry detail.png"
   },
   {
    "id": "uncooked_cake",
@@ -52289,7 +53015,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2053
+   "order": 2053,
+   "img": "img/uncooked_cake.png",
+   "imgPage": "File:Uncooked cake detail.png"
   },
   {
    "id": "raw_fish_pie",
@@ -52311,7 +53039,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2054
+   "order": 2054,
+   "img": "img/raw_fish_pie.png",
+   "imgPage": "File:Raw fish pie detail.png"
   },
   {
    "id": "fried_mushrooms",
@@ -52333,7 +53063,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 2055
+   "order": 2055,
+   "img": "img/fried_mushrooms.png",
+   "imgPage": "File:Fried mushrooms detail.png"
   },
   {
    "id": "fried_onions",
@@ -52355,7 +53087,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 2056
+   "order": 2056,
+   "img": "img/fried_onions.png",
+   "imgPage": "File:Fried onions detail.png"
   },
   {
    "id": "mushroom_onion",
@@ -52377,7 +53111,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 2057
+   "order": 2057,
+   "img": "img/mushroom_onion.png",
+   "imgPage": "File:Mushroom & onion detail.png"
   },
   {
    "id": "peach",
@@ -52399,7 +53135,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 2058
+   "order": 2058,
+   "img": "img/peach.png",
+   "imgPage": "File:Peach detail.png"
   },
   {
    "id": "axemans_folly",
@@ -52420,7 +53158,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2059
+   "order": 2059,
+   "img": "img/axemans_folly.png",
+   "imgPage": "File:Axeman's folly detail.png"
   },
   {
    "id": "axemans_folly_m",
@@ -52441,7 +53181,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2060
+   "order": 2060,
+   "img": "img/axemans_folly_m.png",
+   "imgPage": "File:Axeman's folly (m) detail.png"
   },
   {
    "id": "chefs_delight",
@@ -52462,7 +53204,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2061
+   "order": 2061,
+   "img": "img/chefs_delight.png",
+   "imgPage": "File:Chef's delight detail.png"
   },
   {
    "id": "chefs_delight_m",
@@ -52483,7 +53227,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2062
+   "order": 2062,
+   "img": "img/chefs_delight_m.png",
+   "imgPage": "File:Chef's delight (m) detail.png"
   },
   {
    "id": "greenmans_ale_m",
@@ -52504,7 +53250,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2063
+   "order": 2063,
+   "img": "img/greenmans_ale_m.png",
+   "imgPage": "File:Greenman's ale (m) detail.png"
   },
   {
    "id": "moonlight_mead",
@@ -52525,7 +53273,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2064
+   "order": 2064,
+   "img": "img/moonlight_mead.png",
+   "imgPage": "File:Moonlight mead detail.png"
   },
   {
    "id": "moonlight_mead_m",
@@ -52546,7 +53296,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2065
+   "order": 2065,
+   "img": "img/moonlight_mead_m.png",
+   "imgPage": "File:Moonlight mead (m) detail.png"
   },
   {
    "id": "slayers_respite",
@@ -52567,7 +53319,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2066
+   "order": 2066,
+   "img": "img/slayers_respite.png",
+   "imgPage": "File:Slayer's respite detail.png"
   },
   {
    "id": "slayers_respite_m",
@@ -52588,7 +53342,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2067
+   "order": 2067,
+   "img": "img/slayers_respite_m.png",
+   "imgPage": "File:Slayer's respite (m) detail.png"
   },
   {
    "id": "blurberry_special",
@@ -52612,7 +53368,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2068
+   "order": 2068,
+   "img": "img/blurberry_special.png",
+   "imgPage": "File:Blurberry Special detail.png"
   },
   {
    "id": "chocolate_saturday",
@@ -52636,7 +53394,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2069
+   "order": 2069,
+   "img": "img/chocolate_saturday.png",
+   "imgPage": "File:Chocolate Saturday detail.png"
   },
   {
    "id": "drunk_dragon",
@@ -52660,7 +53420,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2070
+   "order": 2070,
+   "img": "img/drunk_dragon.png",
+   "imgPage": "File:Drunk Dragon detail.png"
   },
   {
    "id": "wizard_blizzard",
@@ -52684,7 +53446,9 @@
    },
    "collection": "Items: Drinks",
    "file": "deck/items/drinks.lua",
-   "order": 2071
+   "order": 2071,
+   "img": "img/wizard_blizzard.png",
+   "imgPage": "File:Wizard Blizzard detail.png"
   },
   {
    "id": "big_bass",
@@ -53202,7 +53966,9 @@
    },
    "collection": "Raw Materials: Ingredients",
    "file": "deck/items/raw_materials/ingredients.lua",
-   "order": 2091
+   "order": 2091,
+   "img": "img/autumn_sqirk.png",
+   "imgPage": "File:Autumn sq'irk detail.png"
   },
   {
    "id": "diamond",
@@ -53682,7 +54448,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 2110
+   "order": 2110,
+   "img": "img/cheese_wheel.png",
+   "imgPage": "File:Cheese wheel detail.png"
   },
   {
    "id": "pitta_dough",
@@ -53704,7 +54472,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 2111
+   "order": 2111,
+   "img": "img/pitta_dough.png",
+   "imgPage": "File:Pitta dough detail.png"
   },
   {
    "id": "manta_ray_bait",
@@ -53728,7 +54498,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 2112
+   "order": 2112,
+   "img": "img/manta_ray_bait.png",
+   "imgPage": "File:Manta ray bait detail.png"
   },
   {
    "id": "strong_cooking_urn_empty",
@@ -53750,7 +54522,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 2113
+   "order": 2113,
+   "img": "img/strong_cooking_urn_empty.png",
+   "imgPage": "File:Strong cooking urn (empty) detail.png"
   },
   {
    "id": "numbing_root",
@@ -53771,7 +54545,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 2114
+   "order": 2114,
+   "img": "img/numbing_root.png",
+   "imgPage": "File:Numbing root detail.png"
   },
   {
    "id": "argway_seed",
@@ -69189,7 +69965,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 2692
+   "order": 2692,
+   "img": "img/raw_blue_crab.png",
+   "imgPage": "File:Raw blue crab detail.png"
   },
   {
    "id": "raw_salve_eel",
@@ -69215,7 +69993,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 2693
+   "order": 2693,
+   "img": "img/raw_salve_eel.png",
+   "imgPage": "File:Raw salve eel detail.png"
   },
   {
    "id": "raw_arcane_apoterrasaur_meat",
@@ -69240,7 +70020,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2694
+   "order": 2694,
+   "img": "img/raw_arcane_apoterrasaur_meat.png",
+   "imgPage": "File:Raw arcane apoterrasaur meat detail.png"
   },
   {
    "id": "raw_scimitops_meat",
@@ -69265,7 +70047,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2695
+   "order": 2695,
+   "img": "img/raw_scimitops_meat.png",
+   "imgPage": "File:Raw scimitops meat detail.png"
   },
   {
    "id": "raw_spicati_apoterrasaur_meat",
@@ -69290,7 +70074,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 2696
+   "order": 2696,
+   "img": "img/raw_spicati_apoterrasaur_meat.png",
+   "imgPage": "File:Raw spicati apoterrasaur meat detail.png"
   },
   {
    "id": "baron_shark",
@@ -69516,7 +70302,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 2705
+   "order": 2705,
+   "img": "img/blue_crab.png",
+   "imgPage": "File:Blue crab detail.png"
   },
   {
    "id": "salve_eel",
@@ -69542,7 +70330,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 2706
+   "order": 2706,
+   "img": "img/salve_eel.png",
+   "imgPage": "File:Salve eel detail.png"
   },
   {
    "id": "arcane_apoterrasaur_meat",
@@ -69567,7 +70357,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2707
+   "order": 2707,
+   "img": "img/arcane_apoterrasaur_meat.png",
+   "imgPage": "File:Arcane apoterrasaur meat detail.png"
   },
   {
    "id": "asciatops_meat",
@@ -69589,7 +70381,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2708
+   "order": 2708,
+   "img": "img/asciatops_meat.png",
+   "imgPage": "File:Asciatops meat detail.png"
   },
   {
    "id": "bagrada_rex_meat",
@@ -69611,7 +70405,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2709
+   "order": 2709,
+   "img": "img/bagrada_rex_meat.png",
+   "imgPage": "File:Bagrada rex meat detail.png"
   },
   {
    "id": "corbicula_rex_meat",
@@ -69636,7 +70432,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2710
+   "order": 2710,
+   "img": "img/corbicula_rex_meat.png",
+   "imgPage": "File:Corbicula rex meat detail.png"
   },
   {
    "id": "malletops_meat",
@@ -69661,7 +70459,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2711
+   "order": 2711,
+   "img": "img/malletops_meat.png",
+   "imgPage": "File:Malletops meat detail.png"
   },
   {
    "id": "oculi_apoterrasaur_meat",
@@ -69686,7 +70486,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2712
+   "order": 2712,
+   "img": "img/oculi_apoterrasaur_meat.png",
+   "imgPage": "File:Oculi apoterrasaur meat detail.png"
   },
   {
    "id": "pavosaurus_rex_meat",
@@ -69711,7 +70513,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2713
+   "order": 2713,
+   "img": "img/pavosaurus_rex_meat.png",
+   "imgPage": "File:Pavosaurus rex meat detail.png"
   },
   {
    "id": "scimitops_meat",
@@ -69736,7 +70540,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2714
+   "order": 2714,
+   "img": "img/scimitops_meat.png",
+   "imgPage": "File:Scimitops meat detail.png"
   },
   {
    "id": "spicati_apoterrasaur_meat",
@@ -69761,7 +70567,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 2715
+   "order": 2715,
+   "img": "img/spicati_apoterrasaur_meat.png",
+   "imgPage": "File:Spicati apoterrasaur meat detail.png"
   },
   {
    "id": "blue_crab_edicap_potato",
@@ -69787,7 +70595,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2716
+   "order": 2716,
+   "img": "img/blue_crab_edicap_potato.png",
+   "imgPage": "File:Blue crab & edicap potato detail.png"
   },
   {
    "id": "blue_crab_potato",
@@ -69813,7 +70623,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2717
+   "order": 2717,
+   "img": "img/blue_crab_potato.png",
+   "imgPage": "File:Blue crab potato detail.png"
   },
   {
    "id": "salve_eel_edicap_potato",
@@ -69839,7 +70651,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2718
+   "order": 2718,
+   "img": "img/salve_eel_edicap_potato.png",
+   "imgPage": "File:Salve eel & edicap potato detail.png"
   },
   {
    "id": "salve_eel_gissel_potato",
@@ -69865,7 +70679,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2719
+   "order": 2719,
+   "img": "img/salve_eel_gissel_potato.png",
+   "imgPage": "File:Salve eel & gissel potato detail.png"
   },
   {
    "id": "salve_eel_potato",
@@ -69891,7 +70707,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2720
+   "order": 2720,
+   "img": "img/salve_eel_potato.png",
+   "imgPage": "File:Salve eel potato.png"
   },
   {
    "id": "banana_pizza",
@@ -69913,7 +70731,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2721
+   "order": 2721,
+   "img": "img/banana_pizza.png",
+   "imgPage": "File:Banana pizza detail.png"
   },
   {
    "id": "bog_n_hog_stew",
@@ -69938,7 +70758,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2722
+   "order": 2722,
+   "img": "img/bog_n_hog_stew.png",
+   "imgPage": "File:Bog 'n' Hog stew detail.png"
   },
   {
    "id": "great_maki",
@@ -69960,7 +70782,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 2723
+   "order": 2723,
+   "img": "img/great_maki.png",
+   "imgPage": "File:Great maki detail.png"
   },
   {
    "id": "admiral_pie",
@@ -69983,7 +70807,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2724
+   "order": 2724,
+   "img": "img/admiral_pie.png",
+   "imgPage": "File:Admiral pie detail.png"
   },
   {
    "id": "pork_pie",
@@ -70006,7 +70832,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2725
+   "order": 2725,
+   "img": "img/pork_pie.png",
+   "imgPage": "File:Pork pie detail.png"
   },
   {
    "id": "wild_pie",
@@ -70029,7 +70857,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 2726
+   "order": 2726,
+   "img": "img/wild_pie.png",
+   "imgPage": "File:Wild pie detail.png"
   },
   {
    "id": "uncooked_bog_n_hog_stew",
@@ -70054,7 +70884,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2727
+   "order": 2727,
+   "img": "img/uncooked_bog_n_hog_stew.png",
+   "imgPage": "File:Uncooked Bog 'n' Hog stew detail.png"
   },
   {
    "id": "raw_admiral_pie",
@@ -70076,7 +70908,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2728
+   "order": 2728,
+   "img": "img/raw_admiral_pie.png",
+   "imgPage": "File:Raw admiral pie detail.png"
   },
   {
    "id": "raw_wild_pie",
@@ -70098,7 +70932,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2729
+   "order": 2729,
+   "img": "img/raw_wild_pie.png",
+   "imgPage": "File:Raw wild pie detail.png"
   },
   {
    "id": "uncooked_pork_pie",
@@ -70120,7 +70956,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 2730
+   "order": 2730,
+   "img": "img/uncooked_pork_pie.png",
+   "imgPage": "File:Uncooked pork pie detail.png"
   },
   {
    "id": "purple_pumpkin",
@@ -70139,7 +70977,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 2731
+   "order": 2731,
+   "img": "img/purple_pumpkin.png",
+   "imgPage": "File:Purple pumpkin detail.png"
   },
   {
    "id": "red_pumpkin",
@@ -70158,7 +70998,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 2732
+   "order": 2732,
+   "img": "img/red_pumpkin.png",
+   "imgPage": "File:Red pumpkin detail.png"
   },
   {
    "id": "banite_ore",
@@ -70602,7 +71444,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 2749
+   "order": 2749,
+   "img": "img/decorated_cooking_urn_empty.png",
+   "imgPage": "File:Decorated cooking urn (empty) detail.png"
   },
   {
    "id": "gout_tuber",
@@ -79882,7 +80726,9 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 3092
+   "order": 3092,
+   "img": "img/raw_cave_moray.png",
+   "imgPage": "File:Raw cave moray detail.png"
   },
   {
    "id": "raw_pavosaurus_rex_meat",
@@ -79908,7 +80754,9 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 3093
+   "order": 3093,
+   "img": "img/raw_pavosaurus_rex_meat.png",
+   "imgPage": "File:Raw pavosaurus rex meat detail.png"
   },
   {
    "id": "blue_blubber_jellyfish",
@@ -80088,7 +80936,9 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 3100
+   "order": 3100,
+   "img": "img/cave_moray.png",
+   "imgPage": "File:Cave moray detail.png"
   },
   {
    "id": "cooked_pekin",
@@ -80113,7 +80963,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 3101
+   "order": 3101,
+   "img": "img/cooked_pekin.png",
+   "imgPage": "File:Cooked pekin detail.png"
   },
   {
    "id": "giant_chinchompa_meat",
@@ -80139,7 +80991,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 3102
+   "order": 3102,
+   "img": "img/giant_chinchompa_meat.png",
+   "imgPage": "File:Giant chinchompa meat detail.png"
   },
   {
    "id": "giant_kebbit_meat",
@@ -80165,7 +81019,9 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 3103
+   "order": 3103,
+   "img": "img/giant_kebbit_meat.png",
+   "imgPage": "File:Giant kebbit meat detail.png"
   },
   {
    "id": "primal_portion",
@@ -80187,7 +81043,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3104
+   "order": 3104,
+   "img": "img/primal_portion.png",
+   "imgPage": "File:Primal portion detail.png"
   },
   {
    "id": "cave_moray_potato",
@@ -80213,7 +81071,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3105
+   "order": 3105,
+   "img": "img/cave_moray_potato.png",
+   "imgPage": "File:Cave moray potato detail.png"
   },
   {
    "id": "moray_edicap_potato",
@@ -80239,7 +81099,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3106
+   "order": 3106,
+   "img": "img/moray_edicap_potato.png",
+   "imgPage": "File:Moray & edicap potato detail.png"
   },
   {
    "id": "moray_gissel_potato",
@@ -80265,7 +81127,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3107
+   "order": 3107,
+   "img": "img/moray_gissel_potato.png",
+   "imgPage": "File:Moray & gissel potato detail.png"
   },
   {
    "id": "arc_gumbo",
@@ -80290,7 +81154,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3108
+   "order": 3108,
+   "img": "img/arc_gumbo.png",
+   "imgPage": "File:Arc gumbo detail.png"
   },
   {
    "id": "great_gunkan",
@@ -80312,7 +81178,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3109
+   "order": 3109,
+   "img": "img/great_gunkan.png",
+   "imgPage": "File:Great gunkan detail.png"
   },
   {
    "id": "primal_dessert",
@@ -80334,7 +81202,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3110
+   "order": 3110,
+   "img": "img/primal_dessert.png",
+   "imgPage": "File:Primal dessert detail.png"
   },
   {
    "id": "primal_feast",
@@ -80356,7 +81226,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3111
+   "order": 3111,
+   "img": "img/primal_feast.png",
+   "imgPage": "File:Primal feast detail.png"
   },
   {
    "id": "primal_main_course",
@@ -80378,7 +81250,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3112
+   "order": 3112,
+   "img": "img/primal_main_course.png",
+   "imgPage": "File:Primal main course detail.png"
   },
   {
    "id": "primal_starter",
@@ -80400,7 +81274,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3113
+   "order": 3113,
+   "img": "img/primal_starter.png",
+   "imgPage": "File:Primal starter detail.png"
   },
   {
    "id": "rocktail_soup",
@@ -80422,7 +81298,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3114
+   "order": 3114,
+   "img": "img/rocktail_soup.png",
+   "imgPage": "File:Rocktail soup detail.png"
   },
   {
    "id": "sailfish_soup",
@@ -80444,7 +81322,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3115
+   "order": 3115,
+   "img": "img/sailfish_soup.png",
+   "imgPage": "File:Sailfish soup detail.png"
   },
   {
    "id": "shark_soup",
@@ -80469,7 +81349,9 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 3116
+   "order": 3116,
+   "img": "img/shark_soup.png",
+   "imgPage": "File:Shark soup detail.png"
   },
   {
    "id": "summer_pie",
@@ -80492,7 +81374,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 3117
+   "order": 3117,
+   "img": "img/summer_pie.png",
+   "imgPage": "File:Summer pie detail.png"
   },
   {
    "id": "wilder_pie",
@@ -80515,7 +81399,9 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 3118
+   "order": 3118,
+   "img": "img/wilder_pie.png",
+   "imgPage": "File:Wilder pie detail.png"
   },
   {
    "id": "uncooked_arc_gumbo",
@@ -80540,7 +81426,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 3119
+   "order": 3119,
+   "img": "img/uncooked_arc_gumbo.png",
+   "imgPage": "File:Uncooked arc gumbo detail.png"
   },
   {
    "id": "uncooked_shark_soup",
@@ -80565,7 +81453,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 3120
+   "order": 3120,
+   "img": "img/uncooked_shark_soup.png",
+   "imgPage": "File:Uncooked shark soup detail.png"
   },
   {
    "id": "raw_summer_pie",
@@ -80587,7 +81477,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 3121
+   "order": 3121,
+   "img": "img/raw_summer_pie.png",
+   "imgPage": "File:Raw summer pie detail.png"
   },
   {
    "id": "raw_wilder_pie",
@@ -80609,7 +81501,9 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 3122
+   "order": 3122,
+   "img": "img/raw_wilder_pie.png",
+   "imgPage": "File:Raw wilder pie detail.png"
   },
   {
    "id": "dragonfruit",
@@ -80631,7 +81525,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 3123
+   "order": 3123,
+   "img": "img/dragonfruit.png",
+   "imgPage": "File:Dragonfruit detail.png"
   },
   {
    "id": "bathus_ore",
@@ -81356,7 +82252,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3151
+   "order": 3151,
+   "img": "img/sliced_mushrooms_the_arc.png",
+   "imgPage": "File:Sliced mushrooms (The Arc) detail.png"
   },
   {
    "id": "wine_of_guthix",
@@ -81378,7 +82276,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3152
+   "order": 3152,
+   "img": "img/wine_of_guthix.png",
+   "imgPage": "File:Wine of Guthix detail.png"
   },
   {
    "id": "wine_of_saradomin",
@@ -81400,7 +82300,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3153
+   "order": 3153,
+   "img": "img/wine_of_saradomin.png",
+   "imgPage": "File:Wine of Saradomin detail.png"
   },
   {
    "id": "wine_of_zamorak",
@@ -81422,7 +82324,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3154
+   "order": 3154,
+   "img": "img/wine_of_zamorak.png",
+   "imgPage": "File:Wine of Zamorak detail.png"
   },
   {
    "id": "apex_sinew",
@@ -81447,7 +82351,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3155
+   "order": 3155,
+   "img": "img/apex_sinew.png",
+   "imgPage": "File:Apex sinew detail.png"
   },
   {
    "id": "fish_oil",
@@ -81469,7 +82375,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3156
+   "order": 3156,
+   "img": "img/fish_oil.png",
+   "imgPage": "File:Fish oil 1 detail.png"
   },
   {
    "id": "wobbegong_oil",
@@ -81494,7 +82402,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3157
+   "order": 3157,
+   "img": "img/wobbegong_oil.png",
+   "imgPage": "File:Wobbegong oil detail.png"
   },
   {
    "id": "primal_fruit_pulp",
@@ -81517,7 +82427,9 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 3158
+   "order": 3158,
+   "img": "img/primal_fruit_pulp.png",
+   "imgPage": "File:Primal fruit pulp detail.png"
   },
   {
    "id": "alchemical_hydrix_dust",
@@ -81585,7 +82497,9 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 3161
+   "order": 3161,
+   "img": "img/exquisite_cooking_urn_empty.png",
+   "imgPage": "File:Exquisite cooking urn (empty) detail.png"
   },
   {
    "id": "avocado_seed",
@@ -85541,7 +86455,9 @@
    },
    "collection": "Armours: Back",
    "file": "deck/items/armours/back.lua",
-   "order": 3303
+   "order": 3303,
+   "img": "img/artisans_cape.png",
+   "imgPage": "File:Artisan's cape detail.png"
   },
   {
    "id": "royal_sceptre",
@@ -86852,7 +87768,9 @@
    },
    "collection": "Items: General",
    "file": "deck/items/general.lua",
-   "order": 3355
+   "order": 3355,
+   "img": "img/half_full_wine_jug.png",
+   "imgPage": "File:Half full wine jug detail.png"
   },
   {
    "id": "pumpkin",
@@ -86872,7 +87790,9 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 3356
+   "order": 3356,
+   "img": "img/pumpkin.png",
+   "imgPage": "File:Pumpkin detail.png"
   },
   {
    "id": "big_shark",
