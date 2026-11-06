@@ -5,12 +5,14 @@
 -- (the NPC or item, name, description, suggested rarity, tags, deck file); there it is checked,
 -- framed and copied as usual. "Next model" goes through the other models the wiki lists for it
 -- (an NPC's other versions, an item's other ids), switching the builder's preview to each in
--- turn. Then "Done" (or "Skip") moves on. The drop-down shows the candidates from one category
+-- turn. Then "Done" (or "Skip", or "Later") moves on. The drop-down shows the candidates from one category
 -- (or page) asked for at a time, or all of them. The search button opens the Wiki Fetch window
 -- (dev/wikifetch.lua), which writes the command that fetches more candidates.
 --
 -- Candidates already on a card (or a draft), with any of their models, are left out, and so are
--- the ones marked Done or Skipped; those marks are kept in the plugin's database (PersistentDB,
+-- the ones marked Done, Skipped or Later (Later is a skip to come back to: the card can't be made yet, say
+-- because a tag or deck file it needs doesn't exist; its own button brings those back, and not the
+-- Skipped ones); those marks are kept in the plugin's database (PersistentDB,
 -- on this computer only). Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
@@ -20,7 +22,7 @@ local WikiFetch = require("dev/wikifetch")
 
 local WikiReview = {}
 
-local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
+local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done", "skipped" or "later" }
 local WIDTH, HEIGHT = 480, 468
 local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
@@ -414,7 +416,7 @@ local function clearAdded()
     queueMessage("Cleared " .. removed .. " added card(s); " .. left .. " still queued")
 end
 
--- Puts the candidate of a wiki page back on the list (taking off its Done or Skip mark), for a
+-- Puts the candidate of a wiki page back on the list (taking off its Done, Skip or Later mark), for a
 -- queued card the script could not add (python dev/card_queue.py --list names the page).
 local reload
 local function reopen(text)
@@ -429,7 +431,7 @@ local function reopen(text)
         end
     end
     if found == nil then
-        queueMessage("No Done or Skip mark for a page called " .. text)
+        queueMessage("No Done, Skip or Later mark for a page called " .. text)
         return
     end
     saved[found] = nil
@@ -464,7 +466,7 @@ local function finish(verdict)
     refresh()
 end
 
--- Takes the marks of `verdict` ("skipped") off the candidates, leaving the others as they are.
+-- Takes the marks of `verdict` ("skipped" or "later") off the candidates, leaving the others as they are.
 local function unmark(verdict)
     local saved = reviewed()
     for page, mark in pairs(saved) do
@@ -498,18 +500,25 @@ function WikiReview.show()
     Kit.iconButton(content, "SEARCH", INNER - 54, 6, WikiFetch.toggle, "Fetch more candidates from the wiki",
         "Fetch", 70)
     Kit.iconButton(content, "REFRESH", INNER - 84, 6, function()
-        Kit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done stay off the list.",
+        Kit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done or Later stay off the list.",
             "Bring back skipped", function()
                 unmark("skipped")
                 reload()
             end)
     end, "Bring back only the candidates marked Skip", "Skipped", 70)
+    Kit.iconButton(content, "EYE", INNER - 114, 6, function()
+        Kit.confirm(gameWindow, "Review the Later ones?", "Every candidate marked Later comes back. Skipped and Done ones stay off the list.",
+            "Bring back later", function()
+                unmark("later")
+                reload()
+            end)
+    end, "Bring back only the candidates marked Later", "Later", 70)
     Kit.iconButton(content, "UNDO", INNER - 24, 6, function()
-        Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done or Skip comes back.", "Review again", function()
+        Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done, Skip or Later comes back.", "Review again", function()
             pcall(function() PersistentDB:SetStructuredData(DB_KEY, {}) end)
             reload()
         end)
-    end, "Bring back the candidates marked Done or Skip", "Reset", 70)
+    end, "Bring back the candidates marked Done, Skip or Later", "Reset", 70)
 
     -- (The drop-down that chooses the source goes between the header and these; it is made last.)
     local top = 76
@@ -528,10 +537,12 @@ function WikiReview.show()
             widgets.loaded = candidate
         end
     end, "positive", "Fill the Card Builder in from this candidate, to check, frame and copy it")
-    local half = (INNER - 6) // 2
-    Kit.buttonAt(content, "Done", 10, buttonsY + 40, half, 30, function() finish("done") end, "neutral",
+    local third = (INNER - 12) // 3
+    Kit.buttonAt(content, "Done", 10, buttonsY + 40, third, 30, function() finish("done") end, "neutral",
         "The card is made: take it off the list")
-    Kit.buttonAt(content, "Skip", 16 + half, buttonsY + 40, half, 30, function() finish("skipped") end, "negative",
+    Kit.buttonAt(content, "Later", 16 + third, buttonsY + 40, third, 30, function() finish("later") end, "neutral",
+        "Not now (a tag or deck file it needs is missing): take it off the list until the Later button brings it back")
+    Kit.buttonAt(content, "Skip", 22 + 2 * third, buttonsY + 40, third, 30, function() finish("skipped") end, "negative",
         "Not a card: take it off the list")
 
     widgets.queueText = Kit.text(content, 10, buttonsY + 76, INNER, 18, "", GREY, ui.AlignMode.TOPLEFT)

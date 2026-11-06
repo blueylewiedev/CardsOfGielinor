@@ -76,7 +76,10 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
 2. In the game, `prf`, then open **Wiki Review**. **Load into Card Builder** fills the builder in;
    check and change anything that is wrong (the tags and rarity are only guesses), try the other
    models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
-   **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
+   **Skip** for one that shouldn't be a card, or **Later** for one that should be but can't be
+   made yet (a tag or deck file it needs doesn't exist). The **Later** button in the header
+   brings back only those, and the **Skipped** button only the skipped ones. Cards already in
+   the deck are left out.
    **Next model** only offers models that look different: `dev/wiki_cards.py` compares their parts
    and colours in the client's cache (`dev/npc_looks.py`), and keeps every model if there's no cache.
 
