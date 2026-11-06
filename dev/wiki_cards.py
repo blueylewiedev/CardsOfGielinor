@@ -874,10 +874,11 @@ JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
 
 # The kind of a food whose wiki categories do not say it, from its name (checked in order; the note says to
 # check it): meals (a sandwich, wrap, stew or soup, whatever is in it), then pies (baked goods, whatever is in them),
-# then meat (bacon cheesecake is meat), then baked goods, then fruit and vegetables.
+# then cheesecakes (baked goods, bacon or not), then meat, then baked goods, then fruit and vegetables.
 FOOD_NAME_KINDS = (
     (re.compile(r"\b(sandwich(es)?|wraps?|stews?|soups?)\b"), "meal"),
     (re.compile(r"\bpies?\b(?! (dish|shell))"), "baked_goods"),
+    (re.compile(r"\bcheesecakes?\b"), "baked_goods"),
     (re.compile(r"^(?!.*\b(?:potato|dough|oil|sauce)\b).*"
                 r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky|carne|chompy|"
                 r"rabbit|pekin|eeligator|snail|spider|snake)\b"), "meat"),
@@ -893,6 +894,11 @@ FOOD_NAME_KINDS = (
 # only part made) is raw_food, in food/raw_food.lua, not baked goods.
 RAW_NAME = re.compile(r"\b(raw|uncooked)\b")
 PART_NAME = re.compile(r"^part\b")
+DOUGH_NAME = re.compile(r"\bdough\b")
+# (an item named raw or uncooked that is an ingredient, not a dish: raw dough is decided elsewhere, and raw meat and
+# fish are raw materials)
+RAW_INGREDIENT_NAME = re.compile(r"\b(raw|uncooked) (meat|fish|chicken|beef|bacon|rabbit|shrimps?|anchovies|sardine|herring|"
+                                 r"dough)\b")
 
 # An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
 # flour). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
@@ -1836,6 +1842,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (a pie dish is a tool and a pie shell is made to be filled, neither is a pie, though the wiki files them under Pie)
         if re.search(r"\bpie (dish|shell)\b", strip_bracket(name).lower()):
             found = [w for w in found if w not in ("food", "baked_goods")]
+            if re.search(r"\bpie dish\b", strip_bracket(name).lower()):
+                found.append("tool")
         # (a pie no category says is food: Raw admiral pie has only Items and Recipes)
         if not found and FOOD_NAME_KINDS[1][0].search(strip_bracket(name).lower()):
             found.append("food")
@@ -1891,8 +1899,15 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # (an ingredient is cooked with, not eaten: in the category Cooking with no category of its own that makes it a food
     # or a drink (the Disassembly one calls barley and sweetcorn "food", which is only what they disassemble into), and
     # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
-    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and not NOT_AN_INGREDIENT & explicit
+    # (a dish named raw or uncooked, with no category of its own that says what it is, is raw_food: Uncooked cake)
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and not found
+            and RAW_NAME.search(name.lower()) and not DOUGH_NAME.search(name.lower())
+            and not RAW_INGREDIENT_NAME.search(strip_bracket(name).lower())
             and plain(fields.get("equipable", "")).lower() != "yes"):
+        found = ["food", "raw_food"]
+        notes.append("raw food: not cooked yet: check it")
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and "raw_food" not in found
+            and not NOT_AN_INGREDIENT & explicit and plain(fields.get("equipable", "")).lower() != "yes"):
         found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_food", "raw_material", "ingredient")]
         notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")
     # (mined and nothing says what it is: sandstone, granite, rune essence. A raw material, but check it)
