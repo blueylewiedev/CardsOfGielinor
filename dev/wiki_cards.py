@@ -1554,6 +1554,8 @@ def linked_pages(text, until=None):
             # (a name made with the plink template, {{plink|Bronze bar}}, as the Bars page does; what follows it, an
             # amount like "x 5", is not part of the name)
             link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[1]) if len(cells) > 1 else None)
+            # (a table with no picture cell, as on the Necromancy weapons page, has the name in its first cell)
+            link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[0]) if cells else None)
             if link:
                 targets.append(link.group(1))
     else:
