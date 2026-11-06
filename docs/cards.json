@@ -18131,7 +18131,7 @@
    "file": "deck/items/food/meals.lua",
    "order": 701,
    "img": "img/redeye_potato.png",
-   "imgPage": "File:Red-eye potato.png"
+   "imgPage": "File:Fish potato.png"
   },
   {
    "id": "banana_stew",
@@ -52424,7 +52424,7 @@
    "file": "deck/items/food/meals.lua",
    "order": 2029,
    "img": "img/shortfin_eel_potato.png",
-   "imgPage": "File:Short-fin eel potato.png"
+   "imgPage": "File:Fish potato.png"
   },
   {
    "id": "snipper_edicap_potato",
@@ -70709,7 +70709,7 @@
    "file": "deck/items/food/meals.lua",
    "order": 2720,
    "img": "img/salve_eel_potato.png",
-   "imgPage": "File:Salve eel potato.png"
+   "imgPage": "File:Fish potato.png"
   },
   {
    "id": "banana_pizza",
