@@ -239,6 +239,8 @@ Cards.itemTagGroups = {
             words = { "meal", "baked_goods", "fruit_veg", "raw_food" } },
         { title = "What kind of raw material", requires = "raw_material",
             words = { "log", "ore", "bone", "hide" } },
+        { title = "What kind of potion", requires = "potion",
+            words = { "flask" } },
         { title = "What kind of processed material", requires = "processed_material",
             words = { "bar", "plank", "clay" } },
         { title = "What kind of seed", requires = "seed",

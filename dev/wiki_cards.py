@@ -872,6 +872,7 @@ ITEM_EXACT_CATEGORY_WORDS = {
     "gnome cooking": ["food", "meal"], "dorgeshuun cuisine": ["food", "meal"],
     "fruit": ["food", "fruit_veg"], "cabbages": ["food", "fruit_veg"], "dungeoneering potatoes": ["food", "fruit_veg"],
     "useless items": ["junk"], "burnt food": ["junk"],
+    "potion flasks": ["potion", "flask"],
 }
 
 # The kinds of raw or processed material (the words that follow raw_material or processed_material).
@@ -1026,6 +1027,39 @@ def only_in_cutscenes(page, fields):
     return all("cutscene" in v.lower() for v in locations)
 
 
+# A potion has a version for each dose, "(1)" to "(4)" (a flask "(1)" to "(6)"), and the card is the full one: 4 doses, or
+# 6 for a flask, or the most there are if it has no such version. A 2-dose mix and an unfinished potion have no card.
+DOSE_VERSION = re.compile(r"\((\d+)\)")
+DOSE_CATEGORIES = {"Potions", "Potion flasks"}
+SKIPPED_POTIONS = (
+    ({"Barbarian mixes"}, "a 2-dose mix: no card"),
+)
+UNFINISHED_POTION = re.compile(r"\(unf\)$|\bunfinished\b", re.I)
+
+
+def dose_fields(page, fields):
+    """(the item infobox's fields with the card's dose as version 1, that dose), for a potion with a version for each
+    dose; (the fields, None) for anything else."""
+    if not DOSE_CATEGORIES & set(page.get("categories", [])):
+        return fields, None
+    doses = {}
+    for key, value in fields.items():
+        number = re.fullmatch(r"version(\d+)", key)
+        found = DOSE_VERSION.fullmatch(plain(value).strip()) if number else None
+        if found:
+            doses[number.group(1)] = int(found.group(1))
+    if len(doses) < 2:
+        return fields, None
+    wanted = 6 if "Potion flasks" in page.get("categories", []) else 4
+    dose = wanted if wanted in doses.values() else max(doses.values())
+    index = next(i for i, d in doses.items() if d == dose)
+    chosen = dict(fields)
+    for key in ("version", "name", "id", "examine", "value"):
+        if key + index in fields:
+            chosen[key + "1"] = fields[key + index]
+    return chosen, dose
+
+
 def candidate(page, names, words, price=None, drop=None):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
     `price` is the item's Grand Exchange price, if it was fetched."""
@@ -1063,7 +1097,17 @@ def candidate(page, names, words, price=None, drop=None):
         if treasure_hunter_item(text, item_fields, page.get("categories", [])):
             return None, SKIPPED_TREASURE_HUNTER
         _, bonuses = find_template(text, ["Infobox Bonuses"])
-        return item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
+        for skipped_categories, reason in SKIPPED_POTIONS:
+            if skipped_categories & set(page.get("categories", [])):
+                return None, reason
+        if DOSE_CATEGORIES & set(page.get("categories", [])) and UNFINISHED_POTION.search(page.get("title", "")):
+            return None, "an unfinished potion: no card unless it has a use of its own (add it by hand)"
+        item_fields, dose = dose_fields(page, item_fields)
+        made, reason = item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
+        if made is not None and dose:
+            made["name"] = re.sub(r"\s*\(\d+\)$", "", made["name"])
+            made["notes"].append(f"the {dose}-dose version: check the description")
+        return made, reason
     return None, "no NPC or item infobox"
 
 
@@ -1864,6 +1908,9 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         # (a drink is not food: a page in both Food and Drinks is a drink)
         if "drink" in found:
             found = [w for w in found if w != "food"]
+        # (nor is a potion, though its infobox says it can be eaten (drunk))
+        if "potion" in found:
+            found = [w for w in found if w not in ("food", "meal", "baked_goods", "fruit_veg", "raw_food")]
         # (a pie dish is a tool and a pie shell is made to be filled, neither is a pie, though the wiki files them under Pie)
         if re.search(r"\bpie (dish|shell)\b", strip_bracket(name).lower()):
             found = [w for w in found if w not in ("food", "baked_goods")]
@@ -3269,8 +3316,8 @@ def main():
     if drop_titles:
         print(f"Drop rates for {len(drops)} items are kept in {DROPS.relative_to(ROOT)}")
     # The Grand Exchange price of each item page, by asking the wiki for {{GEP|name}}.
-    price_names = {title: price_name(template_fields(find_template(pages[title]["text"], ["Infobox Item"])[1] or ""),
-                                     title)
+    price_names = {title: price_name(dose_fields(pages[title], template_fields(
+                       find_template(pages[title]["text"], ["Infobox Item"])[1] or ""))[0], title)
                    for title in titles if title in pages and "Infobox Item" in pages[title].get("text", "")}
     prices = fetch_prices(wiki, [n for n in price_names.values() if n], args.refresh) if price_names else {}
 
