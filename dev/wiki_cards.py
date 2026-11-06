@@ -955,6 +955,8 @@ WEAPON_NAME_KINDS = [
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
     (r"\bcrossbows?$", "crossbow"), (r"\b(?:battle)?(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
     (r"\borbs?$|^orb of\b", "orb"), (r"\b(?:spell)?books?$|\bbook of magic$|\btome\b", "book"),
+    # (a necromancer's off hand: the lantern is a conduit to the Underworld, the guard (an armguard) a siphon)
+    (r"\blanterns?$", "lantern"), (r"\bguards?$", "siphon"),
 ]
 
 
