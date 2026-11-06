@@ -21890,7 +21890,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 856
+   "order": 856,
+   "img": "img/accursed_ashes.png",
+   "imgPage": "File:Accursed ashes detail.png"
   },
   {
    "id": "airut_bonemeal",
@@ -21915,7 +21917,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 857
+   "order": 857,
+   "img": "img/airut_bonemeal.png",
+   "imgPage": "File:Airut bonemeal detail.png"
   },
   {
    "id": "baby_dragon_bonemeal",
@@ -21940,7 +21944,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 858
+   "order": 858,
+   "img": "img/baby_dragon_bonemeal.png",
+   "imgPage": "File:Baby dragon bonemeal detail.png"
   },
   {
    "id": "bat_bonemeal",
@@ -21965,7 +21971,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 859
+   "order": 859,
+   "img": "img/bat_bonemeal.png",
+   "imgPage": "File:Bat bonemeal detail.png"
   },
   {
    "id": "bearded_gorilla_bonemeal",
@@ -21990,7 +21998,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 860
+   "order": 860,
+   "img": "img/bearded_gorilla_bonemeal.png",
+   "imgPage": "File:Bearded gorilla bonemeal detail.png"
   },
   {
    "id": "big_bonemeal",
@@ -22015,7 +22025,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 861
+   "order": 861,
+   "img": "img/big_bonemeal.png",
+   "imgPage": "File:Big bonemeal detail.png"
   },
   {
    "id": "bonemeal",
@@ -22040,7 +22052,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 862
+   "order": 862,
+   "img": "img/bonemeal.png",
+   "imgPage": "File:Small zombie monkey bonemeal detail.png"
   },
   {
    "id": "bonemeal_bones",
@@ -22065,7 +22079,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 863
+   "order": 863,
+   "img": "img/bonemeal_bones.png",
+   "imgPage": "File:Bonemeal (Bones) detail.png"
   },
   {
    "id": "dagannoth_bonemeal",
@@ -22090,7 +22106,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 864
+   "order": 864,
+   "img": "img/dagannoth_bonemeal.png",
+   "imgPage": "File:Dagannoth bonemeal detail.png"
   },
   {
    "id": "dinosaur_bonemeal",
@@ -22115,7 +22133,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 865
+   "order": 865,
+   "img": "img/dinosaur_bonemeal.png",
+   "imgPage": "File:Dinosaur bonemeal detail.png"
   },
   {
    "id": "dragon_bonemeal",
@@ -22140,7 +22160,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 866
+   "order": 866,
+   "img": "img/dragon_bonemeal.png",
+   "imgPage": "File:Dragon bonemeal detail.png"
   },
   {
    "id": "dragonkin_bonemeal",
@@ -22165,7 +22187,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 867
+   "order": 867,
+   "img": "img/dragonkin_bonemeal.png",
+   "imgPage": "File:Dragonkin bonemeal detail.png"
   },
   {
    "id": "fayrg_bonemeal",
@@ -22190,7 +22214,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 868
+   "order": 868,
+   "img": "img/fayrg_bonemeal.png",
+   "imgPage": "File:Fayrg bonemeal detail.png"
   },
   {
    "id": "frost_dragon_bonemeal",
@@ -22215,7 +22241,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 869
+   "order": 869,
+   "img": "img/frost_dragon_bonemeal.png",
+   "imgPage": "File:Frost dragon bonemeal detail.png"
   },
   {
    "id": "gorilla_bonemeal",
@@ -22240,7 +22268,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 870
+   "order": 870,
+   "img": "img/gorilla_bonemeal.png",
+   "imgPage": "File:Gorilla bonemeal detail.png"
   },
   {
    "id": "hardened_dragon_bonemeal",
@@ -22265,7 +22295,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 871
+   "order": 871,
+   "img": "img/hardened_dragon_bonemeal.png",
+   "imgPage": "File:Hardened dragon bonemeal detail.png"
   },
   {
    "id": "jogre_bonemeal",
@@ -22290,7 +22322,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 872
+   "order": 872,
+   "img": "img/jogre_bonemeal.png",
+   "imgPage": "File:Jogre bonemeal detail.png"
   },
   {
    "id": "large_zombie_monkey_bonemeal",
@@ -22315,7 +22349,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 873
+   "order": 873,
+   "img": "img/large_zombie_monkey_bonemeal.png",
+   "imgPage": "File:Large zombie monkey bonemeal detail.png"
   },
   {
    "id": "medium_ninja_monkey_bonemeal",
@@ -22340,7 +22376,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 874
+   "order": 874,
+   "img": "img/medium_ninja_monkey_bonemeal.png",
+   "imgPage": "File:Medium ninja monkey bonemeal detail.png"
   },
   {
    "id": "monkey_bonemeal",
@@ -22365,7 +22403,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 875
+   "order": 875,
+   "img": "img/monkey_bonemeal.png",
+   "imgPage": "File:Monkey bonemeal detail.png"
   },
   {
    "id": "raurg_bonemeal",
@@ -22390,7 +22430,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 876
+   "order": 876,
+   "img": "img/raurg_bonemeal.png",
+   "imgPage": "File:Raurg bonemeal detail.png"
   },
   {
    "id": "reinforced_dragon_bonemeal",
@@ -22415,7 +22457,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 877
+   "order": 877,
+   "img": "img/reinforced_dragon_bonemeal.png",
+   "imgPage": "File:Reinforced dragon bonemeal detail.png"
   },
   {
    "id": "shaikahan_bonemeal",
@@ -22440,7 +22484,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 878
+   "order": 878,
+   "img": "img/shaikahan_bonemeal.png",
+   "imgPage": "File:Shaikahan bonemeal detail.png"
   },
   {
    "id": "skeletal_monkey_bonemeal",
@@ -22465,7 +22511,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 879
+   "order": 879,
+   "img": "img/skeletal_monkey_bonemeal.png",
+   "imgPage": "File:Skeletal monkey bonemeal detail.png"
   },
   {
    "id": "small_ninja_monkey_bonemeal",
@@ -22490,7 +22538,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 880
+   "order": 880,
+   "img": "img/small_ninja_monkey_bonemeal.png",
+   "imgPage": "File:Small ninja monkey bonemeal detail.png"
   },
   {
    "id": "wolf_bonemeal",
@@ -22515,7 +22565,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 881
+   "order": 881,
+   "img": "img/wolf_bonemeal.png",
+   "imgPage": "File:Wolf bonemeal detail.png"
   },
   {
    "id": "wyvern_bonemeal",
@@ -22540,7 +22592,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 882
+   "order": 882,
+   "img": "img/wyvern_bonemeal.png",
+   "imgPage": "File:Wyvern bonemeal detail.png"
   },
   {
    "id": "zogre_bonemeal",
@@ -22565,7 +22619,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 883
+   "order": 883,
+   "img": "img/zogre_bonemeal.png",
+   "imgPage": "File:Zogre bonemeal detail.png"
   },
   {
    "id": "baby_dragon_bones",
@@ -22587,7 +22643,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 884
+   "order": 884,
+   "img": "img/baby_dragon_bones.png",
+   "imgPage": "File:Baby dragon bones detail.png"
   },
   {
    "id": "bat_bones",
@@ -22609,7 +22667,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 885
+   "order": 885,
+   "img": "img/bat_bones.png",
+   "imgPage": "File:Bat bones detail.png"
   },
   {
    "id": "big_bones",
@@ -22631,7 +22691,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 886
+   "order": 886,
+   "img": "img/big_bones.png",
+   "imgPage": "File:Big bones detail.png"
   },
   {
    "id": "bones",
@@ -22653,7 +22715,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 887
+   "order": 887,
+   "img": "img/bones.png",
+   "imgPage": "File:Bones detail.png"
   },
   {
    "id": "dragon_bones",
@@ -22675,7 +22739,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 888
+   "order": 888,
+   "img": "img/dragon_bones.png",
+   "imgPage": "File:Dragon bones detail.png"
   },
   {
    "id": "fayrg_bones",
@@ -22700,7 +22766,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 889
+   "order": 889,
+   "img": "img/fayrg_bones.png",
+   "imgPage": "File:Fayrg bones detail.png"
   },
   {
    "id": "hardened_dragon_bones",
@@ -22726,7 +22794,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 890
+   "order": 890,
+   "img": "img/hardened_dragon_bones.png",
+   "imgPage": "File:Hardened dragon bones detail.png"
   },
   {
    "id": "jogre_bones",
@@ -22751,7 +22821,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 891
+   "order": 891,
+   "img": "img/jogre_bones.png",
+   "imgPage": "File:Jogre bones detail.png"
   },
   {
    "id": "monkey_bones",
@@ -22776,7 +22848,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 892
+   "order": 892,
+   "img": "img/monkey_bones.png",
+   "imgPage": "File:Monkey bones detail.png"
   },
   {
    "id": "ourg_bones",
@@ -22801,7 +22875,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 893
+   "order": 893,
+   "img": "img/ourg_bones.png",
+   "imgPage": "File:Ourg bones detail.png"
   },
   {
    "id": "raurg_bones",
@@ -22826,7 +22902,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 894
+   "order": 894,
+   "img": "img/raurg_bones.png",
+   "imgPage": "File:Raurg bones detail.png"
   },
   {
    "id": "wolf_bones",
@@ -22848,7 +22926,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 895
+   "order": 895,
+   "img": "img/wolf_bones.png",
+   "imgPage": "File:Wolf bones detail.png"
   },
   {
    "id": "zogre_bones",
@@ -22873,7 +22953,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 896
+   "order": 896,
+   "img": "img/zogre_bones.png",
+   "imgPage": "File:Zogre bones detail.png"
   },
   {
    "id": "impious_ashes",
@@ -22895,7 +22977,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 897
+   "order": 897,
+   "img": "img/impious_ashes.png",
+   "imgPage": "File:Impious ashes detail.png"
   },
   {
    "id": "infernal_ashes",
@@ -22917,7 +23001,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 898
+   "order": 898,
+   "img": "img/infernal_ashes.png",
+   "imgPage": "File:Infernal ashes detail.png"
   },
   {
    "id": "ourg_bonemeal",
@@ -22942,7 +23028,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 899
+   "order": 899,
+   "img": "img/ourg_bonemeal.png",
+   "imgPage": "File:Ourg bonemeal detail.png"
   },
   {
    "id": "archaemastyx_hide",
@@ -22968,7 +23056,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 900
+   "order": 900,
+   "img": "img/archaemastyx_hide.png",
+   "imgPage": "File:Archaemastyx hide detail.png"
   },
   {
    "id": "batwing",
@@ -22990,7 +23080,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 901
+   "order": 901,
+   "img": "img/batwing.png",
+   "imgPage": "File:Batwing detail.png"
   },
   {
    "id": "black_dragonhide",
@@ -23012,7 +23104,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 902
+   "order": 902,
+   "img": "img/black_dragonhide.png",
+   "imgPage": "File:Black dragonhide detail.png"
   },
   {
    "id": "carapace",
@@ -23038,7 +23132,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 903
+   "order": 903,
+   "img": "img/carapace.png",
+   "imgPage": "File:Carapace detail.png"
   },
   {
    "id": "cowhide",
@@ -23060,7 +23156,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 904
+   "order": 904,
+   "img": "img/cowhide.png",
+   "imgPage": "File:Cowhide detail.png"
   },
   {
    "id": "green_dragonhide",
@@ -23082,7 +23180,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 905
+   "order": 905,
+   "img": "img/green_dragonhide.png",
+   "imgPage": "File:Green dragonhide detail.png"
   },
   {
    "id": "imphide",
@@ -23104,7 +23204,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 906
+   "order": 906,
+   "img": "img/imphide.png",
+   "imgPage": "File:Imphide detail.png"
   },
   {
    "id": "mystic_cloth",
@@ -23126,7 +23228,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 907
+   "order": 907,
+   "img": "img/mystic_cloth.png",
+   "imgPage": "File:Mystic cloth detail.png"
   },
   {
    "id": "paramastyx_hide",
@@ -23153,7 +23257,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 908
+   "order": 908,
+   "img": "img/paramastyx_hide.png",
+   "imgPage": "File:Paramastyx hide detail.png"
   },
   {
    "id": "protomastyx_hide",
@@ -23180,7 +23286,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 909
+   "order": 909,
+   "img": "img/protomastyx_hide.png",
+   "imgPage": "File:Protomastyx hide detail.png"
   },
   {
    "id": "royal_dragonhide",
@@ -23202,7 +23310,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 910
+   "order": 910,
+   "img": "img/royal_dragonhide.png",
+   "imgPage": "File:Royal dragonhide detail.png"
   },
   {
    "id": "snake_hide",
@@ -23224,7 +23334,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 911
+   "order": 911,
+   "img": "img/snake_hide.png",
+   "imgPage": "File:Snake hide detail.png"
   },
   {
    "id": "snake_hide_swamp",
@@ -23246,7 +23358,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 912
+   "order": 912,
+   "img": "img/snake_hide_swamp.png",
+   "imgPage": "File:Snake hide (swamp) detail.png"
   },
   {
    "id": "spider_silk",
@@ -23268,7 +23382,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 913
+   "order": 913,
+   "img": "img/spider_silk.png",
+   "imgPage": "File:Spider silk detail.png"
   },
   {
    "id": "submastyx_hide",
@@ -23295,7 +23411,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 914
+   "order": 914,
+   "img": "img/submastyx_hide.png",
+   "imgPage": "File:Submastyx hide detail.png"
   },
   {
    "id": "undead_dragonhide",
@@ -23317,7 +23435,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 915
+   "order": 915,
+   "img": "img/undead_dragonhide.png",
+   "imgPage": "File:Undead dragonhide detail.png"
   },
   {
    "id": "yakhide",
@@ -23342,7 +23462,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 916
+   "order": 916,
+   "img": "img/yakhide.png",
+   "imgPage": "File:Yak-hide detail.png"
   },
   {
    "id": "onyx_dust",
@@ -25576,7 +25698,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1008
+   "order": 1008,
+   "img": "img/bathus_bar.png",
+   "imgPage": "File:Bathus bar detail.png"
   },
   {
    "id": "blurite_bar",
@@ -25599,7 +25723,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1009
+   "order": 1009,
+   "img": "img/blurite_bar.png",
+   "imgPage": "File:Blurite bar detail.png"
   },
   {
    "id": "body_bar",
@@ -25626,7 +25752,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1010
+   "order": 1010,
+   "img": "img/body_bar.png",
+   "imgPage": "File:Body bar detail.png"
   },
   {
    "id": "bronze_bar",
@@ -25649,7 +25777,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1011
+   "order": 1011,
+   "img": "img/bronze_bar.png",
+   "imgPage": "File:Bronze bar detail.png"
   },
   {
    "id": "chaos_bar",
@@ -25676,7 +25806,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1012
+   "order": 1012,
+   "img": "img/chaos_bar.png",
+   "imgPage": "File:Chaos bar detail.png"
   },
   {
    "id": "cosmic_bar",
@@ -25703,7 +25835,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1013
+   "order": 1013,
+   "img": "img/cosmic_bar.png",
+   "imgPage": "File:Cosmic bar detail.png"
   },
   {
    "id": "elemental_bar",
@@ -25726,7 +25860,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1014
+   "order": 1014,
+   "img": "img/elemental_bar.png",
+   "imgPage": "File:Elemental bar detail.png"
   },
   {
    "id": "havensilver_bar",
@@ -25751,7 +25887,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1015
+   "order": 1015,
+   "img": "img/havensilver_bar.png",
+   "imgPage": "File:Havensilver bar detail.png"
   },
   {
    "id": "iron_bar",
@@ -25773,7 +25911,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1016
+   "order": 1016,
+   "img": "img/iron_bar.png",
+   "imgPage": "File:Iron bar detail.png"
   },
   {
    "id": "kratonite_bar",
@@ -25799,7 +25939,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1017
+   "order": 1017,
+   "img": "img/kratonite_bar.png",
+   "imgPage": "File:Kratonite bar detail.png"
   },
   {
    "id": "lunar_bar",
@@ -25825,7 +25967,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1018
+   "order": 1018,
+   "img": "img/lunar_bar.png",
+   "imgPage": "File:Lunar bar detail.png"
   },
   {
    "id": "marmaros_bar",
@@ -25851,7 +25995,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1019
+   "order": 1019,
+   "img": "img/marmaros_bar.png",
+   "imgPage": "File:Marmaros bar detail.png"
   },
   {
    "id": "mind_bar",
@@ -25878,7 +26024,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1020
+   "order": 1020,
+   "img": "img/mind_bar.png",
+   "imgPage": "File:Mind bar detail.png"
   },
   {
    "id": "mithril_bar",
@@ -25901,7 +26049,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1021
+   "order": 1021,
+   "img": "img/mithril_bar.png",
+   "imgPage": "File:Mithril bar detail.png"
   },
   {
    "id": "novite_bar",
@@ -25927,7 +26077,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1022
+   "order": 1022,
+   "img": "img/novite_bar.png",
+   "imgPage": "File:Novite bar detail.png"
   },
   {
    "id": "primed_bar",
@@ -25953,7 +26105,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1023
+   "order": 1023,
+   "img": "img/primed_bar.png",
+   "imgPage": "File:Primed bar detail.png"
   },
   {
    "id": "silver_bar",
@@ -25976,7 +26130,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1024
+   "order": 1024,
+   "img": "img/silver_bar.png",
+   "imgPage": "File:Silver bar detail.png"
   },
   {
    "id": "silvthril_bar",
@@ -26002,7 +26158,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1025
+   "order": 1025,
+   "img": "img/silvthril_bar.png",
+   "imgPage": "File:Silvthril bar detail.png"
   },
   {
    "id": "steel_bar",
@@ -26025,7 +26183,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 1026
+   "order": 1026,
+   "img": "img/steel_bar.png",
+   "imgPage": "File:Steel bar detail.png"
   },
   {
    "id": "refined_oak_planks",
@@ -26047,7 +26207,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1027
+   "order": 1027,
+   "img": "img/refined_oak_planks.png",
+   "imgPage": "File:Refined Oak planks detail.png"
   },
   {
    "id": "refined_planks",
@@ -26069,7 +26231,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1028
+   "order": 1028,
+   "img": "img/refined_planks.png",
+   "imgPage": "File:Refined planks detail.png"
   },
   {
    "id": "refined_teak_planks",
@@ -26091,7 +26255,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1029
+   "order": 1029,
+   "img": "img/refined_teak_planks.png",
+   "imgPage": "File:Refined Teak planks detail.png"
   },
   {
    "id": "refined_willow_planks",
@@ -26113,7 +26279,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1030
+   "order": 1030,
+   "img": "img/refined_willow_planks.png",
+   "imgPage": "File:Refined Willow planks detail.png"
   },
   {
    "id": "oak_plank",
@@ -26137,7 +26305,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1031
+   "order": 1031,
+   "img": "img/oak_plank.png",
+   "imgPage": "File:Oak plank detail.png"
   },
   {
    "id": "plank",
@@ -26161,7 +26331,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1032
+   "order": 1032,
+   "img": "img/plank.png",
+   "imgPage": "File:Plank detail.png"
   },
   {
    "id": "teak_plank",
@@ -26185,7 +26357,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1033
+   "order": 1033,
+   "img": "img/teak_plank.png",
+   "imgPage": "File:Teak plank detail.png"
   },
   {
    "id": "willow_plank",
@@ -26209,7 +26383,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 1034
+   "order": 1034,
+   "img": "img/willow_plank.png",
+   "imgPage": "File:Willow plank detail.png"
   },
   {
    "id": "poison_karambwan",
@@ -28438,7 +28614,9 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 1126
+   "order": 1126,
+   "img": "img/ancient_bones_restless_ghost.png",
+   "imgPage": "File:Ancient bones (The Restless Ghost) detail.png"
   },
   {
    "id": "jug_of_bad_wine",
@@ -55670,7 +55848,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2162
+   "order": 2162,
+   "img": "img/bearded_gorilla_bones.png",
+   "imgPage": "File:Bearded gorilla bones detail.png"
   },
   {
    "id": "dagannoth_bones",
@@ -55695,7 +55875,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2163
+   "order": 2163,
+   "img": "img/dagannoth_bones.png",
+   "imgPage": "File:Dagannoth bones detail.png"
   },
   {
    "id": "gorilla_bones",
@@ -55720,7 +55902,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2164
+   "order": 2164,
+   "img": "img/gorilla_bones.png",
+   "imgPage": "File:Gorilla bones detail.png"
   },
   {
    "id": "large_zombie_monkey_bones",
@@ -55745,7 +55929,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2165
+   "order": 2165,
+   "img": "img/large_zombie_monkey_bones.png",
+   "imgPage": "File:Large zombie monkey bones detail.png"
   },
   {
    "id": "medium_ninja_monkey_bones",
@@ -55771,7 +55957,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2166
+   "order": 2166,
+   "img": "img/medium_ninja_monkey_bones.png",
+   "imgPage": "File:Medium ninja monkey bones detail.png"
   },
   {
    "id": "skeletal_monkey_bones",
@@ -55796,7 +55984,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2167
+   "order": 2167,
+   "img": "img/skeletal_monkey_bones.png",
+   "imgPage": "File:Skeletal monkey bones detail.png"
   },
   {
    "id": "small_ninja_monkey_bones",
@@ -55822,7 +56012,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2168
+   "order": 2168,
+   "img": "img/small_ninja_monkey_bones.png",
+   "imgPage": "File:Small ninja monkey bones detail.png"
   },
   {
    "id": "small_zombie_monkey_bones",
@@ -55847,7 +56039,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2169
+   "order": 2169,
+   "img": "img/small_zombie_monkey_bones.png",
+   "imgPage": "File:Small zombie monkey bones detail.png"
   },
   {
    "id": "shaikahan_bones",
@@ -55872,7 +56066,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2170
+   "order": 2170,
+   "img": "img/shaikahan_bones.png",
+   "imgPage": "File:Shaikahan bones detail.png"
   },
   {
    "id": "long_bone",
@@ -55895,7 +56091,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2171
+   "order": 2171,
+   "img": "img/long_bone.png",
+   "imgPage": "File:Long bone detail.png"
   },
   {
    "id": "curved_bone",
@@ -55918,7 +56116,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2172
+   "order": 2172,
+   "img": "img/curved_bone.png",
+   "imgPage": "File:Curved bone detail.png"
   },
   {
    "id": "mangled_bones",
@@ -55942,7 +56142,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2173
+   "order": 2173,
+   "img": "img/mangled_bones.png",
+   "imgPage": "File:Mangled bones detail.png"
   },
   {
    "id": "blue_dragonhide",
@@ -55964,7 +56166,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2174
+   "order": 2174,
+   "img": "img/blue_dragonhide.png",
+   "imgPage": "File:Blue dragonhide detail.png"
   },
   {
    "id": "circular_hide",
@@ -55990,7 +56194,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2175
+   "order": 2175,
+   "img": "img/circular_hide.png",
+   "imgPage": "File:Circular hide detail.png"
   },
   {
    "id": "dagannoth_hide",
@@ -56012,7 +56218,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2176
+   "order": 2176,
+   "img": "img/dagannoth_hide.png",
+   "imgPage": "File:Dagannoth hide detail.png"
   },
   {
    "id": "dromomastyx_hide",
@@ -56039,7 +56247,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2177
+   "order": 2177,
+   "img": "img/dromomastyx_hide.png",
+   "imgPage": "File:Dromomastyx hide detail.png"
   },
   {
    "id": "flattened_hide",
@@ -56061,7 +56271,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2178
+   "order": 2178,
+   "img": "img/flattened_hide.png",
+   "imgPage": "File:Flattened hide detail.png"
   },
   {
    "id": "gallimastyx_hide",
@@ -56088,7 +56300,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2179
+   "order": 2179,
+   "img": "img/gallimastyx_hide.png",
+   "imgPage": "File:Gallimastyx hide detail.png"
   },
   {
    "id": "red_dragonhide",
@@ -56110,7 +56324,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2180
+   "order": 2180,
+   "img": "img/red_dragonhide.png",
+   "imgPage": "File:Red dragonhide detail.png"
   },
   {
    "id": "spinomastyx_hide",
@@ -56137,7 +56353,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2181
+   "order": 2181,
+   "img": "img/spinomastyx_hide.png",
+   "imgPage": "File:Spinomastyx hide detail.png"
   },
   {
    "id": "stretched_hide",
@@ -56159,7 +56377,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2182
+   "order": 2182,
+   "img": "img/stretched_hide.png",
+   "imgPage": "File:Stretched hide detail.png"
   },
   {
    "id": "suqah_hide",
@@ -56185,7 +56405,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2183
+   "order": 2183,
+   "img": "img/suqah_hide.png",
+   "imgPage": "File:Suqah hide detail.png"
   },
   {
    "id": "uncut_diamond",
@@ -56834,7 +57056,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2209
+   "order": 2209,
+   "img": "img/perfect_gold_bar.png",
+   "imgPage": "File:'Perfect' gold bar detail.png"
   },
   {
    "id": "adamant_bar",
@@ -56857,7 +57081,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2210
+   "order": 2210,
+   "img": "img/adamant_bar.png",
+   "imgPage": "File:Adamant bar detail.png"
   },
   {
    "id": "argonite_bar",
@@ -56883,7 +57109,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2211
+   "order": 2211,
+   "img": "img/argonite_bar.png",
+   "imgPage": "File:Argonite bar detail.png"
   },
   {
    "id": "fractite_bar",
@@ -56909,7 +57137,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2212
+   "order": 2212,
+   "img": "img/fractite_bar.png",
+   "imgPage": "File:Fractite bar detail.png"
   },
   {
    "id": "gold_bar",
@@ -56932,7 +57162,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2213
+   "order": 2213,
+   "img": "img/gold_bar.png",
+   "imgPage": "File:Gold bar detail.png"
   },
   {
    "id": "orikalkum_bar",
@@ -56955,7 +57187,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2214
+   "order": 2214,
+   "img": "img/orikalkum_bar.png",
+   "imgPage": "File:Orikalkum bar detail.png"
   },
   {
    "id": "rune_bar",
@@ -56978,7 +57212,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2215
+   "order": 2215,
+   "img": "img/rune_bar.png",
+   "imgPage": "File:Rune bar detail.png"
   },
   {
    "id": "zephyrium_bar",
@@ -57004,7 +57240,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2216
+   "order": 2216,
+   "img": "img/zephyrium_bar.png",
+   "imgPage": "File:Zephyrium bar detail.png"
   },
   {
    "id": "refined_acadia_planks",
@@ -57026,7 +57264,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2217
+   "order": 2217,
+   "img": "img/refined_acadia_planks.png",
+   "imgPage": "File:Refined Acadia planks detail.png"
   },
   {
    "id": "refined_mahogany_planks",
@@ -57048,7 +57288,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2218
+   "order": 2218,
+   "img": "img/refined_mahogany_planks.png",
+   "imgPage": "File:Refined Mahogany planks detail.png"
   },
   {
    "id": "refined_maple_planks",
@@ -57070,7 +57312,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2219
+   "order": 2219,
+   "img": "img/refined_maple_planks.png",
+   "imgPage": "File:Refined Maple planks detail.png"
   },
   {
    "id": "acadia_plank",
@@ -57094,7 +57338,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2220
+   "order": 2220,
+   "img": "img/acadia_plank.png",
+   "imgPage": "File:Acadia plank detail.png"
   },
   {
    "id": "mahogany_plank",
@@ -57118,7 +57364,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2221
+   "order": 2221,
+   "img": "img/mahogany_plank.png",
+   "imgPage": "File:Mahogany plank detail.png"
   },
   {
    "id": "maple_plank",
@@ -57142,7 +57390,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2222
+   "order": 2222,
+   "img": "img/maple_plank.png",
+   "imgPage": "File:Maple plank detail.png"
   },
   {
    "id": "manta_ray_bait",
@@ -74111,7 +74361,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2860
+   "order": 2860,
+   "img": "img/chewed_bones.png",
+   "imgPage": "File:Chewed bones detail.png"
   },
   {
    "id": "dinosaur_bones",
@@ -74136,7 +74388,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2861
+   "order": 2861,
+   "img": "img/dinosaur_bones.png",
+   "imgPage": "File:Dinosaur bones detail.png"
   },
   {
    "id": "frost_dragon_bones",
@@ -74162,7 +74416,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2862
+   "order": 2862,
+   "img": "img/frost_dragon_bones.png",
+   "imgPage": "File:Frost dragon bones detail.png"
   },
   {
    "id": "reinforced_dragon_bones",
@@ -74184,7 +74440,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2863
+   "order": 2863,
+   "img": "img/reinforced_dragon_bones.png",
+   "imgPage": "File:Reinforced dragon bones detail.png"
   },
   {
    "id": "wyvern_bones",
@@ -74210,7 +74468,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 2864
+   "order": 2864,
+   "img": "img/wyvern_bones.png",
+   "imgPage": "File:Wyvern bones detail.png"
   },
   {
    "id": "megamastyx_hide",
@@ -74237,7 +74497,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2865
+   "order": 2865,
+   "img": "img/megamastyx_hide.png",
+   "imgPage": "File:Megamastyx hide detail.png"
   },
   {
    "id": "stegomastyx_hide",
@@ -74264,7 +74526,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2866
+   "order": 2866,
+   "img": "img/stegomastyx_hide.png",
+   "imgPage": "File:Stegomastyx hide detail.png"
   },
   {
    "id": "dinosaur_hide",
@@ -74289,7 +74553,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 2867
+   "order": 2867,
+   "img": "img/dinosaur_hide.png",
+   "imgPage": "File:Dinosaur hide detail.png"
   },
   {
    "id": "the_stuff",
@@ -74488,7 +74754,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2875
+   "order": 2875,
+   "img": "img/bane_bar.png",
+   "imgPage": "File:Bane bar detail.png"
   },
   {
    "id": "gorgonite_bar",
@@ -74514,7 +74782,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2876
+   "order": 2876,
+   "img": "img/gorgonite_bar.png",
+   "imgPage": "File:Gorgonite bar detail.png"
   },
   {
    "id": "katagon_bar",
@@ -74540,7 +74810,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2877
+   "order": 2877,
+   "img": "img/katagon_bar.png",
+   "imgPage": "File:Katagon bar detail.png"
   },
   {
    "id": "necronium_bar",
@@ -74563,7 +74835,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2878
+   "order": 2878,
+   "img": "img/necronium_bar.png",
+   "imgPage": "File:Necronium bar detail.png"
   },
   {
    "id": "obsidian_bar",
@@ -74588,7 +74862,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 2879
+   "order": 2879,
+   "img": "img/obsidian_bar.png",
+   "imgPage": "File:Obsidian bar detail.png"
   },
   {
    "id": "refined_magic_planks",
@@ -74610,7 +74886,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2880
+   "order": 2880,
+   "img": "img/refined_magic_planks.png",
+   "imgPage": "File:Refined Magic planks detail.png"
   },
   {
    "id": "refined_yew_planks",
@@ -74632,7 +74910,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2881
+   "order": 2881,
+   "img": "img/refined_yew_planks.png",
+   "imgPage": "File:Refined Yew planks detail.png"
   },
   {
    "id": "elder_plank",
@@ -74656,7 +74936,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2882
+   "order": 2882,
+   "img": "img/elder_plank.png",
+   "imgPage": "File:Elder plank detail.png"
   },
   {
    "id": "eternal_plank",
@@ -74680,7 +74962,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2883
+   "order": 2883,
+   "img": "img/eternal_plank.png",
+   "imgPage": "File:Eternal plank detail.png"
   },
   {
    "id": "magic_plank",
@@ -74704,7 +74988,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2884
+   "order": 2884,
+   "img": "img/magic_plank.png",
+   "imgPage": "File:Magic plank detail.png"
   },
   {
    "id": "yew_plank",
@@ -74728,7 +75014,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 2885
+   "order": 2885,
+   "img": "img/yew_plank.png",
+   "imgPage": "File:Yew plank detail.png"
   },
   {
    "id": "decorated_cooking_urn_empty",
@@ -85502,7 +85790,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 3285
+   "order": 3285,
+   "img": "img/airut_bones.png",
+   "imgPage": "File:Airut bones detail.png"
   },
   {
    "id": "dragonkin_bones",
@@ -85527,7 +85817,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 3286
+   "order": 3286,
+   "img": "img/dragonkin_bones.png",
+   "imgPage": "File:Dragonkin bones detail.png"
   },
   {
    "id": "ourg_bones_general_graardor",
@@ -85552,7 +85844,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 3287
+   "order": 3287,
+   "img": "img/ourg_bones_general_graardor.png",
+   "imgPage": "File:Ourg bones (General Graardor) detail.png"
   },
   {
    "id": "searing_ashes",
@@ -85574,7 +85868,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 3288
+   "order": 3288,
+   "img": "img/searing_ashes.png",
+   "imgPage": "File:Searing ashes detail.png"
   },
   {
    "id": "tortured_ashes",
@@ -85596,7 +85892,9 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 3289
+   "order": 3289,
+   "img": "img/tortured_ashes.png",
+   "imgPage": "File:Tortured ashes detail.png"
   },
   {
    "id": "apex_hide",
@@ -85618,7 +85916,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 3290
+   "order": 3290,
+   "img": "img/apex_hide.png",
+   "imgPage": "File:Apex hide detail.png"
   },
   {
    "id": "tyrannomastyx_hide",
@@ -85645,7 +85945,9 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 3291
+   "order": 3291,
+   "img": "img/tyrannomastyx_hide.png",
+   "imgPage": "File:Tyrannomastyx hide detail.png"
   },
   {
    "id": "incomplete_hydrix",
@@ -86085,7 +86387,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3309
+   "order": 3309,
+   "img": "img/concentrated_alloy_bar.png",
+   "imgPage": "File:Concentrated alloy bar detail.png"
   },
   {
    "id": "elder_rune_bar",
@@ -86108,7 +86412,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3310
+   "order": 3310,
+   "img": "img/elder_rune_bar.png",
+   "imgPage": "File:Elder rune bar detail.png"
   },
   {
    "id": "enriched_alloy_bar",
@@ -86130,7 +86436,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3311
+   "order": 3311,
+   "img": "img/enriched_alloy_bar.png",
+   "imgPage": "File:Enriched alloy bar detail.png"
   },
   {
    "id": "glorious_bar",
@@ -86152,7 +86460,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3312
+   "order": 3312,
+   "img": "img/glorious_bar.png",
+   "imgPage": "File:Glorious bar detail.png"
   },
   {
    "id": "immaculate_alloy_bar",
@@ -86174,7 +86484,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3313
+   "order": 3313,
+   "img": "img/immaculate_alloy_bar.png",
+   "imgPage": "File:Immaculate alloy bar detail.png"
   },
   {
    "id": "platinum_bar",
@@ -86197,7 +86509,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3314
+   "order": 3314,
+   "img": "img/platinum_bar.png",
+   "imgPage": "File:Platinum bar detail.png"
   },
   {
    "id": "primal_bar",
@@ -86220,7 +86534,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3315
+   "order": 3315,
+   "img": "img/primal_bar.png",
+   "imgPage": "File:Primal bar detail.png"
   },
   {
    "id": "primed_glorious_bar",
@@ -86242,7 +86558,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3316
+   "order": 3316,
+   "img": "img/primed_glorious_bar.png",
+   "imgPage": "File:Primed glorious bar detail.png"
   },
   {
    "id": "promethium_bar",
@@ -86268,7 +86586,9 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 3317
+   "order": 3317,
+   "img": "img/promethium_bar.png",
+   "imgPage": "File:Promethium bar detail.png"
   },
   {
    "id": "refined_elder_planks",
@@ -86290,7 +86610,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 3318
+   "order": 3318,
+   "img": "img/refined_elder_planks.png",
+   "imgPage": "File:Refined Elder planks detail.png"
   },
   {
    "id": "refined_eternal_planks",
@@ -86312,7 +86634,9 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 3319
+   "order": 3319,
+   "img": "img/refined_eternal_planks.png",
+   "imgPage": "File:Refined Eternal planks detail.png"
   },
   {
    "id": "alchemical_hydrix_dust",
