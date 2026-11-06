@@ -55799,7 +55799,9 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 2160
+   "order": 2160,
+   "img": "img/sandstone.png",
+   "imgPage": "File:Sandstone (10kg) detail.png"
   },
   {
    "id": "granite_5kg",
