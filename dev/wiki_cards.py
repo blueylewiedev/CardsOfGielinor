@@ -1037,6 +1037,20 @@ SKIPPED_POTIONS = (
 UNFINISHED_POTION = re.compile(r"\(unf\)$|\bunfinished\b", re.I)
 
 
+# A potion's examine text counts its doses ("4 doses of super attack potion.", "6 doses of overload in a flask."), which a
+# card should not: what follows the count is the description ("Super attack potion.", "Overload in a flask.").
+DOSE_COUNT = re.compile(r"^\s*(?:\d+|one|two|three|four|five|six)\s+doses?\s+of\s+(?:the\s+)?", re.I)
+
+
+def without_doses(desc):
+    """A potion's examine text without the number of doses, as a sentence; unchanged if it has no such count."""
+    rest = DOSE_COUNT.sub("", desc, count=1)
+    if rest == desc or not rest.strip():
+        return desc
+    rest = rest.strip()
+    return rest[0].upper() + rest[1:]
+
+
 def dose_fields(page, fields):
     """(the item infobox's fields with the card's dose as version 1, that dose), for a potion with a version for each
     dose; (the fields, None) for anything else."""
@@ -1106,7 +1120,10 @@ def candidate(page, names, words, price=None, drop=None):
         made, reason = item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
         if made is not None and dose:
             made["name"] = re.sub(r"\s*\(\d+\)$", "", made["name"])
-            made["notes"].append(f"the {dose}-dose version: check the description")
+            made["desc"] = without_doses(made["desc"])
+            made["notes"].append(f"the {dose}-dose version is the card's (its id and price)")
+            if re.search(r"\bdoses?\b", made["desc"], re.I):
+                made["notes"].append("the description still mentions doses: reword it")
         return made, reason
     return None, "no NPC or item infobox"
 
