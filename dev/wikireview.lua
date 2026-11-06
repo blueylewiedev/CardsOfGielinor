@@ -22,7 +22,13 @@ local WikiFetch = require("dev/wikifetch")
 
 local WikiReview = {}
 
-local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done", "skipped" or "later" }
+-- The marks are kept as { [wiki page] = "done", "skipped" or "later" }, split over BUCKETS keys by the page's name.
+-- The client's database seems to refuse a value of about 128 KB (the one key for every mark stopped at 131056 bytes), after which new
+-- marks were silently not saved. DB_KEY is the old single key; what is still in it moves into the buckets the next
+-- time the marks are saved.
+local DB_KEY = "dev_wiki_review"
+local BUCKET_KEY = "dev_wiki_review_"       -- followed by 0 to BUCKETS - 1
+local BUCKETS = 16
 local WIDTH, HEIGHT = 480, 468
 local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
@@ -42,15 +48,67 @@ local filter = ALL    -- the source shown (a category or page asked for), or ALL
 local queue = {}      -- the ones of `remaining` from that source
 local index = 1       -- the one shown
 
-local function reviewed()
-    local ok, saved = pcall(function() return PersistentDB:GetStructuredData(DB_KEY) end)
+local function readKey(key)
+    local ok, saved = pcall(function() return PersistentDB:GetStructuredData(key) end)
     return (ok and type(saved) == "table") and saved or {}
 end
 
+-- True if the database kept the value (it says false for one that is too big).
+local function writeKey(key, value)
+    local ok, result = pcall(function() return PersistentDB:SetStructuredData(key, value) end)
+    return ok and result and true or false
+end
+
+local function bucketOf(page)
+    local sum = 0
+    for i = 1, #page do
+        sum = (sum * 31 + string.byte(page, i)) % 1000003
+    end
+    return sum % BUCKETS
+end
+
+-- Every mark: { [wiki page] = "done", "skipped" or "later" }.
+local function reviewed()
+    local marks = readKey(DB_KEY)
+    for b = 0, BUCKETS - 1 do
+        for page, verdict in pairs(readKey(BUCKET_KEY .. b)) do
+            marks[page] = verdict
+        end
+    end
+    return marks
+end
+
+-- Writes the marks into their buckets, only those in the set `only` (of bucket numbers) if one is given. Returns
+-- false if the database refused any write, and then the marks are not all kept.
+local function saveMarks(marks, only)
+    local legacy = next(readKey(DB_KEY)) ~= nil
+    if legacy then
+        only = nil          -- (all of them: the old key is emptied below, and must have been copied in full)
+    end
+    local buckets = {}
+    for b = 0, BUCKETS - 1 do
+        buckets[b] = {}
+    end
+    for page, verdict in pairs(marks) do
+        buckets[bucketOf(page)][page] = verdict
+    end
+    local ok = true
+    for b = 0, BUCKETS - 1 do
+        if only == nil or only[b] then
+            ok = writeKey(BUCKET_KEY .. b, buckets[b]) and ok
+        end
+    end
+    if ok and legacy then
+        ok = writeKey(DB_KEY, {})
+    end
+    return ok
+end
+
+-- Marks a candidate. Returns false if the mark was not saved.
 local function mark(candidate, verdict)
     local saved = reviewed()
     saved[candidate.page] = verdict
-    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    return saveMarks(saved, { [bucketOf(candidate.page)] = true })
 end
 
 -- The item config names by id, from the client's own list (read once, the first time an item
@@ -435,7 +493,10 @@ local function reopen(text)
         return
     end
     saved[found] = nil
-    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    if not saveMarks(saved, { [bucketOf(found)] = true }) then
+        queueMessage("Not saved: the database refused it, so " .. found .. " stays marked")
+        return
+    end
     reload()
     for i, candidate in ipairs(queue) do
         if candidate.page == found then
@@ -455,7 +516,10 @@ local function finish(verdict)
     if verdict == "done" and not queueCard(candidate) then
         return          -- (not queued: it stays on the list, not marked Done)
     end
-    mark(candidate, verdict)
+    if not mark(candidate, verdict) then
+        queueMessage("Not marked: the database refused it, so this candidate stays on the list")
+        return
+    end
     for i, other in ipairs(remaining) do
         if other == candidate then
             table.remove(remaining, i)
@@ -474,7 +538,9 @@ local function unmark(verdict)
             saved[page] = nil
         end
     end
-    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    if not saveMarks(saved) then
+        queueMessage("Not saved: the database refused it")
+    end
 end
 
 -- Reads the candidates again (all of them, or after Reset).
@@ -515,7 +581,9 @@ function WikiReview.show()
     end, "Bring back only the candidates marked Later", "Later", 70)
     Kit.iconButton(content, "UNDO", INNER - 24, 6, function()
         Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done, Skip or Later comes back.", "Review again", function()
-            pcall(function() PersistentDB:SetStructuredData(DB_KEY, {}) end)
+            if not saveMarks({}) then
+                queueMessage("Not saved: the database refused it")
+            end
             reload()
         end)
     end, "Bring back the candidates marked Done, Skip or Later", "Reset", 70)
