@@ -54,6 +54,8 @@ return {
     "deck/items/drinks",
     "deck/items/decoration",
     "deck/items/raw_materials/ores",
+    "deck/items/raw_materials/bones",
+    "deck/items/raw_materials/hides",
     "deck/items/raw_materials/gems",
     "deck/items/raw_materials/ingredients",
     "deck/items/processed_materials/gems",

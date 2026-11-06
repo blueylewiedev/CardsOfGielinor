@@ -868,6 +868,9 @@ ITEM_EXACT_CATEGORY_WORDS = {
     "useless items": ["junk"], "burnt food": ["junk"],
 }
 
+# The kinds of raw or processed material (the words that follow raw_material or processed_material).
+MATERIAL_KINDS = {"log", "ore", "bone", "hide", "bar", "plank", "clay"}
+
 # An item with no use in the game: what a failed recipe leaves (a jug of bad wine, burnt food) and what the wiki calls
 # useless. Junk is all it is.
 JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
@@ -1836,6 +1839,13 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
             found += ITEM_EXACT_CATEGORY_WORDS.get(category.lower(), [])
             if category in page.get("categories", []) and not category.lower().startswith("disassemble category/"):
                 explicit.update(found[before:])
+        # (the kind of material a page's own categories give (Hides, Bones and ashes) wins over the one its Disassembly
+        # box gives, which is only what it disassembles into: a hide disassembles into logs, a batwing into planks)
+        own_kinds = explicit & MATERIAL_KINDS
+        if own_kinds:
+            found = [w for w in found if w not in MATERIAL_KINDS or w in own_kinds]
+            if "raw_material" in explicit and "processed_material" not in explicit:
+                found = [w for w in found if w != "processed_material"]
         # (a drink is not food: a page in both Food and Drinks is a drink)
         if "drink" in found:
             found = [w for w in found if w != "food"]
