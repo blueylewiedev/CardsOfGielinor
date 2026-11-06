@@ -1055,6 +1055,17 @@ def without_doses(desc):
     return rest[0].upper() + rest[1:]
 
 
+def flask_potion(title):
+    """The cached page of the potion a flask holds ("Adrenaline flask": "Adrenaline potion"; "Super attack flask": "Super
+    attack"), or None. A flask has no recipe of its own: the potion's recipe is what it takes to make."""
+    base = re.sub(r"\s+flask$", "", title, flags=re.I)
+    for name in (base, base + " potion"):
+        page = read_cache("pages", name)
+        if page and "Potions" in page.get("categories", []) and "Potion flasks" not in page.get("categories", []):
+            return page
+    return None
+
+
 def dose_fields(page, fields):
     """(the item infobox's fields with the card's dose as version 1, that dose), for a potion with a version for each
     dose; (the fields, None) for anything else."""
@@ -2052,6 +2063,18 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
+    # (a potion flask has no recipe: the potion it holds has, so the skills and level are that potion's)
+    if not made_with and "Potion flasks" in page.get("categories", []):
+        holds = flask_potion(page["title"])
+        if holds is not None:
+            made_with, level = recipe_requirements(
+                holds.get("text", ""), [holds["title"], strip_bracket(holds["title"]), page["title"]], set(words["skills"]))
+            if made_with:
+                notes.append(f"made with {holds['title']}'s recipe: its skills and level")
+        # (the potion's page is not here (a Juju or Guthix one): a flask of a potion is Herblore's, and the level is unknown)
+        if not made_with and "herblore" in words["skills"]:
+            made_with = ["herblore"]
+            notes.append("a potion flask: made with Herblore, but the potion's level was not found: check it")
     # (an ingredient a recipe makes, butter or flour, is processed; yeast or an egg that nothing makes is raw)
     if made_with and "ingredient" in category and "raw_material" in category:
         category = ["processed_material" if word == "raw_material" else word for word in category]
