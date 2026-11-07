@@ -91,6 +91,20 @@ each region's set has its own version.
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
+| **Armour: hybrid** | Helmet | Not started | Pieces with no single combat style (`hybrid_gear`) |
+| | Body | Not started |  |
+| | Legs | Not started |  |
+| | Gloves | Not started |  |
+| | Boots | Not started |  |
+| | Off-hand | Not started |  |
+| | Back | Not started |  |
+| **Skill outfits** | Helmet | Not started | Skill outfits and skill capes: `skill_outfit`, no combat style |
+| | Body | Not started |  |
+| | Legs | Not started |  |
+| | Gloves | Not started |  |
+| | Boots | Not started |  |
+| | Back | Not started |  |
+| **Treasure trail armour** | | Not started | Trimmed, gold, heraldic and god-themed pieces: added with each armour batch, filed in the treasure trail file |
 | **Jewellery** | Rings | Not started | |
 | | Necklaces | Not started | |
 | **Ammunition** | Arrows | Not started | |

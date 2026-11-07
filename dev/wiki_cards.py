@@ -22,6 +22,12 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     off-hand). Cosmetic recolours and the upgrades (Adamant scimitar + 1, + 2) are
                     left out: the plain weapon has the card. Fetched over several runs, like a
                     region; --count says how many pages. e.g.  --weapons melee --count
+  --armour SLOT     the armour of one slot: head, body, legs, hands, feet, shield or cape, from the wiki's
+                    structured data (Bucket:Infobox_bonuses, read once for every slot). With --style (melee,
+                    ranged, magic, necromancy, hybrid, or other for any class that is none of those) only that
+                    combat style; without it every style. Cosmetic recolours, upgrades (+ 1), augmented and
+                    broken versions are left out. Trimmed, gold, heraldic and god-themed pieces stay in: they
+                    are treasure trail rewards. e.g.  --armour head --style melee --count
   --links-from TITLE
                     every page a list page links to, as if each was given with --page (and remembered
                     the same way): for a kind of item the wiki has no category for, such as the metal
@@ -125,6 +131,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
+import collections
 from functools import lru_cache
 from itertools import zip_longest
 from pathlib import Path
@@ -385,6 +392,74 @@ def weapon_pages(wiki, style, refresh):
     return [t for t in titles if not WEAPON_SKIP.search(t)]
 
 
+# Armour: the wiki's Infobox bonuses has a row for every worn item, with its slot and combat class. They are read once
+# (every slot but the weapons) and kept; --armour SLOT [--style STYLE] then picks from them. Cosmetic recolours, upgrades
+# (+ 1), augmented and broken versions, and the minigame copies are left out: the plain item has the card. The trimmed,
+# gold, heraldic and god-themed versions are treasure trail rewards: they stay in, and are tagged treasure_trail.
+ARMOUR_SLOTS = ("head", "body", "legs", "hands", "feet", "shield", "cape")
+ARMOUR_STYLES = WEAPON_STYLES + ("other",)       # (other: a class that is none of the first four, or none at all)
+ARMOUR_SLOT_OF = {"head": "head", "body": "body", "torso": "body", "legs": "legs", "hands": "hands", "gloves": "hands",
+                  "feet": "feet", "boots": "feet", "shield": "shield", "off-hand": "shield", "off hand": "shield",
+                  "cape": "cape", "back": "cape"}
+ARMOUR_SKIP = re.compile(r"^(augmented|golden|lucky)\s|\((?:charged|e|bugged|broken|degraded|passive|dyed)\)\s*$"
+                         r"|\((?:class \d|Stealing Creation|Dominion Tower)[^)]*\)\s*$", re.I)
+
+
+def armour_rows(wiki, refresh):
+    """{ page: [slot, combat class, tier, equipment type] } for every worn item that is not a weapon (cached), from the
+    wiki's Infobox bonuses, or None if the request limit ran out before they were all read."""
+    cached = None if refresh else read_cache("armour", "rows")
+    if cached is not None:
+        return cached
+    rows, offset, slots, classes = {}, 0, collections.Counter(), collections.Counter()
+    while True:
+        query = ("bucket('infobox_bonuses').select('page_name', 'equipment_slot', 'combat_class', 'equipment_tier',"
+                 " 'equipment_type', 'is_cosmetic_recolour').orderBy('page_name', 'asc')"
+                 f".limit({BUCKET_LIMIT}).offset({offset}).run()")
+        answer = wiki.get({"action": "bucket", "query": query})
+        if answer is None:
+            print("  request limit reached before the armour was listed")
+            return None
+        batch = answer.get("bucket", [])
+        for row in batch:
+            name = row.get("page_name") or ""
+            slot = str(row.get("equipment_slot") or "").lower().strip()
+            recolour = str(row.get("is_cosmetic_recolour") or "").lower() in ("true", "yes", "1")
+            if not name or "weapon" in slot or recolour or UPGRADE_TITLE.search(name):
+                continue
+            slots[slot] += 1
+            classes[str(row.get("combat_class") or "").lower()] += 1
+            rows.setdefault(name, [slot, str(row.get("combat_class") or "").lower(), row.get("equipment_tier"),
+                                   str(row.get("equipment_type") or "")])
+        if len(batch) < BUCKET_LIMIT:
+            break
+        offset += BUCKET_LIMIT
+    write_cache("armour", "rows", rows)
+    print("  slots:", ", ".join(f"{k or '(none)'} {v}" for k, v in slots.most_common()))
+    print("  combat classes:", ", ".join(f"{k or '(none)'} {v}" for k, v in classes.most_common()))
+    return rows
+
+
+def armour_pages(wiki, slot, style, refresh):
+    """The pages of one armour slot (head, body, legs, hands, feet, shield or cape), of one combat style (melee, ranged,
+    magic, necromancy, hybrid; `other` is any other class; "" is all of them), without the pages ARMOUR_SKIP names.
+    None if the request limit ran out before the armour was listed."""
+    rows = armour_rows(wiki, refresh)
+    if rows is None:
+        return None
+    found = []
+    for title, (row_slot, row_class, tier, kind) in rows.items():
+        if ARMOUR_SLOT_OF.get(row_slot) != slot or ARMOUR_SKIP.search(title):
+            continue
+        first = re.split(r"\W+", row_class)[0]
+        if style == "other" and first in WEAPON_STYLES:
+            continue
+        if style and style != "other" and first != style:
+            continue
+        found.append(title)
+    return found
+
+
 def print_titles(titles, sources):
     """The --list output: the pages of each source (a weapon style's with tier and damage type,
     lowest tier first, as far as they are known)."""
@@ -393,7 +468,12 @@ def print_titles(titles, sources):
         weapons = label.startswith("Weapons: ")
         info = read_cache("weapon_info", label[len("Weapons: "):].split(" (")[0]) if weapons else None
         print(f"{label}: {len(mine)} pages")
-        if info:
+        if label.startswith("Armour: "):
+            rows = read_cache("armour", "rows") or {}
+            for title in sorted(mine, key=lambda t: ((rows.get(t) or [0, 0, 0])[2] if isinstance((rows.get(t) or [0, 0, 0])[2], (int, float)) else -1, t.lower())):
+                slot, klass, tier, kind = rows.get(title) or ["", "", "", ""]
+                print(f"  {str(tier) if tier not in (None, '') else '-':>3}  {klass or '-':<10} {kind or '-':<14} {title}")
+        elif info:
             def tier(title):
                 value = (info.get(title) or [None])[0]
                 return value if isinstance(value, (int, float)) else -1
@@ -1110,6 +1190,7 @@ def dose_fields(page, fields):
 # Tools and containers. The wiki files a pickaxe under Melee weapons, a watering can under Containers and a Stealing
 # Creation tool under Tools, so the categories alone tag them wrongly. A tool is a reusable implement you work with; a
 # container holds or stores things (a vessel you get back empty, or storage). An item is one or the other.
+TRAIL_REWARD = re.compile(r"^treasure trails? rewards$", re.I)
 TOOL_CATEGORIES = {"tools", "pickaxes", "hatchets", "mattocks", "tool belt"}
 MINIGAME_TOOL_CATEGORIES = {"stealing creation", "tools for games"}
 MINIGAME_TOOL_TITLE = re.compile(r"\((class \d|Stealing Creation)\)$", re.I)
@@ -2157,6 +2238,10 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     if "herb" in found and re.match(r"clean\b", strip_bracket(name).lower()):
         found = ["processed_material" if w == "raw_material" else w for w in found]
     found = settle_tool_or_container(found, page, name, notes)
+    # (a trimmed, gold, heraldic or god-themed piece, a cane: a treasure trail reward, which has its own deck file)
+    if any(TRAIL_REWARD.match(c) for c in page.get("categories", [])) and "treasure_trail" not in found:
+        found.append("treasure_trail")
+        notes.append("a treasure trail reward: goes in the treasure trail file")
     category = []
     for word in found:
         parents = words["item_requires"].get(word, [])
@@ -3143,6 +3228,7 @@ def remembered_sources(args):
     this_run = {"categories": [source(c, args.race, args.members, args.npcs, args.within) for c in args.category],
                 "regions": [source(r, args.race, args.members, args.npcs) for r in args.region],
                 "weapons": [source(w, (), args.members) for w in args.weapons],
+                "armour": [f"{slot}|{style}" for slot in args.armour for style in (args.style or [""])],
                 "pages": list(args.page)}
     for key, new in this_run.items():
         saved.setdefault(key, [])
@@ -3153,7 +3239,7 @@ def remembered_sources(args):
         SOURCES.parent.mkdir(parents=True, exist_ok=True)
         SOURCES.write_text(json.dumps(saved, indent=1), encoding="utf-8")
     chosen = this_run if args.count or args.list or args.only else saved
-    return chosen["categories"], chosen["regions"], chosen.get("weapons", []), chosen["pages"]
+    return chosen["categories"], chosen["regions"], chosen.get("weapons", []), chosen["pages"], chosen.get("armour", [])
 
 
 def candidate_sources(made, listed_in, filters, words):
@@ -3293,6 +3379,11 @@ def show_subcategories(args):
     return 0
 
 
+def this_armour(args):
+    """The armour sources asked for on this run's command line, as saved ("head|melee")."""
+    return [f"{slot}|{style}" for slot in args.armour for style in (args.style or [""])]
+
+
 def show_count(titles, sources, args, wiki):
     """The --count preview: how many pages each source would fetch, how many of them are cached
     already, and the requests and runs the rest take."""
@@ -3317,6 +3408,8 @@ def main():
     parser.add_argument("--page", action="append", default=[])
     parser.add_argument("--region", action="append", default=[])
     parser.add_argument("--weapons", action="append", default=[], type=str.lower, choices=WEAPON_STYLES)
+    parser.add_argument("--armour", action="append", default=[], type=str.lower, choices=ARMOUR_SLOTS)
+    parser.add_argument("--style", action="append", default=[], type=str.lower, choices=ARMOUR_STYLES)
     parser.add_argument("--race", action="append", default=[])
     parser.add_argument("--members", choices=["f2p", "p2p"])
     parser.add_argument("--npcs", action="store_true")
@@ -3357,7 +3450,7 @@ def main():
     if args.all_bosses:
         args.drops_from.append("Bosses")
         args.until = args.until or "Quest bosses"
-    if (not args.category and not args.region and not args.weapons and not args.page and not args.drops
+    if (not args.category and not args.region and not args.weapons and not args.armour and not args.page and not args.drops
             and not args.drops_from and not args.links_from and not SOURCES.exists()):
         print(__doc__)
         return 1
@@ -3376,14 +3469,16 @@ def main():
             continue
         print(f'"{list_title}" links {len(linked)} pages' + (f' before "{args.until}"' if args.until else ""))
         args.page += [t for t in linked if t not in args.page]
-    categories, regions, weapons, page_titles = remembered_sources(args)
-    if not categories and not regions and not weapons and not page_titles and not args.drops and not args.drops_from:
-        print("Nothing to fetch: give --category, --region, --weapons or --page.")
+    categories, regions, weapons, page_titles, armour = remembered_sources(args)
+    if (not categories and not regions and not weapons and not armour and not page_titles and not args.drops
+            and not args.drops_from):
+        print("Nothing to fetch: give --category, --region, --weapons, --armour or --page.")
         return 1
 
     wiki = wiki or make_wiki(args)
     print("From:", ", ".join([source_label(c) for c in categories] + [source_label(r, True) for r in regions]
                              + ["Weapons: " + source_label(w) for w in weapons]
+                             + ["Armour: " + a.replace("|", " ").strip() for a in armour]
                              + [f'page "{p}"' for p in page_titles]))
     # Each title, with the categories (or the page asked for) it came from, so the review window
     # can show one at a time.
@@ -3448,6 +3543,14 @@ def main():
         label = "Weapons: " + source_label(entry)
         filters[label] = entry
         listed = weapon_pages(wiki, name, args.refresh and name in args.weapons)
+        if listed is None:
+            continue                # (listed next run)
+        for title in listed:
+            add(title, label)
+    for entry in armour:
+        slot, _, style = entry.partition("|")
+        label = "Armour: " + (f"{slot} ({style})" if style else slot)
+        listed = armour_pages(wiki, slot, style, args.refresh and entry in this_armour(args))
         if listed is None:
             continue                # (listed next run)
         for title in listed:
