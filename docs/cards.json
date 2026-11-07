@@ -8052,7 +8052,7 @@
    "name": "Skoblin",
    "kind": "npc",
    "rarity": "common",
-   "desc": "A skeletal goblin. It looks like the necromancer didn't animate only human bones.",
+   "desc": "A skeletal goblin. The necromancer didn't only animate human bones.",
    "tags": {
     "location": [
      "lumbridge"
@@ -28982,7 +28982,7 @@
    "name": "Tellervo's net",
    "kind": "item",
    "rarity": "common",
-   "desc": "A gnome net used for catching implings, moths, and butterflies. The name 'Tellervo' is neatly carved into it.",
+   "desc": "A gnome net used for catching implings, moths and butterflies.",
    "tags": {
     "regions": [
      "havenhythe"
@@ -57081,7 +57081,7 @@
    "name": "Luck potion",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "Provides the effects of the Ring of wealth. If only there was a potion that made me magnetically attractive as well.",
+   "desc": "Provides the effects of the Ring of wealth. Magnetically attractive too?",
    "tags": {
     "skills": [
      "herblore"
@@ -68161,7 +68161,7 @@
    "name": "Black defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -68190,7 +68190,7 @@
    "name": "Bronze defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -68219,7 +68219,7 @@
    "name": "Dragon defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -68248,7 +68248,7 @@
    "name": "Iron defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -68277,7 +68277,7 @@
    "name": "Steel defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -68306,7 +68306,7 @@
    "name": "Mithril defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -68335,7 +68335,7 @@
    "name": "Rune defender",
    "kind": "item",
    "rarity": "uncommon",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -77300,7 +77300,7 @@
    "name": "Enhanced luck potion",
    "kind": "item",
    "rarity": "rare",
-   "desc": "Provides the effects of the Ring of Fortune. Maybe this potion will make me magnetically attractive.",
+   "desc": "Provides the effects of the Ring of Fortune. Magnetically attractive too?",
    "tags": {
     "skills": [
      "herblore"
@@ -80444,7 +80444,7 @@
    "name": "Prickly pear seed",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A prickly pear seed - plant in a cactus patch. Harvesting this plant will grant experience in Defence.",
+   "desc": "Plant in a cactus patch. Harvesting this plant grants Defence experience.",
    "tags": {
     "skills": [
      "farming"
@@ -80540,7 +80540,7 @@
    "name": "Sunchoke seed",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A sunchoke seed - plant in an allotment. Harvesting this plant will grant experience in strength.",
+   "desc": "Plant in an allotment. Harvesting this plant grants Strength experience.",
    "tags": {
     "skills": [
      "farming"
@@ -81144,7 +81144,7 @@
    "name": "Super Guthix balance",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A potion of super restore, blessed silvthril dust, blisterwood ashes and Ivandis's serum.",
+   "desc": "Super restore, blessed silvthril dust, blisterwood ash and Ivandis's serum.",
    "tags": {
     "skills": [
      "herblore"
@@ -81699,7 +81699,7 @@
    "name": "Primed keris",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A mystical dagger gifted to us by Scabaras. It is effective when fighting against scarab creatures.",
+   "desc": "A mystical dagger gifted by Scabaras. Effective against scarab creatures.",
    "tags": {
     "skills": [
      "attack"
@@ -82476,7 +82476,7 @@
    "name": "Sunspear",
    "kind": "item",
    "rarity": "rare",
-   "desc": "Lord Drakan's legendary blisterwood weapon - once a dagger, then a spear, now a sword.",
+   "desc": "Lord Drakan's blisterwood weapon: once a dagger, then a spear, now a sword.",
    "tags": {
     "regions": [
      "morytania"
@@ -83811,7 +83811,7 @@
    "name": "Masuta's warspear",
    "kind": "item",
    "rarity": "rare",
-   "desc": "This blade resonates with the residual energy of at least two overwhelmingly powerful beings.",
+   "desc": "This blade resonates with the residual energy of two powerful beings.",
    "tags": {
     "skills": [
      "attack"
@@ -84025,7 +84025,7 @@
    "name": "Off-hand ripper claw",
    "kind": "item",
    "rarity": "rare",
-   "desc": "Deals bonus damage to targets below half health when wearing the main hand equivalent.",
+   "desc": "Deals bonus damage to targets below half health with the main hand pair.",
    "tags": {
     "skills": [
      "attack"
@@ -84050,7 +84050,7 @@
    "name": "Ripper claw",
    "kind": "item",
    "rarity": "rare",
-   "desc": "Deals bonus damage to targets below half health when wearing the off-hand equivalent.",
+   "desc": "Deals bonus damage to targets below half health with the off-hand pair.",
    "tags": {
     "skills": [
      "attack"
@@ -84569,7 +84569,7 @@
    "name": "Armadyl crossbow",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A crossbow which was once the figurehead of Armadyl's army. In one battle, Saradomin managed to take the bows, and now k",
+   "desc": "Once the figurehead of Armadyl's army, now kept by Saradomin as a trophy.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -84897,7 +84897,7 @@
    "name": "Off-hand Armadyl crossbow",
    "kind": "item",
    "rarity": "rare",
-   "desc": "An off-hand crossbow which was once the figurehead of Armadyl's army. In one battle, Saradomin managed to take the bows,",
+   "desc": "An off-hand crossbow from Armadyl's army, now a trophy of Saradomin's.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -86971,7 +86971,7 @@
    "name": "Corrupted defender",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "morytania"
@@ -87000,7 +87000,7 @@
    "name": "Ancient repriser",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia",
@@ -87030,7 +87030,7 @@
    "name": "Tainted repriser",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "morytania"
@@ -87059,7 +87059,7 @@
    "name": "Ancient lantern",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "asgarnia",
@@ -87089,7 +87089,7 @@
    "name": "Blighted rebounder",
    "kind": "item",
    "rarity": "rare",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "morytania"
@@ -90584,7 +90584,7 @@
    "name": "Poison bomb",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Do not drink, aim away from face, keep away from eyes and small children. If substance gets in eyes, face, hands, or mou",
+   "desc": "Do not drink, aim away from face, keep away from eyes and small children.",
    "tags": {
     "skills": [
      "herblore"
@@ -90722,7 +90722,7 @@
    "name": "Sticky bomb",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Do not drink, aim away from face, keep away from eyes and small children. If substance gets in eyes, face, hands, or mou",
+   "desc": "Do not drink, aim away from face, keep away from eyes and small children.",
    "tags": {
     "skills": [
      "herblore"
@@ -90768,7 +90768,7 @@
    "name": "Vulnerability bomb",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Do not drink, aim away from face, keep away from eyes and small children. If substance gets in eyes, face, hands, or mou",
+   "desc": "Do not drink, aim away from face, keep away from eyes and small children.",
    "tags": {
     "skills": [
      "herblore"
@@ -91044,7 +91044,7 @@
    "name": "Harvest potion",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Harvest potion. Allows you to discover special produce from your allotments patches.",
+   "desc": "Allows you to discover special produce from your allotment patches.",
    "tags": {
     "skills": [
      "herblore"
@@ -91228,7 +91228,7 @@
    "name": "Aggroverload",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Greatly boosts all combat stats and causes creatures within a radius to become aggressive.",
+   "desc": "Greatly boosts all combat stats and makes nearby creatures aggressive.",
    "tags": {
     "skills": [
      "herblore"
@@ -91297,7 +91297,7 @@
    "name": "Elder overload salve",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Greatly boosts all combat stats, restores prayer points over time, cures poison, and protects from poison, dragonfire an",
+   "desc": "Greatly boosts combat stats, restores prayer and resists wyvern fire.",
    "tags": {
     "skills": [
      "herblore"
@@ -91504,7 +91504,7 @@
    "name": "Overload salve",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Boosts all combat stats, restores prayer points over time, cures poison, and protects from both poison and dragonfire.",
+   "desc": "Boosts combat stats, restores prayer, cures poison, resists dragonfire.",
    "tags": {
     "skills": [
      "herblore"
@@ -91527,7 +91527,7 @@
    "name": "Perfect plus potion",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Grants all perfect skilling potion effects, and increases bonuses from the Voice of Seren.",
+   "desc": "Grants all perfect skilling potion effects, and boosts Voice of Seren bonuses.",
    "tags": {
     "skills": [
      "herblore"
@@ -91711,7 +91711,7 @@
    "name": "Supreme overload salve",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Greatly boosts all combat stats, restores prayer points over time, cures poison, and protects from both poison and drago",
+   "desc": "Greatly boosts combat stats, restores prayer, cures poison, resists dragonfire.",
    "tags": {
     "skills": [
      "herblore"
@@ -91828,7 +91828,7 @@
    "name": "Charming potion flask",
    "kind": "item",
    "rarity": "epic",
-   "desc": "A flask of a liquid attuned to the spirit realms. Gives an extra charm per charm drop.",
+   "desc": "A flask of liquid attuned to the spirit realms. Gives an extra charm a drop.",
    "tags": {
     "skills": [
      "herblore"
@@ -94028,7 +94028,7 @@
    "name": "Golden dragonfruit seed",
    "kind": "item",
    "rarity": "epic",
-   "desc": "A dragonfruit seed that produces glorious golden fruit - plant in a cactus patch.",
+   "desc": "A seed that produces glorious golden dragonfruit. Plant in a cactus patch.",
    "tags": {
     "skills": [
      "farming"
@@ -96603,7 +96603,7 @@
    "name": "Elite Death Lotus dart",
    "kind": "item",
    "rarity": "epic",
-   "desc": "A deadly throwing dart made of materials from the East, upgraded via corrosive death lotus extract.",
+   "desc": "A deadly Eastern throwing dart, upgraded with corrosive lotus extract.",
    "tags": {
     "skills": [
      "fletching",
@@ -97527,7 +97527,7 @@
    "name": "Imperium core",
    "kind": "item",
    "rarity": "epic",
-   "desc": "Four augmented shards from each of the elemental stones, forged into a core of power.",
+   "desc": "Four augmented elemental shards, forged into a core of power.",
    "tags": {
     "regions": [
      "asgarnia"
@@ -97732,7 +97732,7 @@
    "name": "Kalphite defender",
    "kind": "item",
    "rarity": "epic",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "kharidian_desert"
@@ -97761,7 +97761,7 @@
    "name": "Kalphite repriser",
    "kind": "item",
    "rarity": "epic",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "kharidian_desert"
@@ -97790,7 +97790,7 @@
    "name": "Kalphite rebounder",
    "kind": "item",
    "rarity": "epic",
-   "desc": "A defensive weapon that can parry attacks, reducing damage and increases the accuracy of your next hit.",
+   "desc": "A defensive weapon that parries attacks, reducing damage and boosting accuracy.",
    "tags": {
     "regions": [
      "kharidian_desert",
@@ -99344,7 +99344,7 @@
    "name": "Blessed flask",
    "kind": "item",
    "rarity": "legendary",
-   "desc": "An extraordinarily holy prayer flask. It can be filled up with extreme prayer potions.",
+   "desc": "An extraordinarily holy prayer flask for extreme prayer potions.",
    "tags": {
     "skills": [
      "crafting"
@@ -100047,7 +100047,7 @@
    "name": "Bow of the Last Guardian",
    "kind": "item",
    "rarity": "legendary",
-   "desc": "A beautiful bow, imbued with divine energy. Perfectly balanced, as all things should be.",
+   "desc": "A beautiful bow, imbued with divine energy. Perfectly balanced.",
    "tags": {
     "skills": [
      "fletching",
@@ -100297,7 +100297,7 @@
    "name": "Fractured Staff of Armadyl",
    "kind": "item",
    "rarity": "legendary",
-   "desc": "The fractured and unstable Staff of Armadyl, taken during Kerapac's reign of terror.",
+   "desc": "The fractured, unstable Staff of Armadyl, taken by Kerapac.",
    "tags": {
     "regions": [
      "misthalin"
@@ -100381,7 +100381,7 @@
    "name": "Staff of Sliske",
    "kind": "item",
    "rarity": "legendary",
-   "desc": "Unsettling faces surround the head of the staff. It almost feels like they're watching you...",
+   "desc": "Unsettling faces surround the staff's head. They almost seem to watch you.",
    "tags": {
     "regions": [
      "kharidian_desert"

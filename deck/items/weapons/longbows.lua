@@ -129,7 +129,7 @@ Set.cards = {
     },
     {
         id = "bow_of_the_last_guardian", name = "Bow of the Last Guardian", kind = "item", rarity = "legendary",
-        desc = "A beautiful bow, imbued with divine energy. Perfectly balanced, as all things should be.",
+        desc = "A beautiful bow, imbued with divine energy. Perfectly balanced.",
         art = { item = "EGWD_ZAMORAK_BOSS_RANGED_WEAPON_NEW", cam = { yaw = 0.91, pitch = 1.24, dist = 483, ty = 13, tx = -70 } },
         tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "longbow" }, membership = { "p2p" } },
     },

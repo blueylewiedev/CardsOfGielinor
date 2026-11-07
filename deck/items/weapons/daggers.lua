@@ -285,7 +285,7 @@ Set.cards = {
     },
     {
         id = "primed_keris", name = "Primed keris", kind = "item", rarity = "rare",
-        desc = "A mystical dagger gifted to us by Scabaras. It is effective when fighting against scarab creatures.",
+        desc = "A mystical dagger gifted by Scabaras. Effective against scarab creatures.",
         art = { item = "MELEE_KERIS_PRIMED_T70", cam = { yaw = -4.93, dist = 394, fov = 25, ty = -14, tx = 23 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "dagger", "quest_item" }, membership = { "p2p" } },
     },

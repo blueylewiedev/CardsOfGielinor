@@ -315,7 +315,7 @@ Set.cards = {
     },
     {
         id = "golden_dragonfruit_seed", name = "Golden dragonfruit seed", kind = "item", rarity = "epic",
-        desc = "A dragonfruit seed that produces glorious golden fruit - plant in a cactus patch.",
+        desc = "A seed that produces glorious golden dragonfruit. Plant in a cactus patch.",
         art = { item = "GOLDEN_DRAGONFRUIT_SEED", cam = { fov = 25 } },
         tags = { skills = { "farming" }, category = { "seed", "cacti" }, membership = { "p2p" } },
     },
@@ -567,7 +567,7 @@ Set.cards = {
     },
     {
         id = "prickly_pear_seed", name = "Prickly pear seed", kind = "item", rarity = "rare",
-        desc = "A prickly pear seed - plant in a cactus patch. Harvesting this plant will grant experience in Defence.",
+        desc = "Plant in a cactus patch. Harvesting this plant grants Defence experience.",
         art = { item = "PRICKLY_PEAR_SEED" },
         tags = { skills = { "farming" }, category = { "seed", "cacti" }, membership = { "p2p" } },
     },
@@ -657,7 +657,7 @@ Set.cards = {
     },
     {
         id = "sunchoke_seed", name = "Sunchoke seed", kind = "item", rarity = "rare",
-        desc = "A sunchoke seed - plant in an allotment. Harvesting this plant will grant experience in strength.",
+        desc = "Plant in an allotment. Harvesting this plant grants Strength experience.",
         art = { item = "SUNCHOKE_SEED", cam = { dist = 397, ty = -20 } },
         tags = { skills = { "farming" }, category = { "seed", "allotment" }, membership = { "p2p" } },
     },
