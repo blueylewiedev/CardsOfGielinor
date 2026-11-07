@@ -75,7 +75,7 @@ Set.cards = {
     },
     {
         id = "poison_bomb", name = "Poison bomb", kind = "item", rarity = "epic",
-        desc = "Do not drink, aim away from face, keep away from eyes and small children. If substance gets in eyes, face, hands, or mou",
+        desc = "Do not drink, aim away from face, keep away from eyes and small children.",
         art = { item = "HERB_POISON_BOMB", cam = { yaw = -0.44, pitch = 0.02, dist = 169, fov = 55, ty = 73, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -135,7 +135,7 @@ Set.cards = {
     },
     {
         id = "sticky_bomb", name = "Sticky bomb", kind = "item", rarity = "epic",
-        desc = "Do not drink, aim away from face, keep away from eyes and small children. If substance gets in eyes, face, hands, or mou",
+        desc = "Do not drink, aim away from face, keep away from eyes and small children.",
         art = { item = "HERB_FREEZE_BOMB", cam = { yaw = -0.44, pitch = 0.02, dist = 169, fov = 55, ty = 73, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -159,7 +159,7 @@ Set.cards = {
     },
     {
         id = "vulnerability_bomb", name = "Vulnerability bomb", kind = "item", rarity = "epic",
-        desc = "Do not drink, aim away from face, keep away from eyes and small children. If substance gets in eyes, face, hands, or mou",
+        desc = "Do not drink, aim away from face, keep away from eyes and small children.",
         art = { item = "HERB_VULNERABILITY_BOMB", cam = { yaw = -0.44, pitch = 0.02, dist = 169, fov = 55, ty = 73, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -213,7 +213,7 @@ Set.cards = {
     },
     {
         id = "luck_potion", name = "Luck potion", kind = "item", rarity = "uncommon",
-        desc = "Provides the effects of the Ring of wealth. If only there was a potion that made me magnetically attractive as well.",
+        desc = "Provides the effects of the Ring of wealth. Magnetically attractive too?",
         art = { item = "WILDERNESS_LUCK_POTION", cam = { yaw = -0.44, pitch = 0.02, dist = 205, ty = 53, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -333,7 +333,7 @@ Set.cards = {
     },
     {
         id = "enhanced_luck_potion", name = "Enhanced luck potion", kind = "item", rarity = "rare",
-        desc = "Provides the effects of the Ring of Fortune. Maybe this potion will make me magnetically attractive.",
+        desc = "Provides the effects of the Ring of Fortune. Magnetically attractive too?",
         art = { item = "WILDERNESS_LUCK_POTION_ENHANCED", cam = { yaw = -0.44, pitch = 0.02, dist = 205, ty = 53, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -531,7 +531,7 @@ Set.cards = {
     },
     {
         id = "harvest_potion", name = "Harvest potion", kind = "item", rarity = "epic",
-        desc = "Harvest potion. Allows you to discover special produce from your allotments patches.",
+        desc = "Allows you to discover special produce from your allotment patches.",
         art = { item = "_4DOSEHARVESTPOTION", cam = { yaw = -0.44, pitch = 0.02, dist = 169, ty = 53, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -633,7 +633,7 @@ Set.cards = {
     },
     {
         id = "aggroverload", name = "Aggroverload", kind = "item", rarity = "epic",
-        desc = "Greatly boosts all combat stats and causes creatures within a radius to become aggressive.",
+        desc = "Greatly boosts all combat stats and makes nearby creatures aggressive.",
         art = { item = "_4DOSECOMBOAGGROOVERLOAD", cam = { yaw = 0.27, pitch = 0.11, dist = 97, fov = 100, ty = 80, tx = -6 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -651,7 +651,7 @@ Set.cards = {
     },
     {
         id = "elder_overload_salve", name = "Elder overload salve", kind = "item", rarity = "epic",
-        desc = "Greatly boosts all combat stats, restores prayer points over time, cures poison, and protects from poison, dragonfire an",
+        desc = "Greatly boosts combat stats, restores prayer and resists wyvern fire.",
         art = { item = "_4DOSE2COMBOELDEROVERLOAD", cam = { yaw = 0.27, pitch = 0.11, dist = 97, fov = 100, ty = 80, tx = -6 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -705,13 +705,13 @@ Set.cards = {
     },
     {
         id = "overload_salve", name = "Overload salve", kind = "item", rarity = "epic",
-        desc = "Boosts all combat stats, restores prayer points over time, cures poison, and protects from both poison and dragonfire.",
+        desc = "Boosts combat stats, restores prayer, cures poison, resists dragonfire.",
         art = { item = "_4DOSECOMBOOVERLOAD", cam = { yaw = 0.27, pitch = 0.11, dist = 97, fov = 100, ty = 80, tx = -6 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
     {
         id = "perfect_plus_potion", name = "Perfect plus potion", kind = "item", rarity = "epic",
-        desc = "Grants all perfect skilling potion effects, and increases bonuses from the Voice of Seren.",
+        desc = "Grants all perfect skilling potion effects, and boosts Voice of Seren bonuses.",
         art = { item = "_4DOSECOMBOPERFECTPLUS", cam = { yaw = 0.27, pitch = 0.11, dist = 97, fov = 100, ty = 80, tx = -6 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },
@@ -759,7 +759,7 @@ Set.cards = {
     },
     {
         id = "supreme_overload_salve", name = "Supreme overload salve", kind = "item", rarity = "epic",
-        desc = "Greatly boosts all combat stats, restores prayer points over time, cures poison, and protects from both poison and drago",
+        desc = "Greatly boosts combat stats, restores prayer, cures poison, resists dragonfire.",
         art = { item = "_4DOSE2COMBOSUPREMEOVERLOAD", cam = { yaw = 0.27, pitch = 0.11, dist = 97, fov = 100, ty = 80, tx = -6 } },
         tags = { skills = { "herblore" }, category = { "potion" }, membership = { "p2p" } },
     },

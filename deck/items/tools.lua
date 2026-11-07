@@ -129,7 +129,7 @@ Set.cards = {
     },
     {
         id = "tellervos_net", name = "Tellervo's net", kind = "item", rarity = "common",
-        desc = "A gnome net used for catching implings, moths, and butterflies. The name 'Tellervo' is neatly carved into it.",
+        desc = "A gnome net used for catching implings, moths and butterflies.",
         art = { item = "GIANT_MOTH_BUTTERFLY_NET", cam = { yaw = -3.98, pitch = 0.83, dist = 698, fov = 45, ty = 50, tx = -57 } },
         tags = { regions = { "havenhythe" }, skills = { "hunter" }, category = { "tool" }, membership = { "p2p" } },
     },
@@ -189,7 +189,7 @@ Set.cards = {
     },
     {
         id = "blessed_flask", name = "Blessed flask", kind = "item", rarity = "legendary",
-        desc = "An extraordinarily holy prayer flask. It can be filled up with extreme prayer potions.",
+        desc = "An extraordinarily holy prayer flask for extreme prayer potions.",
         art = { item = "BLESSED_FLASK", cam = { yaw = -3.57, pitch = 0.16, dist = 205, ty = 69, tx = -4 } },
         tags = { skills = { "crafting" }, category = { "tool" }, membership = { "p2p" } },
     },

@@ -123,13 +123,13 @@ Set.cards = {
     },
     {
         id = "offhand_ripper_claw", name = "Off-hand ripper claw", kind = "item", rarity = "rare",
-        desc = "Deals bonus damage to targets below half health when wearing the main hand equivalent.",
+        desc = "Deals bonus damage to targets below half health with the main hand pair.",
         art = { item = "HLM_RIPPER_CLAW_O", cam = { yaw = 4.36, pitch = 0.99, dist = 578, fov = 30, ty = -14, tx = 35 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "claw" }, membership = { "p2p" } },
     },
     {
         id = "ripper_claw", name = "Ripper claw", kind = "item", rarity = "rare",
-        desc = "Deals bonus damage to targets below half health when wearing the off-hand equivalent.",
+        desc = "Deals bonus damage to targets below half health with the off-hand pair.",
         art = { item = "HLM_RIPPER_CLAW", cam = { yaw = -6.23, pitch = 1.16, dist = 578, fov = 30, ty = -17, tx = -34 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "claw" }, membership = { "p2p" } },
     },

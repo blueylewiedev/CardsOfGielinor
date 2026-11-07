@@ -15,7 +15,7 @@ Set.cards = {
     },
     {
         id = "imperium_core", name = "Imperium core", kind = "item", rarity = "epic",
-        desc = "Four augmented shards from each of the elemental stones, forged into a core of power.",
+        desc = "Four augmented elemental shards, forged into a core of power.",
         art = { item = "NEX2_MAGIC_OFFHAND_NEW", cam = { pitch = 0.67, dist = 205, ty = 44, tx = 1 } },
         tags = { regions = { "asgarnia" }, skills = { "magic" }, category = { "weapon", "magic_gear", "orb" }, membership = { "p2p" } },
     },
