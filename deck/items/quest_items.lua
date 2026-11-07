@@ -194,6 +194,12 @@ Set.cards = {
         art = { item = "SEREN_NATURALISTS_POTION", cam = { yaw = 0.27, pitch = 0.11, dist = 97, fov = 100, ty = 80, tx = -6 } },
         tags = { skills = { "herblore" }, category = { "potion", "quest_item" }, membership = { "p2p" } },
     },
+    {
+        id = "blessed_hatchet", name = "Blessed hatchet", kind = "item", rarity = "common",
+        desc = "It radiates purity but can still lop off heads.",
+        art = { item = "ANMA_AXE", cam = { yaw = -2.11, pitch = 1.05, dist = 226, ty = -25, tx = 48 } },
+        tags = { category = { "tool", "quest_item" }, membership = { "p2p" } },
+    },
 }
 
 return Set

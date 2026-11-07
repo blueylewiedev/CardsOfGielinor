@@ -1136,8 +1136,10 @@ def skilling_main_hands():
 
 def minigame_tool(page):
     """Whether a page is a Stealing Creation (or other minigame) tool: Pickaxe (class 3), Marker seeds, Proto-tool."""
+    categories = {c.lower() for c in page.get("categories", [])}
+    # (only a tool: the Stealing Creation category is on its runes too, and they are ordinary rune cards)
     return bool(MINIGAME_TOOL_TITLE.search(page.get("title", ""))
-                or MINIGAME_TOOL_CATEGORIES & {c.lower() for c in page.get("categories", [])})
+                or (MINIGAME_TOOL_CATEGORIES & categories and (TOOL_CATEGORIES | {"tools for games"}) & categories))
 
 
 # A tool that is a version of another: augmented, gilded (cosmetic) or golden, or with a bracketed suffix ((e),
