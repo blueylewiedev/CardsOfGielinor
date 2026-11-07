@@ -1578,13 +1578,22 @@ def shop_price(text):
     return int(text) if re.fullmatch(r"\d+", text) else None
 
 
+def no_stock(row):
+    """Whether a storeline row says the shop starts with none of the item (a "store_stock" of 0): it only
+    takes the item in from players, as the Hollow Hill's shop does with Dragon bones, so it sells nothing.
+    A row with no stock written, or a stock that never runs out, is not this."""
+    stock = str(row.get("store_stock") or "").strip()
+    return bool(re.fullmatch(r"0+", stock)) and not row.get("store_stock_infinite")
+
+
 def fold_storeline(items, row):
     """Adds one row of the storeline bucket to `items`: { item name in lower case: {"price": the
     cheapest, "shops": how many sell it, "infinite": whether any never runs out, "members": whether
-    every one is members only} }. Rows of shops that are gone, and prices in anything but coins
-    (RuneCoins, tokens, points), are left out. A price of 0 is a free starter item (Tutorial Island's
-    bronze dagger), not what the item costs: it counts as a shop but not as the price."""
-    if row.get("is_historical"):
+    every one is members only} }. Rows of shops that are gone, prices in anything but coins
+    (RuneCoins, tokens, points) and shops that start with none of the item (see no_stock) are left out.
+    A price of 0 is a free starter item (Tutorial Island's bronze dagger), not what the item costs: it
+    counts as a shop but not as the price."""
+    if row.get("is_historical") or no_stock(row):
         return
     name = plain(str(row.get("sold_item") or "")).lower()
     currency = row.get("store_currency") or []
@@ -1636,7 +1645,7 @@ def fetch_shops(wiki, refresh):
     while not state["complete"]:
         answer = wiki.get({"action": "bucket", "query": (
             "bucket('storeline').select('sold_item', 'store_sell_price', 'store_currency', 'store_stock_infinite',"
-            " 'is_members_only', 'is_historical')"
+            " 'store_stock', 'is_members_only', 'is_historical')"
             f".orderBy('sold_item', 'asc').limit({STORELINE_ROWS}).offset({state['offset']}).run()")})
         if answer is None:
             print("request limit reached: run again to carry on")
@@ -1644,6 +1653,8 @@ def fetch_shops(wiki, refresh):
         rows = answer.get("bucket", [])
         for row in rows:
             fold_storeline(state["items"], row)
+            if no_stock(row) and not row.get("is_historical"):
+                state["no_stock"] = state.get("no_stock", 0) + 1      # (kept in the cache to show what was left out)
         state["offset"] += len(rows)
         state["rows"] += len(rows)
         state["complete"] = len(rows) < STORELINE_ROWS

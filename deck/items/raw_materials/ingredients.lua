@@ -110,7 +110,7 @@ Set.cards = {
         tags = { skills = { "cooking", "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
     },
     {
-        id = "watermelon", name = "Watermelon", kind = "item", rarity = "common",
+        id = "watermelon", name = "Watermelon", kind = "item", rarity = "uncommon",
         desc = "A juicy watermelon.",
         art = { item = "WATERMELON", cam = { yaw = 0.51, pitch = 0.71, dist = 300, fov = 60, ty = 61, tx = 8 } },
         tags = { skills = { "farming" }, category = { "raw_material", "ingredient" }, membership = { "p2p" } },
