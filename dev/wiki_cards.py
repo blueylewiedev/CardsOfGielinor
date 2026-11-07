@@ -1140,6 +1140,19 @@ def minigame_tool(page):
                 or MINIGAME_TOOL_CATEGORIES & {c.lower() for c in page.get("categories", [])})
 
 
+# A tool that is a version of another: augmented, gilded (cosmetic) or golden, or with a bracketed suffix ((e),
+# (override), (Archaeology tutorial)). The plain tool has the card, as with weapons (WEAPON_SKIP).
+TOOL_VARIANT = re.compile(r"^(augmented|gilded|golden)\s|\(.*\)$", re.I)
+
+
+def tool_variant(page):
+    """Whether a tool page is a version of another: an upgrade (Rune pickaxe + 2), or see TOOL_VARIANT."""
+    title = page.get("title", "")
+    if not TOOL_CATEGORIES & {c.lower() for c in page.get("categories", [])}:
+        return False
+    return bool(UPGRADE_TITLE.search(title) or TOOL_VARIANT.search(title))
+
+
 def settle_tool_or_container(found, page, name, notes):
     """`found` (the category words so far) corrected for a tool or a container, and the notes added to."""
     lowered = strip_bracket(name).lower()
@@ -1208,6 +1221,8 @@ def candidate(page, names, words, price=None, drop=None):
             return None, SKIPPED_TREASURE_HUNTER
         if minigame_tool(page):
             return None, "a Stealing Creation tool (a minigame variant): no card"
+        if tool_variant(page):
+            return None, "an upgraded, augmented, gilded or bracketed version of a tool: the plain tool has the card"
         _, bonuses = find_template(text, ["Infobox Bonuses"])
         for skipped_categories, reason in SKIPPED_POTIONS:
             if skipped_categories & set(page.get("categories", [])):
