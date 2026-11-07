@@ -29003,52 +29003,6 @@
    "imgPage": "File:Pie dish detail.png"
   },
   {
-   "id": "tea_flask",
-   "name": "Tea flask",
-   "kind": "item",
-   "rarity": "common",
-   "desc": "You can put nice, hot tea in it.",
-   "tags": {
-    "regions": [
-     "kandarin"
-    ],
-    "category": [
-     "tool"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Items: Tools",
-   "file": "deck/items/tools.lua",
-   "order": 1141,
-   "img": "img/tea_flask.png",
-   "imgPage": "File:Tea flask detail.png"
-  },
-  {
-   "id": "bowl",
-   "name": "Bowl",
-   "kind": "item",
-   "rarity": "common",
-   "desc": "Useful for mixing things.",
-   "tags": {
-    "skills": [
-     "crafting"
-    ],
-    "category": [
-     "tool"
-    ],
-    "membership": [
-     "f2p"
-    ]
-   },
-   "collection": "Items: Tools",
-   "file": "deck/items/tools.lua",
-   "order": 1142,
-   "img": "img/bowl.png",
-   "imgPage": "File:Bowl detail.png"
-  },
-  {
    "id": "cake_tin",
    "name": "Cake tin",
    "kind": "item",
@@ -29067,33 +29021,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1143,
+   "order": 1141,
    "img": "img/cake_tin.png",
    "imgPage": "File:Cake tin detail.png"
-  },
-  {
-   "id": "empty_pot",
-   "name": "Empty pot",
-   "kind": "item",
-   "rarity": "common",
-   "desc": "This pot is empty.",
-   "tags": {
-    "skills": [
-     "crafting",
-     "cooking"
-    ],
-    "category": [
-     "tool"
-    ],
-    "membership": [
-     "f2p"
-    ]
-   },
-   "collection": "Items: Tools",
-   "file": "deck/items/tools.lua",
-   "order": 1144,
-   "img": "img/empty_pot.png",
-   "imgPage": "File:Empty pot detail.png"
   },
   {
    "id": "pestle_and_mortar",
@@ -29115,49 +29045,9 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1145,
+   "order": 1142,
    "img": "img/pestle_and_mortar.png",
    "imgPage": "File:Pestle and mortar detail.png"
-  },
-  {
-   "id": "waterskin_0",
-   "name": "Waterskin (0)",
-   "kind": "item",
-   "rarity": "common",
-   "desc": "A completely empty waterskin - you'll need to fill it up.",
-   "tags": {
-    "category": [
-     "tool"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Items: Tools",
-   "file": "deck/items/tools.lua",
-   "order": 1146,
-   "img": "img/waterskin_0.png",
-   "imgPage": "File:Waterskin detail.png"
-  },
-  {
-   "id": "cocktail_glass",
-   "name": "Cocktail glass",
-   "kind": "item",
-   "rarity": "common",
-   "desc": "For sipping cocktails.",
-   "tags": {
-    "category": [
-     "tool"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Items: Tools",
-   "file": "deck/items/tools.lua",
-   "order": 1147,
-   "img": "img/cocktail_glass.png",
-   "imgPage": "File:Cocktail glass detail.png"
   },
   {
    "id": "cocktail_shaker",
@@ -29175,9 +29065,119 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 1148,
+   "order": 1143,
    "img": "img/cocktail_shaker.png",
    "imgPage": "File:Cocktail shaker detail.png"
+  },
+  {
+   "id": "tea_flask",
+   "name": "Tea flask",
+   "kind": "item",
+   "rarity": "common",
+   "desc": "You can put nice, hot tea in it.",
+   "tags": {
+    "regions": [
+     "kandarin"
+    ],
+    "category": [
+     "container"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Items: Containers",
+   "file": "deck/items/containers.lua",
+   "order": 1144,
+   "img": "img/tea_flask.png",
+   "imgPage": "File:Tea flask detail.png"
+  },
+  {
+   "id": "bowl",
+   "name": "Bowl",
+   "kind": "item",
+   "rarity": "common",
+   "desc": "Useful for mixing things.",
+   "tags": {
+    "skills": [
+     "crafting"
+    ],
+    "category": [
+     "container"
+    ],
+    "membership": [
+     "f2p"
+    ]
+   },
+   "collection": "Items: Containers",
+   "file": "deck/items/containers.lua",
+   "order": 1145,
+   "img": "img/bowl.png",
+   "imgPage": "File:Bowl detail.png"
+  },
+  {
+   "id": "empty_pot",
+   "name": "Empty pot",
+   "kind": "item",
+   "rarity": "common",
+   "desc": "This pot is empty.",
+   "tags": {
+    "skills": [
+     "crafting",
+     "cooking"
+    ],
+    "category": [
+     "container"
+    ],
+    "membership": [
+     "f2p"
+    ]
+   },
+   "collection": "Items: Containers",
+   "file": "deck/items/containers.lua",
+   "order": 1146,
+   "img": "img/empty_pot.png",
+   "imgPage": "File:Empty pot detail.png"
+  },
+  {
+   "id": "waterskin_0",
+   "name": "Waterskin (0)",
+   "kind": "item",
+   "rarity": "common",
+   "desc": "A completely empty waterskin - you'll need to fill it up.",
+   "tags": {
+    "category": [
+     "container"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Items: Containers",
+   "file": "deck/items/containers.lua",
+   "order": 1147,
+   "img": "img/waterskin_0.png",
+   "imgPage": "File:Waterskin detail.png"
+  },
+  {
+   "id": "cocktail_glass",
+   "name": "Cocktail glass",
+   "kind": "item",
+   "rarity": "common",
+   "desc": "For sipping cocktails.",
+   "tags": {
+    "category": [
+     "container"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Items: Containers",
+   "file": "deck/items/containers.lua",
+   "order": 1148,
+   "img": "img/cocktail_glass.png",
+   "imgPage": "File:Cocktail glass detail.png"
   },
   {
    "id": "blood_diamond",
@@ -99350,14 +99350,14 @@
      "crafting"
     ],
     "category": [
-     "tool"
+     "container"
     ],
     "membership": [
      "p2p"
     ]
    },
-   "collection": "Items: Tools",
-   "file": "deck/items/tools.lua",
+   "collection": "Items: Containers",
+   "file": "deck/items/containers.lua",
    "order": 3821,
    "img": "img/blessed_flask.png",
    "imgPage": "File:Blessed flask detail.png"
@@ -101871,14 +101871,14 @@
     "butterfly_net",
     "tellervos_net",
     "pie_dish",
+    "cake_tin",
+    "pestle_and_mortar",
+    "cocktail_shaker",
     "tea_flask",
     "bowl",
-    "cake_tin",
     "empty_pot",
-    "pestle_and_mortar",
     "waterskin_0",
     "cocktail_glass",
-    "cocktail_shaker",
     "blood_diamond",
     "blue_jewel",
     "enchanted_emerald",

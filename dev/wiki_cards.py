@@ -854,7 +854,7 @@ ITEM_CATEGORY_WORDS = {
     # Herbs, gems and tools.
     "herbs": ["raw_material", "herb"], "herb": ["raw_material", "herb"],
     "gems": ["raw_material", "gem"], "gem": ["raw_material", "gem"],
-    "tools": ["tool"], "pickaxes": ["tool"], "hatchets": ["tool"],
+    "tools": ["tool"], "pickaxes": ["tool"], "hatchets": ["tool"], "containers": ["container"],
     # Equipment categories by slot (the names are a best guess: check them with --subcategories).
     # The slot in the page's Infobox Bonuses gives the same words; these help when it is missing.
     "head slot items": ["armour", "helmet"], "body slot items": ["armour", "body"],

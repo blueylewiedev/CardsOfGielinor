@@ -58,6 +58,7 @@ each region's set has its own version.
 | **Seeds** | | Complete | |
 | **Runes** | | Complete | |
 | **Tools** | | In Progress | Pickaxes, hatchets, spades and the like |
+| **Containers** | | In Progress | Vials, buckets, flasks, pouches, ore boxes and the like |
 | **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
 | | Ranged | Complete | |
 | | Magic | Complete | |
