@@ -184,7 +184,7 @@ Set.cards = {
     },
     {
         id = "super_guthix_balance", name = "Super Guthix balance", kind = "item", rarity = "rare",
-        desc = "A potion of super restore, blessed silvthril dust, blisterwood ashes and Ivandis's serum.",
+        desc = "Super restore, blessed silvthril dust, blisterwood ash and Ivandis's serum.",
         art = { item = "MYQ7_SUPER_GUTHIX_BALANCE", cam = { yaw = -0.44, pitch = 0.02, dist = 169, ty = 53, tx = -1 } },
         tags = { skills = { "herblore" }, category = { "potion", "quest_item" }, membership = { "p2p" } },
     },

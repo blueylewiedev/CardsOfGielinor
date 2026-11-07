@@ -225,7 +225,7 @@ Set.cards = {
     },
     {
         id = "armadyl_crossbow", name = "Armadyl crossbow", kind = "item", rarity = "rare",
-        desc = "A crossbow which was once the figurehead of Armadyl's army. In one battle, Saradomin managed to take the bows, and now k",
+        desc = "Once the figurehead of Armadyl's army, now kept by Saradomin as a trophy.",
         art = { item = "GODWARS_ARMADYL_CROSSBOW", cam = { yaw = -2.28, pitch = 0.70, dist = 363, ty = 7, tx = 0 } },
         tags = { regions = { "asgarnia" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
     },
@@ -297,7 +297,7 @@ Set.cards = {
     },
     {
         id = "offhand_armadyl_crossbow", name = "Off-hand Armadyl crossbow", kind = "item", rarity = "rare",
-        desc = "An off-hand crossbow which was once the figurehead of Armadyl's army. In one battle, Saradomin managed to take the bows,",
+        desc = "An off-hand crossbow from Armadyl's army, now a trophy of Saradomin's.",
         art = { item = "GODWARS_ARMADYL_CROSSBOW_O", cam = { yaw = 0.74, pitch = 0.58, dist = 300, ty = 26, tx = 25 } },
         tags = { regions = { "asgarnia" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
     },

@@ -369,7 +369,7 @@ Set.cards = {
     },
     {
         id = "elite_death_lotus_dart", name = "Elite Death Lotus dart", kind = "item", rarity = "epic",
-        desc = "A deadly throwing dart made of materials from the East, upgraded via corrosive death lotus extract.",
+        desc = "A deadly Eastern throwing dart, upgraded with corrosive lotus extract.",
         art = { item = "T88_POP2_THROWING_WEAPON_UPGRADED", cam = { yaw = -0.64, dist = 186, ty = -4, tx = 4 } },
         tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
     },

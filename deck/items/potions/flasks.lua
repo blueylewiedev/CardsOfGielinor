@@ -483,7 +483,7 @@ Set.cards = {
     },
     {
         id = "charming_potion_flask", name = "Charming potion flask", kind = "item", rarity = "epic",
-        desc = "A flask of a liquid attuned to the spirit realms. Gives an extra charm per charm drop.",
+        desc = "A flask of liquid attuned to the spirit realms. Gives an extra charm a drop.",
         art = { item = "BIGPOT_6DOSESUMCHARM", cam = { yaw = -2.09, pitch = 0.16, dist = 225, ty = 75, tx = 6 } },
         tags = { skills = { "herblore" }, category = { "potion", "flask" }, membership = { "p2p" } },
     },

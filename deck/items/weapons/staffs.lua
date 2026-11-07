@@ -579,7 +579,7 @@ Set.cards = {
     },
     {
         id = "fractured_staff_of_armadyl", name = "Fractured Staff of Armadyl", kind = "item", rarity = "legendary",
-        desc = "The fractured and unstable Staff of Armadyl, taken during Kerapac's reign of terror.",
+        desc = "The fractured, unstable Staff of Armadyl, taken by Kerapac.",
         art = { item = "EGWD_JAS_BOSS_MAGIC_WEAPON_NEW", cam = { yaw = 2.19, dist = 856, ty = 19, tx = -44 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "magic" }, category = { "weapon", "magic_gear", "staff" }, membership = { "p2p" } },
     },
@@ -627,7 +627,7 @@ Set.cards = {
     },
     {
         id = "staff_of_sliske", name = "Staff of Sliske", kind = "item", rarity = "legendary",
-        desc = "Unsettling faces surround the head of the staff. It almost feels like they're watching you...",
+        desc = "Unsettling faces surround the staff's head. They almost seem to watch you.",
         art = { item = "GWD2_SOLO_MAGIC_WEAPON_NEW", cam = { yaw = -0.22, dist = 585, ty = 103, tx = -90 } },
         tags = { regions = { "kharidian_desert" }, skills = { "crafting", "magic" }, category = { "weapon", "magic_gear", "staff" }, membership = { "p2p" } },
     },

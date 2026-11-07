@@ -873,7 +873,7 @@ Set.cards = {
     },
     {
         id = "sunspear", name = "Sunspear", kind = "item", rarity = "rare",
-        desc = "Lord Drakan's legendary blisterwood weapon - once a dagger, then a spear, now a sword.",
+        desc = "Lord Drakan's blisterwood weapon: once a dagger, then a spear, now a sword.",
         art = { item = "MYQ6_SUNSPEAR", cam = { yaw = -8.22, dist = 477, fov = 35, ty = -11, tx = 9 } },
         tags = { regions = { "morytania" }, skills = { "attack" }, category = { "weapon", "melee_gear", "sword", "quest_item" }, membership = { "p2p" } },
     },

@@ -111,7 +111,7 @@ Set.cards = {
     },
     {
         id = "masutas_warspear", name = "Masuta's warspear", kind = "item", rarity = "rare",
-        desc = "This blade resonates with the residual energy of at least two overwhelmingly powerful beings.",
+        desc = "This blade resonates with the residual energy of two powerful beings.",
         art = { item = "DUNGEON_AMINISHI_2H_MELEE", cam = { yaw = -1.80, dist = 769, fov = 55, ty = -18, tx = -41 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "spear", "halberd" }, membership = { "p2p" } },
     },
