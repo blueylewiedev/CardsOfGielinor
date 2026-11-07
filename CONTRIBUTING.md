@@ -122,6 +122,8 @@ augmented, Golden and Lucky weapons and pages with a bracketed suffix ("Scimitar
 many pages that is, and `--weapons melee --list` to see them (with tier and damage type, lowest tier
 first) before fetching any. The kind (scimitar, dagger...) comes from each page as usual.
 
+For **tools and containers**, use `--category Tools`, `--category Containers` and `--links-from "Skilling main hands"`. The wiki files a pickaxe under Melee weapons and a watering can under Containers, so the tool decides by itself: a page in Tools, Pickaxes, Hatchets, Mattocks or Tool belt, or linked from Skilling main hands, is `tool` only (no weapon words); an empty vessel (vial, bucket, jug, flask) is `container` only; a filled one (a cup of tea, a bucket of water) is tagged by what it holds. Stealing Creation tools ("(class 3)", Marker seeds, Proto-tool) are skipped as minigame variants.
+
 For a kind of item the wiki has no category for, `--links-from "Bars"` takes every page a list page links to (as if each
 was given with `--page`, and remembered the same way): the metal bars, whose list is the tables on the Bars page.
 `--list` shows what it would take before anything is fetched, and `--until HEADING` stops at a heading. A name that ends in
@@ -565,7 +567,8 @@ gathered and then made into something else (logs, a herb), `processed_material` 
 from that (planks, bars), `craftable` for weapons and armour that can be crafted and are not only dropped, 
 `ingredient` (with `raw_material`, or `processed_material` for one made from something) for what is
 cooked with and not eaten (yeast, butter, cream: the wiki's category Cooking), and `food`, `drink`, `potion`,
-`tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. 
+`tool`, `container`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. 
+A `tool` is a reusable implement you work with (a hammer, a pickaxe, a fishing rod); a `container` holds or stores things: a vessel you get back empty (vial, bucket, jug, bowl, pot, flask, waterskin) or storage (ore box, log basket, rune pouch). An item is one or the other, not both.
 Something that is worn, wielded or fired is tagged with what it is: `weapon`, `armour`, `jewellery`,
 `pocket` (the pocket slot) or `ammunition`. Each of those opens a last choice in the tag picker: the kind 
 of weapon (`sword`, `longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
@@ -602,7 +605,7 @@ Some words have more to say about the kind, and open their own choice once the w
   item with no use in the game (a jug of bad wine, burnt food, what the wiki calls useless), is `junk` alone
   and goes in `deck/items/junk.lua`. Urns (cooking, mining and the rest) are `consumable`, and a quest item with no file of its kind goes in
   `deck/items/quest_items.lua`. A potion is `potion` (`deck/items/potions.lua`), and one in a flask is `potion, flask`
-  (`deck/items/potions/flasks.lua`); the Potion flask itself is a `tool`. A potion's card is its full version: 4 doses,
+  (`deck/items/potions/flasks.lua`); the Potion flask itself is a `container`. A potion's card is its full version: 4 doses,
   or 6 for a flask, or the most there are if it has no such version; the tool uses that version's id and examine text, names the card
   without the dose, and leaves out the 2-dose mixes (Barbarian mixes) and the unfinished potions (add one by hand if it has a use of its own).
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
@@ -640,7 +643,7 @@ to guess.
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
 - `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
-- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `raw_material`: `log`, `ore`, `bone`, `hide`, `herb`, `gem`, `ingredient`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `potion`: `flask`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `container`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `raw_material`: `log`, `ore`, `bone`, `hide`, `herb`, `gem`, `ingredient`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `potion`: `flask`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 

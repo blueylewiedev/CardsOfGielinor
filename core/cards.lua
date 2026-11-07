@@ -221,7 +221,7 @@ end
 Cards.itemTagGroups = {
     category = {
         { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
-            "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", "consumable",
+            "tool", "container", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", "consumable",
             "armour", "jewellery", "pocket", "ammunition", "fashion", "novelty", "treasure_trail", "slayer_drop", "minigame", "discontinued",
             "junk" } },
         { title = "What kind of weapon", requires = "weapon",
