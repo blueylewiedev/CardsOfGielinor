@@ -122,6 +122,8 @@ augmented, Golden and Lucky weapons and pages with a bracketed suffix ("Scimitar
 many pages that is, and `--weapons melee --list` to see them (with tier and damage type, lowest tier
 first) before fetching any. The kind (scimitar, dagger...) comes from each page as usual.
 
+For **tools and containers**, use `--category Tools`, `--category Containers` and `--links-from "Skilling main hands"`. The wiki files a pickaxe under Melee weapons and a watering can under Containers, so the tool decides by itself: a page in Tools, Pickaxes, Hatchets, Mattocks or Tool belt, or linked from Skilling main hands, is `tool` only (no weapon words); an empty vessel (vial, bucket, jug, flask) is `container` only; a filled one (a cup of tea, a bucket of water) is tagged by what it holds. Stealing Creation tools ("(class 3)", Marker seeds, Proto-tool) are skipped as minigame variants.
+
 For a kind of item the wiki has no category for, `--links-from "Bars"` takes every page a list page links to (as if each
 was given with `--page`, and remembered the same way): the metal bars, whose list is the tables on the Bars page.
 `--list` shows what it would take before anything is fetched, and `--until HEADING` stops at a heading. A name that ends in

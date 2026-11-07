@@ -1107,6 +1107,69 @@ def dose_fields(page, fields):
     return chosen, dose
 
 
+# Tools and containers. The wiki files a pickaxe under Melee weapons, a watering can under Containers and a Stealing
+# Creation tool under Tools, so the categories alone tag them wrongly. A tool is a reusable implement you work with; a
+# container holds or stores things (a vessel you get back empty, or storage). An item is one or the other.
+TOOL_CATEGORIES = {"tools", "pickaxes", "hatchets", "mattocks", "tool belt"}
+MINIGAME_TOOL_CATEGORIES = {"stealing creation", "tools for games"}
+MINIGAME_TOOL_TITLE = re.compile(r"\((class \d|Stealing Creation)\)$", re.I)
+# What a filled container is named for: the contents decide the card (a cup of tea is a drink, a bucket of water an
+# ingredient), unless the name says it is the empty vessel.
+CONTENT_WORDS = {"food", "meal", "baked_goods", "fruit_veg", "drink", "potion", "ingredient", "raw_material",
+                 "processed_material", "meat", "fish"}
+EMPTY_VESSEL = re.compile(r"^empty\b|\(empty\)$|\b(vial|flask|jug|bucket|bowl|cup|pot|keg|barrel|kettle|teapot|glass|jar)$")
+_skilling_main_hands = None
+
+
+def skilling_main_hands():
+    """The names (lower case) of the pages the wiki's Skilling main hands list links to, from its cached page
+    (python dev/wiki_cards.py --links-from "Skilling main hands" saves it); empty if it was never fetched."""
+    global _skilling_main_hands
+    if _skilling_main_hands is None:
+        page = read_cache("pages", "Skilling main hands")
+        try:
+            _skilling_main_hands = {t.lower() for t in linked_pages(page["text"])} if page else set()
+        except (KeyError, ValueError):
+            _skilling_main_hands = set()
+    return _skilling_main_hands
+
+
+def minigame_tool(page):
+    """Whether a page is a Stealing Creation (or other minigame) tool: Pickaxe (class 3), Marker seeds, Proto-tool."""
+    return bool(MINIGAME_TOOL_TITLE.search(page.get("title", ""))
+                or MINIGAME_TOOL_CATEGORIES & {c.lower() for c in page.get("categories", [])})
+
+
+def settle_tool_or_container(found, page, name, notes):
+    """`found` (the category words so far) corrected for a tool or a container, and the notes added to."""
+    lowered = strip_bracket(name).lower()
+    categories = {c.lower() for c in page.get("categories", [])}
+    is_tool = bool(TOOL_CATEGORIES & categories) or lowered in skilling_main_hands() or page.get("title", "").lower() in skilling_main_hands()
+    if is_tool and not {"food", "drink", "potion"} & set(found):
+        # (a pickaxe is in Melee weapons and has bonuses, but it is a tool: no weapon words)
+        keep = [w for w in found if w in ("minigame", "discontinued")]
+        if "quest_item" in found:
+            notes.append("the wiki also files it under Quest items: tagged tool only, check it is not a quest-only version")
+        if "container" in found:
+            notes.append("in the wiki's Containers too: tagged tool, not container (it is worked with)")
+        if "weapon" in found:
+            notes.append("a skilling tool the wiki files as a weapon: tagged tool only")
+        return ["tool"] + keep
+    if "container" in found:
+        content = [w for w in found if w in CONTENT_WORDS]
+        if content and not EMPTY_VESSEL.search(lowered):
+            notes.append("a filled container: tagged by what it holds, not container: check it")
+            return [w for w in found if w not in ("container", "flask")]
+        if EMPTY_VESSEL.search(lowered):
+            # (a plain vessel is no quest item whatever the wiki says: the quest ones have a bracket, Bucket (Meiyerditch))
+            quest = ["quest_item"] if "quest_item" in found and strip_bracket(name) != name else []
+            if "quest_item" in found and not quest:
+                notes.append("the wiki also files it under Quest items: tagged container only, the quest versions are other pages")
+            return ["container"] + quest + [w for w in found if w in ("minigame", "discontinued")]
+        return [w for w in found if w != "flask"]
+    return found
+
+
 def candidate(page, names, words, price=None, drop=None):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
     `price` is the item's Grand Exchange price, if it was fetched."""
@@ -1143,6 +1206,8 @@ def candidate(page, names, words, price=None, drop=None):
         item_fields = template_fields(inside)
         if treasure_hunter_item(text, item_fields, page.get("categories", [])):
             return None, SKIPPED_TREASURE_HUNTER
+        if minigame_tool(page):
+            return None, "a Stealing Creation tool (a minigame variant): no card"
         _, bonuses = find_template(text, ["Infobox Bonuses"])
         for skipped_categories, reason in SKIPPED_POTIONS:
             if skipped_categories & set(page.get("categories", [])):
@@ -2074,6 +2139,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # (a clean herb is the grimy one after Herblore has cleaned it: a processed material)
     if "herb" in found and re.match(r"clean\b", strip_bracket(name).lower()):
         found = ["processed_material" if w == "raw_material" else w for w in found]
+    found = settle_tool_or_container(found, page, name, notes)
     category = []
     for word in found:
         parents = words["item_requires"].get(word, [])
