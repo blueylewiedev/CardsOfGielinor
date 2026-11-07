@@ -53,10 +53,22 @@ local function readKey(key)
     return (ok and type(saved) == "table") and saved or {}
 end
 
--- True if the database kept the value (it says false for one that is too big).
+-- Why the last write was refused (shown with the message, and written to the console), or nil.
+local lastWriteError = nil
+
+-- True if the database kept the value (it says false for one that is too big). A refusal is tried twice more, in case it
+-- was only busy for a moment, and the reason is kept in lastWriteError.
 local function writeKey(key, value)
-    local ok, result = pcall(function() return PersistentDB:SetStructuredData(key, value) end)
-    return ok and result and true or false
+    for attempt = 1, 3 do
+        local ok, result = pcall(function() return PersistentDB:SetStructuredData(key, value) end)
+        if ok and result then
+            lastWriteError = nil
+            return true
+        end
+        lastWriteError = ok and "it returned false" or tostring(result)
+    end
+    log("wiki review: the database refused", key, "(" .. tostring(lastWriteError) .. ")")
+    return false
 end
 
 local function bucketOf(page)
@@ -517,7 +529,8 @@ local function finish(verdict)
         return          -- (not queued: it stays on the list, not marked Done)
     end
     if not mark(candidate, verdict) then
-        queueMessage("Not marked: the database refused it, so this candidate stays on the list")
+        queueMessage("Not marked: the database refused it" .. (lastWriteError and (" (" .. lastWriteError .. ")") or "")
+            .. ", so this candidate stays on the list")
         return
     end
     for i, other in ipairs(remaining) do
