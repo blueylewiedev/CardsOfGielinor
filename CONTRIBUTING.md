@@ -172,7 +172,7 @@ animation filled in. Each row also shows the NPC's animation set, and so does th
 
    <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
 
-5. **Write a description** (up to 65 letters, shorter is better).
+5. **Write a description** (up to 80 letters, shorter is better).
 
    <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
 
@@ -308,7 +308,7 @@ against it. Choose it carefully.
 
 - The name is the NPC's name as it appears in the game.
 - The description is one short, friendly line in the style of the existing cards ("Sells axes
-  and strong opinions."). Keep it to 65 letters at most.
+  and strong opinions."). Keep it to 80 letters at most.
 - Keep everything suitable for all ages. No real people, no references to real-world events or
   accounts, no copying text from elsewhere.
 

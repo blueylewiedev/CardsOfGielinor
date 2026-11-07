@@ -79,7 +79,7 @@ Cards.odds = {
 Cards.list = {}
 
 -- The longest description that fits on a card (see desc above).
-Cards.MAX_DESC = 65
+Cards.MAX_DESC = 80
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
