@@ -63,7 +63,7 @@ each region's set has its own version.
 | | Ranged | Complete | |
 | | Magic | Complete | |
 | | Necromancy | Complete | |
-| **Armour: melee** | Helmet | Not started | |
+| **Armour: melee** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |

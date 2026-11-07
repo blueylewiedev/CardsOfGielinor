@@ -187,6 +187,7 @@ Set.cards = {
         art = { item = "OZAN2_TOMB_RELIC_SCABARAS", cam = { yaw = -4.74, dist = 643, ty = 9, tx = 20 } },
         tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } },
     },
+    { id = "ram_skull_helm", name = "Ram skull helm", kind = "item", rarity = "common", desc = "Makes me feel baaad to the bone.", art = { item = "RAG_RAM_HELM", cam = { yaw = -5.81, pitch = -0.23, dist = 248, ty = 73, tx = -4 } }, tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "quest_item", "fashion" }, membership = { "p2p" } } },
 }
 
 return Set

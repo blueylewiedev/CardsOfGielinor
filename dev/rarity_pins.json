@@ -8,6 +8,10 @@
     "rarity": "uncommon",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
   },
+  "black_mask": {
+    "rarity": "rare",
+    "why": "Rare as chosen in the Card Builder (2026-11-07); the rules give a different rarity"
+  },
   "blessed_flask": {
     "rarity": "legendary",
     "why": "Legendary as reviewed: Herblore and Crafting 118, but a level gives at most epic"
@@ -19,6 +23,10 @@
   "corrupt_morrigans_throwing_axe": {
     "rarity": "rare",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_statiuss_full_helm": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
   },
   "corrupt_vestas_longsword": {
     "rarity": "rare",
@@ -35,6 +43,10 @@
   "earth_battlestaff": {
     "rarity": "uncommon",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "elite_black_full_helm": {
+    "rarity": "uncommon",
+    "why": "Uncommon as chosen in the Card Builder (2026-11-07); the rules give a different rarity"
   },
   "fire_battlestaff": {
     "rarity": "uncommon",
@@ -124,6 +136,10 @@
     "rarity": "epic",
     "why": "hundreds of hours to obtain, which the wiki data does not show"
   },
+  "refined_anima_core_helm_of_zaros": {
+    "rarity": "epic",
+    "why": "Epic as chosen in the Card Builder (2026-11-07); the rules give a different rarity"
+  },
   "staff": {
     "rarity": "common",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
@@ -144,6 +160,10 @@
     "rarity": "common",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
   },
+  "statiuss_full_helm": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
   "steam_battlestaff": {
     "rarity": "uncommon",
     "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
@@ -159,6 +179,10 @@
   "superior_morrigans_throwing_axe": {
     "rarity": "legendary",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_statiuss_full_helm": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
   },
   "superior_vestas_longsword": {
     "rarity": "legendary",

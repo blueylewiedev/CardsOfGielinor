@@ -1459,6 +1459,7 @@ LEVEL_BANDS = [(90, "epic"), (70, "rare"), (40, "uncommon")]    # level needed
 COMBAT_BANDS = [(150, "epic"), (100, "rare"), (70, "uncommon")]
 PRICE_BANDS = [(50_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
 DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
+ARMOUR_PRICE_FREE = 50_000_000      # (from this price an armour piece gets its price's rarity in full: see item_rarity)
 PET_CATEGORY = re.compile(r"\bpets?$")
 DISCONTINUED_CATEGORY = re.compile(r"discontinued|unobtainable")
 
@@ -1471,7 +1472,8 @@ def band(value, bands):
     return "common"
 
 
-def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False, source=None):
+def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False, source=None,
+                armour=False):
     """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
     (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its most common drop
     rate of 1 in N, `shop` whether a shop sells it, `source` the easiest monster or other source it drops
@@ -1481,7 +1483,9 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
     level gives epic at most), with two limits on the drop rate: an item a shop sells ignores it
     (anyone can buy a mind rune, whatever monsters drop it), and one with a price is held to the
     rarity of that price, plus one step once the price is 50k or more (the corrupt dragon weapons
-    drop at 1 in 28,672 and sell for a few thousand coins)."""
+    drop at 1 in 28,672 and sell for a few thousand coins). For armour (`armour`) the price counts for less, so that a
+    price drifting across a band's edge does not keep changing cards: it raises the rarity by one step at most above
+    what the other signals give, except from 50 million up (a third age helm, a legendary by price)."""
     given = []
     if pet:
         given.append(("legendary", "a pet"))
@@ -1508,6 +1512,11 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
         given.append((RARITIES[tier], "easiest drop source: " + ", ".join(parts)))
     if not given:
         return "common", ["no signal"]
+    if armour and price is not None and price < ARMOUR_PRICE_FREE:
+        others = [RARITIES.index(r) for r, why in given if not why.startswith("GE price")]
+        if others and RARITIES.index(band(price, PRICE_BANDS)) > max(others) + 1:
+            given = [(RARITIES[max(others) + 1], why + ", held to one step above its other signals")
+                     if why.startswith("GE price") else (r, why) for r, why in given]
     best = max(RARITIES.index(r) for r, _ in given)
     return RARITIES[best], [f"{why} ({rarity})" for rarity, why in given]
 
@@ -2332,7 +2341,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     rarity, why = item_rarity(
         level=level, price=price, drop=round(drop) if drop else None, shop=sold, source=easiest,
         pet=any(PET_CATEGORY.search(c) for c in categories),
-        discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
+        discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories),
+        armour=bool({"armour", "skill_outfit"} & set(category)))
     notes.append("rarity is a guess: " + ", ".join(why))
     if price is None:
         notes.append("no Grand Exchange price found (not tradeable?)")

@@ -110,6 +110,41 @@ def work_out(cards):
     return rated, left
 
 
+SHARE_GAP = 2      # (a variant this many steps above its base item has its own rarity: a vast difference)
+
+
+def base_name(name):
+    """The name of the plain item a treasure trail version is of: "Rune full helm (g)" and "Rune full helm (Zamorak)" are
+    "Rune full helm", and a heraldic "Rune helm (h1)" is the "Rune full helm"."""
+    plain_name = re.sub(r"\s*\([^)]*\)$", "", name)
+    if re.search(r"\(h\d\)$", name):
+        plain_name = re.sub(r" helm$", " full helm", plain_name)
+    return plain_name
+
+
+def share_with_base(cards, rated):
+    """The pieces of a treasure trail set share their plain item's rarity (a gold-trimmed rune full helm is a rune full helm,
+    whatever the Grand Exchange says this week), unless the rules put one SHARE_GAP or more steps above it. Changes `rated`
+    in place and returns how many cards it moved."""
+    by_name = {c["name"].lower(): c for c in cards}
+    moved = 0
+    for card in cards:
+        category = card["tags"].get("category", [])
+        if "armour" not in category or "treasure_trail" not in category or card["id"] not in rated:
+            continue
+        base = by_name.get(base_name(card["name"]).lower())
+        if base is None or base["id"] == card["id"] or base["id"] not in rated:
+            continue
+        own, shared = rated[card["id"]], rated[base["id"]]["new"]
+        if own["by"] == "pin" or ORDER.index(own["new"]) - ORDER.index(shared) >= SHARE_GAP:
+            continue
+        if own["new"] != shared:
+            moved += 1
+        own["new"], own["by"] = shared, "set"
+        own["why"] = list(own.get("why", [])) + [f"shares the rarity of {base['name']} ({shared})"]
+    return moved
+
+
 def rewrite_deck(new):
     """Sets rarity = "..." on each card in `new` ({ id: rarity }) in the deck files. Returns the ids done."""
     done = set()
@@ -138,6 +173,7 @@ def main():
     cards = [c for c in json.loads((ROOT / "docs" / "cards.json").read_text(encoding="utf-8"))["cards"]
              if c["kind"] == "item"]
     rated, left = work_out(cards)
+    shared = share_with_base(cards, rated)
     old = {c["id"]: c["rarity"] for c in cards}
     name = {c["id"]: c["name"] for c in cards}
     changes = {cid: r["new"] for cid, r in rated.items() if r["new"] != old[cid]}
@@ -146,7 +182,8 @@ def main():
     print(f"{len(cards)} item cards: {len(rated)} rated, {len(left)} left as they are")
     print("  from the rules:", sum(r["by"] == "rules" for r in rated.values()),
           "| pinned:", sum(r["by"] == "pin" for r in rated.values()),
-          "| no signal, kept:", sum(r["by"] == "no signal" for r in rated.values()))
+          "| no signal, kept:", sum(r["by"] == "no signal" for r in rated.values()),
+          "| shared with a base item:", sum(r["by"] == "set" for r in rated.values()))
     print("  new spread:", ", ".join(f"{k} {100 * share[k] / len(rated):.1f}%" for k in ORDER))
     moves = collections.Counter((old[c], new) for c, new in changes.items())
     print(f"  {len(changes)} cards change:")
