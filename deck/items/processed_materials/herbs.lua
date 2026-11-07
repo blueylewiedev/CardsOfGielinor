@@ -200,6 +200,36 @@ Set.cards = {
         art = { item = "RAND_HERB_4", cam = { yaw = 0.80, pitch = 1.05, dist = 397, fov = 35, ty = 40, tx = 10 } },
         tags = { regions = { "daemonheim" }, skills = { "herblore", "dungeoneering" }, category = { "processed_material", "herb" }, membership = { "p2p" } },
     },
+    {
+        id = "clean_ardrigal", name = "Clean ardrigal", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "ARDRIGAL", cam = { fov = 40, ty = 20 } },
+        tags = { regions = { "karamja" }, skills = { "herblore" }, category = { "processed_material", "herb", "quest_item" }, membership = { "p2p" } },
+    },
+    {
+        id = "clean_rogues_purse", name = "Clean rogue's purse", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "ROGUES_PURSE", cam = { fov = 40, ty = 20 } },
+        tags = { regions = { "karamja" }, skills = { "herblore" }, category = { "processed_material", "herb", "quest_item" }, membership = { "p2p" } },
+    },
+    {
+        id = "clean_sito_foil", name = "Clean sito foil", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "SITO_FOIL", cam = { fov = 40, ty = 20 } },
+        tags = { regions = { "karamja" }, skills = { "herblore" }, category = { "processed_material", "herb", "quest_item" }, membership = { "p2p" } },
+    },
+    {
+        id = "clean_snake_weed", name = "Clean snake weed", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "SNAKE_WEED", cam = { fov = 40, ty = 20 } },
+        tags = { regions = { "karamja" }, skills = { "herblore" }, category = { "processed_material", "herb", "quest_item" }, membership = { "p2p" } },
+    },
+    {
+        id = "clean_volencia_moss", name = "Clean volencia moss", kind = "item", rarity = "common",
+        desc = "A fresh herb.",
+        art = { item = "VOLENCIA_MOSS", cam = { fov = 40, ty = 20 } },
+        tags = { regions = { "karamja" }, skills = { "herblore" }, category = { "processed_material", "herb", "quest_item" }, membership = { "p2p" } },
+    },
 
 }
 
