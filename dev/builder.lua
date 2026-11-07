@@ -2168,6 +2168,12 @@ end
 -- the wiki categories the candidate came from ("Logs").
 function Builder.itemDeckNames(category, sources)
     local names = {}
+    -- A treasure trail reward (a trimmed helm, a cane) has its own file, whatever it is.
+    for _, word in ipairs(category) do
+        if word == "treasure_trail" then
+            names[#names + 1] = "deck/items/treasure_trails"
+        end
+    end
     local first = category[1]
     if first ~= nil and first ~= "" then
         -- The folder: the word in the plural, which is how they are named, then as it is.

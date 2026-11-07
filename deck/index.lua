@@ -100,6 +100,20 @@ return {
 
     -- Armours (By equipment slot, the combat style is a tag)
     "deck/items/armours/back",
+    "deck/items/armours/helmets",
+    "deck/items/armours/bodies",
+    "deck/items/armours/legs",
+    "deck/items/armours/gloves",
+    "deck/items/armours/boots",
+    "deck/items/armours/off_hands",
+
+    -- Skill outfits and skill capes (By equipment slot, the same as armour)
+    "deck/items/skill_outfits/helmets",
+    "deck/items/skill_outfits/bodies",
+    "deck/items/skill_outfits/legs",
+    "deck/items/skill_outfits/gloves",
+    "deck/items/skill_outfits/boots",
+    "deck/items/skill_outfits/back",
 
     -- Cosmetics
     "deck/items/fashions/general",
