@@ -211,5 +211,73 @@
   "zuriels_staff": {
     "rarity": "epic",
     "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "dagonhai_hat": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "dark_mystic_hat": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "focus_sight": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "hexcrest": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "corrupt_morrigans_coif": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "corrupt_zuriels_hood": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "elite_robin_hood_hat": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "elite_tectonic_mask": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was epic"
+  },
+  "morrigans_coif": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "refined_anima_core_helm_of_seren": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "refined_anima_core_helm_of_zamorak": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "robin_hood_hat": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "wizard_hat_g": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was common"
+  },
+  "wizard_hat_t": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was common"
+  },
+  "zuriels_hood": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "superior_morrigans_coif": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "superior_zuriels_hood": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
   }
 }
