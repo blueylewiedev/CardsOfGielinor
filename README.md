@@ -84,21 +84,21 @@ each region's set has its own version.
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: necromancy** | Helmet | Not started | Same slots as melee |
+| **Armour: necromancy** | Helmet | Complete | Same slots as melee |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: hybrid** | Helmet | Not started | Pieces with no single combat style (`hybrid_gear`) |
+| **Armour: hybrid** | Helmet | Complete | Pieces with no single combat style (`hybrid_gear`) |
 | | Body | Not started |  |
 | | Legs | Not started |  |
 | | Gloves | Not started |  |
 | | Boots | Not started |  |
 | | Off-hand | Not started |  |
 | | Back | Not started |  |
-| **Skill outfits** | Helmet | Not started | Skill outfits and skill capes: `skill_outfit`, no combat style |
+| **Skill outfits** | Helmet | In Progress | Skill outfits and skill capes: `skill_outfit`, no combat style. Not carded yet: Sous chef's toque; Farmer's hat and Shaman's headdress are Treasure Hunter items |
 | | Body | Not started |  |
 | | Legs | Not started |  |
 | | Gloves | Not started |  |

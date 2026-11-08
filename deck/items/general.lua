@@ -46,6 +46,7 @@ Set.cards = {
         art = { item = "DUEL_ARENA_REMOVAL_EXTRA_SPICY_CRUNCHIES", cam = { yaw = 1.03, pitch = 0.89, dist = 186, fov = 60, ty = -4, tx = 8 } },
         tags = { skills = { "cooking" }, membership = { "p2p" } },
     },
+    { id = "mod_hat", name = "Mod hat", kind = "item", rarity = "legendary", desc = "Makes you feel like a mod.", art = { item = "JMOD_ARMOUR_HAT", cam = { yaw = -6.28, pitch = 1.04, dist = 169, ty = -6, tx = -1 } }, tags = { membership = { "f2p" } } },
 }
 
 return Set
