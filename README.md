@@ -70,14 +70,14 @@ each region's set has its own version.
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: ranged** | Helmet | Not started | Same slots as melee |
+| **Armour: ranged** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: magic** | Helmet | Not started | Same slots as melee |
+| **Armour: magic** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
