@@ -279,5 +279,161 @@
   "superior_zuriels_hood": {
     "rarity": "legendary",
     "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "fishing_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "archaeologists_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "artisans_bandana": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "black_ibis_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "blacksmiths_helmet": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "botanists_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "first_age_tiara": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "diviners_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "exoskeleton_headband": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "factory_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "fletchers_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "golden_mining_helmet": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "hunters_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "nimble_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "ritualists_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "constructors_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "lumberjack_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "master_runecrafter_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "witchdoctor_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "ghost_hunter_goggles": {
+    "rarity": "common",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was epic"
+  },
+  "infinity_hat": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was legendary"
+  },
+  "intricate_decorative_helm": {
+    "rarity": "common",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "masterwork_magic_hat": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was legendary"
+  },
+  "spectral_lens": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "attuned_crystal_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "dragon_rider_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "dragonstone_helm": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "gemstone_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "profound_decorative_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "refined_anima_core_helm_of_sliske": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "relic_helm_of_armadyl": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_bandos": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_saradomin": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_seren": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_sliske": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_zamorak": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_zaros": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_the_godless": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "seers_headband_4": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was common"
   }
 }
