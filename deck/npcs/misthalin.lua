@@ -1584,7 +1584,7 @@ Set.cards = {
         tags = { location = { "wizards_tower" }, category = { "humanoid", "wizard" }, membership = { "p2p" } },
     },
     {
-        id = "babe", name = "Babe", rarity = "common",
+        id = "babe", name = "Babe", rarity = "uncommon",
         desc = "How can an ox without lungs sneeze like that?",
         art = { npc = "SWEPT_SKELETAL_COW_NPC", model = 42737, anim = 10549, cam = { yaw = 0.51, pitch = 0.30, dist = 1137, fov = 47, ty = 344, tx = -26 } },
         tags = { location = { "maggie", "draynor" }, category = { "skeleton_cow" }, membership = { "f2p" } },
@@ -3846,7 +3846,7 @@ Set.cards = {
         tags = { location = { "thieves_guild" }, category = { "humanoid", "thief" }, membership = { "p2p" } },
     },
     {
-        id = "muncher", name = "Muncher", rarity = "common",
+        id = "muncher", name = "Muncher", rarity = "uncommon",
         desc = "Only the Grim Reaper would have a pet like this.",
         art = { npc = "ADVISOR_SKELETAL_HELLHOUND", anim = 33675, cam = { yaw = 1.34, pitch = 0.30, dist = 1504, fov = 24, ty = 105, tx = -47 } },
         tags = { location = { "death_s_mansion", "city_of_um" }, category = { "undead", "shopkeeper" }, membership = { "f2p" } },
@@ -3996,7 +3996,7 @@ Set.cards = {
         tags = { location = { "nomad_s_temple", "sliske_s_endgame", "soul_wars" }, category = { "humanoid", "shopkeeper", "thief" }, membership = { "p2p" } },
     },
     {
-        id = "norman", name = "Norman", rarity = "common",
+        id = "norman", name = "Norman", rarity = "uncommon",
         desc = "A strong ox, no bones about it.",
         art = { npc = "SWEPT_SKELETAL_BULL_NPC", model = 42735, anim = 10548, cam = { yaw = -0.21, pitch = 0.30, dist = 1513, fov = 35, ty = 324, tx = 62 } },
         tags = { location = { "maggie", "draynor" }, category = { "skeleton_cow" }, membership = { "f2p" } },

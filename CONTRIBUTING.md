@@ -368,6 +368,13 @@ The gods' emissaries (the wiki's God Emissaries, such as Julienne, Emissary of S
 least **uncommon**: one the rules rate common is raised to uncommon, and one rated higher keeps
 its rarity (Relomia, Emissary of Sliske, in 7 quests, is rare).
 
+The Horsemen of the Apocalypse (Death and War so far) are **epic**. The holidays' figureheads
+(Santa Claus, the Queen of Snow, Jack Frost and the Easter Bunny) are **rare**. Other characters who
+came with a holiday event (first released in a Halloween, Christmas, Easter, Thanksgiving or
+Valentine's update, and filed under a holiday event, such as Fame, Muncher and Norman) are at least
+**uncommon**, raised like the emissaries. Regulars who only took part in an event (Hans, Reldo) and
+holiday pets follow the rules above.
+
 Summoning familiars: add a bonus for what the pouch takes to the familiar's Summoning level,
 then read the rarity off the total. Familiars never go above epic.
 

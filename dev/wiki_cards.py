@@ -1071,6 +1071,12 @@ SKIPPED_PAGES = {"Mystery figure": "the disguised champions: Leon d'Cour and Glo
 SHATTERED_WORLDS_COPY = re.compile(r"^(Abnormal|Fabricated|False|Imitation|Malignant|Unnatural) ")
 SKIPPED_SHATTERED_WORLDS = "a Shattered Worlds copy of another monster"
 
+# The Uncharted Isles' copies of other monsters, the islands' slayer-style kill targets ("Zombie
+# (Uncharted Isles)", "Crassian scout (Uncharted Isles)"): the bracket names the isles. Their own
+# creatures (the crablets, the kami, Cocoa Macaw) have plain titles and are kept, the orokami too:
+# the isles' versions of the bakami, but with names and Hunter levels of their own.
+SKIPPED_UNCHARTED_ISLES = "an Uncharted Isles copy of another monster"
+
 # Heist's disguises, the NPCs the robbers can "Take form" of ("Kharidian guard", "Ahrim the Blighted
 # (Heist)"): copies of NPCs from elsewhere. Not Heist's own NPCs (Sir Vyvin, filed under it too).
 SKIPPED_HEIST = "a Heist disguise (a copy of an NPC from elsewhere)"
@@ -1325,6 +1331,8 @@ def candidate(page, names, words, price=None, drop=None):
         return None, skipped
     if "Shattered Worlds" in page.get("categories", []) and SHATTERED_WORLDS_COPY.match(page.get("title", "")):
         return None, SKIPPED_SHATTERED_WORLDS
+    if "Uncharted Isles" in page.get("categories", []) and page.get("title", "").endswith(" (Uncharted Isles)"):
+        return None, SKIPPED_UNCHARTED_ISLES
     text = page.get("text", "")
     # An NPC's infobox; a pet with only a pet infobox (the terrier, the Golden gnome) has that one;
     # an object pet whose page only has an item infobox (Eek) is the NPC named like it, with that
@@ -1454,6 +1462,7 @@ SCENERY_ART = {
     "Babe": {"model": 42737, "anim": 10549},        # scenery 39239, SWEPT_OXEN_COW
     "Norman": {"model": 42735, "anim": 10548},      # scenery 39238, SWEPT_OXEN_BULL
     "Bartender (Blue Moon Inn)": {"model": 51096, "anim": 1567},    # scenery 12964/95961, his NPC's model is a stub
+    "Farli": {"model": 96427, "anim": 12212},      # scenery 45091, at his spit roast (SPITROAST_DWARF_NEW)
     # (at their drums, scenery 127150, DRUM_PLAYING_IDLE; 127151 plays DRUM_PLAYING_SOMBRE_IDLE, 35442)
     "The Spirit of Rhythm": {"model": 128796, "anim": 35441},
     # (HUMAN_ZOMBIE_PLAYING_PIANO, as his pianist NPC plays it; the piano is other scenery, left out)
@@ -2829,12 +2838,38 @@ NPC_RARITY = {
     "Curator Haig Halen": ("epic", "sells the master quest cape"),
     "Minerva": ("epic", "sells the master max cape"),
     "Golden Gnome": ("legendary", "the Golden Gnome, awarded at RuneFest"),
+    # The Horsemen of the Apocalypse (Famine and Pestilence have no NPC yet, November 2026).
+    "Death": ("epic", "a Horseman of the Apocalypse"),
+    "War": ("epic", "a Horseman of the Apocalypse"),
+    "Famine": ("epic", "a Horseman of the Apocalypse"),
+    "Pestilence": ("epic", "a Horseman of the Apocalypse"),
+    # The holidays' own figureheads (other holiday characters: see HOLIDAY_RARITY).
+    "Santa Claus": ("rare", "a holiday's figurehead"),
+    "Queen of Snow": ("rare", "a holiday's figurehead"),
+    "Jack Frost": ("rare", "a holiday's figurehead"),
+    "Easter Bunny": ("rare", "a holiday's figurehead"),
 }
 # The least rarity of the NPCs in a wiki category, and what they are: one the rules rate lower is
 # raised to it (one rated higher keeps its rarity: Relomia, in 7 quests, is rare).
 RARITY_FLOORS = {
     "God Emissaries": ("uncommon", "a god's emissary"),
 }
+# Characters who came with a holiday event, at least uncommon like the emissaries (Fame, Death's
+# assistant at Halloween; Muncher): their first version's update is a holiday's and the wiki files
+# them under a holiday event ("2011 Halloween event", "Valentine's Day 2016"). Both are needed:
+# Hans and Reldo are filed under Christmas events they appeared in, and Myths of the White Lands'
+# yeti came out in a "Christmas Event and Quest" update.
+HOLIDAY = re.compile(r"Halloween|Hallowe'en|Christmas|Easter|Thanksgiving|Valentine", re.I)
+HOLIDAY_RARITY = "uncommon"
+
+
+def holiday_character(page, fields, character):
+    """True for a character who came with a holiday event (see HOLIDAY_RARITY); not a pet, which goes
+    by how it is got."""
+    categories = page.get("categories", [])
+    events = [c for c in categories if HOLIDAY.search(c) and ("event" in c.lower() or re.search(r"\d{4}", c))]
+    return (character and "Pets" not in categories and bool(events)
+            and HOLIDAY.search(first_version(fields, "update") or "") is not None)
 # Shattered Worlds' own NPCs, by what they are: the wiki files them all under Shattered Worlds and
 # none as a boss, and their combat levels are scaled to the world (the generals' 580 to 650 are
 # their highest). The God Wars parodies are epic like the generals; its other bosses, the Barrows
@@ -2898,6 +2933,8 @@ def npc_rarity(page, fields, character, named, words):
     for category, (floor, what) in RARITY_FLOORS.items():
         if category in page.get("categories", []) and RARITIES.index(rarity) < RARITIES.index(floor):
             rarity, why = floor, f"{what}, at least {floor}; the rules give {rarity}: {why}"
+    if holiday_character(page, fields, character) and RARITIES.index(rarity) < RARITIES.index(HOLIDAY_RARITY):
+        rarity, why = HOLIDAY_RARITY, f"a holiday character, at least {HOLIDAY_RARITY}; the rules give {rarity}: {why}"
     return rarity, why
 
 
