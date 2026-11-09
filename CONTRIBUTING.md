@@ -320,7 +320,7 @@ them. Go down the list and stop at the first one that fits:
 | 1 | A god (filed under the wiki's Gods, such as Zamorak, Saradomin or Azzanadra) | **Legendary** | Zamorak, Saradomin |
 | 2 | A pet | **Common** to **legendary**, by how it is got (see below) | Rocky, Trevor, terrier |
 | 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
-| 4 | A Guthixian Cache automaton, a Runespan creature (essling, esshound, esswraith) or a Divination wisp | **Common** to **epic**, by the Divination level to subdue or harvest it or the Runecrafting level to siphon it, on the familiars' bands (see below) | Confused automaton, Soul esswraith, Brilliant wisp |
+| 4 | A Guthixian Cache automaton, a Runespan creature (essling, esshound, esswraith) or a Divination wisp or spring | **Common** to **epic**, by the Divination level to subdue or harvest it or the Runecrafting level to siphon it, on the familiars' bands (see below) | Confused automaton, Soul esswraith, Brilliant wisp, Ancestral energy |
 | 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat or dragonkin boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
 | 6 | A Mahjarrat, or a dragonkin with a name or fought as a boss (not their Nodon soldiers) | **Epic** | Lucien, Hazeel, Kerapac, Strisath |
 | 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
@@ -328,7 +328,7 @@ them. Go down the list and stop at the first one that fits:
 | 9 | A role (a cook, a guardsman) in 2 or more quests | **Uncommon** | Cook (Lumbridge) |
 | 10 | A Slayer monster from Slayer level 5 | **Uncommon** | Cave crawler, Cave bug |
 | 11 | Found almost everywhere (60 or more spawns), whatever its level | **Common** | Goblin, Giant rat, Chicken |
-| 12 | A Hunter creature or an NPC to pickpocket, with no combat level | **Common** to **epic**, by the Hunter or Thieving level it needs, on the familiars' bands (see below) | Crimson swift, Kingly impling, Man |
+| 12 | A Hunter creature, an NPC to pickpocket or one mined like a rock (the Arc's crablets), with no combat level | **Common** to **epic**, by the Hunter, Thieving or Mining level it needs, on the familiars' bands (see below) | Crimson swift, Kingly impling, Man, Alaea crablet |
 | 13 | Combat level 100 or more | **Rare** | |
 | 14 | Combat level 30 or more | **Uncommon** | |
 | 15 | A named quest NPC the wiki gives no gender (not an animal) | **Uncommon** | Angurvadal |
@@ -340,6 +340,14 @@ A few NPCs are set by hand, where the rules can't see what makes them matter: Sl
 legendary as gods. A skill master, who sells a skillcape, is at least rare, so the sellers of the
 capes above it are **epic**: Max and Elen Anterth (max cape), Curator Haig Halen (master quest
 cape) and Minerva (master max cape).
+
+Shattered Worlds is set by what each NPC is, because the wiki files none of its bosses as bosses
+and their combat levels scale with the world. Its copies of other monsters (Abnormal, Fabricated,
+False, Imitation, Malignant and Unnatural ones) get no cards. The God Wars parodies (Generally
+Graardor, Kree'arranged, K'ril Too'tsaroth, Commandeered Zilyana) are **epic**. Its other bosses,
+the Barrows and Dagannoth Kings parodies and Chaos Experimental, are **rare**. The anima creature
+pets go by their reward-shop tier: **uncommon** for tiers 1 to 3, **rare** for 4 to 6 and **epic**
+for 7 to 9. The Abyssal hound is **legendary**. The hub's NPCs follow the rules above.
 
 The gods' emissaries (the wiki's God Emissaries, such as Julienne, Emissary of Saradomin) are at
 least **uncommon**: one the rules rate common is raised to uncommon, and one rated higher keeps
@@ -366,8 +374,9 @@ then read the rarity off the total. Familiars never go above epic.
 Two are set by hand: Meerkats are **rare** (they only come from Treasure Trails) and the Ghast
 is **epic**.
 
-Hunter creatures and NPCs to pickpocket read it too, with the level they need (no bonus): an
-impling caught at level 17 is **common**, at 91 **epic**.
+Hunter creatures, NPCs to pickpocket and NPCs mined like rocks read it too, with the level they
+need (no bonus): an impling caught at level 17 is **common**, at 91 **epic**; an alaea crablet,
+mined at 97, is **epic**.
 
 Automatons read the same table with the Divination level needed to subdue them (no bonus): the
 ancient automaton (none needed) is **common**, the confused (45) **uncommon**, the enraged (85) **rare**.
