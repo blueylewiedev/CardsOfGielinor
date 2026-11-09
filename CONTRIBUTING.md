@@ -76,7 +76,10 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
 2. In the game, `prf`, then open **Wiki Review**. **Load into Card Builder** fills the builder in;
    check and change anything that is wrong (the tags and rarity are only guesses), try the other
    models with **Next model**, frame the art, and copy the block as below. Then press **Done**, or
-   **Skip** for one that shouldn't be a card. Cards already in the deck are left out.
+   **Skip** for one that shouldn't be a card, or **Later** for one that should be but can't be
+   made yet (a tag or deck file it needs doesn't exist). The **Later** button in the header
+   brings back only those, and the **Skipped** button only the skipped ones. Cards already in
+   the deck are left out.
    **Next model** only offers models that look different: `dev/wiki_cards.py` compares their parts
    and colours in the client's cache (`dev/npc_looks.py`), and keeps every model if there's no cache.
 
@@ -118,6 +121,18 @@ augmented, Golden and Lucky weapons and pages with a bracketed suffix ("Scimitar
 "(Dominion Tower)"), which are variants of another page, are left out (`WEAPON_SKIP`), and so are off-hand thrown weapons (an off-hand dart is the same item), Abyssal crossbows and "Mk. 5" upgrades. Try `--weapons melee --count` first to see how
 many pages that is, and `--weapons melee --list` to see them (with tier and damage type, lowest tier
 first) before fetching any. The kind (scimitar, dagger...) comes from each page as usual.
+
+For **tools and containers**, use `--category Tools`, `--category Containers` and `--links-from "Skilling main hands"`. The wiki files a pickaxe under Melee weapons and a watering can under Containers, so the tool decides by itself: a page in Tools, Pickaxes, Hatchets, Mattocks or Tool belt, or linked from Skilling main hands, is `tool` only (no weapon words); an empty vessel (vial, bucket, jug, flask) is `container` only; a filled one (a cup of tea, a bucket of water) is tagged by what it holds. Stealing Creation tools ("(class 3)", Marker seeds, Proto-tool) are skipped as minigame variants.
+
+For **armour**, `--armour SLOT` (head, body, legs, hands, feet, shield or cape) with `--style STYLE` (melee, ranged, magic, necromancy, hybrid, or other for any class that is none of those) lists the pieces from the wiki's structured data (Bucket:Infobox_bonuses): `--armour head --style melee --count` first, then `--list`, then the same without them to fetch. Without `--style` every style is listed. Cosmetic recolours, `+ N` upgrades, augmented, golden and lucky versions and the `(charged)`, `(e)`, `(broken)` and `(class N)` copies are left out (`ARMOUR_SKIP`). Every slot goes in one deck file whatever the style, in `deck/items/armours/` (helmets, bodies, legs, gloves, boots, off_hands, back); the style is the `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear` or `hybrid_gear` tag. Skill outfits and skill capes are `skill_outfit` with a slot word and no style, in `deck/items/skill_outfits/` by slot. The trimmed, gold, heraldic and god-themed pieces (the wiki's "Treasure Trails rewards") are tagged `treasure_trail` as well and go in `deck/items/treasure_trails.lua`, whatever they are.
+
+For a kind of item the wiki has no category for, `--links-from "Bars"` takes every page a list page links to (as if each
+was given with `--page`, and remembered the same way): the metal bars, whose list is the tables on the Bars page.
+`--list` shows what it would take before anything is fetched, and `--until HEADING` stops at a heading. A name that ends in
+"bar" and is filed under Metals or Smithing is suggested as `processed_material, bar`, in
+`deck/items/processed_materials/bars.lua`; one that ends in "plank" or "planks" and is filed under Construction
+(the Sawmill page lists them: `--links-from "Sawmill"`) as `processed_material, plank`, in
+`deck/items/processed_materials/planks.lua`.
 
 Please be gentle with the wiki: the script only uses its API, makes one request every two seconds
 at most, stops after 30 requests a run (`--max-requests`), and keeps every answer in
@@ -161,7 +176,7 @@ animation filled in. Each row also shows the NPC's animation set, and so does th
 
    <img width="580" height="194" alt="image" src="https://github.com/user-attachments/assets/fcc4bdba-e57d-4238-bbb9-3b84cf04e73d" />
 
-5. **Write a description** (up to 65 letters, shorter is better).
+5. **Write a description** (up to 80 letters, shorter is better).
 
    <img width="913" height="423" alt="image" src="https://github.com/user-attachments/assets/e3493df2-0ad3-4876-9709-f38269f5bb6f" />
 
@@ -297,7 +312,7 @@ against it. Choose it carefully.
 
 - The name is the NPC's name as it appears in the game.
 - The description is one short, friendly line in the style of the existing cards ("Sells axes
-  and strong opinions."). Keep it to 65 letters at most.
+  and strong opinions."). Keep it to 80 letters at most.
 - Keep everything suitable for all ages. No real people, no references to real-world events or
   accounts, no copying text from elsewhere.
 
@@ -561,7 +576,10 @@ need it.
 **Choosing a category for an item.** Say what it is used for: `raw_material` for something that is
 gathered and then made into something else (logs, a herb), `processed_material` for something made
 from that (planks, bars), `craftable` for weapons and armour that can be crafted and are not only dropped, 
-and `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency` or `decoration`. 
+`ingredient` (with `raw_material`, or `processed_material` for one made from something) for what is
+cooked with and not eaten (yeast, butter, cream: the wiki's category Cooking), and `food`, `drink`, `potion`,
+`tool`, `container`, `rune`, `seed`, `quest_item`, `currency` or `decoration`, and `skill_outfit` for a skilling outfit or skill cape (with its slot word). 
+A `tool` is a reusable implement you work with (a hammer, a pickaxe, a fishing rod); a `container` holds or stores things: a vessel you get back empty (vial, bucket, jug, bowl, pot, flask, waterskin) or storage (ore box, log basket, rune pouch). An item is one or the other, not both.
 Something that is worn, wielded or fired is tagged with what it is: `weapon`, `armour`, `jewellery`,
 `pocket` (the pocket slot) or `ammunition`. Each of those opens a last choice in the tag picker: the kind 
 of weapon (`sword`, `longbow`, `staff`...), the armour slot (`helmet`, `legs`...), the jewellery slot (`ring` or `neck`) or
@@ -579,9 +597,28 @@ Some words have more to say about the kind, and open their own choice once the w
 - `weapon`, `armour`, `jewellery` or `ammunition` open the **combat style**: `melee_gear`, `ranged_gear`,
   `magic_gear`, `necromancy_gear` or `hybrid_gear` (the wiki's "class" of the item). The words end in
   `_gear` so they are not mistaken for the skills of the same names.
-- `food` opens `meal`, `baked_goods` and `fruit_veg`; `raw_material` opens `log`, `ore`, `bone`,
-  `hide`, `herb` and `gem`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the grimy one
-  is the raw material, cleaning it with Herblore makes it a processed one) and `gem` (a cut gem).
+- `food` opens `meal`, `baked_goods`, `fruit_veg` and `raw_food`; `raw_material` opens `log`, `ore`, `bone`,
+  `hide`, `herb`, `gem` and `ingredient`; `processed_material` opens `bar`, `plank`, `herb` (a clean herb: the
+  grimy one is the raw material, cleaning it with Herblore makes it a processed one), `gem` (a cut gem) and
+  `ingredient`. An ingredient goes in `deck/items/raw_materials/ingredients.lua`, or
+  `deck/items/processed_materials/ingredients.lua` if it is made from something (butter, flour). The wiki tool also
+  suggests it for an intermediate: an item no category classifies that a recipe makes and other recipes use (a
+  dry rabbit sandwich, made of bread and rabbit and used to make a rabbit sandwich). Food goes in
+  `deck/items/food/` by kind: `meals.lua` (soups, pizzas, dishes), `baked_goods.lua` (pies, bread),
+  `fruit_veg.lua`, `meat.lua`, `raw_food.lua` and `cooked_fish.lua`; drinks go in `deck/items/drinks.lua`.
+  The wiki's Produce category makes a food a fruit or vegetable. Sandwiches, wraps, stews and soups are meals and
+  pies are baked goods, whatever is in them. A food nothing says the kind of is suggested as a meal (the note
+  says it is a guess). Dough is a processed ingredient, and bait and swamp paste are consumable. Any other food
+  named raw or uncooked that is not an ingredient (a raw pie, soup or potato, or a pie only part made) is
+  `food, raw_food`. A raw meat or fish (named raw or uncooked, or in the wiki's
+  Uncooked food) is `raw_material, meat` or `raw_material, fish`, not food, and goes in
+  `deck/items/raw_materials/meat.lua` or `fish.lua`; the cooked one is `food, meat` or `food, fish`. Junk, an
+  item with no use in the game (a jug of bad wine, burnt food, what the wiki calls useless), is `junk` alone
+  and goes in `deck/items/junk.lua`. Urns (cooking, mining and the rest) are `consumable`, and a quest item with no file of its kind goes in
+  `deck/items/quest_items.lua`. A potion is `potion` (`deck/items/potions.lua`), and one in a flask is `potion, flask`
+  (`deck/items/potions/flasks.lua`); the Potion flask itself is a `container`. A potion's card is its full version: 4 doses,
+  or 6 for a flask, or the most there are if it has no such version; the tool uses that version's id and examine text, names the card
+  without the dose, and leaves out the 2-dose mixes (Barbarian mixes) and the unfinished potions (add one by hand if it has a use of its own).
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
   (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)
@@ -617,7 +654,7 @@ to guess.
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
 - `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
-- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
+- `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `container`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `skill_outfit`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`; with `raw_material`: `log`, `ore`, `bone`, `hide`, `herb`, `gem`, `ingredient`; with `weapon`: `dagger`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `potion`: `flask`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.
 

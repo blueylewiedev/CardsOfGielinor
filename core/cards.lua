@@ -79,7 +79,7 @@ Cards.odds = {
 Cards.list = {}
 
 -- The longest description that fits on a card (see desc above).
-Cards.MAX_DESC = 65
+Cards.MAX_DESC = 80
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
@@ -234,12 +234,13 @@ end
 Cards.itemTagGroups = {
     category = {
         { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
-            "tool", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", "consumable",
-            "armour", "jewellery", "pocket", "ammunition", "fashion", "novelty", "treasure_trail", "slayer_drop", "minigame", "discontinued" } },
+            "tool", "container", "rune", "seed", "quest_item", "currency", "decoration", "craftable", "weapon", "consumable",
+            "armour", "skill_outfit", "jewellery", "pocket", "ammunition", "fashion", "novelty", "treasure_trail", "slayer_drop", "minigame", "discontinued",
+            "junk" } },
         { title = "What kind of weapon", requires = "weapon",
             words = { "dagger", "defender", "sword", "scimitar", "two_handed_sword", "axe", "mace", "maul", "spear", "halberd",
                 "whip", "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book" } },
-        { title = "Which armour slot", requires = "armour",
+        { title = "Which armour slot", requires = { "armour", "skill_outfit" },
             words = { "helmet", "body", "legs", "gloves", "boots", "off_hand", "back" } },
         { title = "Which jewellery slot", requires = "jewellery",
             words = { "ring", "neck" } },
@@ -248,9 +249,11 @@ Cards.itemTagGroups = {
         { title = "Combat style", requires = { "weapon", "armour", "jewellery", "ammunition" },
             words = { "melee_gear", "ranged_gear", "magic_gear", "necromancy_gear", "hybrid_gear" } },
         { title = "What kind of food", requires = "food",
-            words = { "meal", "baked_goods", "fruit_veg" } },
+            words = { "meal", "baked_goods", "fruit_veg", "raw_food" } },
         { title = "What kind of raw material", requires = "raw_material",
             words = { "log", "ore", "bone", "hide" } },
+        { title = "What kind of potion", requires = "potion",
+            words = { "flask" } },
         { title = "What kind of processed material", requires = "processed_material",
             words = { "bar", "plank", "clay" } },
         { title = "What kind of seed", requires = "seed",
@@ -261,6 +264,8 @@ Cards.itemTagGroups = {
             words = { "gem" } },
         { title = "Herbs", requires = { "raw_material", "processed_material" },
             words = { "herb" } },
+        { title = "Ingredients", requires = { "raw_material", "processed_material" },
+            words = { "ingredient" } },
         { title = "Fish and meat", requires = { "raw_material", "food" },
             words = { "fish", "meat" } },
     },

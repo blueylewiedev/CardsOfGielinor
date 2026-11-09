@@ -1,14 +1,54 @@
 local Set = {}
 
 Set.cards = {
-    { id = "avernic_book", name = "Avernic book", kind = "item", rarity = "common", desc = "A book of demonic lore. Enhances magical prowess when dual-wielded with a wand.", art = { item = "DSLAY_BOOK", cam = { yaw = 0.69, pitch = 1.04, tx = -6 } }, tags = { regions = { "misthalin" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } } },
-    { id = "imphide_book", name = "Imphide book", kind = "item", rarity = "common", desc = "Contains the raw magical power of imps!", art = { item = "IMPHIDE_BOOK", cam = { yaw = 0.24, pitch = 0.93, ty = -2, tx = -17 } }, tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } } },
-    { id = "wizard_book", name = "Wizard book", kind = "item", rarity = "common", desc = "A standard book of spells.", art = { item = "WIZARD_BOOK", cam = { yaw = 0.36, pitch = 0.95, dist = 225, ty = -11 } }, tags = { skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } } },
-    { id = "batwing_book", name = "Batwing book", kind = "item", rarity = "uncommon", desc = "Full of arcane riddles.", art = { item = "BAT_SPELLBOOK", cam = { yaw = 0.36, pitch = 0.95, dist = 248, ty = -14, tx = -4 } }, tags = { regions = { "asgarnia", "misthalin" }, skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } } },
-    { id = "tome_of_frost", name = "Tome of frost", kind = "item", rarity = "uncommon", desc = "Like a snowflake, no page is the same as another.", art = { item = "RAND_REWARD_TOME_OF_FROST", cam = { yaw = -0.42, pitch = 1.00, ty = 2, tx = 28 } }, tags = { regions = { "daemonheim" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } } },
-    { id = "mages_book", name = "Mages' book", kind = "item", rarity = "rare", desc = "The magical book of the Mage.", art = { item = "MAGICTRAINING_BOOKOFMAGIC", cam = { yaw = 0.36, pitch = 0.95, ty = -10, tx = -12 } }, tags = { regions = { "kharidian_desert" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book", "minigame" }, membership = { "p2p" } } },
-    { id = "ahrims_book_of_magic", name = "Ahrim's book of magic", kind = "item", rarity = "epic", desc = "Ahrim was known to cast spells from this.", art = { item = "BARROWS_AHRIM_OFFHAND", cam = { yaw = 0.36, pitch = 0.95, dist = 248, ty = -8, tx = -19 } }, tags = { regions = { "morytania" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "p2p" } } },
-    { id = "virtus_book", name = "Virtus book", kind = "item", rarity = "epic", desc = "Contains the magical secrets of Zaros.", art = { item = "GODWARS2_MAGIC_BOOK", cam = { yaw = 0.36, pitch = 0.95, dist = 248, ty = -10, tx = -22 } }, tags = { regions = { "asgarnia" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "p2p" } } },
+    {
+        id = "avernic_book", name = "Avernic book", kind = "item", rarity = "common",
+        desc = "A book of demonic lore. Enhances magical prowess when dual-wielded with a wand.",
+        art = { item = "DSLAY_BOOK", cam = { yaw = 0.69, pitch = 1.04, tx = -6 } },
+        tags = { regions = { "misthalin" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
+    },
+    {
+        id = "imphide_book", name = "Imphide book", kind = "item", rarity = "common",
+        desc = "Contains the raw magical power of imps!",
+        art = { item = "IMPHIDE_BOOK", cam = { yaw = 0.24, pitch = 0.93, ty = -2, tx = -17 } },
+        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
+    },
+    {
+        id = "wizard_book", name = "Wizard book", kind = "item", rarity = "common",
+        desc = "A standard book of spells.",
+        art = { item = "WIZARD_BOOK", cam = { yaw = 0.36, pitch = 0.95, dist = 225, ty = -11 } },
+        tags = { skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
+    },
+    {
+        id = "batwing_book", name = "Batwing book", kind = "item", rarity = "common",
+        desc = "Full of arcane riddles.",
+        art = { item = "BAT_SPELLBOOK", cam = { yaw = 0.36, pitch = 0.95, dist = 248, ty = -14, tx = -4 } },
+        tags = { regions = { "asgarnia", "misthalin" }, skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
+    },
+    {
+        id = "tome_of_frost", name = "Tome of frost", kind = "item", rarity = "uncommon",
+        desc = "Like a snowflake, no page is the same as another.",
+        art = { item = "RAND_REWARD_TOME_OF_FROST", cam = { yaw = -0.42, pitch = 1.00, ty = 2, tx = 28 } },
+        tags = { regions = { "daemonheim" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
+    },
+    {
+        id = "mages_book", name = "Mages' book", kind = "item", rarity = "rare",
+        desc = "The magical book of the Mage.",
+        art = { item = "MAGICTRAINING_BOOKOFMAGIC", cam = { yaw = 0.36, pitch = 0.95, ty = -10, tx = -12 } },
+        tags = { regions = { "kharidian_desert" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book", "minigame" }, membership = { "p2p" } },
+    },
+    {
+        id = "ahrims_book_of_magic", name = "Ahrim's book of magic", kind = "item", rarity = "rare",
+        desc = "Ahrim was known to cast spells from this.",
+        art = { item = "BARROWS_AHRIM_OFFHAND", cam = { yaw = 0.36, pitch = 0.95, dist = 248, ty = -8, tx = -19 } },
+        tags = { regions = { "morytania" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "p2p" } },
+    },
+    {
+        id = "virtus_book", name = "Virtus book", kind = "item", rarity = "rare",
+        desc = "Contains the magical secrets of Zaros.",
+        art = { item = "GODWARS2_MAGIC_BOOK", cam = { yaw = 0.36, pitch = 0.95, dist = 248, ty = -10, tx = -22 } },
+        tags = { regions = { "asgarnia" }, skills = { "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "p2p" } },
+    },
 }
 
 return Set

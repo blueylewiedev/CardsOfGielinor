@@ -1,0 +1,138 @@
+local Set = {}
+
+Set.cards = {
+    {
+        id = "refined_oak_planks", name = "Refined Oak planks", kind = "item", rarity = "common",
+        desc = "A set of refined oak planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_OAK", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_planks", name = "Refined planks", kind = "item", rarity = "common",
+        desc = "A set of refined planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_BASIC", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_teak_planks", name = "Refined Teak planks", kind = "item", rarity = "common",
+        desc = "A set of refined teak planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_TEAK", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_willow_planks", name = "Refined Willow planks", kind = "item", rarity = "common",
+        desc = "A set of refined willow planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_WILLOW", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_acadia_planks", name = "Refined Acadia planks", kind = "item", rarity = "uncommon",
+        desc = "A set of refined acadia planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_ACADIA", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_mahogany_planks", name = "Refined Mahogany planks", kind = "item", rarity = "uncommon",
+        desc = "A set of refined mahogany planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_MAHOGANY", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_maple_planks", name = "Refined Maple planks", kind = "item", rarity = "uncommon",
+        desc = "A set of refined maple planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_MAPLE", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_magic_planks", name = "Refined Magic planks", kind = "item", rarity = "rare",
+        desc = "A set of refined magic planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_MAGIC", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_yew_planks", name = "Refined Yew planks", kind = "item", rarity = "rare",
+        desc = "A set of refined yew planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_YEW", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_elder_planks", name = "Refined Elder planks", kind = "item", rarity = "epic",
+        desc = "A set of refined elder planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_ELDER", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "refined_eternal_planks", name = "Refined Eternal planks", kind = "item", rarity = "epic",
+        desc = "A set of refined eternal planks, ready for buildings.",
+        art = { item = "CONSTRUCTION_REFINED_PLANK_ETERNAL", cam = { yaw = 0.52, pitch = 0.65, dist = 643, ty = -13, tx = 80 } },
+        tags = { skills = { "construction" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "oak_plank", name = "Oak plank", kind = "item", rarity = "common",
+        desc = "A plank of sturdy oak. Used in Construction.",
+        art = { item = "PLANK_OAK", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "plank", name = "Plank", kind = "item", rarity = "common",
+        desc = "A plank of wood! Used in Construction.",
+        art = { item = "WOODPLANK", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "f2p" } },
+    },
+    {
+        id = "teak_plank", name = "Teak plank", kind = "item", rarity = "common",
+        desc = "A plank of fine teak.",
+        art = { item = "PLANK_TEAK", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "willow_plank", name = "Willow plank", kind = "item", rarity = "common",
+        desc = "A plank of flexible willow. Used in Construction.",
+        art = { item = "PLANK_WILLOW", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "acadia_plank", name = "Acadia plank", kind = "item", rarity = "uncommon",
+        desc = "A plank of exotic Acadia.",
+        art = { item = "PLANK_ACADIA", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "mahogany_plank", name = "Mahogany plank", kind = "item", rarity = "uncommon",
+        desc = "A plank of expensive mahogany.",
+        art = { item = "PLANK_MAHOGANY", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "maple_plank", name = "Maple plank", kind = "item", rarity = "uncommon",
+        desc = "A plank of fine maple.",
+        art = { item = "PLANK_MAPLE", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "elder_plank", name = "Elder plank", kind = "item", rarity = "rare",
+        desc = "A plank of ancient wood.",
+        art = { item = "PLANK_ELDER", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "eternal_plank", name = "Eternal plank", kind = "item", rarity = "rare",
+        desc = "A plank of eternal wood.",
+        art = { item = "PLANK_ETERNAL", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "magic_plank", name = "Magic plank", kind = "item", rarity = "rare",
+        desc = "A plank of magical wood.",
+        art = { item = "PLANK_MAGIC", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+    {
+        id = "yew_plank", name = "Yew plank", kind = "item", rarity = "rare",
+        desc = "A plank of flexible yew.",
+        art = { item = "PLANK_YEW", cam = { yaw = 1.15, pitch = 0.72, dist = 483, ty = -29, tx = -28 } },
+        tags = { skills = { "construction", "magic", "invention" }, category = { "processed_material", "plank" }, membership = { "p2p" } },
+    },
+}
+
+return Set

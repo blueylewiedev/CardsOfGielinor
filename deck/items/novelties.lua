@@ -2,7 +2,7 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "rubber_chicken", name = "Rubber chicken", kind = "item", rarity = "common",
+        id = "rubber_chicken", name = "Rubber chicken", kind = "item", rarity = "legendary",
         desc = "Perhaps not the most powerful weapon in Gielinor.",
         art = { item = "RUBBER_CHICKEN", cam = { yaw = -6.33, dist = 635, fov = 35, ty = -15, tx = 12 } },
         tags = { category = { "novelty" }, membership = { "f2p" } },
@@ -44,7 +44,7 @@ Set.cards = {
         tags = { category = { "novelty" }, membership = { "p2p" } },
     },
     {
-        id = "pogo_stick", name = "Pogo stick", kind = "item", rarity = "legendary",
+        id = "pogo_stick", name = "Pogo stick", kind = "item", rarity = "epic",
         desc = "Four times the bouncy, five times the fun!",
         art = { item = "INVENT_POGO_STICK", cam = { yaw = -8.10, dist = 845, fov = 35, ty = -24, tx = 12 } },
         tags = { skills = { "invention", "smithing" }, category = { "novelty", "fashion" }, membership = { "p2p" } },
@@ -80,25 +80,25 @@ Set.cards = {
         tags = { regions = { "misthalin" }, category = { "novelty" }, membership = { "p2p" } },
     },
     {
-        id = "rolling_pin", name = "Rolling pin", kind = "item", rarity = "uncommon",
+        id = "rolling_pin", name = "Rolling pin", kind = "item", rarity = "common",
         desc = "That's how I roll!",
         art = { item = "HUNDRED_ROLLINGPIN", cam = { yaw = -7.20, dist = 525, fov = 35 } },
         tags = { category = { "novelty" }, membership = { "p2p" } },
     },
     {
-        id = "meat_tenderiser", name = "Meat tenderiser", kind = "item", rarity = "uncommon",
+        id = "meat_tenderiser", name = "Meat tenderiser", kind = "item", rarity = "common",
         desc = "Often used to soften tough meat up.",
         art = { item = "HUNDRED_HAMMER", cam = { yaw = -8.44, pitch = 0.95, dist = 769, fov = 35, ty = 55, tx = 13 } },
         tags = { category = { "novelty" }, membership = { "p2p" } },
     },
     {
-        id = "kitchen_knife", name = "Kitchen knife", kind = "item", rarity = "uncommon",
+        id = "kitchen_knife", name = "Kitchen knife", kind = "item", rarity = "common",
         desc = "A sharp, dependable knife, for filleting meat.",
         art = { item = "HUNDRED_KNIFE", cam = { yaw = -1.14, dist = 326, fov = 45, ty = -23, tx = 49 } },
         tags = { category = { "novelty" }, membership = { "p2p" } },
     },
     {
-        id = "mud_pie", name = "Mud pie", kind = "item", rarity = "uncommon",
+        id = "mud_pie", name = "Mud pie", kind = "item", rarity = "common",
         desc = "All the good of the earth.",
         art = { item = "MUD_PIE", cam = { yaw = -4.90, pitch = 0.54, dist = 296, fov = 45, ty = 22, tx = 11 } },
         tags = { skills = { "cooking", "magic" }, category = { "novelty" }, membership = { "p2p" } },
@@ -115,7 +115,12 @@ Set.cards = {
         art = { item = "XMAS2014_SNOWBALL", cam = { yaw = 0.74, pitch = 0.96, dist = 273, ty = 36, tx = 25 } },
         tags = { category = { "novelty" }, membership = { "f2p" } },
     },
-    { id = "draccles", name = "Draccles", kind = "item", rarity = "common", desc = "I'll hug him, and pet him, and squeeze him!", art = { item = "MYQ7_LOST_TOYS_PLAYER_PLUSH", cam = { yaw = 0.32, pitch = 0.29, dist = 205, ty = 80, tx = 3 } }, tags = { category = { "novelty" }, membership = { "p2p" } } },
+    {
+        id = "draccles", name = "Draccles", kind = "item", rarity = "common",
+        desc = "I'll hug him, and pet him, and squeeze him!",
+        art = { item = "MYQ7_LOST_TOYS_PLAYER_PLUSH", cam = { yaw = 0.32, pitch = 0.29, dist = 205, ty = 80, tx = 3 } },
+        tags = { category = { "novelty" }, membership = { "p2p" } },
+    },
 }
 
 return Set

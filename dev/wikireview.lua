@@ -5,12 +5,14 @@
 -- (the NPC or item, name, description, suggested rarity, tags, deck file); there it is checked,
 -- framed and copied as usual. "Next model" goes through the other models the wiki lists for it
 -- (an NPC's other versions, an item's other ids), switching the builder's preview to each in
--- turn. Then "Done" (or "Skip") moves on. The drop-down shows the candidates from one category
+-- turn. Then "Done" (or "Skip", or "Later") moves on. The drop-down shows the candidates from one category
 -- (or page) asked for at a time, or all of them. The search button opens the Wiki Fetch window
 -- (dev/wikifetch.lua), which writes the command that fetches more candidates.
 --
 -- Candidates already on a card (or a draft), with any of their models, are left out, and so are
--- the ones marked Done or Skipped; those marks are kept in the plugin's database (PersistentDB,
+-- the ones marked Done, Skipped or Later (Later is a skip to come back to: the card can't be made yet, say
+-- because a tag or deck file it needs doesn't exist; its own button brings those back, and not the
+-- Skipped ones); those marks are kept in the plugin's database (PersistentDB,
 -- on this computer only). Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
@@ -20,7 +22,13 @@ local WikiFetch = require("dev/wikifetch")
 
 local WikiReview = {}
 
-local DB_KEY = "dev_wiki_review"         -- { [wiki page] = "done" or "skipped" }
+-- The marks are kept as { [wiki page] = "done", "skipped" or "later" }, split over BUCKETS keys by the page's name.
+-- The client's database seems to refuse a value of about 128 KB (the one key for every mark stopped at 131056 bytes), after which new
+-- marks were silently not saved. DB_KEY is the old single key; what is still in it moves into the buckets the next
+-- time the marks are saved.
+local DB_KEY = "dev_wiki_review"
+local BUCKET_KEY = "dev_wiki_review_"       -- followed by 0 to BUCKETS - 1
+local BUCKETS = 16
 local WIDTH, HEIGHT = 480, 468
 local INNER = Kit.contentWidth(WIDTH)
 local NOTE_ROWS = 8
@@ -40,15 +48,79 @@ local filter = ALL    -- the source shown (a category or page asked for), or ALL
 local queue = {}      -- the ones of `remaining` from that source
 local index = 1       -- the one shown
 
-local function reviewed()
-    local ok, saved = pcall(function() return PersistentDB:GetStructuredData(DB_KEY) end)
+local function readKey(key)
+    local ok, saved = pcall(function() return PersistentDB:GetStructuredData(key) end)
     return (ok and type(saved) == "table") and saved or {}
 end
 
+-- Why the last write was refused (shown with the message, and written to the console), or nil.
+local lastWriteError = nil
+
+-- True if the database kept the value (it says false for one that is too big). A refusal is tried twice more, in case it
+-- was only busy for a moment, and the reason is kept in lastWriteError.
+local function writeKey(key, value)
+    for attempt = 1, 3 do
+        local ok, result = pcall(function() return PersistentDB:SetStructuredData(key, value) end)
+        if ok and result then
+            lastWriteError = nil
+            return true
+        end
+        lastWriteError = ok and "it returned false" or tostring(result)
+    end
+    log("wiki review: the database refused", key, "(" .. tostring(lastWriteError) .. ")")
+    return false
+end
+
+local function bucketOf(page)
+    local sum = 0
+    for i = 1, #page do
+        sum = (sum * 31 + string.byte(page, i)) % 1000003
+    end
+    return sum % BUCKETS
+end
+
+-- Every mark: { [wiki page] = "done", "skipped" or "later" }.
+local function reviewed()
+    local marks = readKey(DB_KEY)
+    for b = 0, BUCKETS - 1 do
+        for page, verdict in pairs(readKey(BUCKET_KEY .. b)) do
+            marks[page] = verdict
+        end
+    end
+    return marks
+end
+
+-- Writes the marks into their buckets, only those in the set `only` (of bucket numbers) if one is given. Returns
+-- false if the database refused any write, and then the marks are not all kept.
+local function saveMarks(marks, only)
+    local legacy = next(readKey(DB_KEY)) ~= nil
+    if legacy then
+        only = nil          -- (all of them: the old key is emptied below, and must have been copied in full)
+    end
+    local buckets = {}
+    for b = 0, BUCKETS - 1 do
+        buckets[b] = {}
+    end
+    for page, verdict in pairs(marks) do
+        buckets[bucketOf(page)][page] = verdict
+    end
+    local ok = true
+    for b = 0, BUCKETS - 1 do
+        if only == nil or only[b] then
+            ok = writeKey(BUCKET_KEY .. b, buckets[b]) and ok
+        end
+    end
+    if ok and legacy then
+        ok = writeKey(DB_KEY, {})
+    end
+    return ok
+end
+
+-- Marks a candidate. Returns false if the mark was not saved.
 local function mark(candidate, verdict)
     local saved = reviewed()
     saved[candidate.page] = verdict
-    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    return saveMarks(saved, { [bucketOf(candidate.page)] = true })
 end
 
 -- The item config names by id, from the client's own list (read once, the first time an item
@@ -414,7 +486,7 @@ local function clearAdded()
     queueMessage("Cleared " .. removed .. " added card(s); " .. left .. " still queued")
 end
 
--- Puts the candidate of a wiki page back on the list (taking off its Done or Skip mark), for a
+-- Puts the candidate of a wiki page back on the list (taking off its Done, Skip or Later mark), for a
 -- queued card the script could not add (python dev/card_queue.py --list names the page).
 local reload
 local function reopen(text)
@@ -429,11 +501,14 @@ local function reopen(text)
         end
     end
     if found == nil then
-        queueMessage("No Done or Skip mark for a page called " .. text)
+        queueMessage("No Done, Skip or Later mark for a page called " .. text)
         return
     end
     saved[found] = nil
-    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    if not saveMarks(saved, { [bucketOf(found)] = true }) then
+        queueMessage("Not saved: the database refused it, so " .. found .. " stays marked")
+        return
+    end
     reload()
     for i, candidate in ipairs(queue) do
         if candidate.page == found then
@@ -453,7 +528,11 @@ local function finish(verdict)
     if verdict == "done" and not queueCard(candidate) then
         return          -- (not queued: it stays on the list, not marked Done)
     end
-    mark(candidate, verdict)
+    if not mark(candidate, verdict) then
+        queueMessage("Not marked: the database refused it" .. (lastWriteError and (" (" .. lastWriteError .. ")") or "")
+            .. ", so this candidate stays on the list")
+        return
+    end
     for i, other in ipairs(remaining) do
         if other == candidate then
             table.remove(remaining, i)
@@ -464,7 +543,7 @@ local function finish(verdict)
     refresh()
 end
 
--- Takes the marks of `verdict` ("skipped") off the candidates, leaving the others as they are.
+-- Takes the marks of `verdict` ("skipped" or "later") off the candidates, leaving the others as they are.
 local function unmark(verdict)
     local saved = reviewed()
     for page, mark in pairs(saved) do
@@ -472,7 +551,9 @@ local function unmark(verdict)
             saved[page] = nil
         end
     end
-    pcall(function() PersistentDB:SetStructuredData(DB_KEY, saved) end)
+    if not saveMarks(saved) then
+        queueMessage("Not saved: the database refused it")
+    end
 end
 
 -- Reads the candidates again (all of them, or after Reset).
@@ -498,18 +579,27 @@ function WikiReview.show()
     Kit.iconButton(content, "SEARCH", INNER - 54, 6, WikiFetch.toggle, "Fetch more candidates from the wiki",
         "Fetch", 70)
     Kit.iconButton(content, "REFRESH", INNER - 84, 6, function()
-        Kit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done stay off the list.",
+        Kit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done or Later stay off the list.",
             "Bring back skipped", function()
                 unmark("skipped")
                 reload()
             end)
     end, "Bring back only the candidates marked Skip", "Skipped", 70)
+    Kit.iconButton(content, "EYE", INNER - 114, 6, function()
+        Kit.confirm(gameWindow, "Review the Later ones?", "Every candidate marked Later comes back. Skipped and Done ones stay off the list.",
+            "Bring back later", function()
+                unmark("later")
+                reload()
+            end)
+    end, "Bring back only the candidates marked Later", "Later", 70)
     Kit.iconButton(content, "UNDO", INNER - 24, 6, function()
-        Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done or Skip comes back.", "Review again", function()
-            pcall(function() PersistentDB:SetStructuredData(DB_KEY, {}) end)
+        Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done, Skip or Later comes back.", "Review again", function()
+            if not saveMarks({}) then
+                queueMessage("Not saved: the database refused it")
+            end
             reload()
         end)
-    end, "Bring back the candidates marked Done or Skip", "Reset", 70)
+    end, "Bring back the candidates marked Done, Skip or Later", "Reset", 70)
 
     -- (The drop-down that chooses the source goes between the header and these; it is made last.)
     local top = 76
@@ -528,10 +618,12 @@ function WikiReview.show()
             widgets.loaded = candidate
         end
     end, "positive", "Fill the Card Builder in from this candidate, to check, frame and copy it")
-    local half = (INNER - 6) // 2
-    Kit.buttonAt(content, "Done", 10, buttonsY + 40, half, 30, function() finish("done") end, "neutral",
+    local third = (INNER - 12) // 3
+    Kit.buttonAt(content, "Done", 10, buttonsY + 40, third, 30, function() finish("done") end, "neutral",
         "The card is made: take it off the list")
-    Kit.buttonAt(content, "Skip", 16 + half, buttonsY + 40, half, 30, function() finish("skipped") end, "negative",
+    Kit.buttonAt(content, "Later", 16 + third, buttonsY + 40, third, 30, function() finish("later") end, "neutral",
+        "Not now (a tag or deck file it needs is missing): take it off the list until the Later button brings it back")
+    Kit.buttonAt(content, "Skip", 22 + 2 * third, buttonsY + 40, third, 30, function() finish("skipped") end, "negative",
         "Not a card: take it off the list")
 
     widgets.queueText = Kit.text(content, 10, buttonsY + 76, INNER, 18, "", GREY, ui.AlignMode.TOPLEFT)

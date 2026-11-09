@@ -37,73 +37,87 @@ each region's set has its own version.
 
 | Type | Section | Status | Notes |
 | --- | --- | --- | --- |
-| **Food** | Fish (cooked) | In progress | |
-| | Meat | Not started | |
-| | Meals | Not started | |
-| | Baked goods | Not started | |
-| | Fruit and vegetables | Not started | |
-| | Drinks | Not started | |
-| **Potions** | | Not started | |
-| **Flasks** | | Not started | |
-| **Raw materials** | Fish | In progress | |
-| | Meat | Not started | |
-| | Herbs | In progress | |
-| | Logs | In progress | |
-| | Ores | Not started | |
-| | Bones | Not started | |
-| | Hides | Not started | |
-| | Gems | Not started | |
-| **Processed materials** | Bars | Not started | |
-| | Planks | Not started | |
-| **Seeds** | | Not started | |
-| **Runes** | | In progress | |
-| **Tools** | | Not started | Pickaxes, hatchets, spades and the like |
-| **Weapons** | Melee | Not started | One row per kind below if you want to track them separately |
-| | Ranged | Not started | |
-| | Magic | Not started | |
-| | Necromancy | Not started | |
-| **Armour: melee** | Helmet | Not started | |
+| **Food** | Fish (cooked) | Complete | |
+| | Meat | Complete | |
+| | Meals | Complete | |
+| | Baked goods | Complete | |
+| | Fruit and vegetables | Complete | |
+| | Drinks | Complete | |
+| **Potions** | | Complete | |
+| **Flasks** | | Complete | |
+| **Raw materials** | Fish | Complete | |
+| | Meat | Complete | |
+| | Herbs | Complete | |
+| | Logs | Complete | |
+| | Ores | Complete | |
+| | Bones | Complete | |
+| | Hides | Complete | |
+| | Gems | Complete | |
+| **Processed materials** | Bars | Complete | |
+| | Planks | Complete | |
+| **Seeds** | | Complete | |
+| **Runes** | | Complete | |
+| **Tools** | | Complete | Pickaxes, hatchets, spades and the like |
+| **Containers** | | Complete | Vials, buckets, flasks, pouches, ore boxes and the like |
+| **Weapons** | Melee | Complete | One row per kind below if you want to track them separately |
+| | Ranged | Complete | |
+| | Magic | Complete | |
+| | Necromancy | Complete | |
+| **Armour: melee** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: ranged** | Helmet | Not started | Same slots as melee |
+| **Armour: ranged** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: magic** | Helmet | Not started | Same slots as melee |
+| **Armour: magic** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
-| **Armour: necromancy** | Helmet | Not started | Same slots as melee |
+| **Armour: necromancy** | Helmet | Complete | Same slots as melee |
 | | Body | Not started | |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
+| **Armour: hybrid** | Helmet | Complete | Pieces with no single combat style (`hybrid_gear`) |
+| | Body | Not started |  |
+| | Legs | Not started |  |
+| | Gloves | Not started |  |
+| | Boots | Not started |  |
+| | Off-hand | Not started |  |
+| | Back | Not started |  |
+| **Skill outfits** | Helmet | In Progress | Skill outfits and skill capes: `skill_outfit`, no combat style. Not carded yet: Sous chef's toque; Farmer's hat and Shaman's headdress are Treasure Hunter items |
+| | Body | Not started |  |
+| | Legs | Not started |  |
+| | Gloves | Not started |  |
+| | Boots | Not started |  |
+| | Back | Not started |  |
+| **Treasure trail armour** | | Not started | Trimmed, gold, heraldic and god-themed pieces: added with each armour batch, filed in the treasure trail file |
 | **Jewellery** | Rings | Not started | |
 | | Necklaces | Not started | |
 | **Ammunition** | Arrows | Not started | |
 | | Bolts | Not started | |
 | | Other (spikes) | Not started | |
 | **Decoration** | | In progress | |
-| **Currency** | | Not started | |
-| **Quest items** | | Not started | |
-| **Craftable** | | Not started | |
+| **Currency** | | In Progress | |
+| **Quest items** | | In Progress | |
 | **Pocket items** | | Not started | |
-| **Fashion** | | Not started | |
-| **Treasure Trails** | | Not started | |
-| **Slayer drops** | | Not started | |
-| **Minigame items** | | Not started | |
+| **Fashion** | | In Progress | |
+| **Treasure Trails** | | In Progress | |
+| **Slayer drops** | | In Progress | |
+| **Minigame items** | | In Progress | |
 | **General (other)** | | In progress | Cards that fit none of the above |
 
 ## Licence

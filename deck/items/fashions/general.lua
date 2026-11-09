@@ -98,7 +98,7 @@ Set.cards = {
         tags = { category = { "weapon", "melee_gear", "whip", "quest_item", "fashion" }, membership = { "f2p" } },
     },
     {
-        id = "full_easter_basket", name = "Full Easter basket", kind = "item", rarity = "epic",
+        id = "full_easter_basket", name = "Full Easter basket", kind = "item", rarity = "legendary",
         desc = "An Easter basket full with eggs.",
         art = { item = "EASTER23_EGG_BASKET_FULL", cam = { yaw = -7.20, pitch = 0.75, dist = 397, fov = 35, ty = 60 } },
         tags = { category = { "fashion", "weapon", "discontinued" }, membership = { "f2p" } },
@@ -110,7 +110,7 @@ Set.cards = {
         tags = { regions = { "morytania" }, category = { "minigame", "fashion" }, membership = { "p2p" } },
     },
     {
-        id = "royal_sceptre", name = "Royal sceptre", kind = "item", rarity = "uncommon",
+        id = "royal_sceptre", name = "Royal sceptre", kind = "item", rarity = "epic",
         desc = "The sceptre of royalty!",
         art = { item = "II_ROYAL_SCEPTRE", cam = { yaw = -6.49, pitch = 0.80, dist = 578, fov = 35, ty = 4, tx = 22 } },
         tags = { category = { "weapon", "melee_gear", "mace", "fashion" }, membership = { "p2p" } },
@@ -157,11 +157,37 @@ Set.cards = {
         art = { item = "SHADOW_MAJ_SHADOW_SWORD", cam = { yaw = -3.31, dist = 525, fov = 45, ty = 75, tx = 27 } },
         tags = { category = { "weapon", "melee_gear", "sword", "quest_item", "two_handed_sword", "fashion" }, membership = { "p2p" } },
     },
-    { id = "ankh", name = "Ankh", kind = "item", rarity = "common", desc = "A symbol of life.", art = { item = "OZAN2_TOMB_RELIC_APMEKEN", cam = { dist = 439, ty = -11, tx = -3 } }, tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } } },
-    { id = "heka", name = "Heka", kind = "item", rarity = "common", desc = "Signifies the authority of rule.", art = { item = "OZAN2_TOMB_RELIC_HET", cam = { yaw = 0.01, ty = -17, tx = 11 } }, tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } } },
-    { id = "nekhakha", name = "Nekhakha", kind = "item", rarity = "common", desc = "Signifies fertility of the land.", art = { item = "OZAN2_TOMB_RELIC_CRONDIS", cam = { yaw = -0.30, dist = 330, ty = -12, tx = 8 } }, tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } } },
-    { id = "relomias_wand", name = "Relomia's wand", kind = "item", rarity = "common", desc = "Looks like she wanted something space-themed.", art = { item = "MINIQUEST_OUT3_WAND", cam = { yaw = -1.92, dist = 399, ty = 7, tx = 2 } }, tags = { category = { "fashion" }, membership = { "p2p" } } },
-    { id = "was", name = "Was", kind = "item", rarity = "common", desc = "A long, thin stick topped with an effigy of Icthlarin's head.", art = { item = "OZAN2_TOMB_RELIC_SCABARAS", cam = { yaw = -4.74, dist = 643, ty = 9, tx = 20 } }, tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } } },
+    {
+        id = "ankh", name = "Ankh", kind = "item", rarity = "common",
+        desc = "A symbol of life.",
+        art = { item = "OZAN2_TOMB_RELIC_APMEKEN", cam = { dist = 439, ty = -11, tx = -3 } },
+        tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } },
+    },
+    {
+        id = "heka", name = "Heka", kind = "item", rarity = "common",
+        desc = "Signifies the authority of rule.",
+        art = { item = "OZAN2_TOMB_RELIC_HET", cam = { yaw = 0.01, ty = -17, tx = 11 } },
+        tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } },
+    },
+    {
+        id = "nekhakha", name = "Nekhakha", kind = "item", rarity = "common",
+        desc = "Signifies fertility of the land.",
+        art = { item = "OZAN2_TOMB_RELIC_CRONDIS", cam = { yaw = -0.30, dist = 330, ty = -12, tx = 8 } },
+        tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } },
+    },
+    {
+        id = "relomias_wand", name = "Relomia's wand", kind = "item", rarity = "common",
+        desc = "Looks like she wanted something space-themed.",
+        art = { item = "MINIQUEST_OUT3_WAND", cam = { yaw = -1.92, dist = 399, ty = 7, tx = 2 } },
+        tags = { category = { "fashion" }, membership = { "p2p" } },
+    },
+    {
+        id = "was", name = "Was", kind = "item", rarity = "common",
+        desc = "A long, thin stick topped with an effigy of Icthlarin's head.",
+        art = { item = "OZAN2_TOMB_RELIC_SCABARAS", cam = { yaw = -4.74, dist = 643, ty = 9, tx = 20 } },
+        tags = { regions = { "kharidian_desert" }, category = { "fashion" }, membership = { "p2p" } },
+    },
+    { id = "ram_skull_helm", name = "Ram skull helm", kind = "item", rarity = "common", desc = "Makes me feel baaad to the bone.", art = { item = "RAG_RAM_HELM", cam = { yaw = -5.81, pitch = -0.23, dist = 248, ty = 73, tx = -4 } }, tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "quest_item", "fashion" }, membership = { "p2p" } } },
 }
 
 return Set

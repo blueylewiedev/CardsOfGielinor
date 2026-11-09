@@ -1,0 +1,439 @@
+{
+  "_note": "Rarities the item rules cannot work out, kept by card id with the reason. dev/apply_rarity.py applies the rules to every item card and then these, so a pin survives a re-run. Add one when the rules give a card a rarity that is wrong for a reason the wiki data does not show.",
+  "air_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "black_mask": {
+    "rarity": "rare",
+    "why": "Rare as chosen in the Card Builder (2026-11-07); the rules give a different rarity"
+  },
+  "blessed_flask": {
+    "rarity": "legendary",
+    "why": "Legendary as reviewed: Herblore and Crafting 118, but a level gives at most epic"
+  },
+  "corrupt_morrigans_javelin": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_morrigans_throwing_axe": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_statiuss_full_helm": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_vestas_longsword": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_vestas_spear": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_zuriels_staff": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "earth_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "elite_black_full_helm": {
+    "rarity": "uncommon",
+    "why": "Uncommon as chosen in the Card Builder (2026-11-07); the rules give a different rarity"
+  },
+  "fire_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "lava_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "magic_staff": {
+    "rarity": "common",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "morrigans_javelin": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "morrigans_throwing_axe": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "mud_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_air_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_earth_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_fire_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_lava_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_mud_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_steam_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "mystic_water_staff": {
+    "rarity": "rare",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "poison_bomb": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_acceleration": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_feats": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_masterstroke": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_opportunity": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_sorcery": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "powerburst_of_vitality": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "primal_portion": {
+    "rarity": "epic",
+    "why": "only from a Primal feast, Cooking 115"
+  },
+  "profound_decorative_sword": {
+    "rarity": "epic",
+    "why": "hundreds of hours to obtain, which the wiki data does not show"
+  },
+  "refined_anima_core_helm_of_zaros": {
+    "rarity": "epic",
+    "why": "Epic as chosen in the Card Builder (2026-11-07); the rules give a different rarity"
+  },
+  "staff": {
+    "rarity": "common",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "staff_of_air": {
+    "rarity": "common",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "staff_of_earth": {
+    "rarity": "common",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "staff_of_fire": {
+    "rarity": "common",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "staff_of_water": {
+    "rarity": "common",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "statiuss_full_helm": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "steam_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "sticky_bomb": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "superior_morrigans_javelin": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_morrigans_throwing_axe": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_statiuss_full_helm": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_vestas_longsword": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_vestas_spear": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_zuriels_staff": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "vestas_longsword": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "vulnerability_bomb": {
+    "rarity": "epic",
+    "why": "Epic as reviewed: the wiki page has no recipe table, so the tool found no level and would say common"
+  },
+  "water_battlestaff": {
+    "rarity": "uncommon",
+    "why": "staves go in three tiers: staff common, battlestaff uncommon, mystic staff rare"
+  },
+  "zuriels_staff": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan and Zuriel equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "dagonhai_hat": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "dark_mystic_hat": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "focus_sight": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "hexcrest": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "corrupt_morrigans_coif": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "corrupt_zuriels_hood": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "elite_robin_hood_hat": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "elite_tectonic_mask": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was epic"
+  },
+  "morrigans_coif": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "refined_anima_core_helm_of_seren": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "refined_anima_core_helm_of_zamorak": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "robin_hood_hat": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "wizard_hat_g": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was common"
+  },
+  "wizard_hat_t": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was common"
+  },
+  "zuriels_hood": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "superior_morrigans_coif": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "superior_zuriels_hood": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
+  },
+  "fishing_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "archaeologists_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "artisans_bandana": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "black_ibis_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "blacksmiths_helmet": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "botanists_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "first_age_tiara": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "diviners_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "exoskeleton_headband": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "factory_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "fletchers_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "golden_mining_helmet": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "hunters_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "nimble_headwear": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "ritualists_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "constructors_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "lumberjack_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "master_runecrafter_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "witchdoctor_mask": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "ghost_hunter_goggles": {
+    "rarity": "common",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was epic"
+  },
+  "infinity_hat": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was legendary"
+  },
+  "intricate_decorative_helm": {
+    "rarity": "common",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "masterwork_magic_hat": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was legendary"
+  },
+  "spectral_lens": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "attuned_crystal_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "dragon_rider_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "dragonstone_helm": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "gemstone_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "profound_decorative_helm": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "refined_anima_core_helm_of_sliske": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was rare"
+  },
+  "relic_helm_of_armadyl": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_bandos": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_saradomin": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_seren": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_sliske": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_zamorak": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_zaros": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "relic_helm_of_the_godless": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
+  },
+  "seers_headband_4": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was common"
+  }
+}

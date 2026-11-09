@@ -22,6 +22,18 @@ Usage:  python dev/wiki_cards.py [--category NAME ...] [--page TITLE ...] [optio
                     off-hand). Cosmetic recolours and the upgrades (Adamant scimitar + 1, + 2) are
                     left out: the plain weapon has the card. Fetched over several runs, like a
                     region; --count says how many pages. e.g.  --weapons melee --count
+  --armour SLOT     the armour of one slot: head, body, legs, hands, feet, shield or cape, from the wiki's
+                    structured data (Bucket:Infobox_bonuses, read once for every slot). With --style (melee,
+                    ranged, magic, necromancy, hybrid, or other for any class that is none of those) only that
+                    combat style; without it every style. Cosmetic recolours, upgrades (+ 1), augmented and
+                    broken versions are left out. Trimmed, gold, heraldic and god-themed pieces stay in: they
+                    are treasure trail rewards. e.g.  --armour head --style melee --count
+  --links-from TITLE
+                    every page a list page links to, as if each was given with --page (and remembered
+                    the same way): for a kind of item the wiki has no category for, such as the metal
+                    bars on "Bars". Like --drops-from, a page of tables takes each row's name (its
+                    second cell) and any other page takes every link; --until HEADING stops at a
+                    heading. One request for the list page. Preview what it takes with --list first
   --list            with --weapons (or other sources): print the pages each would fetch, one per line
                     (weapons with their tier and damage type, lowest tier first), and stop: no pages
                     are fetched and nothing is remembered. For deciding what to leave out. The tier
@@ -119,6 +131,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
+import collections
 from functools import lru_cache
 from itertools import zip_longest
 from pathlib import Path
@@ -340,7 +353,7 @@ UPGRADE_TITLE = re.compile(r"\s\+\s*\d+$")
 # of another page), augmented, golden and lucky versions of a weapon, off-hand thrown weapons
 # (an off-hand dart or knife is the same item), Abyssal crossbows (copies of the plain crossbow
 # tiers) and "Mk. 5" upgrades of a weapon.
-WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\([^)]*\)\s*$|^(augmented|golden|lucky)\s"
+WEAPON_SKIP = re.compile(r"pickaxe|hatchet|mattock|\((?!tier \d+\))[^)]*\)\s*$|^(augmented|golden|lucky)\s"
                          r"|^off-hand .*(dart|knife|throwing axe|javelin|chakram|glaive|stake)$"
                          r"|^(off-hand )?abyssal .* crossbow$|\sMk\.? ?\d+$", re.I)
 
@@ -379,6 +392,74 @@ def weapon_pages(wiki, style, refresh):
     return [t for t in titles if not WEAPON_SKIP.search(t)]
 
 
+# Armour: the wiki's Infobox bonuses has a row for every worn item, with its slot and combat class. They are read once
+# (every slot but the weapons) and kept; --armour SLOT [--style STYLE] then picks from them. Cosmetic recolours, upgrades
+# (+ 1), augmented and broken versions, and the minigame copies are left out: the plain item has the card. The trimmed,
+# gold, heraldic and god-themed versions are treasure trail rewards: they stay in, and are tagged treasure_trail.
+ARMOUR_SLOTS = ("head", "body", "legs", "hands", "feet", "shield", "cape")
+ARMOUR_STYLES = WEAPON_STYLES + ("other",)       # (other: a class that is none of the first four, or none at all)
+ARMOUR_SLOT_OF = {"head": "head", "body": "body", "torso": "body", "legs": "legs", "hands": "hands", "gloves": "hands",
+                  "feet": "feet", "boots": "feet", "shield": "shield", "off-hand": "shield", "off hand": "shield",
+                  "cape": "cape", "back": "cape"}
+ARMOUR_SKIP = re.compile(r"^(augmented|golden|lucky)\s|\((?:charged|e|bugged|broken|degraded|passive|dyed)\)\s*$"
+                         r"|\((?:class \d|Stealing Creation|Dominion Tower)[^)]*\)\s*$", re.I)
+
+
+def armour_rows(wiki, refresh):
+    """{ page: [slot, combat class, tier, equipment type] } for every worn item that is not a weapon (cached), from the
+    wiki's Infobox bonuses, or None if the request limit ran out before they were all read."""
+    cached = None if refresh else read_cache("armour", "rows")
+    if cached is not None:
+        return cached
+    rows, offset, slots, classes = {}, 0, collections.Counter(), collections.Counter()
+    while True:
+        query = ("bucket('infobox_bonuses').select('page_name', 'equipment_slot', 'combat_class', 'equipment_tier',"
+                 " 'equipment_type', 'is_cosmetic_recolour').orderBy('page_name', 'asc')"
+                 f".limit({BUCKET_LIMIT}).offset({offset}).run()")
+        answer = wiki.get({"action": "bucket", "query": query})
+        if answer is None:
+            print("  request limit reached before the armour was listed")
+            return None
+        batch = answer.get("bucket", [])
+        for row in batch:
+            name = row.get("page_name") or ""
+            slot = str(row.get("equipment_slot") or "").lower().strip()
+            recolour = str(row.get("is_cosmetic_recolour") or "").lower() in ("true", "yes", "1")
+            if not name or "weapon" in slot or recolour or UPGRADE_TITLE.search(name):
+                continue
+            slots[slot] += 1
+            classes[str(row.get("combat_class") or "").lower()] += 1
+            rows.setdefault(name, [slot, str(row.get("combat_class") or "").lower(), row.get("equipment_tier"),
+                                   str(row.get("equipment_type") or "")])
+        if len(batch) < BUCKET_LIMIT:
+            break
+        offset += BUCKET_LIMIT
+    write_cache("armour", "rows", rows)
+    print("  slots:", ", ".join(f"{k or '(none)'} {v}" for k, v in slots.most_common()))
+    print("  combat classes:", ", ".join(f"{k or '(none)'} {v}" for k, v in classes.most_common()))
+    return rows
+
+
+def armour_pages(wiki, slot, style, refresh):
+    """The pages of one armour slot (head, body, legs, hands, feet, shield or cape), of one combat style (melee, ranged,
+    magic, necromancy, hybrid; `other` is any other class; "" is all of them), without the pages ARMOUR_SKIP names.
+    None if the request limit ran out before the armour was listed."""
+    rows = armour_rows(wiki, refresh)
+    if rows is None:
+        return None
+    found = []
+    for title, (row_slot, row_class, tier, kind) in rows.items():
+        if ARMOUR_SLOT_OF.get(row_slot) != slot or ARMOUR_SKIP.search(title):
+            continue
+        first = re.split(r"\W+", row_class)[0]
+        if style == "other" and first in WEAPON_STYLES:
+            continue
+        if style and style != "other" and first != style:
+            continue
+        found.append(title)
+    return found
+
+
 def print_titles(titles, sources):
     """The --list output: the pages of each source (a weapon style's with tier and damage type,
     lowest tier first, as far as they are known)."""
@@ -387,7 +468,12 @@ def print_titles(titles, sources):
         weapons = label.startswith("Weapons: ")
         info = read_cache("weapon_info", label[len("Weapons: "):].split(" (")[0]) if weapons else None
         print(f"{label}: {len(mine)} pages")
-        if info:
+        if label.startswith("Armour: "):
+            rows = read_cache("armour", "rows") or {}
+            for title in sorted(mine, key=lambda t: ((rows.get(t) or [0, 0, 0])[2] if isinstance((rows.get(t) or [0, 0, 0])[2], (int, float)) else -1, t.lower())):
+                slot, klass, tier, kind = rows.get(title) or ["", "", "", ""]
+                print(f"  {str(tier) if tier not in (None, '') else '-':>3}  {klass or '-':<10} {kind or '-':<14} {title}")
+        elif info:
             def tier(title):
                 value = (info.get(title) or [None])[0]
                 return value if isinstance(value, (int, float)) else -1
@@ -843,6 +929,8 @@ ITEM_CATEGORY_WORDS = {
     "potion": ["potion"], "seeds": ["seed"], "jewellery": ["jewellery"], "quest items": ["quest_item"],
     "arrows": ["ammunition", "arrow"], "bolts": ["ammunition", "bolt"], "dagger": ["dagger"], "daggers": ["dagger"],
     "scimitar": ["scimitar"], "scimitars": ["scimitar"], "longsword": ["sword"], "sword": ["sword"],
+    "ceremonial swords": ["sword"], "darts": ["thrown"], "javelins": ["thrown"],
+    "defenders": ["defender"], "defender": ["defender"], "urns": ["consumable"],
     "2h sword": ["two_handed_sword"], "two-handed swords": ["two_handed_sword"], "battleaxe": ["axe"],
     "battleaxes": ["axe"], "mace": ["mace"], "maces": ["mace"], "spear": ["spear"], "spears": ["spear"],
     "halberd": ["halberd"], "halberds": ["halberd"], "whip": ["whip"], "claws": ["claw"], "shortbow": ["shortbow"],
@@ -852,7 +940,7 @@ ITEM_CATEGORY_WORDS = {
     # Herbs, gems and tools.
     "herbs": ["raw_material", "herb"], "herb": ["raw_material", "herb"],
     "gems": ["raw_material", "gem"], "gem": ["raw_material", "gem"],
-    "tools": ["tool"], "pickaxes": ["tool"], "hatchets": ["tool"],
+    "tools": ["tool"], "pickaxes": ["tool"], "hatchets": ["tool"], "containers": ["container"],
     # Equipment categories by slot (the names are a best guess: check them with --subcategories).
     # The slot in the page's Infobox Bonuses gives the same words; these help when it is missing.
     "head slot items": ["armour", "helmet"], "body slot items": ["armour", "body"],
@@ -862,6 +950,64 @@ ITEM_CATEGORY_WORDS = {
     "ring slot items": ["jewellery", "ring"], "ammunition slot items": ["ammunition"],
     "pocket slot items": ["pocket"],
 }
+
+# Item category words suggested by a wiki category's whole name, not a word of it ("Fruit" but not "Fruit tree
+# seeds"): the kind of food. A pie is baked goods; soups, pizzas and the gnome and Dorgeshuun dishes are meals.
+ITEM_EXACT_CATEGORY_WORDS = {
+    "pie": ["food", "baked_goods"], "pizza": ["food", "meal"], "soups": ["food", "meal"],
+    "gnome cooking": ["food", "meal"], "dorgeshuun cuisine": ["food", "meal"],
+    "fruit": ["food", "fruit_veg"], "cabbages": ["food", "fruit_veg"], "dungeoneering potatoes": ["food", "fruit_veg"],
+    "useless items": ["junk"], "burnt food": ["junk"],
+    "potion flasks": ["potion", "flask"],
+}
+
+# The kinds of raw or processed material (the words that follow raw_material or processed_material).
+MATERIAL_KINDS = {"log", "ore", "bone", "hide", "bar", "plank", "clay"}
+
+# Items named "... bar" or "... plank" are those kinds of processed material, when filed under what makes them.
+MATERIAL_NAMES = (
+    (r"\bbars?$", "bar", {"Metals", "Smithing", "Recipes using Smithing"}),
+    (r"\bplanks?$", "plank", {"Recipes using Construction", "Construction", "Fort Forinthry"}),
+)
+
+# An item with no use in the game: what a failed recipe leaves (a jug of bad wine, burnt food) and what the wiki calls
+# useless. Junk is all it is.
+JUNK_NAME = re.compile(r"^burnt\b|\bbad wine\b|\(bad\)")
+
+# The kind of a food whose wiki categories do not say it, from its name (checked in order; the note says to
+# check it): meals (a sandwich, wrap, stew or soup, whatever is in it), then pies (baked goods, whatever is in them),
+# then cheesecakes (baked goods, bacon or not), then meat, then baked goods, then fruit and vegetables.
+FOOD_NAME_KINDS = (
+    (re.compile(r"\b(sandwich(es)?|wraps?|stews?|soups?)\b"), "meal"),
+    (re.compile(r"\bpies?\b(?! (dish|shell))"), "baked_goods"),
+    (re.compile(r"\bcheesecakes?\b"), "baked_goods"),
+    (re.compile(r"^(?!.*\b(?:potato|dough|oil|sauce)\b).*"
+                r"\b(meat|bacon|steak|sausages?|kebabs?|ham|chicken|beef|turkey|sirloin|drumstick|jerky|carne|chompy|"
+                r"rabbit|pekin|eeligator|snail|spider|snake)\b"), "meat"),
+    (re.compile(r"\b(cakes?|cheesecake|bread|biscuits?|cookies?|muffins?|tarts?|buns?|rolls?|scones?|doughnuts?|pastry|"
+                r"baguette|croissant|waffles?|flatbread)\b"), "baked_goods"),
+    (re.compile(r"\b(potato|potatoes|fruit|berry|berries|apples?|bananas?|oranges?|lemons?|limes?|pineapples?|"
+                r"cabbages?|onions?|tomato(es)?|carrots?|pumpkins?|salad|vegetables?|mushrooms?|corn|pears?|grapes?|"
+                r"peach(es)?|melons?)\b"), "fruit_veg"),
+)
+
+# A raw meat or fish: named raw or uncooked, or in the wiki's Uncooked food. It is a raw material
+# (raw_materials/meat.lua, raw_materials/fish.lua), not food, as the cooked one is. A raw pie or cake (or one
+# only part made) is raw_food, in food/raw_food.lua, not baked goods.
+RAW_NAME = re.compile(r"\b(raw|uncooked)\b")
+PART_NAME = re.compile(r"^part\b")
+DOUGH_NAME = re.compile(r"\bdough\b")
+# (an item named raw or uncooked that is an ingredient, not a dish: raw dough is decided elsewhere, and raw meat and
+# fish are raw materials)
+RAW_INGREDIENT_NAME = re.compile(r"\b(raw|uncooked) (meat|fish|chicken|beef|bacon|rabbit|shrimps?|anchovies|sardine|herring|"
+                                 r"dough)\b")
+
+# An ingredient is an item the wiki files under the category Cooking itself (Ale yeast, Pat of butter, Pot of
+# flour). A cooked dish is under "Recipes using Cooking", which is why this is the whole name, not a word of it.
+# The category is wide, though: lobster, pies, ales and bananas are in it as well. So an item whose other
+# categories already make it a food, a drink or a fish, or that is worn, is not an ingredient.
+INGREDIENT_CATEGORY = "Cooking"
+NOT_AN_INGREDIENT = {"food", "meal", "baked_goods", "fruit_veg", "fish", "meat", "drink"}
 
 # A wiki category that says an item is a cosmetic (an override, only worn for its looks): it is
 # tagged fashion, and nothing else, as the Contributing guide says.
@@ -881,17 +1027,22 @@ NOVELTY_PAGES = {"tambourine", "mega-phonus", "rubber turkey", "off-hand rubber 
 
 
 WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd", "whip",
-                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book"}
+                     "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book",
+                     "defender"}
 # The kind of a weapon from its name (the last word), for a weapon whose wiki categories name no
 # kind: "Adamant claws" is a claw. In order, as "2h sword" must come before "sword".
 WEAPON_NAME_KINDS = [
     (r"\b2h swords?$", "two_handed_sword"), (r"\bclaws?$", "claw"), (r"\bdaggers?$", "dagger"),
-    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?$|\brapiers?$", "sword"),
+    (r"\bdefenders?$", "defender"),
+    (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?(?: [ivx]+)?$|\brapiers?$", "sword"),
+    (r"\b(?:darts?|javelins?|knife|knives|throwing (?:axes?|knives))$", "thrown"),
     (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|mauls?|flails?)$", "mace"),
     (r"\b(?:spears?|hastas?|warspears?|lances?)$", "spear"), (r"\bhalberds?$", "halberd"),
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
     (r"\bcrossbows?$", "crossbow"), (r"\b(?:battle)?(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
     (r"\borbs?$|^orb of\b", "orb"), (r"\b(?:spell)?books?$|\bbook of magic$|\btome\b", "book"),
+    # (a necromancer's off hand: the lantern is a conduit to the Underworld, the guard (an armguard) a siphon)
+    (r"\blanterns?$", "lantern"), (r"\bguards?$", "siphon"),
 ]
 
 
@@ -1006,6 +1157,163 @@ def only_in_cutscenes(page, fields):
     return all("cutscene" in v.lower() for v in locations)
 
 
+# A potion has a version for each dose, "(1)" to "(4)" (a flask "(1)" to "(6)"), and the card is the full one: 4 doses, or
+# 6 for a flask, or the most there are if it has no such version. A 2-dose mix and an unfinished potion have no card.
+DOSE_VERSION = re.compile(r"\((\d+)\)")
+DOSE_CATEGORIES = {"Potions", "Potion flasks"}
+SKIPPED_POTIONS = (
+    ({"Barbarian mixes"}, "a 2-dose mix: no card"),
+)
+UNFINISHED_POTION = re.compile(r"\(unf\)$|\bunfinished\b", re.I)
+
+
+# A potion's examine text counts its doses ("4 doses of super attack potion.", "A 6 dose flask of overload potion.", "Restores
+# stats. 4 doses."), which a card should not: the rest is the description ("Super attack potion.", "A flask of overload
+# potion.", "Restores stats.").
+DOSE_WORDS = r"(?:\d+|one|two|three|four|five|six|several|fewer|more|many)"
+DOSE_TRAILING = re.compile(r"\s+\d+\s+doses?\.?$", re.I)
+DOSE_LEADING = re.compile(r"^\s*" + DOSE_WORDS + r"\s+doses?\s+(?:of\s+)?(?:the\s+)?", re.I)
+DOSE_INLINE = re.compile(r"\b\d+[- ]doses?\s+", re.I)
+
+
+def without_doses(desc):
+    """A potion's examine text without the number of doses, as a sentence; unchanged if it has no such count."""
+    rest = DOSE_INLINE.sub("", DOSE_LEADING.sub("", DOSE_TRAILING.sub("", desc.strip()), count=1))
+    if rest == desc.strip() or not rest.strip():
+        return desc
+    rest = rest.strip()
+    return rest[0].upper() + rest[1:]
+
+
+FLASK_HOLDS = re.compile(r"\bdoses? of (?:the )?\[\[([^\]|#{}]+)", re.I)
+
+
+def flask_potion_titles(page):
+    """The titles of the potion a flask holds, most likely first: the page the flask's text links to ("six doses of
+    [[Juju cooking potion]]"), then the flask's name without "flask", with and without "potion"."""
+    titles = []
+    found = FLASK_HOLDS.search(page.get("text", ""))
+    if found:
+        titles.append(found.group(1).strip())
+    base = re.sub(r"\s+flask$", "", page.get("title", ""), flags=re.I)
+    titles += [base, base + " potion"]
+    return [t[0].upper() + t[1:] for t in dict.fromkeys(t for t in titles if t)]
+
+
+def flask_potion(page):
+    """The cached page of the potion a flask holds, or None. A flask has no recipe of its own: the potion's recipe is
+    what it takes to make."""
+    for title in flask_potion_titles(page):
+        held = read_cache("pages", title)
+        categories = held.get("categories", []) if held else []
+        # (a potion's page: in Potions or one of its kinds (Juju potions), not the skill page "Cooking")
+        if held and not held.get("missing") and "Potion flasks" not in categories and any("otions" in c for c in categories):
+            return held
+    return None
+
+
+def dose_fields(page, fields):
+    """(the item infobox's fields with the card's dose as version 1, that dose), for a potion with a version for each
+    dose; (the fields, None) for anything else."""
+    if not DOSE_CATEGORIES & set(page.get("categories", [])):
+        return fields, None
+    doses = {}
+    for key, value in fields.items():
+        number = re.fullmatch(r"version(\d+)", key)
+        found = DOSE_VERSION.fullmatch(plain(value).strip()) if number else None
+        if found:
+            doses[number.group(1)] = int(found.group(1))
+    if len(doses) < 2:
+        return fields, None
+    wanted = 6 if "Potion flasks" in page.get("categories", []) else 4
+    dose = wanted if wanted in doses.values() else max(doses.values())
+    index = next(i for i, d in doses.items() if d == dose)
+    chosen = dict(fields)
+    for key in ("version", "name", "id", "examine", "value"):
+        if key + index in fields:
+            chosen[key + "1"] = fields[key + index]
+    return chosen, dose
+
+
+# Tools and containers. The wiki files a pickaxe under Melee weapons, a watering can under Containers and a Stealing
+# Creation tool under Tools, so the categories alone tag them wrongly. A tool is a reusable implement you work with; a
+# container holds or stores things (a vessel you get back empty, or storage). An item is one or the other.
+TRAIL_REWARD = re.compile(r"^treasure trails? rewards$", re.I)
+TOOL_CATEGORIES = {"tools", "pickaxes", "hatchets", "mattocks", "tool belt"}
+MINIGAME_TOOL_CATEGORIES = {"stealing creation", "tools for games"}
+MINIGAME_TOOL_TITLE = re.compile(r"\((class \d|Stealing Creation)\)$", re.I)
+# What a filled container is named for: the contents decide the card (a cup of tea is a drink, a bucket of water an
+# ingredient), unless the name says it is the empty vessel.
+CONTENT_WORDS = {"food", "meal", "baked_goods", "fruit_veg", "drink", "potion", "ingredient", "raw_material",
+                 "processed_material", "meat", "fish"}
+EMPTY_VESSEL = re.compile(r"^empty\b|\(empty\)$|\b(vial|flask|jug|bucket|bowl|cup|pot|keg|barrel|kettle|teapot|glass|jar)$")
+_skilling_main_hands = None
+
+
+def skilling_main_hands():
+    """The names (lower case) of the pages the wiki's Skilling main hands list links to, from its cached page
+    (python dev/wiki_cards.py --links-from "Skilling main hands" saves it); empty if it was never fetched."""
+    global _skilling_main_hands
+    if _skilling_main_hands is None:
+        page = read_cache("pages", "Skilling main hands")
+        try:
+            _skilling_main_hands = {t.lower() for t in linked_pages(page["text"])} if page else set()
+        except (KeyError, ValueError):
+            _skilling_main_hands = set()
+    return _skilling_main_hands
+
+
+def minigame_tool(page):
+    """Whether a page is a Stealing Creation (or other minigame) tool: Pickaxe (class 3), Marker seeds, Proto-tool."""
+    categories = {c.lower() for c in page.get("categories", [])}
+    # (only a tool: the Stealing Creation category is on its runes too, and they are ordinary rune cards)
+    return bool(MINIGAME_TOOL_TITLE.search(page.get("title", ""))
+                or (MINIGAME_TOOL_CATEGORIES & categories and (TOOL_CATEGORIES | {"tools for games"}) & categories))
+
+
+# A tool that is a version of another: augmented, gilded (cosmetic) or golden, or with a bracketed suffix ((e),
+# (override), (Archaeology tutorial)). The plain tool has the card, as with weapons (WEAPON_SKIP).
+TOOL_VARIANT = re.compile(r"^(augmented|gilded|golden)\s|\(.*\)$", re.I)
+
+
+def tool_variant(page):
+    """Whether a tool page is a version of another: an upgrade (Rune pickaxe + 2), or see TOOL_VARIANT."""
+    title = page.get("title", "")
+    if not TOOL_CATEGORIES & {c.lower() for c in page.get("categories", [])}:
+        return False
+    return bool(UPGRADE_TITLE.search(title) or TOOL_VARIANT.search(title))
+
+
+def settle_tool_or_container(found, page, name, notes):
+    """`found` (the category words so far) corrected for a tool or a container, and the notes added to."""
+    lowered = strip_bracket(name).lower()
+    categories = {c.lower() for c in page.get("categories", [])}
+    is_tool = bool(TOOL_CATEGORIES & categories) or lowered in skilling_main_hands() or page.get("title", "").lower() in skilling_main_hands()
+    if is_tool and not {"food", "drink", "potion"} & set(found):
+        # (a pickaxe is in Melee weapons and has bonuses, but it is a tool: no weapon words)
+        keep = [w for w in found if w in ("minigame", "discontinued")]
+        if "quest_item" in found:
+            notes.append("the wiki also files it under Quest items: tagged tool only, check it is not a quest-only version")
+        if "container" in found:
+            notes.append("in the wiki's Containers too: tagged tool, not container (it is worked with)")
+        if "weapon" in found:
+            notes.append("a skilling tool the wiki files as a weapon: tagged tool only")
+        return ["tool"] + keep
+    if "container" in found:
+        content = [w for w in found if w in CONTENT_WORDS]
+        if content and not EMPTY_VESSEL.search(lowered):
+            notes.append("a filled container: tagged by what it holds, not container: check it")
+            return [w for w in found if w not in ("container", "flask")]
+        if EMPTY_VESSEL.search(lowered):
+            # (a plain vessel is no quest item whatever the wiki says: the quest ones have a bracket, Bucket (Meiyerditch))
+            quest = ["quest_item"] if "quest_item" in found and strip_bracket(name) != name else []
+            if "quest_item" in found and not quest:
+                notes.append("the wiki also files it under Quest items: tagged container only, the quest versions are other pages")
+            return ["container"] + quest + [w for w in found if w in ("minigame", "discontinued")]
+        return [w for w in found if w != "flask"]
+    return found
+
+
 def candidate(page, names, words, price=None, drop=None):
     """A card candidate from a page (an NPC or an item), or (None, reason) if it isn't one.
     `price` is the item's Grand Exchange price, if it was fetched."""
@@ -1047,8 +1355,26 @@ def candidate(page, names, words, price=None, drop=None):
         item_fields = template_fields(inside)
         if treasure_hunter_item(text, item_fields, page.get("categories", [])):
             return None, SKIPPED_TREASURE_HUNTER
+        if minigame_tool(page):
+            return None, "a Stealing Creation tool (a minigame variant): no card"
+        if tool_variant(page):
+            return None, "an upgraded, augmented, gilded or bracketed version of a tool: the plain tool has the card"
         _, bonuses = find_template(text, ["Infobox Bonuses"])
-        return item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
+        for skipped_categories, reason in SKIPPED_POTIONS:
+            if skipped_categories & set(page.get("categories", [])):
+                return None, reason
+        if DOSE_CATEGORIES & set(page.get("categories", [])) and UNFINISHED_POTION.search(page.get("title", "")):
+            return None, "an unfinished potion: no card unless it has a use of its own (add it by hand)"
+        item_fields, dose = dose_fields(page, item_fields)
+        made, reason = item_candidate(page, item_fields, template_fields(bonuses or ""), words, price, drop)
+        if made is not None and DOSE_CATEGORIES & set(page.get("categories", [])):
+            made["desc"] = without_doses(made["desc"])
+            if re.search(r"\bdoses?\b", made["desc"], re.I):
+                made["notes"].append("the description still mentions doses: reword it")
+        if made is not None and dose:
+            made["name"] = re.sub(r"\s*\(\d+\)$", "", made["name"])
+            made["notes"].append(f"the {dose}-dose version is the card's (its id and price)")
+        return made, reason
     return None, "no NPC or item infobox"
 
 
@@ -1186,6 +1512,7 @@ LEVEL_BANDS = [(90, "epic"), (70, "rare"), (40, "uncommon")]    # level needed
 COMBAT_BANDS = [(150, "epic"), (100, "rare"), (70, "uncommon")]
 PRICE_BANDS = [(50_000_000, "legendary"), (10_000_000, "epic"), (1_000_000, "rare"), (50_000, "uncommon")]
 DROP_BANDS = [(2500, "legendary"), (1000, "epic"), (100, "rare"), (25, "uncommon")]  # 1 in N or rarer
+ARMOUR_PRICE_FREE = 50_000_000      # (from this price an armour piece gets its price's rarity in full: see item_rarity)
 PET_CATEGORY = re.compile(r"\bpets?$")
 DISCONTINUED_CATEGORY = re.compile(r"discontinued|unobtainable")
 
@@ -1198,7 +1525,8 @@ def band(value, bands):
     return "common"
 
 
-def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False, source=None):
+def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False, shop=False, source=None,
+                armour=False):
     """The suggested rarity of an item and why, as (rarity, reasons). `level` is the level needed
     (skill, or combat for gear), `price` the Grand Exchange price, `drop` N for its most common drop
     rate of 1 in N, `shop` whether a shop sells it, `source` the easiest monster or other source it drops
@@ -1208,7 +1536,9 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
     level gives epic at most), with two limits on the drop rate: an item a shop sells ignores it
     (anyone can buy a mind rune, whatever monsters drop it), and one with a price is held to the
     rarity of that price, plus one step once the price is 50k or more (the corrupt dragon weapons
-    drop at 1 in 28,672 and sell for a few thousand coins)."""
+    drop at 1 in 28,672 and sell for a few thousand coins). For armour (`armour`) the price counts for less, so that a
+    price drifting across a band's edge does not keep changing cards: it raises the rarity by one step at most above
+    what the other signals give, except from 50 million up (a third age helm, a legendary by price)."""
     given = []
     if pet:
         given.append(("legendary", "a pet"))
@@ -1235,6 +1565,11 @@ def item_rarity(level=None, price=None, drop=None, discontinued=False, pet=False
         given.append((RARITIES[tier], "easiest drop source: " + ", ".join(parts)))
     if not given:
         return "common", ["no signal"]
+    if armour and price is not None and price < ARMOUR_PRICE_FREE:
+        others = [RARITIES.index(r) for r, why in given if not why.startswith("GE price")]
+        if others and RARITIES.index(band(price, PRICE_BANDS)) > max(others) + 1:
+            given = [(RARITIES[max(others) + 1], why + ", held to one step above its other signals")
+                     if why.startswith("GE price") else (r, why) for r, why in given]
     best = max(RARITIES.index(r) for r, _ in given)
     return RARITIES[best], [f"{why} ({rarity})" for rarity, why in given]
 
@@ -1310,11 +1645,13 @@ def farming_level(text):
 
 def gather_requirements(text, skill_words, categories=()):
     """What getting an item takes when no recipe or seed gives it: (skills, level), from the infobox of
-    the logs, fish or ore on its page (the lowest `level`; a version has level1, level2...). An ore's
+    the logs, fish or ore on its page (the main catch's `level`: a version has level1, level2..., and
+    a fish's swarm and whirlpool versions catch it far below its level). An ore's
     infobox only names the rock's page ("Infobox Ore|Promethium rock"), so its level is the sentence
     beside it: "requires level 90 Mining", with or without a link on the skill (the same skill; any
     other skill in the text is something else), or "no Mining requirement", which is level 1. For a
-    grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
+    fish with no infobox of its own (a page in the category Fish) it is the sentence "requires level 95
+    Fishing to catch". For a grimy herb (a page in the category Herbs) it is the Farming level to grow it: how it is obtained,
     not the Herblore level to clean it, which is a use. Only how an item is obtained counts, never what
     it is used for (the Smithing level to smelt corrupted ore). ([], None) if none."""
     text = text or ""
@@ -1322,8 +1659,12 @@ def gather_requirements(text, skill_words, categories=()):
         _, inside = find_template(text, [name])
         if inside is None or skill not in skill_words:
             continue
-        levels = [int(m.group()) for key, value in template_fields(inside).items()
-                  if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m]
+        found = {key: int(m.group()) for key, value in template_fields(inside).items()
+                 if re.fullmatch(r"level\d*", key) for m in [re.search(r"\d+", plain(value))] if m}
+        # (the main catch: a fish's page has a version for each spot and the swarm and whirlpool ones, which
+        # catch it far below its level, so the first version's level, else the plain `level`, not the lowest)
+        main = found.get("level1", found.get("level", min(found.values()) if found else None))
+        levels = [main] if main is not None else []
         if not levels:
             said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?" + skill
                              + r"\b", text, re.I)
@@ -1332,7 +1673,12 @@ def gather_requirements(text, skill_words, categories=()):
             elif re.search(r"\bno\s+(?:\[\[)?" + skill + r"(?:\]\])?\s+requirement", text, re.I):
                 levels = [1]
         if levels:
-            return [skill], min(levels)
+            return [skill], levels[0]
+    if "Fish" in categories and "fishing" in skill_words:
+        # (a fish with no infobox of its own: Raw tiger shark "requires level 95 Fishing to catch")
+        said = re.search(r"(?:requires?|requiring)\s+(?:at\s+least\s+)?level\s+(\d+)\s+(?:\[\[)?Fishing\b", text, re.I)
+        if said:
+            return ["fishing"], int(said.group(1))
     if "Herbs" in categories and "farming" in skill_words:
         level = farming_level(text)
         if level is not None:
@@ -1430,6 +1776,11 @@ def linked_pages(text, until=None):
         for row in re.split(r"^\|-.*$", text, flags=re.M)[1:]:
             cells = [line[1:].strip() for line in row.splitlines() if re.match(r"\|(?![-}+])", line)]
             link = re.fullmatch(r"\[\[([^\[\]|]+)(?:\|[^\[\]]*)?\]\]", cells[1]) if len(cells) > 1 else None
+            # (a name made with the plink template, {{plink|Bronze bar}}, as the Bars page does; what follows it, an
+            # amount like "x 5", is not part of the name)
+            link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[1]) if len(cells) > 1 else None)
+            # (a table with no picture cell, as on the Necromancy weapons page, has the name in its first cell)
+            link = link or (re.match(r"\{\{plink[a-z]*\|([^|{}]+)(?:\|[^{}]*)?\}\}", cells[0]) if cells else None)
             if link:
                 targets.append(link.group(1))
     else:
@@ -1452,13 +1803,22 @@ def shop_price(text):
     return int(text) if re.fullmatch(r"\d+", text) else None
 
 
+def no_stock(row):
+    """Whether a storeline row says the shop starts with none of the item (a "store_stock" of 0): it only
+    takes the item in from players, as the Hollow Hill's shop does with Dragon bones, so it sells nothing.
+    A row with no stock written, or a stock that never runs out, is not this."""
+    stock = str(row.get("store_stock") or "").strip()
+    return bool(re.fullmatch(r"0+", stock)) and not row.get("store_stock_infinite")
+
+
 def fold_storeline(items, row):
     """Adds one row of the storeline bucket to `items`: { item name in lower case: {"price": the
     cheapest, "shops": how many sell it, "infinite": whether any never runs out, "members": whether
-    every one is members only} }. Rows of shops that are gone, and prices in anything but coins
-    (RuneCoins, tokens, points), are left out. A price of 0 is a free starter item (Tutorial Island's
-    bronze dagger), not what the item costs: it counts as a shop but not as the price."""
-    if row.get("is_historical"):
+    every one is members only} }. Rows of shops that are gone, prices in anything but coins
+    (RuneCoins, tokens, points) and shops that start with none of the item (see no_stock) are left out.
+    A price of 0 is a free starter item (Tutorial Island's bronze dagger), not what the item costs: it
+    counts as a shop but not as the price."""
+    if row.get("is_historical") or no_stock(row):
         return
     name = plain(str(row.get("sold_item") or "")).lower()
     currency = row.get("store_currency") or []
@@ -1510,7 +1870,7 @@ def fetch_shops(wiki, refresh):
     while not state["complete"]:
         answer = wiki.get({"action": "bucket", "query": (
             "bucket('storeline').select('sold_item', 'store_sell_price', 'store_currency', 'store_stock_infinite',"
-            " 'is_members_only', 'is_historical')"
+            " 'store_stock', 'is_members_only', 'is_historical')"
             f".orderBy('sold_item', 'asc').limit({STORELINE_ROWS}).offset({state['offset']}).run()")})
         if answer is None:
             print("request limit reached: run again to carry on")
@@ -1518,6 +1878,8 @@ def fetch_shops(wiki, refresh):
         rows = answer.get("bucket", [])
         for row in rows:
             fold_storeline(state["items"], row)
+            if no_stock(row) and not row.get("is_historical"):
+                state["no_stock"] = state.get("no_stock", 0) + 1      # (kept in the cache to show what was left out)
         state["offset"] += len(rows)
         state["rows"] += len(rows)
         state["complete"] = len(rows) < STORELINE_ROWS
@@ -1558,7 +1920,9 @@ def historical_source(name):
 
 def dropline_kept(row):
     """The part of a dropline row worth keeping: (item name in lower case, [source, rarity, kinds, levels]),
-    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level"."""
+    or None for a row with no item. `kinds` and `levels` are the line's "Drop type" and "Drop level". The
+    rarity is the line's "Rarity" followed by its alternative rates ("Alt Rarities": the Camel staff's
+    1/10,000 is 1/1,940 on a Slayer task, shown as the range 1/10,000-1/1,940), all of which count."""
     name = plain(str(row.get("item_name") or "")).lower()
     try:
         line = json.loads(row.get("drop_json") or "{}")
@@ -1566,7 +1930,13 @@ def dropline_kept(row):
         return None
     if not name:
         return None
-    return name, [str(row.get("page_name") or ""), str(line.get("Rarity") or ""), line.get("Drop type"), line.get("Drop level")]
+    rarity = str(line.get("Rarity") or "")
+    alternatives = [str(a.get("text") or "") for a in line.get("Alt Rarities") or [] if isinstance(a, dict)]
+    if not alternatives and line.get("Alt Rarity"):
+        alternatives = [str(line["Alt Rarity"])]
+    if alternatives and not re.fullmatch(r"\s*always\s*", rarity, re.I):
+        rarity = " ".join([rarity] + alternatives)
+    return name, [str(row.get("page_name") or ""), rarity, line.get("Drop type"), line.get("Drop level")]
 
 
 # Kinds of source that hand an item over indirectly: a reward, a shop's stock, a Squeal of Fortune or
@@ -1780,6 +2150,7 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         notes.append(f"{len(ids)} item ids listed; using the first")
     name, desc = name_and_desc(page, fields, notes)
 
+    explicit = set()        # (the words the wiki's own categories give, not the Disassembly ones: see the ingredient below)
     found = list(SLOT_WORDS.get(plain(bonuses.get("slot", "")).lower(), []))
     style = plain(bonuses.get("style", "")).lower()
     if "ammunition" in found:
@@ -1809,9 +2180,113 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
         kinds = [plain(template_fields(disassembly or "").get("category", ""))]
         for category in page.get("categories", []) + [k for k in kinds if k]:
             name_part = category.lower().removeprefix("disassemble category/")
+            before = len(found)
             for key, keyed in ITEM_CATEGORY_WORDS.items():
                 if re.search(r"\b" + re.escape(key) + r"\b", name_part):
                     found += keyed
+            found += ITEM_EXACT_CATEGORY_WORDS.get(category.lower(), [])
+            if category in page.get("categories", []) and not category.lower().startswith("disassemble category/"):
+                explicit.update(found[before:])
+        # (the kind of material a page's own categories give (Hides, Bones and ashes) wins over the one its Disassembly
+        # box gives, which is only what it disassembles into: a hide disassembles into logs, a batwing into planks)
+        own_kinds = explicit & MATERIAL_KINDS
+        if own_kinds:
+            found = [w for w in found if w not in MATERIAL_KINDS or w in own_kinds]
+            if "raw_material" in explicit and "processed_material" not in explicit:
+                found = [w for w in found if w != "processed_material"]
+        # (a drink is not food: a page in both Food and Drinks is a drink)
+        if "drink" in found:
+            found = [w for w in found if w != "food"]
+        # (nor is a potion, though its infobox says it can be eaten (drunk))
+        if "potion" in found:
+            found = [w for w in found if w not in ("food", "meal", "baked_goods", "fruit_veg", "raw_food")]
+        # (a pie dish is a tool and a pie shell is made to be filled, neither is a pie, though the wiki files them under Pie)
+        if re.search(r"\bpie (dish|shell)\b", strip_bracket(name).lower()):
+            found = [w for w in found if w not in ("food", "baked_goods")]
+            if re.search(r"\bpie dish\b", strip_bracket(name).lower()):
+                found.append("tool")
+        # (a pie no category says is food: Raw admiral pie has only Items and Recipes)
+        if not found and FOOD_NAME_KINDS[1][0].search(strip_bracket(name).lower()):
+            found.append("food")
+        # (junk is all it is: a failed recipe, burnt food, what the wiki calls useless)
+        if "junk" in found or JUNK_NAME.search(strip_bracket(name).lower() + " " + name.lower()):
+            found = ["junk"]
+            notes.append("junk: no use in the game: check it")
+        # (bait, swamp paste and fish offcuts are used up by what they do: consumable, not food)
+        if re.search(r"\b(bait|swamp paste|fish offcuts)$", strip_bracket(name).lower()):
+            found = ["consumable"]
+            notes.append("looks like a consumable (bait, swamp paste): check it")
+        # (dough is made to be baked, not eaten: an intermediate, a processed ingredient)
+        if "food" in found and re.search(r"\bdough\b", strip_bracket(name).lower()):
+            found = ["processed_material", "ingredient"] + [
+                w for w in found if w not in ("food", "meal", "baked_goods", "fruit_veg", "fish", "meat")]
+            notes.append("dough: a processed ingredient, not food: check it")
+        # (a food no category says the kind of: the wiki's Produce is fruit and vegetables, else the name often says.
+        # Not an ingredient, which is decided below: in Cooking with no category of its own that says food, it is one)
+        if ("food" in found and (INGREDIENT_CATEGORY not in page.get("categories", []) or "food" in explicit)
+                and not {"meal", "baked_goods", "fruit_veg", "fish", "meat"} & set(found)):
+            lowered = strip_bracket(name).lower()
+            if "Produce" in page.get("categories", []):
+                found.append("fruit_veg")
+            else:
+                for pattern, kind in FOOD_NAME_KINDS:
+                    if pattern.search(lowered):
+                        found.append(kind)
+                        notes.append(f"food kind {kind} taken from the name: check it")
+                        break
+                else:
+                    # (nothing says the kind: most of what is left is a dish, so suggest meal and say it is a guess)
+                    found.append("meal")
+                    notes.append("food kind not found: meal is a guess, check it")
+        # (a raw meat or fish is a raw material, not food: raw_materials/meat or fish. A pie or a meal with meat in its
+        # name is not)
+        raw_kind = ("meat" if "meat" in found and "fish" not in found
+                    else "fish" if "fish" in found and "meat" not in found else None)
+        if (raw_kind and not {"meal", "baked_goods", "fruit_veg"} & set(found)
+                and ("Uncooked food" in page.get("categories", []) or RAW_NAME.search(name.lower()))):
+            found = ["raw_material"] + [w for w in found if w not in ("food", "raw_material")]
+            notes.append(f"raw {raw_kind}: a raw material, not food: check it")
+        # (any other food named raw or uncooked, or a part-made pie, is raw_food in place of its kind: a raw pie, a raw
+        # soup, a raw potato. An ingredient is not: that is decided below)
+        if "food" in found:
+            if (RAW_NAME.search(name.lower()) or "Uncooked food" in page.get("categories", [])
+                    or (PART_NAME.search(name.lower()) and "baked_goods" in found)):
+                kinds = ("meal", "baked_goods", "fruit_veg")
+                found = [w for w in found if w not in kinds] + ["raw_food"]
+                notes.append("raw food: not cooked yet: check it")
+        # (an herb is not food, though the Disassembly box may call it that)
+        if "herb" in found:
+            found = [w for w in found if w != "food"]
+    # (an ingredient is cooked with, not eaten: in the category Cooking with no category of its own that makes it a food
+    # or a drink (the Disassembly one calls barley and sweetcorn "food", which is only what they disassemble into), and
+    # not worn. raw_material and ingredient, or processed_material if a recipe makes it, below)
+    # (a dish named raw or uncooked, with no category of its own that says what it is, is raw_food: Uncooked cake)
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and not found
+            and RAW_NAME.search(name.lower()) and not DOUGH_NAME.search(name.lower())
+            and not RAW_INGREDIENT_NAME.search(strip_bracket(name).lower())
+            and plain(fields.get("equipable", "")).lower() != "yes"):
+        found = ["food", "raw_food"]
+        notes.append("raw food: not cooked yet: check it")
+    if (INGREDIENT_CATEGORY in page.get("categories", []) and "junk" not in found and "raw_food" not in found
+            and not NOT_AN_INGREDIENT & explicit and plain(fields.get("equipable", "")).lower() != "yes"):
+        found = ["raw_material", "ingredient"] + [w for w in found if w not in ("food", "raw_food", "raw_material", "ingredient")]
+        notes.append("an ingredient (wiki category Cooking): check it is not a tool or a food")
+    # (mined and nothing says what it is: sandstone, granite, rune essence. A raw material, but check it)
+    if not found and "Mining" in page.get("categories", []) and plain(fields.get("equipable", "")).lower() != "yes":
+        found = ["raw_material"]
+        notes.append("filed under Mining: a raw material, check it is not treasure or a tool")
+    # (a metal bar or a plank: named "... bar" or "... plank" and filed under the skill that makes it. Nothing else says
+    # so: the wiki has no category of bars or planks, and a bar's Disassembly box says planks. A processed material and
+    # that kind, whatever else the categories guessed (a refined plank is only an intermediate, a bar only an
+    # ingredient, there); only what it is for (a quest, a minigame) is kept)
+    material_name = strip_bracket(name).lower()
+    for name_pattern, material_kind, material_categories in MATERIAL_NAMES:
+        if (re.search(name_pattern, material_name) and not {"food", "drink"} & set(found)
+                and material_categories & set(page.get("categories", []))):
+            found = ["processed_material", material_kind] + [
+                w for w in found if w in ("quest_item", "minigame", "treasure_trail", "slayer_drop", "discontinued")]
+            notes.append(f"a {material_kind}: a processed material and a {material_kind}: check it")
+            break
     # (a weapon whose categories gave no kind gets it from its name: Adamant claws -> claw)
     kind_words = {w for pair in ITEM_CATEGORY_WORDS.values() for w in pair if w in WEAPON_KIND_WORDS}
     if "weapon" in found and not kind_words.intersection(found):
@@ -1824,6 +2299,11 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     # (a clean herb is the grimy one after Herblore has cleaned it: a processed material)
     if "herb" in found and re.match(r"clean\b", strip_bracket(name).lower()):
         found = ["processed_material" if w == "raw_material" else w for w in found]
+    found = settle_tool_or_container(found, page, name, notes)
+    # (a trimmed, gold, heraldic or god-themed piece, a cane: a treasure trail reward, which has its own deck file)
+    if any(TRAIL_REWARD.match(c) for c in page.get("categories", [])) and "treasure_trail" not in found:
+        found.append("treasure_trail")
+        notes.append("a treasure trail reward: goes in the treasure trail file")
     category = []
     for word in found:
         parents = words["item_requires"].get(word, [])
@@ -1844,6 +2324,31 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     item_names = [plain(v) for k, v in fields.items() if re.fullmatch(r"name\d*", k)]
     made_with, level = recipe_requirements(page.get("text", ""), [page["title"], name, strip_bracket(name)] + item_names,
                                            set(words["skills"]))
+    # (a potion flask has no recipe: the potion it holds has, so the skills and level are that potion's)
+    if not made_with and "Potion flasks" in page.get("categories", []):
+        holds = flask_potion(page)
+        if holds is not None:
+            made_with, level = recipe_requirements(
+                holds.get("text", ""), [holds["title"], strip_bracket(holds["title"]), holds["title"] + " potion", page["title"]]
+                + flask_potion_titles(page), set(words["skills"]))
+            if made_with:
+                notes.append(f"made with {holds['title']}'s recipe: its skills and level")
+        # (the potion's page is not here (a Juju or Guthix one): a flask of a potion is Herblore's, and the level is unknown)
+        if not made_with and "herblore" in words["skills"]:
+            made_with = ["herblore"]
+            notes.append("a potion flask: made with Herblore, but the potion's level was not found: check it")
+    # (an ingredient a recipe makes, butter or flour, is processed; yeast or an egg that nothing makes is raw)
+    if made_with and "ingredient" in category and "raw_material" in category:
+        category = ["processed_material" if word == "raw_material" else word for word in category]
+        tags["category"] = category
+    # (an intermediate: no category says what it is, a recipe makes it and the page has the table of the recipes that
+    # use it (Uses material list), as the Dry rabbit sandwich, made of bread and rabbit and used to make a rabbit
+    # sandwich. Not being in Food or Drinks is how we know it is not usable as it is)
+    if not category and made_with and "Uses material list" in page.get("text", ""):
+        category = ["processed_material", "ingredient"]
+        tags["category"] = category
+        notes[:] = [n for n in notes if not n.startswith("no category found")]
+        notes.append("an intermediate (made by a recipe, used by others): processed material and ingredient, check it")
     worn_with, worn_level = gear_requirements(bonuses, set(words["skills"]))
     if "novelty" in found:
         worn_with, worn_level = [], None      # (nobody needs Attack to wave a rubber chicken)
@@ -1889,7 +2394,8 @@ def item_candidate(page, fields, bonuses, words, price=None, drop=None):
     rarity, why = item_rarity(
         level=level, price=price, drop=round(drop) if drop else None, shop=sold, source=easiest,
         pet=any(PET_CATEGORY.search(c) for c in categories),
-        discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories))
+        discontinued=any(DISCONTINUED_CATEGORY.search(c) for c in categories),
+        armour=bool({"armour", "skill_outfit"} & set(category)))
     notes.append("rarity is a guess: " + ", ".join(why))
     if price is None:
         notes.append("no Grand Exchange price found (not tradeable?)")
@@ -2827,6 +3333,7 @@ def remembered_sources(args):
     this_run = {"categories": [source(c, args.race, args.members, args.npcs, args.within) for c in args.category],
                 "regions": [source(r, args.race, args.members, args.npcs) for r in args.region],
                 "weapons": [source(w, (), args.members) for w in args.weapons],
+                "armour": [f"{slot}|{style}" for slot in args.armour for style in (args.style or [""])],
                 "pages": list(args.page)}
     for key, new in this_run.items():
         saved.setdefault(key, [])
@@ -2837,7 +3344,7 @@ def remembered_sources(args):
         SOURCES.parent.mkdir(parents=True, exist_ok=True)
         SOURCES.write_text(json.dumps(saved, indent=1), encoding="utf-8")
     chosen = this_run if args.count or args.list or args.only else saved
-    return chosen["categories"], chosen["regions"], chosen.get("weapons", []), chosen["pages"]
+    return chosen["categories"], chosen["regions"], chosen.get("weapons", []), chosen["pages"], chosen.get("armour", [])
 
 
 def candidate_sources(made, listed_in, filters, words):
@@ -2977,6 +3484,11 @@ def show_subcategories(args):
     return 0
 
 
+def this_armour(args):
+    """The armour sources asked for on this run's command line, as saved ("head|melee")."""
+    return [f"{slot}|{style}" for slot in args.armour for style in (args.style or [""])]
+
+
 def show_count(titles, sources, args, wiki):
     """The --count preview: how many pages each source would fetch, how many of them are cached
     already, and the requests and runs the rest take."""
@@ -3001,6 +3513,8 @@ def main():
     parser.add_argument("--page", action="append", default=[])
     parser.add_argument("--region", action="append", default=[])
     parser.add_argument("--weapons", action="append", default=[], type=str.lower, choices=WEAPON_STYLES)
+    parser.add_argument("--armour", action="append", default=[], type=str.lower, choices=ARMOUR_SLOTS)
+    parser.add_argument("--style", action="append", default=[], type=str.lower, choices=ARMOUR_STYLES)
     parser.add_argument("--race", action="append", default=[])
     parser.add_argument("--members", choices=["f2p", "p2p"])
     parser.add_argument("--npcs", action="store_true")
@@ -3014,6 +3528,7 @@ def main():
     parser.add_argument("--forget", action="store_true")
     parser.add_argument("--drops", action="append", default=[])
     parser.add_argument("--drops-from", action="append", default=[])
+    parser.add_argument("--links-from", action="append", default=[])
     parser.add_argument("--until", default="")
     parser.add_argument("--all-bosses", action="store_true")
     parser.add_argument("--subcategories", action="append", default=[])
@@ -3040,18 +3555,35 @@ def main():
     if args.all_bosses:
         args.drops_from.append("Bosses")
         args.until = args.until or "Quest bosses"
-    if (not args.category and not args.region and not args.weapons and not args.page and not args.drops
-            and not args.drops_from and not SOURCES.exists()):
+    if (not args.category and not args.region and not args.weapons and not args.armour and not args.page and not args.drops
+            and not args.drops_from and not args.links_from and not SOURCES.exists()):
         print(__doc__)
         return 1
-    categories, regions, weapons, page_titles = remembered_sources(args)
-    if not categories and not regions and not weapons and not page_titles and not args.drops and not args.drops_from:
-        print("Nothing to fetch: give --category, --region, --weapons or --page.")
+    # (the pages a list page links to are asked for like --page ones, so they are remembered the same way)
+    wiki = None
+    for list_title in args.links_from:
+        wiki = wiki or make_wiki(args)
+        listed = fetch_pages(wiki, [list_title], args.refresh).get(list_title)
+        if listed is None or listed.get("missing"):
+            print(f'The page "{list_title}" could not be read: no pages taken from it')
+            continue
+        try:
+            linked = linked_pages(listed.get("text", ""), args.until)
+        except ValueError as problem:
+            print(f'"{list_title}": {problem}, so nothing was taken from it')
+            continue
+        print(f'"{list_title}" links {len(linked)} pages' + (f' before "{args.until}"' if args.until else ""))
+        args.page += [t for t in linked if t not in args.page]
+    categories, regions, weapons, page_titles, armour = remembered_sources(args)
+    if (not categories and not regions and not weapons and not armour and not page_titles and not args.drops
+            and not args.drops_from):
+        print("Nothing to fetch: give --category, --region, --weapons, --armour or --page.")
         return 1
 
-    wiki = make_wiki(args)
+    wiki = wiki or make_wiki(args)
     print("From:", ", ".join([source_label(c) for c in categories] + [source_label(r, True) for r in regions]
                              + ["Weapons: " + source_label(w) for w in weapons]
+                             + ["Armour: " + a.replace("|", " ").strip() for a in armour]
                              + [f'page "{p}"' for p in page_titles]))
     # Each title, with the categories (or the page asked for) it came from, so the review window
     # can show one at a time.
@@ -3120,12 +3652,26 @@ def main():
             continue                # (listed next run)
         for title in listed:
             add(title, label)
+    for entry in armour:
+        slot, _, style = entry.partition("|")
+        label = "Armour: " + (f"{slot} ({style})" if style else slot)
+        listed = armour_pages(wiki, slot, style, args.refresh and entry in this_armour(args))
+        if listed is None:
+            continue                # (listed next run)
+        for title in listed:
+            add(title, label)
     if args.list:
         print_titles(titles, sources)
         return 0
     if args.count:
         return show_count(titles, sources, args, wiki)
     pages = fetch_pages(wiki, titles, args.refresh)
+    # (the potion each potion flask holds gives its skills and level; it is read here, not made a candidate)
+    held = [t for page in pages.values() if page and "Potion flasks" in page.get("categories", [])
+            and flask_potion(page) is None
+            for t in flask_potion_titles(page) if t not in pages and read_cache("pages", t) is None]
+    if held:
+        fetch_pages(wiki, list(dict.fromkeys(held)), False)
     drop_titles = list(args.drops)
     for list_title in args.drops_from:
         listed = fetch_pages(wiki, [list_title], args.refresh).get(list_title)
@@ -3144,8 +3690,8 @@ def main():
     if drop_titles:
         print(f"Drop rates for {len(drops)} items are kept in {DROPS.relative_to(ROOT)}")
     # The Grand Exchange price of each item page, by asking the wiki for {{GEP|name}}.
-    price_names = {title: price_name(template_fields(find_template(pages[title]["text"], ["Infobox Item"])[1] or ""),
-                                     title)
+    price_names = {title: price_name(dose_fields(pages[title], template_fields(
+                       find_template(pages[title]["text"], ["Infobox Item"])[1] or ""))[0], title)
                    for title in titles if title in pages and "Infobox Item" in pages[title].get("text", "")}
     prices = fetch_prices(wiki, [n for n in price_names.values() if n], args.refresh) if price_names else {}
 
