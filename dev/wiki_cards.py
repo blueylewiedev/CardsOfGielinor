@@ -670,9 +670,11 @@ def infoboxes(text):
 
 def other_infoboxes(page, fields, any_name=False):
     """The page's other NPC and monster infoboxes than `fields` (from npc_infobox), leaving out any
-    named for something else (the Kitten on the Cat page) unless `any_name`."""
+    named for something else (the Kitten on the Cat page) unless `any_name`. (`fields` can be the
+    box with some fields left out, see without_removed_places: it is still that box.)"""
     title = strip_bracket(page.get("title", "")).lower()
-    return [box for box in infoboxes(page.get("text", "")) if not box.items() <= fields.items()
+    return [box for box in infoboxes(page.get("text", ""))
+            if not (box.items() <= fields.items() or fields.items() <= box.items())
             and (any_name or plain(first_version(box, "name")).lower() in ("", title))]
 
 
@@ -852,6 +854,10 @@ LOCATION_TABLE_PLACES = 3
 # Port Sarim, though its NPCs are "Desert,Asgarnia,Tirannwn". A page's title works the same way:
 # Chaeldar lives in Zanaris, though her Monster infobox says Kandarin.
 HOME_REGIONS = {"Player-owned port": "asgarnia", "Chaeldar": "misthalin"}
+# Pages whose league region the wiki gives wrong, and the regions they are really in: the Abyssal
+# Knights guard Senntisten's cathedral (Misthalin, as Kenton Decarte's Senntisten version says),
+# though their version there says Asgarnia.
+REGION_FIXES = {"Abyssal Knight": ["misthalin"]}
 
 # Category words suggested by the infobox's race.
 RACE_WORDS = {
@@ -1059,6 +1065,28 @@ SKIPPED_CATEGORIES = {"Removed content": "removed from the game", "Historical ar
 # Pages that never become cards, by title without its bracket, and why.
 SKIPPED_PAGES = {"Mystery figure": "the disguised champions: Leon d'Cour and Glophren have their own pages"}
 
+# Shattered Worlds' copies of other monsters ("Abnormal dagannoth", "False ork"): the prefix is how
+# deep in the worlds they are, their stats are placeholders (level 1, scaled to the world) and their
+# pages say nothing of their own. Its bosses, pets and hub NPCs are kept (see SHATTERED_WORLDS_RARITY).
+SHATTERED_WORLDS_COPY = re.compile(r"^(Abnormal|Fabricated|False|Imitation|Malignant|Unnatural) ")
+SKIPPED_SHATTERED_WORLDS = "a Shattered Worlds copy of another monster"
+
+# The Uncharted Isles' copies of other monsters, the islands' slayer-style kill targets ("Zombie
+# (Uncharted Isles)", "Crassian scout (Uncharted Isles)"): the bracket names the isles. Their own
+# creatures (the crablets, the kami, Cocoa Macaw) have plain titles and are kept, the orokami too:
+# the isles' versions of the bakami, but with names and Hunter levels of their own.
+SKIPPED_UNCHARTED_ISLES = "an Uncharted Isles copy of another monster"
+
+# Heist's disguises, the NPCs the robbers can "Take form" of ("Kharidian guard", "Ahrim the Blighted
+# (Heist)"): copies of NPCs from elsewhere. Not Heist's own NPCs (Sir Vyvin, filed under it too).
+SKIPPED_HEIST = "a Heist disguise (a copy of an NPC from elsewhere)"
+
+
+def heist_disguise(page, fields):
+    """True for a page filed under Heist whose infobox lets a robber Take form of it."""
+    actions = " ".join(numbered_fields(fields, "actions") + numbered_fields(fields, "options"))
+    return "Heist" in page.get("categories", []) and "take form" in actions.lower()
+
 # Treasure Hunter items are bought with real money (microtransactions), so they never become cards.
 # The wiki marks them three ways: the {{TH Item}} template on the page, the item infobox's
 # restriction field being "th" (the restriction field also says "limited", "quest", "minigame" and
@@ -1089,6 +1117,32 @@ def secondary_places(page, fields):
     if page["title"] in RUSH_OF_BLOOD:
         found.add("Rush of Blood")
     return found
+
+
+def removed_versions(fields):
+    """The numbers of an infobox's versions the wiki says were removed (removal2 = a date), or none
+    if every version was (such an NPC is kept whole, and noted)."""
+    numbers = [k[len("version"):] for k in fields if re.fullmatch(r"version\d+", k)]
+    removed = [n for n in numbers if fields.get("removal" + n, "").strip() not in ("", "No", "no")]
+    return [] if len(removed) == len(numbers) else removed
+
+
+def without_removed_places(fields):
+    """An infobox without the locations of its removed versions, so they give it no location tags:
+    the Abyssal Knights' Shattered Worlds lobby is gone, their Senntisten version is not. Their
+    other fields are kept (the models, quests and spawns that rate it)."""
+    removed = {"location" + n for n in removed_versions(fields)}
+    return {k: v for k, v in fields.items() if k not in removed} if removed else fields
+
+
+def removed_places(fields):
+    """The places (as slugs) only an infobox's removed versions are in: a wiki category naming one
+    (the Abyssal Knights are still filed under Shattered Worlds) gives it no location tag either."""
+    removed = removed_versions(fields)
+    gone = {slug(p) for n in removed for p in links(fields.get("location" + n, ""))}
+    kept = {slug(p) for k, v in fields.items() if re.fullmatch(r"location\d*", k) and k[len("location"):] not in removed
+            for p in links(v)}
+    return gone - kept
 
 
 def configs_named(name, names):
@@ -1275,6 +1329,10 @@ def candidate(page, names, words, price=None, drop=None):
     skipped = SKIPPED_PAGES.get(strip_bracket(page.get("title", "")))
     if skipped:
         return None, skipped
+    if "Shattered Worlds" in page.get("categories", []) and SHATTERED_WORLDS_COPY.match(page.get("title", "")):
+        return None, SKIPPED_SHATTERED_WORLDS
+    if "Uncharted Isles" in page.get("categories", []) and page.get("title", "").endswith(" (Uncharted Isles)"):
+        return None, SKIPPED_UNCHARTED_ISLES
     text = page.get("text", "")
     # An NPC's infobox; a pet with only a pet infobox (the terrier, the Golden gnome) has that one;
     # an object pet whose page only has an item infobox (Eek) is the NPC named like it, with that
@@ -1297,6 +1355,9 @@ def candidate(page, names, words, price=None, drop=None):
             fields["id"] = template_fields(pet).get("npcid", "")
         if only_in_cutscenes(page, fields):
             return None, "only seen in cutscenes"
+        if heist_disguise(page, fields):
+            return None, SKIPPED_HEIST
+        fields = without_removed_places(fields)
         return npc_candidate(page, kind, fields, names, words)
     if inside is not None:
         item_fields = template_fields(inside)
@@ -1401,6 +1462,7 @@ SCENERY_ART = {
     "Babe": {"model": 42737, "anim": 10549},        # scenery 39239, SWEPT_OXEN_COW
     "Norman": {"model": 42735, "anim": 10548},      # scenery 39238, SWEPT_OXEN_BULL
     "Bartender (Blue Moon Inn)": {"model": 51096, "anim": 1567},    # scenery 12964/95961, his NPC's model is a stub
+    "Farli": {"model": 96427, "anim": 12212},      # scenery 45091, at his spit roast (SPITROAST_DWARF_NEW)
     # (at their drums, scenery 127150, DRUM_PLAYING_IDLE; 127151 plays DRUM_PLAYING_SOMBRE_IDLE, 35442)
     "The Spirit of Rhythm": {"model": 128796, "anim": 35441},
     # (HUMAN_ZOMBIE_PLAYING_PIANO, as his pianist NPC plays it; the piano is other scenery, left out)
@@ -2501,7 +2563,7 @@ ANIMAL_RACES = {"sheep", "cow", "chicken", "dog", "cat", "rat", "bird", "bear", 
 ROLE_WORDS = {"tutor", "instructor", "guard", "farmer", "guardsman", "guardswoman", "priest", "priestess", "herbalist",
               "shopkeeper", "assistant", "banker", "merchant", "musician", "citizen", "villager", "monk", "nun",
               "sailor", "worker", "cleaner", "trader", "soldier", "knight", "cook", "chef", "archaeologist",
-              "attendee", "player", "bartender", "barman", "barmaid", "innkeeper"}
+              "attendee", "player", "bartender", "barman", "barmaid", "innkeeper", "druid", "druidess"}
 # (Not "man" or "woman": the plain Man and Woman aren't filed as characters anyway, and the Wise
 # Old Man is one.)
 NAME_LINKS = {"the", "of", "de", "von", "van", "du", "la", "le"}     # small words in real names
@@ -2591,12 +2653,15 @@ def automaton_rarity(page):
 GATHERED_FROM = [
     ("Runespan", r"Requires Runecrafting \((\d+)\)", "a Runespan creature siphoned at Runecrafting level"),
     ("Wisps", r"harvestable by those with Divination level (\d+)", "a wisp harvested at Divination level"),
+    # (the Arc's springs: "require a [[Divination]] level of at least 95", "require level 90 Divination")
+    ("Divine energies", r"require (?:a \[\[Divination\]\] level of (?:at least )?|level )(\d+)(?= to| \[*Divination)",
+     "a Divination spring harvested at Divination level"),
 ]
 
 
 def gathered_rarity(page):
-    """The rarity of a Runespan creature (essling, esshound, esswraith) or a Divination wisp, by the
-    level to gather from it, and why; or None if the page is neither's."""
+    """The rarity of a Runespan creature (essling, esshound, esswraith), a Divination wisp or spring
+    (ancestral energy), by the level to gather from it, and why; or None if the page is none of them."""
     for category, examine, what in GATHERED_FROM:
         found = category in page.get("categories", []) and re.search(examine, page.get("text", ""))
         if found:
@@ -2606,9 +2671,11 @@ def gathered_rarity(page):
 
 
 def skill_level_rarity(page):
-    """The rarity of a Hunter creature or an NPC to pickpocket, by the level it needs (its "Hunter
-    info" or "Thieving info"), on the familiars' bands, and why; or None if it has neither."""
-    for template, skill, verb in (("Hunter info", "Hunter", "caught"), ("Thieving info", "Thieving", "pickpocketed")):
+    """The rarity of a Hunter creature, an NPC to pickpocket or one mined like a rock (the Arc's
+    crablets: an alaea crablet needs 97 Mining), by the level it needs (its "Hunter info", "Thieving
+    info" or "Infobox ores"), on the familiars' bands, and why; or None if it has none of them."""
+    for template, skill, verb in (("Hunter info", "Hunter", "caught"), ("Thieving info", "Thieving", "pickpocketed"),
+                                  ("Infobox ores", "Mining", "mined")):
         _, inside = find_template(page.get("text", ""), [template])
         if inside is None:
             continue
@@ -2771,12 +2838,70 @@ NPC_RARITY = {
     "Curator Haig Halen": ("epic", "sells the master quest cape"),
     "Minerva": ("epic", "sells the master max cape"),
     "Golden Gnome": ("legendary", "the Golden Gnome, awarded at RuneFest"),
+    # The Horsemen of the Apocalypse (Famine and Pestilence have no NPC yet, November 2026).
+    "Death": ("epic", "a Horseman of the Apocalypse"),
+    "War": ("epic", "a Horseman of the Apocalypse"),
+    "Famine": ("epic", "a Horseman of the Apocalypse"),
+    "Pestilence": ("epic", "a Horseman of the Apocalypse"),
+    # The holidays' own figureheads (other holiday characters: see HOLIDAY_RARITY).
+    "Santa Claus": ("rare", "a holiday's figurehead"),
+    "Queen of Snow": ("rare", "a holiday's figurehead"),
+    "Jack Frost": ("rare", "a holiday's figurehead"),
+    "Easter Bunny": ("rare", "a holiday's figurehead"),
 }
 # The least rarity of the NPCs in a wiki category, and what they are: one the rules rate lower is
 # raised to it (one rated higher keeps its rarity: Relomia, in 7 quests, is rare).
 RARITY_FLOORS = {
     "God Emissaries": ("uncommon", "a god's emissary"),
 }
+# Characters who came with a holiday event, at least uncommon like the emissaries (Fame, Death's
+# assistant at Halloween; Muncher): their first version's update is a holiday's and the wiki files
+# them under a holiday event ("2011 Halloween event", "Valentine's Day 2016"). Both are needed:
+# Hans and Reldo are filed under Christmas events they appeared in, and Myths of the White Lands'
+# yeti came out in a "Christmas Event and Quest" update.
+HOLIDAY = re.compile(r"Halloween|Hallowe'en|Christmas|Easter|Thanksgiving|Valentine", re.I)
+HOLIDAY_RARITY = "uncommon"
+
+
+def holiday_character(page, fields, character):
+    """True for a character who came with a holiday event (see HOLIDAY_RARITY); not a pet, which goes
+    by how it is got."""
+    categories = page.get("categories", [])
+    events = [c for c in categories if HOLIDAY.search(c) and ("event" in c.lower() or re.search(r"\d{4}", c))]
+    return (character and "Pets" not in categories and bool(events)
+            and HOLIDAY.search(first_version(fields, "update") or "") is not None)
+# Shattered Worlds' own NPCs, by what they are: the wiki files them all under Shattered Worlds and
+# none as a boss, and their combat levels are scaled to the world (the generals' 580 to 650 are
+# their highest). The God Wars parodies are epic like the generals; its other bosses, the Barrows
+# and Dagannoth Kings parodies, are rare like other minigame bosses; the Abyssal hound, a very rare
+# reward, is legendary like the boss pets. Others (the hub's NPCs) go by the rules.
+SHATTERED_WORLDS_RARITY = [
+    ({"Generally Graardor", "Kree'arranged", "K'ril Too'tsaroth", "Commandeered Zilyana"},
+     "epic", "a Shattered Worlds God Wars boss"),
+    ({"Ahrntim the Blighted", "Dharok the Retconned", "Guthan the Inverted", "Karil the Twisted",
+      "Norag the Corrupted", "Verac the Redefined", "Dagannot Prime", "Dagannot Rex", "Dagannot Supreme",
+      "Chaos Experimental"},
+     "rare", "a Shattered Worlds boss"),
+    ({"Abyssal hound"}, "legendary", "the Abyssal hound, a very rare Shattered Worlds reward"),
+]
+# The anima creature pets, bought with shattered anima in tiers 1 to 9 (their pages say "the tier 7
+# pet"): (lowest tier, rarity), from the top.
+ANIMA_PET_TIERS = [(7, "epic"), (4, "rare"), (1, "uncommon")]
+
+
+def shattered_worlds_rarity(page):
+    """A Shattered Worlds boss's or pet's rarity and why (see SHATTERED_WORLDS_RARITY), or None if
+    the page is not one's."""
+    if "Shattered Worlds" not in page.get("categories", []):
+        return None
+    for titles, rarity, what in SHATTERED_WORLDS_RARITY:
+        if page["title"] in titles:
+            return rarity, what
+    tier = re.search(r"tier ([1-9]) pet", page.get("text", ""))
+    if tier and "Pets" in page.get("categories", []):
+        rarity = next(r for lowest, r in ANIMA_PET_TIERS if int(tier.group(1)) >= lowest)
+        return rarity, f"a tier {tier.group(1)} anima creature pet"
+    return None
 # The gods (the wiki's Category:Gods, October 2026), for a god whose NPC page is a bracketed one
 # that is not filed there itself ("Azzanadra (Children of Mah)"). Not Gielinor or the Kendal, whose
 # names are also a place and a quest's monster ("The Kendal (monster)").
@@ -2808,6 +2933,8 @@ def npc_rarity(page, fields, character, named, words):
     for category, (floor, what) in RARITY_FLOORS.items():
         if category in page.get("categories", []) and RARITIES.index(rarity) < RARITIES.index(floor):
             rarity, why = floor, f"{what}, at least {floor}; the rules give {rarity}: {why}"
+    if holiday_character(page, fields, character) and RARITIES.index(rarity) < RARITIES.index(HOLIDAY_RARITY):
+        rarity, why = HOLIDAY_RARITY, f"a holiday character, at least {HOLIDAY_RARITY}; the rules give {rarity}: {why}"
     return rarity, why
 
 
@@ -2849,6 +2976,9 @@ def rules_rarity(page, fields, character, named, words):
     hand_set = NPC_RARITY.get(page["title"]) or NPC_RARITY.get(strip_bracket(page["title"]))
     if hand_set:
         return hand_set
+    shattered = shattered_worlds_rarity(page)
+    if shattered is not None:
+        return shattered
     # Gods (the wiki's Category:Gods, which takes those who rose to godhood, like Zamorak and
     # Azzanadra) are legendary, whatever their combat level.
     # (a god's own NPC page can be a bracketed one, "Azzanadra (Children of Mah)", so its title
@@ -2988,6 +3118,7 @@ def npc_candidate(page, kind, fields, names, words):
     home = next((HOME_REGIONS[c] for c in categories + [page["title"]] if c in HOME_REGIONS), None)
     if home in regions:
         regions = [home]
+    regions = list(REGION_FIXES.get(page["title"], regions))
     # A page named for one of its places ("Firefly (The Lost Grove)", found in the Lost Grove and the
     # Piscatoris Hunter area) gets that place's region: the wiki lists the regions in the order of
     # the places ("Tirannwn,Kandarin"), so when there are as many of each, the place's is the one in
@@ -3050,9 +3181,10 @@ def npc_candidate(page, kind, fields, names, words):
     # A known place the page is filed under (Aggie: Draynor Village -> draynor). The category must
     # be the place itself, give or take "village", "town" or "city": "Lumbridge quests" or
     # "Taverley Dungeon" only mention one.
+    gone = removed_places(npc_infobox(page)[1] or {})
     for wiki_category in page.get("categories", []):
         place = re.sub(r"_(village|town|city)$", "", slug(wiki_category))
-        if place in words["location"] and place not in places:
+        if place in words["location"] and place not in places and place not in gone:
             places.append(place)
     # (a place it is only fought again in, or met in the future, is left out when it has another:
     # Sigmund's Dominion Tower; the Stone face, only in the Dominion Tower, keeps it)

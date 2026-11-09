@@ -1990,10 +1990,13 @@ end
 -- The camera of the most typical NPC card framed with the body model in `group`, as a copy, and
 -- that card; or nil if no card is in the group yet. Given a `name`, the cards of its family (the
 -- titans, the minotaurs: see nameFamily) are used instead when there are FAMILY_CARDS of them, as
--- a creature's size is much more like its family's than its group's. Without a family, `tiles`
--- (see Builder.tilesOf) narrows them to the group's cards of that size; a big NPC whose group has
--- none is framed like the nearest size of any group, as the deck's framing follows tiles closely.
-function Builder.typicalCamera(group, name, tiles)
+-- a creature's size is much more like its family's than its group's. Failing that, given a `race`
+-- (the wiki's), the cards with it as a category word are, when there are FAMILY_CARDS of them: the
+-- kami are bakami and orokami, and float far above where other creatures stand. Without either,
+-- `tiles` (see Builder.tilesOf) narrows them to the group's cards of that size; a big NPC whose
+-- group has none is framed like the nearest size of any group, as the deck's framing follows tiles
+-- closely.
+function Builder.typicalCamera(group, name, tiles, race)
     local defaults = CardView.defaultsFor({ body = true })
     local members, everyone = {}, {}
     for _, card in ipairs(Cards.list) do
@@ -2022,18 +2025,32 @@ function Builder.typicalCamera(group, name, tiles)
         end
         return total
     end
-    local family = nameFamily(name)
-    if family ~= nil then
+    -- (keeps only the members whose card `isKin`, if FAMILY_CARDS are, and then not by size)
+    local function narrowTo(isKin)
         local kin = {}
         for _, member in ipairs(members) do
-            if nameFamily(member.card.name) == family then
+            if isKin(member.card) then
                 kin[#kin + 1] = member
             end
         end
-        if #kin >= FAMILY_CARDS then
-            members = kin
-            tiles = nil
+        if #kin < FAMILY_CARDS then
+            return false
         end
+        members, tiles = kin, nil
+        return true
+    end
+    local family = nameFamily(name)
+    local byFamily = family ~= nil and narrowTo(function(card) return nameFamily(card.name) == family end)
+    local raceWord = race ~= nil and Builder.slug(race) or ""
+    if not byFamily and raceWord ~= "" then
+        narrowTo(function(card)
+            for _, word in ipairs((card.tags or {}).category or {}) do
+                if word == raceWord then
+                    return true
+                end
+            end
+            return false
+        end)
     end
     if tiles ~= nil then
         -- (too few of the group's own: the same size of any group, then one smaller, one bigger,
@@ -2277,7 +2294,7 @@ function Builder.loadCandidate(candidate, configName)
             return Builder.isFlying(candidate.race, candidate.name, candidate.desc, Builder.animSetOf(fresh.npc))
         end
         local group = Builder.framingGroup(tags.category, candidate.named == true, short, flying)
-        local cam, like = Builder.typicalCamera(group, candidate.name, Builder.tilesOf(fresh.npc))
+        local cam, like = Builder.typicalCamera(group, candidate.name, Builder.tilesOf(fresh.npc), candidate.race)
         if cam ~= nil then
             fresh.cam = cam
             log("builder: framing", candidate.name, "as a " .. group .. ", like", like.name)
