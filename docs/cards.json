@@ -3356,7 +3356,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 125
+   "order": 125,
+   "img": "img/cave_goblin.png",
+   "imgPage": "File:Cave goblin (monster).png"
   },
   {
    "id": "cave_goblin_guard",
@@ -11050,7 +11052,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 412
+   "order": 412,
+   "img": "img/anton.png",
+   "imgPage": "File:Anton.png"
   },
   {
    "id": "aoife_fairweather",
@@ -11077,7 +11081,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 413
+   "order": 413,
+   "img": "img/aoife_fairweather.png",
+   "imgPage": "File:Aoife Fairweather.png"
   },
   {
    "id": "apprentice_clara",
@@ -11105,7 +11111,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 414
+   "order": 414,
+   "img": "img/apprentice_clara.png",
+   "imgPage": "File:Apprentice Clara.png"
   },
   {
    "id": "archer_conquest",
@@ -11130,7 +11138,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 415
+   "order": 415,
+   "img": "img/archer_conquest.png",
+   "imgPage": "File:Archer (Conquest).png"
   },
   {
    "id": "artiefax",
@@ -11154,7 +11164,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 416
+   "order": 416,
+   "img": "img/artiefax.png",
+   "imgPage": "File:Artiefax.png"
   },
   {
    "id": "ashuelot_reis",
@@ -11179,7 +11191,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 417
+   "order": 417,
+   "img": "img/ashuelot_reis.png",
+   "imgPage": "File:Ashuelot Reis.png"
   },
   {
    "id": "assistant_power_station",
@@ -11204,7 +11218,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 418
+   "order": 418,
+   "img": "img/assistant_power_station.png",
+   "imgPage": "File:Assistant (Power Station).png"
   },
   {
    "id": "assistant_brock",
@@ -11228,7 +11244,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 419
+   "order": 419,
+   "img": "img/assistant_brock.png",
+   "imgPage": "File:Assistant Brock.png"
   },
   {
    "id": "awah_guan",
@@ -11253,7 +11271,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 420
+   "order": 420,
+   "img": "img/awah_guan.png",
+   "imgPage": "File:Awah Guan.png"
   },
   {
    "id": "ayleth_beaststalker",
@@ -11281,7 +11301,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 421
+   "order": 421,
+   "img": "img/ayleth_beaststalker.png",
+   "imgPage": "File:Ayleth Beaststalker.png"
   },
   {
    "id": "azalea_oakheart",
@@ -11306,7 +11328,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 422
+   "order": 422,
+   "img": "img/azalea_oakheart.png",
+   "imgPage": "File:Azalea Oakheart.png"
   },
   {
    "id": "azure_parrot",
@@ -11330,7 +11354,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 423
+   "order": 423,
+   "img": "img/azure_parrot.png",
+   "imgPage": "File:Azure Parrot.png"
   },
   {
    "id": "baby_gecko",
@@ -11355,7 +11381,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 424
+   "order": 424,
+   "img": "img/baby_gecko.png",
+   "imgPage": "File:Baby gecko (Hunter) (orange).png"
   },
   {
    "id": "baby_icefiend",
@@ -11379,7 +11407,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 425
+   "order": 425,
+   "img": "img/baby_icefiend.png",
+   "imgPage": "File:Baby icefiend.png"
   },
   {
    "id": "baby_mole",
@@ -11401,7 +11431,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 426
+   "order": 426,
+   "img": "img/baby_mole.png",
+   "imgPage": "File:Baby mole.png"
   },
   {
    "id": "bacon_addict",
@@ -11425,7 +11457,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 427
+   "order": 427,
+   "img": "img/bacon_addict.png",
+   "imgPage": "File:Bacon addict.png"
   },
   {
    "id": "banker_fist_of_guthix",
@@ -11449,7 +11483,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 428
+   "order": 428,
+   "img": "img/banker_fist_of_guthix.png",
+   "imgPage": "File:Banker (Fist of Guthix).png"
   },
   {
    "id": "banker_shattered_worlds",
@@ -11474,7 +11510,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 429
+   "order": 429,
+   "img": "img/banker_shattered_worlds.png",
+   "imgPage": "File:Banker (Shattered Worlds).png"
   },
   {
    "id": "banky_crablet",
@@ -11498,7 +11536,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 430
+   "order": 430,
+   "img": "img/banky_crablet.png",
+   "imgPage": "File:Banky crablet placed.png"
   },
   {
    "id": "banky_crablet_cyclosis",
@@ -11522,7 +11562,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 431
+   "order": 431,
+   "img": "img/banky_crablet_cyclosis.png",
+   "imgPage": "File:Banky crablet (Cyclosis).png"
   },
   {
    "id": "bard_roberts",
@@ -11550,7 +11592,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 432
+   "order": 432,
+   "img": "img/bard_roberts.png",
+   "imgPage": "File:Bard Roberts.png"
   },
   {
    "id": "bellemorde",
@@ -11574,7 +11618,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 433
+   "order": 433,
+   "img": "img/bellemorde.png",
+   "imgPage": "File:Bellemorde.png"
   },
   {
    "id": "bettamax",
@@ -11599,7 +11645,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 434
+   "order": 434,
+   "img": "img/bettamax.png",
+   "imgPage": "File:Bettamax.png"
   },
   {
    "id": "billy",
@@ -11624,7 +11672,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 435
+   "order": 435,
+   "img": "img/billy.png",
+   "imgPage": "File:Billy.png"
   },
   {
    "id": "black_knight_death_of_chivalry",
@@ -11646,7 +11696,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 436
+   "order": 436,
+   "img": "img/black_knight_death_of_chivalry.png",
+   "imgPage": "File:Black Knight.png"
   },
   {
    "id": "black_knight_doorkeeper",
@@ -11670,7 +11722,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 437
+   "order": 437,
+   "img": "img/black_knight_doorkeeper.png",
+   "imgPage": "File:Black knight doorkeeper.png"
   },
   {
    "id": "black_knight_guard",
@@ -11695,7 +11749,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 438
+   "order": 438,
+   "img": "img/black_knight_guard.png",
+   "imgPage": "File:Black Knight guard.png"
   },
   {
    "id": "black_knight_zombie",
@@ -11717,7 +11773,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 439
+   "order": 439,
+   "img": "img/black_knight_zombie.png",
+   "imgPage": "File:Black Knight zombie.png"
   },
   {
    "id": "boni_rewards",
@@ -11742,7 +11800,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 440
+   "order": 440,
+   "img": "img/boni_rewards.png",
+   "imgPage": "File:Boni (rewards).png"
   },
   {
    "id": "brambickle",
@@ -11766,7 +11826,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 441
+   "order": 441,
+   "img": "img/brambickle.png",
+   "imgPage": "File:Brambickle.png"
   },
   {
    "id": "breoca",
@@ -11790,7 +11852,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 442
+   "order": 442,
+   "img": "img/breoca.png",
+   "imgPage": "File:Breoca.png"
   },
   {
    "id": "brian_rimmington",
@@ -11815,7 +11879,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 443
+   "order": 443,
+   "img": "img/brian_rimmington.png",
+   "imgPage": "File:Brian (Rimmington).png"
   },
   {
    "id": "brian_orichard",
@@ -11841,7 +11907,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 444
+   "order": 444,
+   "img": "img/brian_orichard.png",
+   "imgPage": "File:Brian O'Richard.png"
   },
   {
    "id": "brother_celerity",
@@ -11866,7 +11934,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 445
+   "order": 445,
+   "img": "img/brother_celerity.png",
+   "imgPage": "File:Brother Celerity.png"
   },
   {
    "id": "brother_fintan",
@@ -11892,7 +11962,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 446
+   "order": 446,
+   "img": "img/brother_fintan.png",
+   "imgPage": "File:Brother Fintan.png"
   },
   {
    "id": "calladin",
@@ -11916,7 +11988,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 447
+   "order": 447,
+   "img": "img/calladin.png",
+   "imgPage": "File:Calladin.png"
   },
   {
    "id": "cannonballhead",
@@ -11940,7 +12014,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 448
+   "order": 448,
+   "img": "img/cannonballhead.png",
+   "imgPage": "File:Cannonballhead.png"
   },
   {
    "id": "captain_ethar",
@@ -11966,7 +12042,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 449
+   "order": 449,
+   "img": "img/captain_ethar.png",
+   "imgPage": "File:Captain Ethar.png"
   },
   {
    "id": "captain_jute",
@@ -11990,7 +12068,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 450
+   "order": 450,
+   "img": "img/captain_jute.png",
+   "imgPage": "File:Captain Jute.png"
   },
   {
    "id": "captain_ninto",
@@ -12014,7 +12094,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 451
+   "order": 451,
+   "img": "img/captain_ninto.png",
+   "imgPage": "File:Captain Ninto.png"
   },
   {
    "id": "carwen_essencebinder",
@@ -12041,7 +12123,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 452
+   "order": 452,
+   "img": "img/carwen_essencebinder.png",
+   "imgPage": "File:Carwen Essencebinder.png"
   },
   {
    "id": "cave_monk",
@@ -12067,7 +12151,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 453
+   "order": 453,
+   "img": "img/cave_monk.png",
+   "imgPage": "File:Cave monk.png"
   },
   {
    "id": "ceolburg",
@@ -12091,7 +12177,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 454
+   "order": 454,
+   "img": "img/ceolburg.png",
+   "imgPage": "File:Ceolburg.png"
   },
   {
    "id": "challenge_mistress_fara",
@@ -12115,7 +12203,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 455
+   "order": 455,
+   "img": "img/challenge_mistress_fara.png",
+   "imgPage": "File:Challenge Mistress Fara.png"
   },
   {
    "id": "champion",
@@ -12140,7 +12230,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 456
+   "order": 456,
+   "img": "img/champion.png",
+   "imgPage": "File:Champion (Conquest).png"
   },
   {
    "id": "chaplain_sarah",
@@ -12169,7 +12261,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 457
+   "order": 457,
+   "img": "img/chaplain_sarah.png",
+   "imgPage": "File:Chaplain Sarah.png"
   },
   {
    "id": "cheri",
@@ -12193,7 +12287,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 458
+   "order": 458,
+   "img": "img/cheri.png",
+   "imgPage": "File:Cheri.png"
   },
   {
    "id": "clay_familiar_class_1",
@@ -12218,7 +12314,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 459
+   "order": 459,
+   "img": "img/clay_familiar_class_1.png",
+   "imgPage": "File:Clay familiar (Class 1).png"
   },
   {
    "id": "clay_familiar_class_2",
@@ -12243,7 +12341,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 460
+   "order": 460,
+   "img": "img/clay_familiar_class_2.png",
+   "imgPage": "File:Clay familiar (Class 2).png"
   },
   {
    "id": "cleric_of_zamorak",
@@ -12267,7 +12367,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 461
+   "order": 461,
+   "img": "img/cleric_of_zamorak.png",
+   "imgPage": "File:Cleric of Zamorak.png"
   },
   {
    "id": "cocoa_macaw",
@@ -12291,7 +12393,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 462
+   "order": 462,
+   "img": "img/cocoa_macaw.png",
+   "imgPage": "File:Cocoa Macaw.png"
   },
   {
    "id": "cook_troll",
@@ -12315,7 +12419,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 463
+   "order": 463,
+   "img": "img/cook_troll.png",
+   "imgPage": "File:Cook (troll).png"
   },
   {
    "id": "corporal_boothe",
@@ -12340,7 +12446,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 464
+   "order": 464,
+   "img": "img/corporal_boothe.png",
+   "imgPage": "File:Corporal Boothe.png"
   },
   {
    "id": "corporal_keymans",
@@ -12364,7 +12472,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 465
+   "order": 465,
+   "img": "img/corporal_keymans.png",
+   "imgPage": "File:Corporal Keymans.png"
   },
   {
    "id": "crablet",
@@ -12388,7 +12498,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 466
+   "order": 466,
+   "img": "img/crablet.png",
+   "imgPage": "File:Crablet.png"
   },
   {
    "id": "crassian_scout_2",
@@ -12413,7 +12525,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 467
+   "order": 467,
+   "img": "img/crassian_scout_2.png",
+   "imgPage": "File:Crassian scout.png"
   },
   {
    "id": "crested_sillago_snatcher",
@@ -12437,7 +12551,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 468
+   "order": 468,
+   "img": "img/crested_sillago_snatcher.png",
+   "imgPage": "File:Crested Sillago Snatcher.png"
   },
   {
    "id": "cuffs",
@@ -12465,7 +12581,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 469
+   "order": 469,
+   "img": "img/cuffs.png",
+   "imgPage": "File:Cuffs.png"
   },
   {
    "id": "cyansoul_kakapo",
@@ -12489,7 +12607,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 470
+   "order": 470,
+   "img": "img/cyansoul_kakapo.png",
+   "imgPage": "File:Cyansoul Kakapo.png"
   },
   {
    "id": "cyclops_cyclosis",
@@ -12517,7 +12637,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 471
+   "order": 471,
+   "img": "img/cyclops_cyclosis.png",
+   "imgPage": "File:Cyclops (Cyclosis) (1).png"
   },
   {
    "id": "cyclops_labourer",
@@ -12541,7 +12663,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 472
+   "order": 472,
+   "img": "img/cyclops_labourer.png",
+   "imgPage": "File:Cyclops labourer 1.png"
   },
   {
    "id": "cyclosis_cockatiel",
@@ -12565,7 +12689,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 473
+   "order": 473,
+   "img": "img/cyclosis_cockatiel.png",
+   "imgPage": "File:Cyclosis Cockatiel.png"
   },
   {
    "id": "daya",
@@ -12592,7 +12718,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 474
+   "order": 474,
+   "img": "img/daya.png",
+   "imgPage": "File:Daya.png"
   },
   {
    "id": "death_lotus_assassin",
@@ -12616,7 +12744,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 475
+   "order": 475,
+   "img": "img/death_lotus_assassin.png",
+   "imgPage": "File:Death Lotus assassin male.png"
   },
   {
    "id": "digory",
@@ -12640,7 +12770,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 476
+   "order": 476,
+   "img": "img/digory.png",
+   "imgPage": "File:Digory.png"
   },
   {
    "id": "dog",
@@ -12664,7 +12796,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 477
+   "order": 477,
+   "img": "img/dog.png",
+   "imgPage": "File:Dog (NPC).png"
   },
   {
    "id": "doronbol",
@@ -12688,7 +12822,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 478
+   "order": 478,
+   "img": "img/doronbol.png",
+   "imgPage": "File:Doronbol.png"
   },
   {
    "id": "dreaming_soul",
@@ -12712,7 +12848,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 479
+   "order": 479,
+   "img": "img/dreaming_soul.png",
+   "imgPage": "File:Dreaming soul.png"
   },
   {
    "id": "drogo_dwarf",
@@ -12737,7 +12875,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 480
+   "order": 480,
+   "img": "img/drogo_dwarf.png",
+   "imgPage": "File:Drogo dwarf.png"
   },
   {
    "id": "druid_while_guthix_sleeps",
@@ -12761,7 +12901,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 481
+   "order": 481,
+   "img": "img/druid_while_guthix_sleeps.png",
+   "imgPage": "File:Druid (While Guthix Sleeps, truth serum).png"
   },
   {
    "id": "druidess",
@@ -12787,7 +12929,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 482
+   "order": 482,
+   "img": "img/druidess.png",
+   "imgPage": "File:Druidess.png"
   },
   {
    "id": "drunken_dwarfs_leg",
@@ -12811,7 +12955,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 483
+   "order": 483,
+   "img": "img/drunken_dwarfs_leg.png",
+   "imgPage": "File:Drunken dwarf's leg.png"
   },
   {
    "id": "drunken_sailor",
@@ -12835,7 +12981,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 484
+   "order": 484,
+   "img": "img/drunken_sailor.png",
+   "imgPage": "File:Drunken sailor (with hat).png"
   },
   {
    "id": "dusky_wigglebill",
@@ -12861,7 +13009,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 485
+   "order": 485,
+   "img": "img/dusky_wigglebill.png",
+   "imgPage": "File:Dusky Wigglebill.png"
   },
   {
    "id": "dwarf_dwarven_shopping",
@@ -12887,7 +13037,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 486
+   "order": 486,
+   "img": "img/dwarf_dwarven_shopping.png",
+   "imgPage": "File:Dwarf (Dwarven Shopping Store).png"
   },
   {
    "id": "dwarven_smith",
@@ -12911,7 +13063,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 487
+   "order": 487,
+   "img": "img/dwarven_smith.png",
+   "imgPage": "File:Dwarven Smith.png"
   },
   {
    "id": "dwarven_ancestor",
@@ -12935,7 +13089,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 488
+   "order": 488,
+   "img": "img/dwarven_ancestor.png",
+   "imgPage": "File:Dwarven ancestor.png"
   },
   {
    "id": "dynamite",
@@ -12960,7 +13116,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 489
+   "order": 489,
+   "img": "img/dynamite.png",
+   "imgPage": "File:Dynamite.png"
   },
   {
    "id": "eadburg",
@@ -12984,7 +13142,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 490
+   "order": 490,
+   "img": "img/eadburg.png",
+   "imgPage": "File:Eadburg.png"
   },
   {
    "id": "earth_wizard",
@@ -13010,7 +13170,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 491
+   "order": 491,
+   "img": "img/earth_wizard.png",
+   "imgPage": "File:Earth wizard.png"
   },
   {
    "id": "ember",
@@ -13035,7 +13197,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 492
+   "order": 492,
+   "img": "img/ember.png",
+   "imgPage": "File:Ember.png"
   },
   {
    "id": "emerald_benedict",
@@ -13060,7 +13224,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 493
+   "order": 493,
+   "img": "img/emerald_benedict.png",
+   "imgPage": "File:Emerald Benedict.png"
   },
   {
    "id": "engineer",
@@ -13084,7 +13250,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 494
+   "order": 494,
+   "img": "img/engineer.png",
+   "imgPage": "File:Engineer.png"
   },
   {
    "id": "engineering_assistant",
@@ -13108,7 +13276,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 495
+   "order": 495,
+   "img": "img/engineering_assistant.png",
+   "imgPage": "File:Engineering assistant.png"
   },
   {
    "id": "enriched_flickering_wisp",
@@ -13135,7 +13305,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 496
+   "order": 496,
+   "img": "img/enriched_flickering_wisp.png",
+   "imgPage": "File:Enriched flickering spring.png"
   },
   {
    "id": "entranan_firebird",
@@ -13160,7 +13332,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 497
+   "order": 497,
+   "img": "img/entranan_firebird.png",
+   "imgPage": "File:Entranan firebird.png"
   },
   {
    "id": "eohric",
@@ -13185,7 +13359,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 498
+   "order": 498,
+   "img": "img/eohric.png",
+   "imgPage": "File:Eohric.png"
   },
   {
    "id": "farli",
@@ -13209,7 +13385,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 499
+   "order": 499,
+   "img": "img/farli.png",
+   "imgPage": "File:Farli.png"
   },
   {
    "id": "farmer_taverley",
@@ -13233,7 +13411,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 500
+   "order": 500,
+   "img": "img/farmer_taverley.png",
+   "imgPage": "File:Farmer (Taverley, rake).png"
   },
   {
    "id": "fire_wizard",
@@ -13259,7 +13439,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 501
+   "order": 501,
+   "img": "img/fire_wizard.png",
+   "imgPage": "File:Fire wizard.png"
   },
   {
    "id": "fishmaskhead",
@@ -13284,7 +13466,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 502
+   "order": 502,
+   "img": "img/fishmaskhead.png",
+   "imgPage": "File:Fishmaskhead.png"
   },
   {
    "id": "flickering_wisp",
@@ -13311,7 +13495,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 503
+   "order": 503,
+   "img": "img/flickering_wisp.png",
+   "imgPage": "File:Flickering spring.png"
   },
   {
    "id": "flippers_mcgraw",
@@ -13341,7 +13527,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 504
+   "order": 504,
+   "img": "img/flippers_mcgraw.png",
+   "imgPage": "File:Flippers McGraw.png"
   },
   {
    "id": "fluffy_jublet",
@@ -13366,7 +13554,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 505
+   "order": 505,
+   "img": "img/fluffy_jublet.png",
+   "imgPage": "File:Fluffy Jublet.png"
   },
   {
    "id": "foo_lion",
@@ -13391,7 +13581,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 506
+   "order": 506,
+   "img": "img/foo_lion.png",
+   "imgPage": "File:Foo lion.png"
   },
   {
    "id": "fortress_guard",
@@ -13416,7 +13608,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 507
+   "order": 507,
+   "img": "img/fortress_guard.png",
+   "imgPage": "File:Fortress guard (spearman).png"
   },
   {
    "id": "francis",
@@ -13445,7 +13639,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 508
+   "order": 508,
+   "img": "img/francis.png",
+   "imgPage": "File:Francis.png"
   },
   {
    "id": "frincos",
@@ -13471,7 +13667,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 509
+   "order": 509,
+   "img": "img/frincos.png",
+   "imgPage": "File:Frincos.png"
   },
   {
    "id": "fritz_the_glassblower",
@@ -13495,7 +13693,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 510
+   "order": 510,
+   "img": "img/fritz_the_glassblower.png",
+   "imgPage": "File:Fritz the Glassblower.png"
   },
   {
    "id": "frizzy_skernip",
@@ -13523,7 +13723,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 511
+   "order": 511,
+   "img": "img/frizzy_skernip.png",
+   "imgPage": "File:Frizzy Skernip.png"
   },
   {
    "id": "frog_makeover_mage",
@@ -13547,7 +13749,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 512
+   "order": 512,
+   "img": "img/frog_makeover_mage.png",
+   "imgPage": "File:Frog (Makeover Mage).png"
   },
   {
    "id": "gaius",
@@ -13572,7 +13776,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 513
+   "order": 513,
+   "img": "img/gaius.png",
+   "imgPage": "File:Gaius.png"
   },
   {
    "id": "gamfred",
@@ -13596,7 +13802,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 514
+   "order": 514,
+   "img": "img/gamfred.png",
+   "imgPage": "File:Gamfred.png"
   },
   {
    "id": "getorix",
@@ -13620,7 +13828,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 515
+   "order": 515,
+   "img": "img/getorix.png",
+   "imgPage": "File:Getorix.png"
   },
   {
    "id": "guard",
@@ -55804,7 +56014,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2164
+   "order": 2164,
+   "img": "img/shady_sullivan.png",
+   "imgPage": "File:'Shady' Sullivan.png"
   },
   {
    "id": "abbot_langley",
@@ -55829,7 +56041,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2165
+   "order": 2165,
+   "img": "img/abbot_langley.png",
+   "imgPage": "File:Abbot Langley.png"
   },
   {
    "id": "achietties",
@@ -55854,7 +56068,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2166
+   "order": 2166,
+   "img": "img/achietties.png",
+   "imgPage": "File:Achietties.png"
   },
   {
    "id": "adventurer",
@@ -55878,7 +56094,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2167
+   "order": 2167,
+   "img": "img/adventurer.png",
+   "imgPage": "File:Adventurer.png"
   },
   {
    "id": "aga",
@@ -55902,7 +56120,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2168
+   "order": 2168,
+   "img": "img/aga.png",
+   "imgPage": "File:Aga.png"
   },
   {
    "id": "akrisae",
@@ -55928,7 +56148,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2169
+   "order": 2169,
+   "img": "img/akrisae.png",
+   "imgPage": "File:Akrisae.png"
   },
   {
    "id": "alain",
@@ -55956,7 +56178,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2170
+   "order": 2170,
+   "img": "img/alain.png",
+   "imgPage": "File:Alain.png"
   },
   {
    "id": "alfred_stonemason",
@@ -55983,7 +56207,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2171
+   "order": 2171,
+   "img": "img/alfred_stonemason.png",
+   "imgPage": "File:Alfred Stonemason.png"
   },
   {
    "id": "ali_tist",
@@ -56007,7 +56233,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2172
+   "order": 2172,
+   "img": "img/ali_tist.png",
+   "imgPage": "File:Ali Tist.png"
   },
   {
    "id": "almas",
@@ -56031,7 +56259,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2173
+   "order": 2173,
+   "img": "img/almas.png",
+   "imgPage": "File:Almas.png"
   },
   {
    "id": "ambush_commander",
@@ -56056,7 +56286,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2174
+   "order": 2174,
+   "img": "img/ambush_commander.png",
+   "imgPage": "File:Ambush Commander.png"
   },
   {
    "id": "angelica",
@@ -56080,7 +56312,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2175
+   "order": 2175,
+   "img": "img/angelica.png",
+   "imgPage": "File:Angelica.png"
   },
   {
    "id": "animated_adamant_armour",
@@ -56104,7 +56338,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2176
+   "order": 2176,
+   "img": "img/animated_adamant_armour.png",
+   "imgPage": "File:Animated Adamant Armour.png"
   },
   {
    "id": "animated_black_armour",
@@ -56128,7 +56364,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2177
+   "order": 2177,
+   "img": "img/animated_black_armour.png",
+   "imgPage": "File:Animated Black Armour.png"
   },
   {
    "id": "animated_mithril_armour",
@@ -56152,7 +56390,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2178
+   "order": 2178,
+   "img": "img/animated_mithril_armour.png",
+   "imgPage": "File:Animated mithril armour.png"
   },
   {
    "id": "animated_rune_armour",
@@ -56176,7 +56416,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2179
+   "order": 2179,
+   "img": "img/animated_rune_armour.png",
+   "imgPage": "File:Animated Rune Armour.png"
   },
   {
    "id": "animated_steel_armour",
@@ -56200,7 +56442,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2180
+   "order": 2180,
+   "img": "img/animated_steel_armour.png",
+   "imgPage": "File:Animated steel armour.png"
   },
   {
    "id": "apropos",
@@ -56224,7 +56468,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2181
+   "order": 2181,
+   "img": "img/apropos.png",
+   "imgPage": "File:Apropos (Gower Quest).png"
   },
   {
    "id": "archer_burthorpe",
@@ -56250,7 +56496,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2182
+   "order": 2182,
+   "img": "img/archer_burthorpe.png",
+   "imgPage": "File:Burthorpe archer.png"
   },
   {
    "id": "arhat",
@@ -56278,7 +56526,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2183
+   "order": 2183,
+   "img": "img/arhat.png",
+   "imgPage": "File:Arhat.png"
   },
   {
    "id": "asgarnian_ambassador",
@@ -56302,7 +56552,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2184
+   "order": 2184,
+   "img": "img/asgarnian_ambassador.png",
+   "imgPage": "File:Asgarnian Ambassador.png"
   },
   {
    "id": "ash",
@@ -56326,7 +56578,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2185
+   "order": 2185,
+   "img": "img/ash.png",
+   "imgPage": "File:Ash.png"
   },
   {
    "id": "assistant_brad",
@@ -56350,7 +56604,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2186
+   "order": 2186,
+   "img": "img/assistant_brad.png",
+   "imgPage": "File:Assistant Brad.png"
   },
   {
    "id": "assistant_stan",
@@ -56374,7 +56630,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2187
+   "order": 2187,
+   "img": "img/assistant_stan.png",
+   "imgPage": "File:Assistant Stan.png"
   },
   {
    "id": "assistant_susi",
@@ -56398,7 +56656,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2188
+   "order": 2188,
+   "img": "img/assistant_susi.png",
+   "imgPage": "File:Assistant Susi.png"
   },
   {
    "id": "auguste",
@@ -56423,7 +56683,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2189
+   "order": 2189,
+   "img": "img/auguste.png",
+   "imgPage": "File:Auguste.png"
   },
   {
    "id": "austri",
@@ -56447,7 +56709,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2190
+   "order": 2190,
+   "img": "img/austri.png",
+   "imgPage": "File:Austri.png"
   },
   {
    "id": "baby_roc",
@@ -56469,7 +56733,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2191
+   "order": 2191,
+   "img": "img/baby_roc.png",
+   "imgPage": "File:Baby Roc.png"
   },
   {
    "id": "baby_blue_dragon",
@@ -56494,7 +56760,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2192
+   "order": 2192,
+   "img": "img/baby_blue_dragon.png",
+   "imgPage": "File:Baby blue dragon.png"
   },
   {
    "id": "bartender_rusty_anchor",
@@ -56520,7 +56788,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2193
+   "order": 2193,
+   "img": "img/bartender_rusty_anchor.png",
+   "imgPage": "File:Bartender (Rusty Anchor).png"
   },
   {
    "id": "beggar",
@@ -56545,7 +56815,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2194
+   "order": 2194,
+   "img": "img/beggar.png",
+   "imgPage": "File:Beggar.png"
   },
   {
    "id": "bernald",
@@ -56569,7 +56841,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2195
+   "order": 2195,
+   "img": "img/bernald.png",
+   "imgPage": "File:Bernald.png"
   },
   {
    "id": "berry",
@@ -56598,7 +56872,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2196
+   "order": 2196,
+   "img": "img/berry.png",
+   "imgPage": "File:Berry.png"
   },
   {
    "id": "betty",
@@ -56627,7 +56903,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2197
+   "order": 2197,
+   "img": "img/betty.png",
+   "imgPage": "File:Betty.png"
   },
   {
    "id": "bikkras_attendant",
@@ -56649,7 +56927,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2198
+   "order": 2198,
+   "img": "img/bikkras_attendant.png",
+   "imgPage": "File:BikKra's attendant.png"
   },
   {
    "id": "black_guard_dwarven_mine",
@@ -56675,7 +56955,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2199
+   "order": 2199,
+   "img": "img/black_guard_dwarven_mine.png",
+   "imgPage": "File:Black Guard (2).png"
   },
   {
    "id": "boot",
@@ -56699,7 +56981,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2200
+   "order": 2200,
+   "img": "img/boot.png",
+   "imgPage": "File:Boot.png"
   },
   {
    "id": "boric",
@@ -56726,7 +57010,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2201
+   "order": 2201,
+   "img": "img/boric.png",
+   "imgPage": "File:Boric.png"
   },
   {
    "id": "bowloftrix",
@@ -56750,7 +57036,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2202
+   "order": 2202,
+   "img": "img/bowloftrix.png",
+   "imgPage": "File:Bowloftrix.png"
   },
   {
    "id": "brawler",
@@ -56772,7 +57060,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2203
+   "order": 2203,
+   "img": "img/brawler.png",
+   "imgPage": "File:Brawler (Level 53).png"
   },
   {
    "id": "brian",
@@ -56797,7 +57087,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2204
+   "order": 2204,
+   "img": "img/brian.png",
+   "imgPage": "File:Brian.png"
   },
   {
    "id": "burntmeat",
@@ -56821,7 +57113,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2205
+   "order": 2205,
+   "img": "img/burntmeat.png",
+   "imgPage": "File:Burntmeat.png"
   },
   {
    "id": "cabin_boy_jenkins",
@@ -56847,7 +57141,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2206
+   "order": 2206,
+   "img": "img/cabin_boy_jenkins.png",
+   "imgPage": "File:Cabin boy Jenkins.png"
   },
   {
    "id": "capn_ekahi",
@@ -56872,7 +57168,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2207
+   "order": 2207,
+   "img": "img/capn_ekahi.png",
+   "imgPage": "File:Cap'n Ekahi.png"
   },
   {
    "id": "capn_hand",
@@ -56897,7 +57195,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2208
+   "order": 2208,
+   "img": "img/capn_hand.png",
+   "imgPage": "File:Cap'n Hand.png"
   },
   {
    "id": "captain_bleemadge",
@@ -56921,7 +57221,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2209
+   "order": 2209,
+   "img": "img/captain_bleemadge.png",
+   "imgPage": "File:Captain Bleemadge.png"
   },
   {
    "id": "captain_cora",
@@ -56947,7 +57249,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2210
+   "order": 2210,
+   "img": "img/captain_cora.png",
+   "imgPage": "File:Captain Cora.png"
   },
   {
    "id": "captain_gilroy",
@@ -56973,7 +57277,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2211
+   "order": 2211,
+   "img": "img/captain_gilroy.png",
+   "imgPage": "File:Captain Gilroy.png"
   },
   {
    "id": "captain_haskell",
@@ -56998,7 +57304,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2212
+   "order": 2212,
+   "img": "img/captain_haskell.png",
+   "imgPage": "File:Imperial Guard Quartermaster (challenges).png"
   },
   {
    "id": "captain_lorris",
@@ -57024,7 +57332,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2213
+   "order": 2213,
+   "img": "img/captain_lorris.png",
+   "imgPage": "File:Captain Lorris.png"
   },
   {
    "id": "captain_tobias",
@@ -57048,7 +57358,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2214
+   "order": 2214,
+   "img": "img/captain_tobias.png",
+   "imgPage": "File:Captain Tobias.png"
   },
   {
    "id": "captain_tyr",
@@ -57074,7 +57386,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2215
+   "order": 2215,
+   "img": "img/captain_tyr.png",
+   "imgPage": "File:Tyr.png"
   },
   {
    "id": "chaos_dwarf",
@@ -57099,7 +57413,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2216
+   "order": 2216,
+   "img": "img/chaos_dwarf.png",
+   "imgPage": "File:Chaos dwarf male.png"
   },
   {
    "id": "charlie",
@@ -57123,7 +57439,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2217
+   "order": 2217,
+   "img": "img/charlie.png",
+   "imgPage": "File:Charlie (Violet is Blue).png"
   },
   {
    "id": "chemist",
@@ -57147,7 +57465,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2218
+   "order": 2218,
+   "img": "img/chemist.png",
+   "imgPage": "File:Chemist.png"
   },
   {
    "id": "clay_familiar_class_3",
@@ -57172,7 +57492,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2219
+   "order": 2219,
+   "img": "img/clay_familiar_class_3.png",
+   "imgPage": "File:Clay familiar (Class 3).png"
   },
   {
    "id": "clay_familiar_class_4",
@@ -57197,7 +57519,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2220
+   "order": 2220,
+   "img": "img/clay_familiar_class_4.png",
+   "imgPage": "File:Clay familiar (class 4).png"
   },
   {
    "id": "commandant_bletchley",
@@ -57221,7 +57545,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2221
+   "order": 2221,
+   "img": "img/commandant_bletchley.png",
+   "imgPage": "File:Commandant Bletchley.png"
   },
   {
    "id": "commander_colby",
@@ -57245,7 +57571,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2222
+   "order": 2222,
+   "img": "img/commander_colby.png",
+   "imgPage": "File:Commander Colby.png"
   },
   {
    "id": "commander_denulth",
@@ -57269,7 +57597,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2223
+   "order": 2223,
+   "img": "img/commander_denulth.png",
+   "imgPage": "File:Commander Denulth.png"
   },
   {
    "id": "commander_korasi",
@@ -57294,7 +57624,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2224
+   "order": 2224,
+   "img": "img/commander_korasi.png",
+   "imgPage": "File:Korasi.png"
   },
   {
    "id": "commodore_matthias",
@@ -57319,7 +57651,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2225
+   "order": 2225,
+   "img": "img/commodore_matthias.png",
+   "imgPage": "File:Commodore Matthias.png"
   },
   {
    "id": "customs_sergeant",
@@ -57343,7 +57677,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2226
+   "order": 2226,
+   "img": "img/customs_sergeant.png",
+   "imgPage": "File:Customs Sergeant.png"
   },
   {
    "id": "cyclops",
@@ -57368,7 +57704,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2227
+   "order": 2227,
+   "img": "img/cyclops.png",
+   "imgPage": "File:Cyclops (57 Stab).png"
   },
   {
    "id": "cyclops_god_wars_dungeon",
@@ -57393,7 +57731,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2228
+   "order": 2228,
+   "img": "img/cyclops_god_wars_dungeon.png",
+   "imgPage": "File:Cyclops GWD.png"
   },
   {
    "id": "cyclossus",
@@ -57418,7 +57758,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2229
+   "order": 2229,
+   "img": "img/cyclossus.png",
+   "imgPage": "File:Cyclossus.png"
   },
   {
    "id": "dark_wizard_elijah",
@@ -57440,7 +57782,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2230
+   "order": 2230,
+   "img": "img/dark_wizard_elijah.png",
+   "imgPage": "File:Elijah.png"
   },
   {
    "id": "defence_pylon",
@@ -57461,7 +57805,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2231
+   "order": 2231,
+   "img": "img/defence_pylon.png",
+   "imgPage": "File:Defence Pylon.png"
   },
   {
    "id": "defiler",
@@ -57483,7 +57829,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2232
+   "order": 2232,
+   "img": "img/defiler.png",
+   "imgPage": "File:Defiler 1.png"
   },
   {
    "id": "delphie",
@@ -57507,7 +57855,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2233
+   "order": 2233,
+   "img": "img/delphie.png",
+   "imgPage": "File:Delphie.png"
   },
   {
    "id": "drill_sergeant_hartman",
@@ -57534,7 +57884,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2234
+   "order": 2234,
+   "img": "img/drill_sergeant_hartman.png",
+   "imgPage": "File:Drill Sergeant Hartman.png"
   },
   {
    "id": "drorkar",
@@ -57564,7 +57916,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2235
+   "order": 2235,
+   "img": "img/drorkar.png",
+   "imgPage": "File:Drorkar.png"
   },
   {
    "id": "dung",
@@ -57588,7 +57942,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2236
+   "order": 2236,
+   "img": "img/dung.png",
+   "imgPage": "File:Dung.png"
   },
   {
    "id": "dunstan",
@@ -57613,7 +57969,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2237
+   "order": 2237,
+   "img": "img/dunstan.png",
+   "imgPage": "File:Dunstan.png"
   },
   {
    "id": "dwarf_gang_member",
@@ -57638,7 +57996,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2238
+   "order": 2238,
+   "img": "img/dwarf_gang_member.png",
+   "imgPage": "File:Dwarf gang member (blonde hair).png"
   },
   {
    "id": "eadgar",
@@ -57664,7 +58024,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2239
+   "order": 2239,
+   "img": "img/eadgar.png",
+   "imgPage": "File:Eadgar.png"
   },
   {
    "id": "eastern_soldier",
@@ -57691,7 +58053,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2240
+   "order": 2240,
+   "img": "img/eastern_soldier.png",
+   "imgPage": "File:Eastern soldier 1.png"
   },
   {
    "id": "eli",
@@ -57715,7 +58079,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2241
+   "order": 2241,
+   "img": "img/eli.png",
+   "imgPage": "File:Eli.png"
   },
   {
    "id": "elite_dark_mage",
@@ -57740,7 +58106,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2242
+   "order": 2242,
+   "img": "img/elite_dark_mage.png",
+   "imgPage": "File:Elite Dark Mage.png"
   },
   {
    "id": "elite_dark_ranger",
@@ -57765,7 +58133,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2243
+   "order": 2243,
+   "img": "img/elite_dark_ranger.png",
+   "imgPage": "File:Elite Dark Ranger.png"
   },
   {
    "id": "elite_dark_warrior",
@@ -57790,7 +58160,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2244
+   "order": 2244,
+   "img": "img/elite_dark_warrior.png",
+   "imgPage": "File:Elite Dark Warrior.png"
   },
   {
    "id": "elite_defiler",
@@ -57812,7 +58184,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2245
+   "order": 2245,
+   "img": "img/elite_defiler.png",
+   "imgPage": "File:Elite defiler.png"
   },
   {
    "id": "eliza",
@@ -57836,7 +58210,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2246
+   "order": 2246,
+   "img": "img/eliza.png",
+   "imgPage": "File:Eliza (Violet is Blue).png"
   },
   {
    "id": "elizabeth",
@@ -57860,7 +58236,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2247
+   "order": 2247,
+   "img": "img/elizabeth.png",
+   "imgPage": "File:Elizabeth (Violet is Blue Too).png"
   },
   {
    "id": "elstan",
@@ -57888,7 +58266,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2248
+   "order": 2248,
+   "img": "img/elstan.png",
+   "imgPage": "File:Elstan.png"
   },
   {
    "id": "endwyr_emissary_of_seren",
@@ -57913,7 +58293,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2249
+   "order": 2249,
+   "img": "img/endwyr_emissary_of_seren.png",
+   "imgPage": "File:Endwyr, Emissary of Seren.png"
   },
   {
    "id": "experiment_no2",
@@ -57938,7 +58320,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2250
+   "order": 2250,
+   "img": "img/experiment_no2.png",
+   "imgPage": "File:Experiment no 2.png"
   },
   {
    "id": "fame",
@@ -57965,7 +58349,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2251
+   "order": 2251,
+   "img": "img/fame.png",
+   "imgPage": "File:Fame.png"
   },
   {
    "id": "farkle",
@@ -57989,7 +58375,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2252
+   "order": 2252,
+   "img": "img/farkle.png",
+   "imgPage": "File:Farkle.png"
   },
   {
    "id": "father_frith",
@@ -58013,7 +58401,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2253
+   "order": 2253,
+   "img": "img/father_frith.png",
+   "imgPage": "File:Father Frith.png"
   },
   {
    "id": "felkrash",
@@ -58038,7 +58428,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2254
+   "order": 2254,
+   "img": "img/felkrash.png",
+   "imgPage": "File:Felkrash.png"
   },
   {
    "id": "fern",
@@ -58060,7 +58452,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2255
+   "order": 2255,
+   "img": "img/fern.png",
+   "imgPage": "File:Fern (centaur).png"
   },
   {
    "id": "fiara",
@@ -58086,7 +58480,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2256
+   "order": 2256,
+   "img": "img/fiara.png",
+   "imgPage": "File:Fiara.png"
   },
   {
    "id": "firefly",
@@ -58110,7 +58506,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2257
+   "order": 2257,
+   "img": "img/firefly.png",
+   "imgPage": "File:Firefly (Violet is Blue, NPC).png"
   },
   {
    "id": "flight_kilisa",
@@ -58136,7 +58534,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2258
+   "order": 2258,
+   "img": "img/flight_kilisa.png",
+   "imgPage": "File:Flight Kilisa.png"
   },
   {
    "id": "flockleader_geerin",
@@ -58162,7 +58562,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2259
+   "order": 2259,
+   "img": "img/flockleader_geerin.png",
+   "imgPage": "File:Flockleader Geerin.png"
   },
   {
    "id": "flying_jellyfish",
@@ -58188,7 +58590,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2260
+   "order": 2260,
+   "img": "img/flying_jellyfish.png",
+   "imgPage": "File:Flying jellyfish.png"
   },
   {
    "id": "foppish_pierre",
@@ -58215,7 +58619,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2261
+   "order": 2261,
+   "img": "img/foppish_pierre.png",
+   "imgPage": "File:Foppish Pierre.png"
   },
   {
    "id": "freda",
@@ -58241,7 +58647,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2262
+   "order": 2262,
+   "img": "img/freda.png",
+   "imgPage": "File:Freda.png"
   },
   {
    "id": "gerrant",
@@ -58266,7 +58674,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 2263
+   "order": 2263,
+   "img": "img/gerrant.png",
+   "imgPage": "File:Gerrant.png"
   },
   {
    "id": "zamorak_mage",
@@ -84618,7 +85028,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3263
+   "order": 3263,
+   "img": "img/ahoeitu_the_chef.png",
+   "imgPage": "File:Ahoeitu the Chef.png"
   },
   {
    "id": "ahrntim_the_blighted",
@@ -84643,7 +85055,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3264
+   "order": 3264,
+   "img": "img/ahrntim_the_blighted.png",
+   "imgPage": "File:Ahrntim the Blighted.png"
   },
   {
    "id": "ajjat",
@@ -84672,7 +85086,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3265
+   "order": 3265,
+   "img": "img/ajjat.png",
+   "imgPage": "File:Ajjat.png"
   },
   {
    "id": "anagami",
@@ -84700,7 +85116,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3266
+   "order": 3266,
+   "img": "img/anagami.png",
+   "imgPage": "File:Anagami.png"
   },
   {
    "id": "ancient_mage",
@@ -84724,7 +85142,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3267
+   "order": 3267,
+   "img": "img/ancient_mage.png",
+   "imgPage": "File:Ancient mage.png"
   },
   {
    "id": "ancient_ranger",
@@ -84748,7 +85168,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3268
+   "order": 3268,
+   "img": "img/ancient_ranger.png",
+   "imgPage": "File:Ancient ranger.png"
   },
   {
    "id": "ancient_warrior",
@@ -84772,7 +85194,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3269
+   "order": 3269,
+   "img": "img/ancient_warrior.png",
+   "imgPage": "File:Ancient warrior.png"
   },
   {
    "id": "arhat_paragon",
@@ -84794,7 +85218,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3270
+   "order": 3270,
+   "img": "img/arhat_paragon.png",
+   "imgPage": "File:Arhat.png"
   },
   {
    "id": "balfrug_kreeyath",
@@ -84819,7 +85245,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3271
+   "order": 3271,
+   "img": "img/balfrug_kreeyath.png",
+   "imgPage": "File:Balfrug Kreeyath.png"
   },
   {
    "id": "bloodveld_gwd",
@@ -84847,7 +85275,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3272
+   "order": 3272,
+   "img": "img/bloodveld_gwd.png",
+   "imgPage": "File:Bloodveld (God Wars Dungeon).png"
   },
   {
    "id": "bree",
@@ -84872,7 +85302,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3273
+   "order": 3273,
+   "img": "img/bree.png",
+   "imgPage": "File:Bree.png"
   },
   {
    "id": "brokeface",
@@ -84898,7 +85330,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3274
+   "order": 3274,
+   "img": "img/brokeface.png",
+   "imgPage": "File:Brokeface.png"
   },
   {
    "id": "brother_jered",
@@ -84928,7 +85362,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3275
+   "order": 3275,
+   "img": "img/brother_jered.png",
+   "imgPage": "File:Brother Jered.png"
   },
   {
    "id": "chaos_experimental",
@@ -84952,7 +85388,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3276
+   "order": 3276,
+   "img": "img/chaos_experimental.png",
+   "imgPage": "File:Chaos Experimental.png"
   },
   {
    "id": "clay_familiar_class_5",
@@ -84977,7 +85415,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3277
+   "order": 3277,
+   "img": "img/clay_familiar_class_5.png",
+   "imgPage": "File:Clay familiar (class 5).png"
   },
   {
    "id": "cliff",
@@ -85003,7 +85443,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3278
+   "order": 3278,
+   "img": "img/cliff.png",
+   "imgPage": "File:Cliff.png"
   },
   {
    "id": "cloaked_zealot",
@@ -85025,7 +85467,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3279
+   "order": 3279,
+   "img": "img/cloaked_zealot.png",
+   "imgPage": "File:Cloaked zealot.png"
   },
   {
    "id": "crassian_reinforcement",
@@ -85047,7 +85491,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3280
+   "order": 3280,
+   "img": "img/crassian_reinforcement.png",
+   "imgPage": "File:Crassian reinforcement.png"
   },
   {
    "id": "dad",
@@ -85075,7 +85521,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3281
+   "order": 3281,
+   "img": "img/dad.png",
+   "imgPage": "File:Dad.png"
   },
   {
    "id": "dagannot_prime",
@@ -85100,7 +85548,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3282
+   "order": 3282,
+   "img": "img/dagannot_prime.png",
+   "imgPage": "File:Dagannot Prime.png"
   },
   {
    "id": "dagannot_rex",
@@ -85125,7 +85575,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3283
+   "order": 3283,
+   "img": "img/dagannot_rex.png",
+   "imgPage": "File:Dagannot Rex.png"
   },
   {
    "id": "dagannot_supreme",
@@ -85150,7 +85602,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3284
+   "order": 3284,
+   "img": "img/dagannot_supreme.png",
+   "imgPage": "File:Dagannot Supreme.png"
   },
   {
    "id": "decaying_avatar",
@@ -85172,7 +85626,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3285
+   "order": 3285,
+   "img": "img/decaying_avatar.png",
+   "imgPage": "File:Decaying avatar.png"
   },
   {
    "id": "dharok_the_retconned",
@@ -85197,7 +85653,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3286
+   "order": 3286,
+   "img": "img/dharok_the_retconned.png",
+   "imgPage": "File:Dharok the Retconned.png"
   },
   {
    "id": "doc",
@@ -85225,7 +85683,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3287
+   "order": 3287,
+   "img": "img/doc.png",
+   "imgPage": "File:Doc.png"
   },
   {
    "id": "dramen_tree_spirit",
@@ -85250,7 +85710,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3288
+   "order": 3288,
+   "img": "img/dramen_tree_spirit.png",
+   "imgPage": "File:Dramen tree spirit.png"
   },
   {
    "id": "eastern_mercenary",
@@ -85272,7 +85734,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3289
+   "order": 3289,
+   "img": "img/eastern_mercenary.png",
+   "imgPage": "File:Eastern mercenary.png"
   },
   {
    "id": "elite_sakadagami",
@@ -85293,7 +85757,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3290
+   "order": 3290,
+   "img": "img/elite_sakadagami.png",
+   "imgPage": "File:Elite Sakadagami.png"
   },
   {
    "id": "elite_sotapanna",
@@ -85315,7 +85781,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3291
+   "order": 3291,
+   "img": "img/elite_sotapanna.png",
+   "imgPage": "File:Elite Sotapanna (melee).png"
   },
   {
    "id": "frost_dragon",
@@ -85340,7 +85808,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3292
+   "order": 3292,
+   "img": "img/frost_dragon.png",
+   "imgPage": "File:Frost dragon.png"
   },
   {
    "id": "capsarius",
@@ -103302,7 +103772,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3971
+   "order": 3971,
+   "img": "img/agoroth.png",
+   "imgPage": "File:Agoroth.png"
   },
   {
    "id": "alaea_crablet",
@@ -103329,7 +103801,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3972
+   "order": 3972,
+   "img": "img/alaea_crablet.png",
+   "imgPage": "File:Alaea crablet.png"
   },
   {
    "id": "ancestral_bakami",
@@ -103356,7 +103830,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3973
+   "order": 3973,
+   "img": "img/ancestral_bakami.png",
+   "imgPage": "File:Ancestral bakami.png"
   },
   {
    "id": "ancestral_energy",
@@ -103383,7 +103859,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3974
+   "order": 3974,
+   "img": "img/ancestral_energy.png",
+   "imgPage": "File:Ancestral energy (spring).png"
   },
   {
    "id": "ancestral_orokami",
@@ -103410,7 +103888,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3975
+   "order": 3975,
+   "img": "img/ancestral_orokami.png",
+   "imgPage": "File:Ancestral orokami.png"
   },
   {
    "id": "bundling_bakami",
@@ -103437,7 +103917,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3976
+   "order": 3976,
+   "img": "img/bundling_bakami.png",
+   "imgPage": "File:Bundling bakami.png"
   },
   {
    "id": "bundling_orokami",
@@ -103464,7 +103946,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3977
+   "order": 3977,
+   "img": "img/bundling_orokami.png",
+   "imgPage": "File:Bundling orokami.png"
   },
   {
    "id": "commandeered_zilyana",
@@ -103488,7 +103972,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3978
+   "order": 3978,
+   "img": "img/commandeered_zilyana.png",
+   "imgPage": "File:Commandeered Zilyana.png"
   },
   {
    "id": "commander_zilyana",
@@ -103515,7 +104001,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3979
+   "order": 3979,
+   "img": "img/commander_zilyana.png",
+   "imgPage": "File:Commander Zilyana.png"
   },
   {
    "id": "dawn",
@@ -103541,7 +104029,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3980
+   "order": 3980,
+   "img": "img/dawn.png",
+   "imgPage": "File:Dawn.png"
   },
   {
    "id": "foraging_bakami",
@@ -103568,7 +104058,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3981
+   "order": 3981,
+   "img": "img/foraging_bakami.png",
+   "imgPage": "File:Foraging bakami.png"
   },
   {
    "id": "foraging_orokami",
@@ -103596,7 +104088,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3982
+   "order": 3982,
+   "img": "img/foraging_orokami.png",
+   "imgPage": "File:Foraging orokami.png"
   },
   {
    "id": "fortunate_bakami",
@@ -103623,7 +104117,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3983
+   "order": 3983,
+   "img": "img/fortunate_bakami.png",
+   "imgPage": "File:Fortunate bakami.png"
   },
   {
    "id": "fortunate_orokami",
@@ -103651,7 +104147,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3984
+   "order": 3984,
+   "img": "img/fortunate_orokami.png",
+   "imgPage": "File:Fortunate orokami.png"
   },
   {
    "id": "general_graardor",
@@ -103680,7 +104178,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3985
+   "order": 3985,
+   "img": "img/general_graardor.png",
+   "imgPage": "File:General Graardor.png"
   },
   {
    "id": "generally_graardor",
@@ -103704,7 +104204,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3986
+   "order": 3986,
+   "img": "img/generally_graardor.png",
+   "imgPage": "File:Generally Graardor.png"
   },
   {
    "id": "hazelmere",
