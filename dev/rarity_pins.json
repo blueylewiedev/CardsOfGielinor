@@ -507,5 +507,45 @@
   "refined_anima_core_body_of_zaros": {
     "rarity": "epic",
     "why": "Rarity as reviewed by the owner (body slot melee batch, 2026-11-10); the rules' answer was rare"
+  },
+  "corrupt_morrigans_leather_body": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "morrigans_leather_body": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_morrigans_leather_body": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "dracolich_hauberk": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was legendary"
+  },
+  "masterwork_ranged_body": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "pernix_body": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was legendary"
+  },
+  "armadyl_robe_top": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was uncommon"
+  },
+  "elite_robin_hood_tunic": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
+  },
+  "refined_anima_core_body_of_zamorak": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
+  },
+  "anima_core_body_of_zamorak": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
   }
 }
