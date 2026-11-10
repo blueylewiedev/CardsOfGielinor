@@ -64,7 +64,7 @@ each region's set has its own version.
 | | Magic | Complete | |
 | | Necromancy | Complete | |
 | **Armour: melee** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
-| | Body | Not started | |
+| | Body | Complete | Includes the treasure trail versions. Masterwork: only the plain (epic) and trimmed (legendary), no custom-fit |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |

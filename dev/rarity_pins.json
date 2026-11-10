@@ -455,5 +455,57 @@
   "shamans_headdress": {
     "rarity": "rare",
     "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "corrupt_statiuss_platebody": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "corrupt_vestas_chainbody": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "statiuss_platebody": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "vestas_chainbody": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_statiuss_platebody": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_vestas_chainbody": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "elite_black_platebody": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (body slot melee batch, 2026-11-10); the rules' answer was rare"
+  },
+  "dragon_platebody": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (body slot melee batch, 2026-11-10); the rules' answer was epic"
+  },
+  "masterwork_melee_platebody": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "trimmed_masterwork_melee_platebody": {
+    "rarity": "legendary",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "torva_platebody": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot melee batch, 2026-11-10); the rules' answer was legendary"
+  },
+  "anima_core_body_of_zaros": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot melee batch, 2026-11-10); the rules' answer was rare"
+  },
+  "refined_anima_core_body_of_zaros": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot melee batch, 2026-11-10); the rules' answer was rare"
   }
 }
