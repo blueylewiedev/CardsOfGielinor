@@ -547,5 +547,41 @@
   "anima_core_body_of_zamorak": {
     "rarity": "epic",
     "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
+  },
+  "corrupt_zuriels_robe_top": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "zuriels_robe_top": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_zuriels_robe_top": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "masterwork_magic_robe_top": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "refined_anima_core_body_of_seren": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot magic batch, 2026-11-10); the rules' answer was rare"
+  },
+  "anima_core_body_of_seren": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot magic batch, 2026-11-10); the rules' answer was rare"
+  },
+  "dagonhai_robe_top": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (body slot magic batch, 2026-11-10); the rules' answer was rare"
+  },
+  "light_mystic_robe_top": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (body slot magic batch, 2026-11-10); the rules' answer was rare"
+  },
+  "flamtaer_robe_top": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (body slot magic batch, 2026-11-10); the rules' answer was uncommon"
   }
 }

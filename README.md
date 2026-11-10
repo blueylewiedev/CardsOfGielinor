@@ -78,7 +78,7 @@ each region's set has its own version.
 | | Off-hand | Not started | |
 | | Back | Not started | |
 | **Armour: magic** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
-| | Body | Not started | |
+| | Body | Complete | Includes the treasure trail versions. Masterwork: plain only, no custom-fit |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
