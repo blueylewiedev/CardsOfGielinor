@@ -92,8 +92,14 @@ Set.cards = {
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
     },
     {
-        id = "statiuss_warhammer", name = "Statius's warhammer", kind = "item", rarity = "legendary",
+        id = "statiuss_warhammer", name = "Statius's warhammer", kind = "item", rarity = "epic",
         desc = "This item degrades in combat, and will turn to dust.",
+        art = { item = "PVPW_WARHAMMER", cam = { yaw = -8.06, dist = 525, fov = 35, ty = 9, tx = 18 } },
+        tags = { regions = { "wilderness" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
+    },
+    {
+        id = "corrupt_statiuss_warhammer", name = "Corrupt Statius's warhammer", kind = "item", rarity = "rare",
+        desc = "This item degrades while worn, and will turn to dust.",
         art = { item = "PVPW_WARHAMMER_20", cam = { yaw = -8.00, dist = 604, fov = 35, tx = 20 } },
         tags = { regions = { "wilderness" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
@@ -416,7 +422,7 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
-        id = "superior_statiuss_warhammer", name = "Superior Statius's warhammer", kind = "item", rarity = "rare",
+        id = "superior_statiuss_warhammer", name = "Superior Statius's warhammer", kind = "item", rarity = "legendary",
         desc = "Improved Ancient Warrior equipment from the Forinthry Dungeon.",
         art = { item = "DMBH_ANCIENT_MELEE_WEAPON_WARHAMMER", cam = { yaw = -8.10, dist = 578, fov = 35, ty = 0, tx = 36 } },
         tags = { regions = { "wilderness" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
@@ -456,12 +462,6 @@ Set.cards = {
         desc = "I don't think it's intended for joinery.",
         art = { item = "RAND_WARHAMMER_10", cam = { yaw = -7.02, dist = 394, fov = 35, ty = 20, tx = -15 } },
         tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
-        id = "statiuss_warhammer_2", name = "Statius's warhammer", kind = "item", rarity = "legendary",
-        desc = "This item degrades in combat, and will turn to dust.",
-        art = { item = "PVPW_WARHAMMER", cam = { yaw = -8.06, dist = 525, fov = 35, ty = 9, tx = 18 } },
-        tags = { regions = { "wilderness" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
         id = "linzas_hammer", name = "Linza's hammer", kind = "item", rarity = "rare",
