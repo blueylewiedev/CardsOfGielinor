@@ -115,6 +115,24 @@ Set.cards = {
         art = { item = "ECO_SHAMAN_MASK", cam = { yaw = -6.56, pitch = 1.28, dist = 273, ty = 34, tx = -6 } },
         tags = { regions = { "karamja" }, skills = { "hunter", "herblore", "farming", "agility" }, category = { "helmet", "minigame", "skill_outfit" }, membership = { "p2p" } },
     },
+    {
+        id = "sous_chefs_toque", name = "Sous chef's toque", kind = "item", rarity = "rare",
+        desc = "Increases Cooking experience gained by 1% when worn.",
+        art = { item = "WOF19_SKILL_COOKING_HEAD", cam = { yaw = -6.56, pitch = 0.08, dist = 225, ty = 65, tx = -0 } },
+        tags = { regions = { "kandarin" }, skills = { "cooking" }, category = { "helmet", "skill_outfit", "minigame" }, membership = { "p2p" } },
+    },
+    {
+        id = "farmers_hat", name = "Farmer's hat", kind = "item", rarity = "rare",
+        desc = "Increases Farming experience gained by 1% when worn.",
+        art = { item = "TRH13_FARMER_HAT", cam = { yaw = -6.75, pitch = 0.24, ty = 28, tx = 5 } },
+        tags = { skills = { "farming" }, category = { "helmet", "minigame", "skill_outfit" }, membership = { "p2p" } },
+    },
+    {
+        id = "shamans_headdress", name = "Shaman's headdress", kind = "item", rarity = "rare",
+        desc = "Increases Summoning experience gained by 1% when worn.",
+        art = { item = "WOF51_SKILL_SUMMONING_HEAD", cam = { yaw = -6.89, pitch = 0.28, dist = 225, ty = 51, tx = 8 } },
+        tags = { regions = { "havenhythe" }, skills = { "summoning" }, category = { "helmet", "skill_outfit" }, membership = { "p2p" } },
+    },
 }
 
 return Set
