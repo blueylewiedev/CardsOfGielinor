@@ -587,5 +587,57 @@
   "flamtaer_hood": {
     "rarity": "rare",
     "why": "Rare as set by the owner (2026-11-10): it needs a rare item to make, like the Flamtaer robe top"
+  },
+  "anima_core_body_of_sliske": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was rare"
+  },
+  "refined_anima_core_body_of_sliske": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was rare"
+  },
+  "attuned_crystal_body": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was rare"
+  },
+  "dragon_rider_body": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was rare"
+  },
+  "gemstone_hauberk": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was rare"
+  },
+  "dragonstone_hauberk": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was uncommon"
+  },
+  "ghost_hunter_body": {
+    "rarity": "common",
+    "why": "Common like the Ghost hunter goggles (owner, 2026-11-10); the rules' answer was epic"
+  },
+  "archaeologists_jacket": {
+    "rarity": "rare",
+    "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
+  },
+  "artisans_top": {
+    "rarity": "rare",
+    "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
+  },
+  "ritualists_robe_top": {
+    "rarity": "rare",
+    "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
+  },
+  "master_runecrafter_robe": {
+    "rarity": "rare",
+    "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
+  },
+  "constructors_garb": {
+    "rarity": "rare",
+    "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
+  },
+  "lumberjack_top": {
+    "rarity": "rare",
+    "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
   }
 }

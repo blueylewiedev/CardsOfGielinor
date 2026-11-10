@@ -85,21 +85,21 @@ each region's set has its own version.
 | | Off-hand | Not started | |
 | | Back | Not started | |
 | **Armour: necromancy** | Helmet | Complete | Same slots as melee |
-| | Body | Not started | |
+| | Body | Complete | Includes the treasure trail versions |
 | | Legs | Not started | |
 | | Gloves | Not started | |
 | | Boots | Not started | |
 | | Off-hand | Not started | |
 | | Back | Not started | |
 | **Armour: hybrid** | Helmet | Complete | Pieces with no single combat style (`hybrid_gear`) |
-| | Body | Not started |  |
+| | Body | Complete |  |
 | | Legs | Not started |  |
 | | Gloves | Not started |  |
 | | Boots | Not started |  |
 | | Off-hand | Not started |  |
 | | Back | Not started |  |
 | **Skill outfits** | Helmet | Complete | Skill outfits and skill capes: `skill_outfit`, no combat style. All carded; Farmer's hat and Shaman's headdress are Treasure Hunter items now obtainable in game (the tool lets them through) |
-| | Body | Not started |  |
+| | Body | Complete | Includes the Treasure Hunter pieces now obtainable in game; the First age and a few other outfits' pieces are not carded yet |
 | | Legs | Not started |  |
 | | Gloves | Not started |  |
 | | Boots | Not started |  |
