@@ -53498,7 +53498,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 2069
+   "order": 2069,
+   "img": "img/putrid_zombie.png",
+   "imgPage": "File:Putrid Zombie.png"
   },
   {
    "id": "reese",
@@ -53827,7 +53829,9 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 2082
+   "order": 2082,
+   "img": "img/skeleton_warrior.png",
+   "imgPage": "File:Skeleton Warrior.png"
   },
   {
    "id": "soran_emissary_of_zaros",
