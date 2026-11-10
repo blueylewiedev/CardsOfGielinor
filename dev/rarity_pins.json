@@ -435,5 +435,25 @@
   "seers_headband_4": {
     "rarity": "epic",
     "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was common"
+  },
+  "corrupt_statiuss_warhammer": {
+    "rarity": "rare",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "statiuss_warhammer": {
+    "rarity": "epic",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "superior_statiuss_warhammer": {
+    "rarity": "legendary",
+    "why": "Vesta, Morrigan, Zuriel and Statius equipment: corrupt rare, normal epic, superior legendary"
+  },
+  "farmers_hat": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
+  },
+  "shamans_headdress": {
+    "rarity": "rare",
+    "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
   }
 }

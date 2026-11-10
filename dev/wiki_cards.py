@@ -1095,6 +1095,10 @@ def heist_disguise(page, fields):
 TREASURE_HUNTER_TEMPLATE = re.compile(r"\{\{\s*TH[ _]Item\s*[|}]", re.I)
 TREASURE_HUNTER_CATEGORY = re.compile(r"^Treasure Hunter\b", re.I)
 SKIPPED_TREASURE_HUNTER = "a Treasure Hunter item (real-money only)"
+# Treasure Hunter has been removed from the game, and these were given other ways of being earned
+# (the wiki still files them under Treasure Hunter), so they are carded after all. Add a page's
+# title here when the owner says a Treasure Hunter item can now be obtained in game.
+TREASURE_HUNTER_NOW_IN_GAME = {"Farmer's hat", "Shaman's headdress"}
 
 
 def treasure_hunter_item(text, fields, categories=()):
@@ -1361,7 +1365,8 @@ def candidate(page, names, words, price=None, drop=None):
         return npc_candidate(page, kind, fields, names, words)
     if inside is not None:
         item_fields = template_fields(inside)
-        if treasure_hunter_item(text, item_fields, page.get("categories", [])):
+        if (page["title"] not in TREASURE_HUNTER_NOW_IN_GAME
+                and treasure_hunter_item(text, item_fields, page.get("categories", []))):
             return None, SKIPPED_TREASURE_HUNTER
         if minigame_tool(page):
             return None, "a Stealing Creation tool (a minigame variant): no card"

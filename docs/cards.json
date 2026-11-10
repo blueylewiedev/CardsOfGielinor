@@ -10780,7 +10780,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 402
+   "order": 402,
+   "img": "img/adolescent_white_wolf.png",
+   "imgPage": "File:Wolf25.png"
   },
   {
    "id": "ahab",
@@ -10804,7 +10806,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 403
+   "order": 403,
+   "img": "img/ahab.png",
+   "imgPage": "File:Ahab.png"
   },
   {
    "id": "air_wizard",
@@ -10830,7 +10834,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 404
+   "order": 404,
+   "img": "img/air_wizard.png",
+   "imgPage": "File:Air wizard.png"
   },
   {
    "id": "alder_bamboo_merchant",
@@ -10855,7 +10861,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 405
+   "order": 405,
+   "img": "img/alder_bamboo_merchant.png",
+   "imgPage": "File:Alder (bamboo merchant).png"
   },
   {
    "id": "almost_master_crafter",
@@ -10880,7 +10888,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 406
+   "order": 406,
+   "img": "img/almost_master_crafter.png",
+   "imgPage": "File:Almost Master Crafter (1).png"
   },
   {
    "id": "alran",
@@ -10904,7 +10914,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 407
+   "order": 407,
+   "img": "img/alran.png",
+   "imgPage": "File:Alran.png"
   },
   {
    "id": "ani_farming_merchant",
@@ -10929,7 +10941,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 408
+   "order": 408,
+   "img": "img/ani_farming_merchant.png",
+   "imgPage": "File:Ani (farming merchant).png"
   },
   {
    "id": "animated_bronze_armour",
@@ -10953,7 +10967,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 409
+   "order": 409,
+   "img": "img/animated_bronze_armour.png",
+   "imgPage": "File:Animated Bronze Armour.png"
   },
   {
    "id": "animated_iron_armour",
@@ -10977,7 +10993,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 410
+   "order": 410,
+   "img": "img/animated_iron_armour.png",
+   "imgPage": "File:Animated Iron Armour.png"
   },
   {
    "id": "anja",
@@ -11005,7 +11023,9 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 411
+   "order": 411,
+   "img": "img/anja.png",
+   "imgPage": "File:Anja.png"
   },
   {
    "id": "anton",
@@ -96289,6 +96309,34 @@
    "imgPage": "File:Akrisae's war mace detail.png"
   },
   {
+   "id": "corrupt_statiuss_warhammer",
+   "name": "Corrupt Statius's warhammer",
+   "kind": "item",
+   "rarity": "rare",
+   "desc": "This item degrades while worn, and will turn to dust.",
+   "tags": {
+    "regions": [
+     "wilderness"
+    ],
+    "skills": [
+     "attack"
+    ],
+    "category": [
+     "weapon",
+     "melee_gear",
+     "mace"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Weapons: Maces",
+   "file": "deck/items/weapons/maces.lua",
+   "order": 3722,
+   "img": "img/corrupt_statiuss_warhammer.png",
+   "imgPage": "File:Corrupt Statius's warhammer detail.png"
+  },
+  {
    "id": "superior_ancient_mace",
    "name": "Superior ancient mace",
    "kind": "item",
@@ -96310,7 +96358,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 3722,
+   "order": 3723,
    "img": "img/superior_ancient_mace.png",
    "imgPage": "File:Superior ancient mace detail.png"
   },
@@ -96340,7 +96388,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 3723,
+   "order": 3724,
    "img": "img/katagon_warhammer.png",
    "imgPage": "File:Katagon warhammer detail.png"
   },
@@ -96370,7 +96418,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 3724,
+   "order": 3725,
    "img": "img/offhand_gorgonite_warhammer.png",
    "imgPage": "File:Off-hand gorgonite warhammer detail.png"
   },
@@ -96400,7 +96448,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 3725,
+   "order": 3726,
    "img": "img/offhand_katagon_warhammer.png",
    "imgPage": "File:Off-hand katagon warhammer detail.png"
   },
@@ -96425,7 +96473,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 3726,
+   "order": 3727,
    "img": "img/superior_dragon_mace.png",
    "imgPage": "File:Superior dragon mace detail.png"
   },
@@ -96450,37 +96498,9 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 3727,
+   "order": 3728,
    "img": "img/superior_offhand_dragon_mace.png",
    "imgPage": "File:Superior off-hand dragon mace detail.png"
-  },
-  {
-   "id": "superior_statiuss_warhammer",
-   "name": "Superior Statius's warhammer",
-   "kind": "item",
-   "rarity": "rare",
-   "desc": "Improved Ancient Warrior equipment from the Forinthry Dungeon.",
-   "tags": {
-    "regions": [
-     "wilderness"
-    ],
-    "skills": [
-     "attack"
-    ],
-    "category": [
-     "weapon",
-     "melee_gear",
-     "mace"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Weapons: Maces",
-   "file": "deck/items/weapons/maces.lua",
-   "order": 3728,
-   "img": "img/superior_statiuss_warhammer.png",
-   "imgPage": "File:Superior Statius's warhammer detail.png"
   },
   {
    "id": "veracs_flail",
@@ -102396,6 +102416,86 @@
    "imgPage": "File:Witchdoctor mask detail.png"
   },
   {
+   "id": "sous_chefs_toque",
+   "name": "Sous chef's toque",
+   "kind": "item",
+   "rarity": "rare",
+   "desc": "Increases Cooking experience gained by 1% when worn.",
+   "tags": {
+    "regions": [
+     "kandarin"
+    ],
+    "skills": [
+     "cooking"
+    ],
+    "category": [
+     "helmet",
+     "skill_outfit",
+     "minigame"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Skill Outfits: Helmets",
+   "file": "deck/items/skill_outfits/helmets.lua",
+   "order": 3940,
+   "img": "img/sous_chefs_toque.png",
+   "imgPage": "File:Sous chef's toque detail.png"
+  },
+  {
+   "id": "farmers_hat",
+   "name": "Farmer's hat",
+   "kind": "item",
+   "rarity": "rare",
+   "desc": "Increases Farming experience gained by 1% when worn.",
+   "tags": {
+    "skills": [
+     "farming"
+    ],
+    "category": [
+     "helmet",
+     "minigame",
+     "skill_outfit"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Skill Outfits: Helmets",
+   "file": "deck/items/skill_outfits/helmets.lua",
+   "order": 3941,
+   "img": "img/farmers_hat.png",
+   "imgPage": "File:Farmer's hat detail.png"
+  },
+  {
+   "id": "shamans_headdress",
+   "name": "Shaman's headdress",
+   "kind": "item",
+   "rarity": "rare",
+   "desc": "Increases Summoning experience gained by 1% when worn.",
+   "tags": {
+    "regions": [
+     "havenhythe"
+    ],
+    "skills": [
+     "summoning"
+    ],
+    "category": [
+     "helmet",
+     "skill_outfit"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Skill Outfits: Helmets",
+   "file": "deck/items/skill_outfits/helmets.lua",
+   "order": 3942,
+   "img": "img/shamans_headdress.png",
+   "imgPage": "File:Shaman's headdress detail.png"
+  },
+  {
    "id": "king_roald",
    "name": "King Roald",
    "kind": "npc",
@@ -102415,7 +102515,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3940,
+   "order": 3943,
    "img": "img/king_roald.png",
    "imgPage": "File:King Roald.png"
   },
@@ -102445,7 +102545,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3941,
+   "order": 3944,
    "img": "img/crystal_impling.png",
    "imgPage": "File:Crystal impling.png"
   },
@@ -102475,7 +102575,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3942,
+   "order": 3945,
    "img": "img/curator_haig_halen.png",
    "imgPage": "File:Curator Haig Halen.png"
   },
@@ -102504,7 +102604,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3943,
+   "order": 3946,
    "img": "img/max.png",
    "imgPage": "File:Max.png"
   },
@@ -102531,7 +102631,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3944,
+   "order": 3947,
    "img": "img/reldo.png",
    "imgPage": "File:Reldo.png"
   },
@@ -102557,7 +102657,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3945,
+   "order": 3948,
    "img": "img/dahaka_aughra_elder.png",
    "imgPage": "File:Dahaka (Aughra elder).png"
   },
@@ -102582,7 +102682,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3946,
+   "order": 3949,
    "img": "img/balance_elemental.png",
    "imgPage": "File:Balance Elemental.png"
   },
@@ -102615,7 +102715,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3947,
+   "order": 3950,
    "img": "img/death.png",
    "imgPage": "File:Death (Soul Reaper).png"
   },
@@ -102644,7 +102744,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3948,
+   "order": 3951,
    "img": "img/fairy_trader.png",
    "imgPage": "File:Fairy trader (green).png"
   },
@@ -102672,7 +102772,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3949,
+   "order": 3952,
    "img": "img/hazeel.png",
    "imgPage": "File:Hazeel (Children of Mah).png"
   },
@@ -102703,7 +102803,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3950,
+   "order": 3953,
    "img": "img/hermod_the_spirit_of_war.png",
    "imgPage": "File:Hermod, the Spirit of War.png"
   },
@@ -102727,7 +102827,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3951,
+   "order": 3954,
    "img": "img/remy.png",
    "imgPage": "File:Remy pet.png"
   },
@@ -102756,7 +102856,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3952,
+   "order": 3955,
    "img": "img/soul_esswraith.png",
    "imgPage": "File:Soul esswraith.png"
   },
@@ -102782,7 +102882,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3953,
+   "order": 3956,
    "img": "img/the_gate_of_elidinis.png",
    "imgPage": "File:The Gate of Elidinis.png"
   },
@@ -102809,7 +102909,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3954,
+   "order": 3957,
    "img": "img/the_raptor.png",
    "imgPage": "File:The Raptor (combat stance).png"
   },
@@ -102837,7 +102937,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3955,
+   "order": 3958,
    "img": "img/vermyx_brood_mother.png",
    "imgPage": "File:Vermyx, Brood Mother.png"
   },
@@ -102862,7 +102962,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3956,
+   "order": 3959,
    "img": "img/vorkath.png",
    "imgPage": "File:Vorkath.png"
   },
@@ -102891,7 +102991,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3957,
+   "order": 3960,
    "img": "img/war.png",
    "imgPage": "File:War.png"
   },
@@ -102920,7 +103020,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3958,
+   "order": 3961,
    "img": "img/wise_old_man.png",
    "imgPage": "File:Wise Old Man (Saradomin staff).png"
   },
@@ -102950,7 +103050,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3959,
+   "order": 3962,
    "img": "img/wizards_tower_master_mage.png",
    "imgPage": "File:Wizards' Tower master mage (1).png"
   },
@@ -102977,7 +103077,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3960,
+   "order": 3963,
    "img": "img/zaromark_sliver.png",
    "imgPage": "File:Zaromark Sliver.png"
   },
@@ -103004,7 +103104,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3961,
+   "order": 3964,
    "img": "img/zemouregal.png",
    "imgPage": "File:Zemouregal (skeletal).png"
   },
@@ -103032,7 +103132,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 3962,
+   "order": 3965,
    "img": "img/zenevivia.png",
    "imgPage": "File:Zenevivia.png"
   },
@@ -103059,7 +103159,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3963,
+   "order": 3966,
    "img": "img/tarshak.png",
    "imgPage": "File:Tarshak.png"
   },
@@ -103087,7 +103187,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3964,
+   "order": 3967,
    "img": "img/giant_mole.png",
    "imgPage": "File:Giant mole.png"
   },
@@ -103114,7 +103214,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3965,
+   "order": 3968,
    "img": "img/minerva.png",
    "imgPage": "File:Minerva.png"
   },
@@ -103145,7 +103245,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3966,
+   "order": 3969,
    "img": "img/sir_amik_varze.png",
    "imgPage": "File:Sir Amik Varze.png"
   },
@@ -103174,7 +103274,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3967,
+   "order": 3970,
    "img": "img/sir_tiffy_cashien.png",
    "imgPage": "File:Sir Tiffy Cashien.png"
   },
@@ -103202,7 +103302,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3968
+   "order": 3971
   },
   {
    "id": "alaea_crablet",
@@ -103229,7 +103329,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3969
+   "order": 3972
   },
   {
    "id": "ancestral_bakami",
@@ -103256,7 +103356,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3970
+   "order": 3973
   },
   {
    "id": "ancestral_energy",
@@ -103283,7 +103383,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3971
+   "order": 3974
   },
   {
    "id": "ancestral_orokami",
@@ -103310,7 +103410,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3972
+   "order": 3975
   },
   {
    "id": "bundling_bakami",
@@ -103337,7 +103437,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3973
+   "order": 3976
   },
   {
    "id": "bundling_orokami",
@@ -103364,7 +103464,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3974
+   "order": 3977
   },
   {
    "id": "commandeered_zilyana",
@@ -103388,7 +103488,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3975
+   "order": 3978
   },
   {
    "id": "commander_zilyana",
@@ -103415,7 +103515,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3976
+   "order": 3979
   },
   {
    "id": "dawn",
@@ -103441,7 +103541,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3977
+   "order": 3980
   },
   {
    "id": "foraging_bakami",
@@ -103468,7 +103568,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3978
+   "order": 3981
   },
   {
    "id": "foraging_orokami",
@@ -103496,7 +103596,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3979
+   "order": 3982
   },
   {
    "id": "fortunate_bakami",
@@ -103523,7 +103623,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3980
+   "order": 3983
   },
   {
    "id": "fortunate_orokami",
@@ -103551,7 +103651,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3981
+   "order": 3984
   },
   {
    "id": "general_graardor",
@@ -103580,7 +103680,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3982
+   "order": 3985
   },
   {
    "id": "generally_graardor",
@@ -103604,7 +103704,7 @@
    },
    "collection": "NPCs: Asgarnia",
    "file": "deck/npcs/asgarnia.lua",
-   "order": 3983
+   "order": 3986
   },
   {
    "id": "hazelmere",
@@ -103632,7 +103732,7 @@
    },
    "collection": "NPCs: Kandarin",
    "file": "deck/npcs/kandarin.lua",
-   "order": 3984,
+   "order": 3987,
    "img": "img/hazelmere.png",
    "imgPage": "File:Hazelmere.png"
   },
@@ -103661,7 +103761,7 @@
    },
    "collection": "NPCs: Kandarin",
    "file": "deck/npcs/kandarin.lua",
-   "order": 3985,
+   "order": 3988,
    "img": "img/zanik.png",
    "imgPage": "File:Zanik (Nomad's Elegy, crossbow).png"
   },
@@ -103683,7 +103783,7 @@
    },
    "collection": "NPCs: Karamja",
    "file": "deck/npcs/karamja.lua",
-   "order": 3986,
+   "order": 3989,
    "img": "img/elvarg.png",
    "imgPage": "File:Elvarg.png"
   },
@@ -103713,7 +103813,7 @@
    },
    "collection": "NPCs: Wilderness",
    "file": "deck/npcs/wilderness.lua",
-   "order": 3987,
+   "order": 3990,
    "img": "img/veilripper_ozharakha.png",
    "imgPage": "File:Veil-ripper Ozharakha.png"
   },
@@ -103737,7 +103837,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3988,
+   "order": 3991,
    "img": "img/adamant_minotaur.png",
    "imgPage": "File:Adamant minotaur.png"
   },
@@ -103761,7 +103861,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3989,
+   "order": 3992,
    "img": "img/fire_titan.png",
    "imgPage": "File:Fire titan.png"
   },
@@ -103782,7 +103882,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3990,
+   "order": 3993,
    "img": "img/giant_mimic.png",
    "imgPage": "File:Giant Mimic.png"
   },
@@ -103806,7 +103906,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3991,
+   "order": 3994,
    "img": "img/ice_titan.png",
    "imgPage": "File:Ice titan.png"
   },
@@ -103830,7 +103930,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3992,
+   "order": 3995,
    "img": "img/moss_titan.png",
    "imgPage": "File:Moss titan.png"
   },
@@ -103854,7 +103954,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3993,
+   "order": 3996,
    "img": "img/spirit_dagannoth.png",
    "imgPage": "File:Spirit dagannoth.png"
   },
@@ -103878,7 +103978,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3994,
+   "order": 3997,
    "img": "img/steel_titan.png",
    "imgPage": "File:Steel titan.png"
   },
@@ -103902,7 +104002,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3995,
+   "order": 3998,
    "img": "img/swamp_titan.png",
    "imgPage": "File:Swamp titan.png"
   },
@@ -103922,7 +104022,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3996,
+   "order": 3999,
    "img": "img/agent_007.png",
    "imgPage": "File:Agent 007.png"
   },
@@ -103946,7 +104046,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3997,
+   "order": 4000,
    "img": "img/unicorn_stallion.png",
    "imgPage": "File:Unicorn stallion.png"
   },
@@ -103972,7 +104072,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3998,
+   "order": 4001,
    "img": "img/archaeology_professor.png",
    "imgPage": "File:Archaeology professor.png"
   },
@@ -103998,7 +104098,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 3999,
+   "order": 4002,
    "img": "img/kingly_impling.png",
    "imgPage": "File:Kingly impling.png"
   },
@@ -104024,7 +104124,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4000,
+   "order": 4003,
    "img": "img/black_soporith_moth.png",
    "imgPage": "File:Black soporith moth detail.png"
   },
@@ -104053,7 +104153,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4001,
+   "order": 4004,
    "img": "img/enakhra.png",
    "imgPage": "File:Enakhra (Children of Mah).png"
   },
@@ -104077,7 +104177,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4002,
+   "order": 4005,
    "img": "img/lava_titan.png",
    "imgPage": "File:Lava titan.png"
   },
@@ -104101,7 +104201,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4003,
+   "order": 4006,
    "img": "img/wolpertinger.png",
    "imgPage": "File:Wolpertinger.png"
   },
@@ -104122,7 +104222,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4004,
+   "order": 4007,
    "img": "img/luma.png",
    "imgPage": "File:Luma pet.png"
   },
@@ -104146,7 +104246,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4005,
+   "order": 4008,
    "img": "img/warborn_behemoth.png",
    "imgPage": "File:Warborn behemoth adult.png"
   },
@@ -104170,7 +104270,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4006,
+   "order": 4009,
    "img": "img/blazehound.png",
    "imgPage": "File:Blazehound adult.png"
   },
@@ -104194,7 +104294,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4007,
+   "order": 4010,
    "img": "img/bloodpouncer.png",
    "imgPage": "File:Adult bloodpouncer.png"
   },
@@ -104215,7 +104315,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4008,
+   "order": 4011,
    "img": "img/prime_colossus.png",
    "imgPage": "File:Prime Colossus Mk III.png"
   },
@@ -104239,7 +104339,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4009,
+   "order": 4012,
    "img": "img/prototype_colossus.png",
    "imgPage": "File:Prototype colossus mk III.png"
   },
@@ -104263,7 +104363,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4010,
+   "order": 4013,
    "img": "img/dragon_wolf.png",
    "imgPage": "File:Dragon Wolf.png"
   },
@@ -104287,7 +104387,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4011,
+   "order": 4014,
    "img": "img/fire_drake.png",
    "imgPage": "File:Fire Drake adult.png"
   },
@@ -104311,7 +104411,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4012,
+   "order": 4015,
    "img": "img/shadow_drake.png",
    "imgPage": "File:Shadow Drake adult.png"
   },
@@ -104335,7 +104435,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4013,
+   "order": 4016,
    "img": "img/jungle_gorilla.png",
    "imgPage": "File:Jungle gorilla (adult).png"
   },
@@ -104362,7 +104462,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4014,
+   "order": 4017,
    "img": "img/hermit_crab.png",
    "imgPage": "File:Hermit crab pet.png"
   },
@@ -104387,7 +104487,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4015,
+   "order": 4018,
    "img": "img/broav.png",
    "imgPage": "File:Broav pet.png"
   },
@@ -104411,7 +104511,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4016,
+   "order": 4019,
    "img": "img/glowing_ember.png",
    "imgPage": "File:Glowing Ember pet.png"
   },
@@ -104435,7 +104535,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4017,
+   "order": 4020,
    "img": "img/searing_flame.png",
    "imgPage": "File:Searing Flame pet.png"
   },
@@ -104459,7 +104559,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4018,
+   "order": 4021,
    "img": "img/twisted_firestarter.png",
    "imgPage": "File:Twisted Firestarter pet.png"
   },
@@ -104483,7 +104583,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4019,
+   "order": 4022,
    "img": "img/warming_flames.png",
    "imgPage": "File:Warming Flame pet.png"
   },
@@ -104507,7 +104607,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4020,
+   "order": 4023,
    "img": "img/lucien.png",
    "imgPage": "File:Lucien (rejuvenated).png"
   },
@@ -104532,7 +104632,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4021,
+   "order": 4024,
    "img": "img/general_khazard.png",
    "imgPage": "File:General Khazard (Children of Mah).png"
   },
@@ -104556,7 +104656,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4022,
+   "order": 4025,
    "img": "img/monkey_pet.png",
    "imgPage": "File:Baby monkey (blue and white) pet.png"
   },
@@ -104579,7 +104679,7 @@
    },
    "collection": "Raw Materials: Herbs",
    "file": "deck/items/raw_materials/herbs.lua",
-   "order": 4023,
+   "order": 4026,
    "img": "img/grimy_fellstalk.png",
    "imgPage": "File:Grimy fellstalk detail.png"
   },
@@ -104607,7 +104707,7 @@
    },
    "collection": "Raw Materials: Herbs",
    "file": "deck/items/raw_materials/herbs.lua",
-   "order": 4024,
+   "order": 4027,
    "img": "img/grimy_buckthorn.png",
    "imgPage": "File:Grimy buckthorn detail.png"
   },
@@ -104631,7 +104731,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4025,
+   "order": 4028,
    "img": "img/bamboo.png",
    "imgPage": "File:Bamboo detail.png"
   },
@@ -104655,7 +104755,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4026,
+   "order": 4029,
    "img": "img/elder_logs.png",
    "imgPage": "File:Elder logs detail.png"
   },
@@ -104682,7 +104782,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4027,
+   "order": 4030,
    "img": "img/elder_pyre_logs.png",
    "imgPage": "File:Elder pyre logs detail.png"
   },
@@ -104710,7 +104810,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4028,
+   "order": 4031,
    "img": "img/eternal_magic_logs.png",
    "imgPage": "File:Eternal magic logs detail.png"
   },
@@ -104734,7 +104834,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4029,
+   "order": 4032,
    "img": "img/golden_bamboo.png",
    "imgPage": "File:Golden bamboo detail.png"
   },
@@ -104758,7 +104858,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4030,
+   "order": 4033,
    "img": "img/magic_logs.png",
    "imgPage": "File:Magic logs detail.png"
   },
@@ -104786,7 +104886,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4031,
+   "order": 4034,
    "img": "img/grave_creeper_branches.png",
    "imgPage": "File:Grave creeper branches detail.png"
   },
@@ -104813,7 +104913,7 @@
    },
    "collection": "Raw Materials: Logs",
    "file": "deck/items/raw_materials/logs.lua",
-   "order": 4032,
+   "order": 4035,
    "img": "img/petrified_logs.png",
    "imgPage": "File:Petrified logs detail.png"
   },
@@ -104836,7 +104936,7 @@
    },
    "collection": "Items: Runes",
    "file": "deck/items/runes.lua",
-   "order": 4033,
+   "order": 4036,
    "img": "img/soul_rune.png",
    "imgPage": "File:Soul rune detail.png"
   },
@@ -104859,7 +104959,7 @@
    },
    "collection": "Items: Runes",
    "file": "deck/items/runes.lua",
-   "order": 4034,
+   "order": 4037,
    "img": "img/time_rune.png",
    "imgPage": "File:Time rune detail.png"
   },
@@ -104886,7 +104986,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4035,
+   "order": 4038,
    "img": "img/raw_blue_blubber_jellyfish.png",
    "imgPage": "File:Raw blue blubber jellyfish detail.png"
   },
@@ -104914,7 +105014,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4036,
+   "order": 4039,
    "img": "img/raw_manta_ray.png",
    "imgPage": "File:Raw manta ray detail.png"
   },
@@ -104941,7 +105041,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4037,
+   "order": 4040,
    "img": "img/raw_rocktail.png",
    "imgPage": "File:Raw rocktail detail.png"
   },
@@ -104968,7 +105068,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4038,
+   "order": 4041,
    "img": "img/raw_sailfish.png",
    "imgPage": "File:Raw sailfish detail.png"
   },
@@ -104995,7 +105095,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4039,
+   "order": 4042,
    "img": "img/raw_seerfish.png",
    "imgPage": "File:Raw seerfish detail.png"
   },
@@ -105022,7 +105122,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4040,
+   "order": 4043,
    "img": "img/raw_sillago.png",
    "imgPage": "File:Raw sillago detail.png"
   },
@@ -105049,7 +105149,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4041,
+   "order": 4044,
    "img": "img/raw_tarpon.png",
    "imgPage": "File:Raw tarpon detail.png"
   },
@@ -105077,7 +105177,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4042,
+   "order": 4045,
    "img": "img/raw_tiger_shark.png",
    "imgPage": "File:Raw tiger shark detail.png"
   },
@@ -105104,7 +105204,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4043,
+   "order": 4046,
    "img": "img/raw_wobbegong.png",
    "imgPage": "File:Raw wobbegong detail.png"
   },
@@ -105132,7 +105232,7 @@
    },
    "collection": "Raw Materials: Fish",
    "file": "deck/items/raw_materials/fish.lua",
-   "order": 4044,
+   "order": 4047,
    "img": "img/raw_cave_moray.png",
    "imgPage": "File:Raw cave moray detail.png"
   },
@@ -105159,7 +105259,7 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 4045,
+   "order": 4048,
    "img": "img/raw_corbicula_rex_meat.png",
    "imgPage": "File:Raw corbicula rex meat detail.png"
   },
@@ -105186,7 +105286,7 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 4046,
+   "order": 4049,
    "img": "img/raw_giant_chinchompa_meat.png",
    "imgPage": "File:Raw giant chinchompa meat detail.png"
   },
@@ -105213,7 +105313,7 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 4047,
+   "order": 4050,
    "img": "img/raw_giant_kebbit_meat.png",
    "imgPage": "File:Raw giant kebbit meat detail.png"
   },
@@ -105240,7 +105340,7 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 4048,
+   "order": 4051,
    "img": "img/raw_malletops_meat.png",
    "imgPage": "File:Raw malletops meat detail.png"
   },
@@ -105267,7 +105367,7 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 4049,
+   "order": 4052,
    "img": "img/raw_oculi_apoterrasaur_meat.png",
    "imgPage": "File:Raw oculi apoterrasaur meat detail.png"
   },
@@ -105295,7 +105395,7 @@
    },
    "collection": "Raw Materials: Meat",
    "file": "deck/items/raw_materials/meat.lua",
-   "order": 4050,
+   "order": 4053,
    "img": "img/raw_pavosaurus_rex_meat.png",
    "imgPage": "File:Raw pavosaurus rex meat detail.png"
   },
@@ -105321,7 +105421,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4051,
+   "order": 4054,
    "img": "img/blue_blubber_jellyfish.png",
    "imgPage": "File:Blue blubber jellyfish detail.png"
   },
@@ -105347,7 +105447,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4052,
+   "order": 4055,
    "img": "img/fury_shark.png",
    "imgPage": "File:Fury shark detail.png"
   },
@@ -105370,7 +105470,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4053,
+   "order": 4056,
    "img": "img/manta_ray.png",
    "imgPage": "File:Manta ray detail.png"
   },
@@ -105396,7 +105496,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4054,
+   "order": 4057,
    "img": "img/rocktail.png",
    "imgPage": "File:Rocktail detail.png"
   },
@@ -105422,7 +105522,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4055,
+   "order": 4058,
    "img": "img/sailfish.png",
    "imgPage": "File:Sailfish detail.png"
   },
@@ -105449,7 +105549,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4056,
+   "order": 4059,
    "img": "img/tiger_shark.png",
    "imgPage": "File:Tiger shark detail.png"
   },
@@ -105477,7 +105577,7 @@
    },
    "collection": "Food: Cooked Fish",
    "file": "deck/items/food/cooked_fish.lua",
-   "order": 4057,
+   "order": 4060,
    "img": "img/cave_moray.png",
    "imgPage": "File:Cave moray detail.png"
   },
@@ -105504,7 +105604,7 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 4058,
+   "order": 4061,
    "img": "img/cooked_pekin.png",
    "imgPage": "File:Cooked pekin detail.png"
   },
@@ -105532,7 +105632,7 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 4059,
+   "order": 4062,
    "img": "img/giant_chinchompa_meat.png",
    "imgPage": "File:Giant chinchompa meat detail.png"
   },
@@ -105560,7 +105660,7 @@
    },
    "collection": "Food: Meat",
    "file": "deck/items/food/meat.lua",
-   "order": 4060,
+   "order": 4063,
    "img": "img/giant_kebbit_meat.png",
    "imgPage": "File:Giant kebbit meat detail.png"
   },
@@ -105584,7 +105684,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4061,
+   "order": 4064,
    "img": "img/primal_portion.png",
    "imgPage": "File:Primal portion detail.png"
   },
@@ -105612,7 +105712,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4062,
+   "order": 4065,
    "img": "img/cave_moray_potato.png",
    "imgPage": "File:Cave moray potato detail.png"
   },
@@ -105640,7 +105740,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4063,
+   "order": 4066,
    "img": "img/moray_edicap_potato.png",
    "imgPage": "File:Moray & edicap potato detail.png"
   },
@@ -105668,7 +105768,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4064,
+   "order": 4067,
    "img": "img/moray_gissel_potato.png",
    "imgPage": "File:Moray & gissel potato detail.png"
   },
@@ -105695,7 +105795,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4065,
+   "order": 4068,
    "img": "img/arc_gumbo.png",
    "imgPage": "File:Arc gumbo detail.png"
   },
@@ -105719,7 +105819,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4066,
+   "order": 4069,
    "img": "img/great_gunkan.png",
    "imgPage": "File:Great gunkan detail.png"
   },
@@ -105743,7 +105843,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4067,
+   "order": 4070,
    "img": "img/primal_dessert.png",
    "imgPage": "File:Primal dessert detail.png"
   },
@@ -105767,7 +105867,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4068,
+   "order": 4071,
    "img": "img/primal_feast.png",
    "imgPage": "File:Primal feast detail.png"
   },
@@ -105791,7 +105891,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4069,
+   "order": 4072,
    "img": "img/primal_main_course.png",
    "imgPage": "File:Primal main course detail.png"
   },
@@ -105815,7 +105915,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4070,
+   "order": 4073,
    "img": "img/primal_starter.png",
    "imgPage": "File:Primal starter detail.png"
   },
@@ -105839,7 +105939,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4071,
+   "order": 4074,
    "img": "img/rocktail_soup.png",
    "imgPage": "File:Rocktail soup detail.png"
   },
@@ -105863,7 +105963,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4072,
+   "order": 4075,
    "img": "img/sailfish_soup.png",
    "imgPage": "File:Sailfish soup detail.png"
   },
@@ -105890,7 +105990,7 @@
    },
    "collection": "Food: Meals",
    "file": "deck/items/food/meals.lua",
-   "order": 4073,
+   "order": 4076,
    "img": "img/shark_soup.png",
    "imgPage": "File:Shark soup detail.png"
   },
@@ -105915,7 +106015,7 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 4074,
+   "order": 4077,
    "img": "img/summer_pie.png",
    "imgPage": "File:Summer pie detail.png"
   },
@@ -105940,7 +106040,7 @@
    },
    "collection": "Food: Baked Goods",
    "file": "deck/items/food/baked_goods.lua",
-   "order": 4075,
+   "order": 4078,
    "img": "img/wilder_pie.png",
    "imgPage": "File:Wilder pie detail.png"
   },
@@ -105967,7 +106067,7 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 4076,
+   "order": 4079,
    "img": "img/uncooked_arc_gumbo.png",
    "imgPage": "File:Uncooked arc gumbo detail.png"
   },
@@ -105994,7 +106094,7 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 4077,
+   "order": 4080,
    "img": "img/uncooked_shark_soup.png",
    "imgPage": "File:Uncooked shark soup detail.png"
   },
@@ -106018,7 +106118,7 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 4078,
+   "order": 4081,
    "img": "img/raw_summer_pie.png",
    "imgPage": "File:Raw summer pie detail.png"
   },
@@ -106042,7 +106142,7 @@
    },
    "collection": "Food: Raw Food",
    "file": "deck/items/food/raw_food.lua",
-   "order": 4079,
+   "order": 4082,
    "img": "img/raw_wilder_pie.png",
    "imgPage": "File:Raw wilder pie detail.png"
   },
@@ -106066,7 +106166,7 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 4080,
+   "order": 4083,
    "img": "img/dragonfruit.png",
    "imgPage": "File:Dragonfruit detail.png"
   },
@@ -106090,7 +106190,7 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 4081,
+   "order": 4084,
    "img": "img/mango.png",
    "imgPage": "File:Mango detail.png"
   },
@@ -106113,7 +106213,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4082,
+   "order": 4085,
    "img": "img/adrenaline_renewal_potion.png",
    "imgPage": "File:Adrenaline renewal potion (4) detail.png"
   },
@@ -106136,7 +106236,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4083,
+   "order": 4086,
    "img": "img/poison_bomb.png",
    "imgPage": "File:Poison bomb detail.png"
   },
@@ -106159,7 +106259,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4084,
+   "order": 4087,
    "img": "img/powerburst_of_acceleration.png",
    "imgPage": "File:Powerburst of acceleration detail.png"
   },
@@ -106182,7 +106282,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4085,
+   "order": 4088,
    "img": "img/powerburst_of_feats.png",
    "imgPage": "File:Powerburst of feats detail.png"
   },
@@ -106205,7 +106305,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4086,
+   "order": 4089,
    "img": "img/powerburst_of_masterstroke.png",
    "imgPage": "File:Powerburst of masterstroke detail.png"
   },
@@ -106228,7 +106328,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4087,
+   "order": 4090,
    "img": "img/powerburst_of_opportunity.png",
    "imgPage": "File:Powerburst of opportunity detail.png"
   },
@@ -106251,7 +106351,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4088,
+   "order": 4091,
    "img": "img/powerburst_of_vitality.png",
    "imgPage": "File:Powerburst of vitality detail.png"
   },
@@ -106274,7 +106374,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4089,
+   "order": 4092,
    "img": "img/sticky_bomb.png",
    "imgPage": "File:Sticky bomb detail.png"
   },
@@ -106297,7 +106397,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4090,
+   "order": 4093,
    "img": "img/ultragrowth_potion.png",
    "imgPage": "File:Ultra-growth potion detail.png"
   },
@@ -106320,7 +106420,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4091,
+   "order": 4094,
    "img": "img/vulnerability_bomb.png",
    "imgPage": "File:Vulnerability bomb detail.png"
   },
@@ -106343,7 +106443,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4092,
+   "order": 4095,
    "img": "img/powerburst_of_sorcery.png",
    "imgPage": "File:Powerburst of sorcery detail.png"
   },
@@ -106366,7 +106466,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4093,
+   "order": 4096,
    "img": "img/charming_potion.png",
    "imgPage": "File:Charming potion (4) detail.png"
   },
@@ -106389,7 +106489,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4094,
+   "order": 4097,
    "img": "img/extended_super_antifire.png",
    "imgPage": "File:Extended super antifire (4) detail.png"
   },
@@ -106412,7 +106512,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4095,
+   "order": 4098,
    "img": "img/extreme_cooking_potion.png",
    "imgPage": "File:Extreme cooking potion (4) detail.png"
   },
@@ -106435,7 +106535,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4096,
+   "order": 4099,
    "img": "img/extreme_defence.png",
    "imgPage": "File:Extreme defence (4) detail.png"
   },
@@ -106458,7 +106558,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4097,
+   "order": 4100,
    "img": "img/extreme_invention.png",
    "imgPage": "File:Extreme invention (4) detail.png"
   },
@@ -106481,7 +106581,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4098,
+   "order": 4101,
    "img": "img/extreme_magic.png",
    "imgPage": "File:Extreme magic (4) detail.png"
   },
@@ -106504,7 +106604,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4099,
+   "order": 4102,
    "img": "img/extreme_necromancy.png",
    "imgPage": "File:Extreme necromancy (4) detail.png"
   },
@@ -106527,7 +106627,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4100,
+   "order": 4103,
    "img": "img/extreme_prayer.png",
    "imgPage": "File:Extreme prayer (4) detail.png"
   },
@@ -106550,7 +106650,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4101,
+   "order": 4104,
    "img": "img/extreme_ranging.png",
    "imgPage": "File:Extreme ranging (4) detail.png"
   },
@@ -106573,7 +106673,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4102,
+   "order": 4105,
    "img": "img/extreme_runecrafting.png",
    "imgPage": "File:Extreme runecrafting (4) detail.png"
   },
@@ -106596,7 +106696,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4103,
+   "order": 4106,
    "img": "img/harvest_potion.png",
    "imgPage": "File:Harvest potion (4) detail.png"
   },
@@ -106619,7 +106719,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4104,
+   "order": 4107,
    "img": "img/prayer_renewal.png",
    "imgPage": "File:Prayer renewal (4) detail.png"
   },
@@ -106642,7 +106742,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4105,
+   "order": 4108,
    "img": "img/spirit_attraction_potion.png",
    "imgPage": "File:Spirit attraction potion (4) detail.png"
   },
@@ -106665,7 +106765,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4106,
+   "order": 4109,
    "img": "img/super_guthix_rest.png",
    "imgPage": "File:Super Guthix rest (4) detail.png"
   },
@@ -106688,7 +106788,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4107,
+   "order": 4110,
    "img": "img/super_prayer.png",
    "imgPage": "File:Super prayer (4) detail.png"
   },
@@ -106711,7 +106811,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4108,
+   "order": 4111,
    "img": "img/super_saradomin_brew.png",
    "imgPage": "File:Super Saradomin brew (4) detail.png"
   },
@@ -106734,7 +106834,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4109,
+   "order": 4112,
    "img": "img/super_zamorak_brew.png",
    "imgPage": "File:Super Zamorak brew (4) detail.png"
   },
@@ -106757,7 +106857,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4110,
+   "order": 4113,
    "img": "img/weapon_poison_plusplusplus.png",
    "imgPage": "File:Weapon poison+++ (4) detail.png"
   },
@@ -106780,7 +106880,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4111,
+   "order": 4114,
    "img": "img/aggroverload.png",
    "imgPage": "File:Aggroverload (4) detail.png"
   },
@@ -106803,7 +106903,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4112,
+   "order": 4115,
    "img": "img/brightfire_potion.png",
    "imgPage": "File:Brightfire potion (4) detail.png"
   },
@@ -106826,7 +106926,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4113,
+   "order": 4116,
    "img": "img/elder_overload_potion.png",
    "imgPage": "File:Elder overload potion (4) detail.png"
   },
@@ -106849,7 +106949,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4114,
+   "order": 4117,
    "img": "img/elder_overload_salve.png",
    "imgPage": "File:Elder overload salve (4) detail.png"
   },
@@ -106872,7 +106972,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4115,
+   "order": 4118,
    "img": "img/enhanced_replenishment_potion.png",
    "imgPage": "File:Enhanced replenishment potion (4) detail.png"
   },
@@ -106895,7 +106995,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4116,
+   "order": 4119,
    "img": "img/extreme_battlemages_potion.png",
    "imgPage": "File:Extreme battlemage's potion (4) detail.png"
   },
@@ -106918,7 +107018,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4117,
+   "order": 4120,
    "img": "img/extreme_brawlers_potion.png",
    "imgPage": "File:Extreme brawler's potion (4) detail.png"
   },
@@ -106941,7 +107041,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4118,
+   "order": 4121,
    "img": "img/extreme_sharpshooters_potion.png",
    "imgPage": "File:Extreme sharpshooter's potion (4) detail.png"
   },
@@ -106964,7 +107064,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4119,
+   "order": 4122,
    "img": "img/extreme_warmasters_potion.png",
    "imgPage": "File:Extreme warmaster's potion (4) detail.png"
   },
@@ -106987,7 +107087,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4120,
+   "order": 4123,
    "img": "img/holy_aggroverload.png",
    "imgPage": "File:Holy aggroverload (4) detail.png"
   },
@@ -107010,7 +107110,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4121,
+   "order": 4124,
    "img": "img/holy_overload_potion.png",
    "imgPage": "File:Holy overload potion (4) detail.png"
   },
@@ -107033,7 +107133,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4122,
+   "order": 4125,
    "img": "img/overload.png",
    "imgPage": "File:Overload (4) detail.png"
   },
@@ -107056,7 +107156,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4123,
+   "order": 4126,
    "img": "img/overload_salve.png",
    "imgPage": "File:Overload salve detail.png"
   },
@@ -107079,7 +107179,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4124,
+   "order": 4127,
    "img": "img/perfect_plus_potion.png",
    "imgPage": "File:Perfect plus potion (4) detail.png"
   },
@@ -107102,7 +107202,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4125,
+   "order": 4128,
    "img": "img/searing_overload_potion.png",
    "imgPage": "File:Searing overload potion detail.png"
   },
@@ -107125,7 +107225,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4126,
+   "order": 4129,
    "img": "img/spiritual_prayer_potion.png",
    "imgPage": "File:Spiritual prayer potion (4) detail.png"
   },
@@ -107148,7 +107248,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4127,
+   "order": 4130,
    "img": "img/super_prayer_renewal_potion.png",
    "imgPage": "File:Super prayer renewal potion detail.png"
   },
@@ -107171,7 +107271,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4128,
+   "order": 4131,
    "img": "img/supreme_attack_potion.png",
    "imgPage": "File:Supreme attack potion detail.png"
   },
@@ -107194,7 +107294,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4129,
+   "order": 4132,
    "img": "img/supreme_defence_potion.png",
    "imgPage": "File:Supreme defence potion detail.png"
   },
@@ -107217,7 +107317,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4130,
+   "order": 4133,
    "img": "img/supreme_magic_potion.png",
    "imgPage": "File:Supreme magic potion detail.png"
   },
@@ -107240,7 +107340,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4131,
+   "order": 4134,
    "img": "img/supreme_overload_potion.png",
    "imgPage": "File:Supreme overload potion detail.png"
   },
@@ -107263,7 +107363,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4132,
+   "order": 4135,
    "img": "img/supreme_overload_salve.png",
    "imgPage": "File:Supreme overload salve detail.png"
   },
@@ -107286,7 +107386,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4133,
+   "order": 4136,
    "img": "img/supreme_ranging_potion.png",
    "imgPage": "File:Supreme ranging potion detail.png"
   },
@@ -107309,7 +107409,7 @@
    },
    "collection": "Items: Potions",
    "file": "deck/items/potions.lua",
-   "order": 4134,
+   "order": 4137,
    "img": "img/supreme_strength_potion.png",
    "imgPage": "File:Supreme strength potion detail.png"
   },
@@ -107333,7 +107433,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4135,
+   "order": 4138,
    "img": "img/adrenaline_renewal_flask.png",
    "imgPage": "File:Adrenaline renewal flask (6) detail.png"
   },
@@ -107357,7 +107457,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4136,
+   "order": 4139,
    "img": "img/extreme_prayer_flask.png",
    "imgPage": "File:Extreme prayer flask (6) detail.png"
   },
@@ -107381,7 +107481,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4137,
+   "order": 4140,
    "img": "img/charming_potion_flask.png",
    "imgPage": "File:Charming potion flask (6) detail.png"
   },
@@ -107405,7 +107505,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4138,
+   "order": 4141,
    "img": "img/extended_super_antifire_flask.png",
    "imgPage": "File:Extended super antifire flask (6) detail.png"
   },
@@ -107429,7 +107529,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4139,
+   "order": 4142,
    "img": "img/extreme_cooking_flask.png",
    "imgPage": "File:Extreme cooking flask (6) detail.png"
   },
@@ -107453,7 +107553,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4140,
+   "order": 4143,
    "img": "img/extreme_defence_flask.png",
    "imgPage": "File:Extreme defence flask (6) detail.png"
   },
@@ -107477,7 +107577,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4141,
+   "order": 4144,
    "img": "img/extreme_invention_flask.png",
    "imgPage": "File:Extreme invention flask (6) detail.png"
   },
@@ -107501,7 +107601,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4142,
+   "order": 4145,
    "img": "img/extreme_magic_flask.png",
    "imgPage": "File:Extreme magic flask (6) detail.png"
   },
@@ -107525,7 +107625,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4143,
+   "order": 4146,
    "img": "img/extreme_necromancy_flask.png",
    "imgPage": "File:Extreme necromancy flask (6) detail.png"
   },
@@ -107549,7 +107649,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4144,
+   "order": 4147,
    "img": "img/extreme_ranging_flask.png",
    "imgPage": "File:Extreme ranging flask (6) detail.png"
   },
@@ -107573,7 +107673,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4145,
+   "order": 4148,
    "img": "img/extreme_runecrafting_flask.png",
    "imgPage": "File:Extreme runecrafting flask (6) detail.png"
   },
@@ -107597,7 +107697,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4146,
+   "order": 4149,
    "img": "img/harvest_flask.png",
    "imgPage": "File:Harvest flask (6) detail.png"
   },
@@ -107621,7 +107721,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4147,
+   "order": 4150,
    "img": "img/overload_flask.png",
    "imgPage": "File:Overload flask (6) detail.png"
   },
@@ -107645,7 +107745,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4148,
+   "order": 4151,
    "img": "img/perfect_juju_dungeoneering_flask.png",
    "imgPage": "File:Perfect juju dungeoneering flask (6) detail.png"
   },
@@ -107669,7 +107769,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4149,
+   "order": 4152,
    "img": "img/perfect_juju_fishing_flask.png",
    "imgPage": "File:Perfect juju fishing flask (6) detail.png"
   },
@@ -107693,7 +107793,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4150,
+   "order": 4153,
    "img": "img/perfect_juju_herblore_flask.png",
    "imgPage": "File:Perfect juju herblore flask (6) detail.png"
   },
@@ -107717,7 +107817,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4151,
+   "order": 4154,
    "img": "img/prayer_renewal_flask.png",
    "imgPage": "File:Prayer renewal flask (6) detail.png"
   },
@@ -107741,7 +107841,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4152,
+   "order": 4155,
    "img": "img/spirit_attraction_flask.png",
    "imgPage": "File:Spirit attraction flask (6) detail.png"
   },
@@ -107765,7 +107865,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4153,
+   "order": 4156,
    "img": "img/super_guthix_brew_flask.png",
    "imgPage": "File:Super Guthix brew flask (6) detail.png"
   },
@@ -107789,7 +107889,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4154,
+   "order": 4157,
    "img": "img/super_prayer_flask.png",
    "imgPage": "File:Super prayer flask (6) detail.png"
   },
@@ -107813,7 +107913,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4155,
+   "order": 4158,
    "img": "img/super_saradomin_brew_flask.png",
    "imgPage": "File:Super Saradomin brew flask (6) detail.png"
   },
@@ -107837,7 +107937,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4156,
+   "order": 4159,
    "img": "img/super_zamorak_brew_flask.png",
    "imgPage": "File:Super Zamorak brew flask (6) detail.png"
   },
@@ -107861,7 +107961,7 @@
    },
    "collection": "Potions: Flasks",
    "file": "deck/items/potions/flasks.lua",
-   "order": 4157,
+   "order": 4160,
    "img": "img/weapon_poisonplusplusplus_flask.png",
    "imgPage": "File:Weapon poison+++ flask (6) detail.png"
   },
@@ -107888,7 +107988,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4158,
+   "order": 4161,
    "img": "img/bathus_ore.png",
    "imgPage": "File:Bathus ore detail.png"
   },
@@ -107915,7 +108015,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4159,
+   "order": 4162,
    "img": "img/fractite_ore.png",
    "imgPage": "File:Fractite ore detail.png"
   },
@@ -107942,7 +108042,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4160,
+   "order": 4163,
    "img": "img/gorgonite_ore.png",
    "imgPage": "File:Gorgonite ore detail.png"
   },
@@ -107969,7 +108069,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4161,
+   "order": 4164,
    "img": "img/katagon_ore.png",
    "imgPage": "File:Katagon ore detail.png"
   },
@@ -107996,7 +108096,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4162,
+   "order": 4165,
    "img": "img/kratonium_ore.png",
    "imgPage": "File:Kratonium ore detail.png"
   },
@@ -108023,7 +108123,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4163,
+   "order": 4166,
    "img": "img/marmaros_ore.png",
    "imgPage": "File:Marmaros ore detail.png"
   },
@@ -108050,7 +108150,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4164,
+   "order": 4167,
    "img": "img/novite_ore.png",
    "imgPage": "File:Novite ore detail.png"
   },
@@ -108074,7 +108174,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4165,
+   "order": 4168,
    "img": "img/platinum_ore.png",
    "imgPage": "File:Platinum ore detail.png"
   },
@@ -108101,7 +108201,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4166,
+   "order": 4169,
    "img": "img/promethium_ore.png",
    "imgPage": "File:Promethium ore detail.png"
   },
@@ -108129,7 +108229,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4167,
+   "order": 4170,
    "img": "img/promethium_ore_dungeoneering.png",
    "imgPage": "File:Promethium ore (Dungeoneering) detail.png"
   },
@@ -108156,7 +108256,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4168,
+   "order": 4171,
    "img": "img/zephyrium_ore.png",
    "imgPage": "File:Zephyrium ore detail.png"
   },
@@ -108183,7 +108283,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4169,
+   "order": 4172,
    "img": "img/argonite_ore.png",
    "imgPage": "File:Argonite ore detail.png"
   },
@@ -108207,7 +108307,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4170,
+   "order": 4173,
    "img": "img/light_animica.png",
    "imgPage": "File:Light animica detail.png"
   },
@@ -108235,7 +108335,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4171,
+   "order": 4174,
    "img": "img/dark_animica.png",
    "imgPage": "File:Dark animica detail.png"
   },
@@ -108263,7 +108363,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4172,
+   "order": 4175,
    "img": "img/porcelain_clay.png",
    "imgPage": "File:Porcelain clay detail.png"
   },
@@ -108290,7 +108390,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4173,
+   "order": 4176,
    "img": "img/enriched_calcified_fungus.png",
    "imgPage": "File:Enriched calcified fungus detail.png"
   },
@@ -108317,7 +108417,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4174,
+   "order": 4177,
    "img": "img/alaea_sea_salt.png",
    "imgPage": "File:Alaea sea salt detail.png"
   },
@@ -108345,7 +108445,7 @@
    },
    "collection": "Raw Materials: Ores",
    "file": "deck/items/raw_materials/ores.lua",
-   "order": 4175,
+   "order": 4178,
    "img": "img/golden_idol.png",
    "imgPage": "File:Golden idol detail.png"
   },
@@ -108373,7 +108473,7 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 4176,
+   "order": 4179,
    "img": "img/airut_bones.png",
    "imgPage": "File:Airut bones detail.png"
   },
@@ -108400,7 +108500,7 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 4177,
+   "order": 4180,
    "img": "img/dragonkin_bones.png",
    "imgPage": "File:Dragonkin bones detail.png"
   },
@@ -108427,7 +108527,7 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 4178,
+   "order": 4181,
    "img": "img/ourg_bones_general_graardor.png",
    "imgPage": "File:Ourg bones (General Graardor) detail.png"
   },
@@ -108451,7 +108551,7 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 4179,
+   "order": 4182,
    "img": "img/searing_ashes.png",
    "imgPage": "File:Searing ashes detail.png"
   },
@@ -108475,7 +108575,7 @@
    },
    "collection": "Raw Materials: Bones",
    "file": "deck/items/raw_materials/bones.lua",
-   "order": 4180,
+   "order": 4183,
    "img": "img/tortured_ashes.png",
    "imgPage": "File:Tortured ashes detail.png"
   },
@@ -108499,7 +108599,7 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 4181,
+   "order": 4184,
    "img": "img/apex_hide.png",
    "imgPage": "File:Apex hide detail.png"
   },
@@ -108528,7 +108628,7 @@
    },
    "collection": "Raw Materials: Hides",
    "file": "deck/items/raw_materials/hides.lua",
-   "order": 4182,
+   "order": 4185,
    "img": "img/tyrannomastyx_hide.png",
    "imgPage": "File:Tyrannomastyx hide detail.png"
   },
@@ -108552,7 +108652,7 @@
    },
    "collection": "Raw Materials: Gems",
    "file": "deck/items/raw_materials/gems.lua",
-   "order": 4183,
+   "order": 4186,
    "img": "img/incomplete_hydrix.png",
    "imgPage": "File:Incomplete hydrix detail.png"
   },
@@ -108576,7 +108676,7 @@
    },
    "collection": "Raw Materials: Gems",
    "file": "deck/items/raw_materials/gems.lua",
-   "order": 4184,
+   "order": 4187,
    "img": "img/uncut_hydrix.png",
    "imgPage": "File:Uncut hydrix detail.png"
   },
@@ -108600,7 +108700,7 @@
    },
    "collection": "Raw Materials: Gems",
    "file": "deck/items/raw_materials/gems.lua",
-   "order": 4185,
+   "order": 4188,
    "img": "img/uncut_moonstone.png",
    "imgPage": "File:Uncut moonstone detail.png"
   },
@@ -108624,7 +108724,7 @@
    },
    "collection": "Raw Materials: Gems",
    "file": "deck/items/raw_materials/gems.lua",
-   "order": 4186,
+   "order": 4189,
    "img": "img/uncut_onyx.png",
    "imgPage": "File:Uncut onyx detail.png"
   },
@@ -108645,7 +108745,7 @@
    },
    "collection": "Raw Materials: Gems",
    "file": "deck/items/raw_materials/gems.lua",
-   "order": 4187,
+   "order": 4190,
    "img": "img/red_jewel.png",
    "imgPage": "File:Red jewel detail.png"
   },
@@ -108670,7 +108770,7 @@
    },
    "collection": "Processed Materials: Gems",
    "file": "deck/items/processed_materials/gems.lua",
-   "order": 4188,
+   "order": 4191,
    "img": "img/alchemical_onyx.png",
    "imgPage": "File:Alchemical onyx detail.png"
   },
@@ -108694,7 +108794,7 @@
    },
    "collection": "Processed Materials: Gems",
    "file": "deck/items/processed_materials/gems.lua",
-   "order": 4189,
+   "order": 4192,
    "img": "img/hydrix.png",
    "imgPage": "File:Hydrix detail.png"
   },
@@ -108718,7 +108818,7 @@
    },
    "collection": "Processed Materials: Gems",
    "file": "deck/items/processed_materials/gems.lua",
-   "order": 4190,
+   "order": 4193,
    "img": "img/onyx.png",
    "imgPage": "File:Onyx detail.png"
   },
@@ -108742,7 +108842,7 @@
    },
    "collection": "Processed Materials: Herbs",
    "file": "deck/items/processed_materials/herbs.lua",
-   "order": 4191,
+   "order": 4194,
    "img": "img/clean_fellstalk.png",
    "imgPage": "File:Clean fellstalk detail.png"
   },
@@ -108771,7 +108871,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4192,
+   "order": 4195,
    "img": "img/sliced_mushrooms_the_arc.png",
    "imgPage": "File:Sliced mushrooms (The Arc) detail.png"
   },
@@ -108795,7 +108895,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4193,
+   "order": 4196,
    "img": "img/wine_of_guthix.png",
    "imgPage": "File:Wine of Guthix detail.png"
   },
@@ -108819,7 +108919,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4194,
+   "order": 4197,
    "img": "img/wine_of_saradomin.png",
    "imgPage": "File:Wine of Saradomin detail.png"
   },
@@ -108843,7 +108943,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4195,
+   "order": 4198,
    "img": "img/wine_of_zamorak.png",
    "imgPage": "File:Wine of Zamorak detail.png"
   },
@@ -108870,7 +108970,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4196,
+   "order": 4199,
    "img": "img/apex_sinew.png",
    "imgPage": "File:Apex sinew detail.png"
   },
@@ -108894,7 +108994,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4197,
+   "order": 4200,
    "img": "img/fish_oil.png",
    "imgPage": "File:Fish oil 1 detail.png"
   },
@@ -108921,7 +109021,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4198,
+   "order": 4201,
    "img": "img/wobbegong_oil.png",
    "imgPage": "File:Wobbegong oil detail.png"
   },
@@ -108946,7 +109046,7 @@
    },
    "collection": "Processed Materials: Ingredients",
    "file": "deck/items/processed_materials/ingredients.lua",
-   "order": 4199,
+   "order": 4202,
    "img": "img/primal_fruit_pulp.png",
    "imgPage": "File:Primal fruit pulp detail.png"
   },
@@ -108970,7 +109070,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4200,
+   "order": 4203,
    "img": "img/concentrated_alloy_bar.png",
    "imgPage": "File:Concentrated alloy bar detail.png"
   },
@@ -108995,7 +109095,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4201,
+   "order": 4204,
    "img": "img/elder_rune_bar.png",
    "imgPage": "File:Elder rune bar detail.png"
   },
@@ -109019,7 +109119,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4202,
+   "order": 4205,
    "img": "img/enriched_alloy_bar.png",
    "imgPage": "File:Enriched alloy bar detail.png"
   },
@@ -109043,7 +109143,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4203,
+   "order": 4206,
    "img": "img/glorious_bar.png",
    "imgPage": "File:Glorious bar detail.png"
   },
@@ -109067,7 +109167,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4204,
+   "order": 4207,
    "img": "img/immaculate_alloy_bar.png",
    "imgPage": "File:Immaculate alloy bar detail.png"
   },
@@ -109092,7 +109192,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4205,
+   "order": 4208,
    "img": "img/platinum_bar.png",
    "imgPage": "File:Platinum bar detail.png"
   },
@@ -109117,7 +109217,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4206,
+   "order": 4209,
    "img": "img/primal_bar.png",
    "imgPage": "File:Primal bar detail.png"
   },
@@ -109141,7 +109241,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4207,
+   "order": 4210,
    "img": "img/primed_glorious_bar.png",
    "imgPage": "File:Primed glorious bar detail.png"
   },
@@ -109169,7 +109269,7 @@
    },
    "collection": "Processed Materials: Bars",
    "file": "deck/items/processed_materials/bars.lua",
-   "order": 4208,
+   "order": 4211,
    "img": "img/promethium_bar.png",
    "imgPage": "File:Promethium bar detail.png"
   },
@@ -109193,7 +109293,7 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 4209,
+   "order": 4212,
    "img": "img/refined_elder_planks.png",
    "imgPage": "File:Refined Elder planks detail.png"
   },
@@ -109217,7 +109317,7 @@
    },
    "collection": "Processed Materials: Planks",
    "file": "deck/items/processed_materials/planks.lua",
-   "order": 4210,
+   "order": 4213,
    "img": "img/refined_eternal_planks.png",
    "imgPage": "File:Refined Eternal planks detail.png"
   },
@@ -109240,7 +109340,7 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 4211,
+   "order": 4214,
    "img": "img/alchemical_hydrix_dust.png",
    "imgPage": "File:Alchemical hydrix dust detail.png"
   },
@@ -109263,7 +109363,7 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 4212,
+   "order": 4215,
    "img": "img/moonstone_dust.png",
    "imgPage": "File:Moonstone dust detail.png"
   },
@@ -109287,7 +109387,7 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 4213,
+   "order": 4216,
    "img": "img/exquisite_cooking_urn_empty.png",
    "imgPage": "File:Exquisite cooking urn (empty) detail.png"
   },
@@ -109310,7 +109410,7 @@
    },
    "collection": "Items: Consumable",
    "file": "deck/items/consumable.lua",
-   "order": 4214,
+   "order": 4217,
    "img": "img/numbing_root.png",
    "imgPage": "File:Numbing root detail.png"
   },
@@ -109334,7 +109434,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4215,
+   "order": 4218,
    "img": "img/avocado_seed.png",
    "imgPage": "File:Avocado seed 5 detail.png"
   },
@@ -109362,7 +109462,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4216,
+   "order": 4219,
    "img": "img/buckthorn_seed.png",
    "imgPage": "File:Buckthorn seed 5 detail.png"
   },
@@ -109386,7 +109486,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4217,
+   "order": 4220,
    "img": "img/carambola_seed.png",
    "imgPage": "File:Carambola seed 5 detail.png"
   },
@@ -109410,7 +109510,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4218,
+   "order": 4221,
    "img": "img/ciku_seed.png",
    "imgPage": "File:Ciku seed 5 detail.png"
   },
@@ -109437,7 +109537,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4219,
+   "order": 4222,
    "img": "img/crystal_acorn.png",
    "imgPage": "File:Crystal acorn 5 detail.png"
   },
@@ -109461,7 +109561,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4220,
+   "order": 4223,
    "img": "img/dragonfruit_seed.png",
    "imgPage": "File:Dragonfruit seed 5 detail.png"
   },
@@ -109485,7 +109585,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4221,
+   "order": 4224,
    "img": "img/elder_seed.png",
    "imgPage": "File:Elder seed 5 detail.png"
   },
@@ -109509,7 +109609,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4222,
+   "order": 4225,
    "img": "img/fellstalk_seed.png",
    "imgPage": "File:Fellstalk seed 5 detail.png"
   },
@@ -109533,7 +109633,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4223,
+   "order": 4226,
    "img": "img/fly_trap_seed.png",
    "imgPage": "File:Fly trap seed 5 detail.png"
   },
@@ -109557,7 +109657,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4224,
+   "order": 4227,
    "img": "img/godly_grapevine_seed.png",
    "imgPage": "File:Godly grapevine seed 5 detail.png"
   },
@@ -109581,7 +109681,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4225,
+   "order": 4228,
    "img": "img/golden_dragonfruit_seed.png",
    "imgPage": "File:Golden dragonfruit seed 5 detail.png"
   },
@@ -109605,7 +109705,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4226,
+   "order": 4229,
    "img": "img/guarana_seed.png",
    "imgPage": "File:Guarana seed 5 detail.png"
   },
@@ -109629,7 +109729,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4227,
+   "order": 4230,
    "img": "img/liverwort_seed.png",
    "imgPage": "File:Liverwort seed detail.png"
   },
@@ -109653,7 +109753,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4228,
+   "order": 4231,
    "img": "img/lychee_seed.png",
    "imgPage": "File:Lychee seed detail.png"
   },
@@ -109677,7 +109777,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4229,
+   "order": 4232,
    "img": "img/mango_seed.png",
    "imgPage": "File:Mango seed detail.png"
   },
@@ -109701,7 +109801,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4230,
+   "order": 4233,
    "img": "img/money_tree_seed.png",
    "imgPage": "File:Money tree seed detail.png"
   },
@@ -109725,7 +109825,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4231,
+   "order": 4234,
    "img": "img/mourning_lily_seed.png",
    "imgPage": "File:Mourning lily seed detail.png"
   },
@@ -109749,7 +109849,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4232,
+   "order": 4235,
    "img": "img/starbloom_flower_seed.png",
    "imgPage": "File:Starbloom flower seed 5 detail.png"
   },
@@ -109773,7 +109873,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4233,
+   "order": 4236,
    "img": "img/stinkshroom_spore.png",
    "imgPage": "File:Stinkshroom spore detail.png"
   },
@@ -109797,7 +109897,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4234,
+   "order": 4237,
    "img": "img/tombshroom_spore.png",
    "imgPage": "File:Tombshroom spore detail.png"
   },
@@ -109824,7 +109924,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4235,
+   "order": 4238,
    "img": "img/stoneberry_seed.png",
    "imgPage": "File:Stoneberry seed detail.png"
   },
@@ -109851,7 +109951,7 @@
    },
    "collection": "Items: Seeds",
    "file": "deck/items/seeds.lua",
-   "order": 4236,
+   "order": 4239,
    "img": "img/stormberry_seed.png",
    "imgPage": "File:Stormberry seed detail.png"
   },
@@ -109876,7 +109976,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4237,
+   "order": 4240,
    "img": "img/inferno_adze.png",
    "imgPage": "File:Inferno adze detail.png"
   },
@@ -109899,7 +109999,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4238,
+   "order": 4241,
    "img": "img/elder_rune_hatchet.png",
    "imgPage": "File:Elder rune hatchet detail.png"
   },
@@ -109923,7 +110023,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4239,
+   "order": 4242,
    "img": "img/hatchet_of_bloom_and_blight.png",
    "imgPage": "File:Hatchet of bloom and blight detail.png"
   },
@@ -109946,7 +110046,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4240,
+   "order": 4243,
    "img": "img/hatchet_of_ember_and_glade.png",
    "imgPage": "File:Hatchet of ember and glade detail.png"
   },
@@ -109969,7 +110069,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4241,
+   "order": 4244,
    "img": "img/primal_hatchet.png",
    "imgPage": "File:Primal hatchet detail.png"
   },
@@ -109992,7 +110092,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4242,
+   "order": 4245,
    "img": "img/dragon_pickaxe.png",
    "imgPage": "File:Dragon pickaxe detail.png"
   },
@@ -110016,7 +110116,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4243,
+   "order": 4246,
    "img": "img/elder_rune_pickaxe.png",
    "imgPage": "File:Elder rune pickaxe detail.png"
   },
@@ -110040,7 +110140,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4244,
+   "order": 4247,
    "img": "img/pickaxe_of_earth_and_song.png",
    "imgPage": "File:Pickaxe of earth and song detail.png"
   },
@@ -110064,7 +110164,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4245,
+   "order": 4248,
    "img": "img/pickaxe_of_life_and_death.png",
    "imgPage": "File:Pickaxe of life and death detail.png"
   },
@@ -110088,7 +110188,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4246,
+   "order": 4249,
    "img": "img/primal_pickaxe.png",
    "imgPage": "File:Primal pickaxe detail.png"
   },
@@ -110112,7 +110212,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4247,
+   "order": 4250,
    "img": "img/hammertron_e.png",
    "imgPage": "File:Hammer-tron detail.png"
   },
@@ -110136,7 +110236,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4248,
+   "order": 4251,
    "img": "img/pyromatic_e.png",
    "imgPage": "File:Pyro-matic detail.png"
   },
@@ -110159,7 +110259,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4249,
+   "order": 4252,
    "img": "img/dragon_mattock.png",
    "imgPage": "File:Dragon mattock detail.png"
   },
@@ -110183,7 +110283,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4250,
+   "order": 4253,
    "img": "img/elder_rune_mattock.png",
    "imgPage": "File:Elder rune mattock detail.png"
   },
@@ -110206,7 +110306,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4251,
+   "order": 4254,
    "img": "img/mattock_of_time_and_space.png",
    "imgPage": "File:Mattock of Time and Space detail.png"
   },
@@ -110227,7 +110327,7 @@
    },
    "collection": "Items: Quest Items",
    "file": "deck/items/quest_items.lua",
-   "order": 4252,
+   "order": 4255,
    "img": "img/green_jewel.png",
    "imgPage": "File:Green jewel detail.png"
   },
@@ -110254,7 +110354,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4253,
+   "order": 4256,
    "img": "img/elite_robin_hood_hat.png",
    "imgPage": "File:Elite Robin Hood hat detail.png"
   },
@@ -110279,7 +110379,7 @@
    },
    "collection": "Items: Novelties",
    "file": "deck/items/novelties.lua",
-   "order": 4254,
+   "order": 4257,
    "img": "img/pogo_stick.png",
    "imgPage": "File:Pogo stick detail.png"
   },
@@ -110309,7 +110409,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4255,
+   "order": 4258,
    "img": "img/attuned_crystal_dagger.png",
    "imgPage": "File:Attuned crystal dagger detail.png"
   },
@@ -110339,7 +110439,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4256,
+   "order": 4259,
    "img": "img/dark_ice_sliver.png",
    "imgPage": "File:Dark ice sliver detail.png"
   },
@@ -110366,7 +110466,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4257,
+   "order": 4260,
    "img": "img/offhand_attuned_crystal_dagger.png",
    "imgPage": "File:Off-hand attuned crystal dagger detail.png"
   },
@@ -110395,7 +110495,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4258,
+   "order": 4261,
    "img": "img/offhand_primal_dagger.png",
    "imgPage": "File:Off-hand primal dagger detail.png"
   },
@@ -110425,7 +110525,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4259,
+   "order": 4262,
    "img": "img/offhand_promethium_dagger.png",
    "imgPage": "File:Off-hand promethium dagger detail.png"
   },
@@ -110454,7 +110554,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4260,
+   "order": 4263,
    "img": "img/primal_dagger.png",
    "imgPage": "File:Primal dagger detail.png"
   },
@@ -110484,7 +110584,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4261,
+   "order": 4264,
    "img": "img/promethium_dagger.png",
    "imgPage": "File:Promethium dagger detail.png"
   },
@@ -110514,7 +110614,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4262,
+   "order": 4265,
    "img": "img/dark_ice_shard.png",
    "imgPage": "File:Dark ice shard detail.png"
   },
@@ -110542,7 +110642,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4263,
+   "order": 4266,
    "img": "img/drygore_longsword.png",
    "imgPage": "File:Drygore longsword detail.png"
   },
@@ -110570,7 +110670,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4264,
+   "order": 4267,
    "img": "img/drygore_rapier.png",
    "imgPage": "File:Drygore rapier detail.png"
   },
@@ -110596,7 +110696,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4265,
+   "order": 4268,
    "img": "img/elder_rune_longsword.png",
    "imgPage": "File:Elder rune longsword detail.png"
   },
@@ -110622,7 +110722,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4266,
+   "order": 4269,
    "img": "img/elder_rune_off_hand_longsword.png",
    "imgPage": "File:Elder rune off hand longsword detail.png"
   },
@@ -110650,7 +110750,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4267,
+   "order": 4270,
    "img": "img/elite_tetsu_katana.png",
    "imgPage": "File:Elite tetsu katana detail.png"
   },
@@ -110678,7 +110778,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4268,
+   "order": 4271,
    "img": "img/elite_tetsu_wakizashi.png",
    "imgPage": "File:Elite tetsu wakizashi detail.png"
   },
@@ -110707,7 +110807,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4269,
+   "order": 4272,
    "img": "img/profound_decorative_sword.png",
    "imgPage": "File:Profound decorative sword detail.png"
   },
@@ -110735,7 +110835,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4270,
+   "order": 4273,
    "img": "img/oh_khopesh_of_the_kharidian.png",
    "imgPage": "File:Off-hand khopesh of the Kharidian detail.png"
   },
@@ -110763,7 +110863,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4271,
+   "order": 4274,
    "img": "img/offhand_drygore_longsword.png",
    "imgPage": "File:Off-hand drygore longsword detail.png"
   },
@@ -110791,7 +110891,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4272,
+   "order": 4275,
    "img": "img/offhand_drygore_rapier.png",
    "imgPage": "File:Off-hand drygore rapier detail.png"
   },
@@ -110820,7 +110920,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4273,
+   "order": 4276,
    "img": "img/offhand_primal_longsword.png",
    "imgPage": "File:Off-hand primal longsword detail.png"
   },
@@ -110849,7 +110949,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4274,
+   "order": 4277,
    "img": "img/offhand_primal_rapier.png",
    "imgPage": "File:Off-hand primal rapier detail.png"
   },
@@ -110879,7 +110979,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4275,
+   "order": 4278,
    "img": "img/oh_promethium_longsword.png",
    "imgPage": "File:Off-hand promethium longsword detail.png"
   },
@@ -110909,7 +111009,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4276,
+   "order": 4279,
    "img": "img/offhand_promethium_rapier.png",
    "imgPage": "File:Off-hand promethium rapier detail.png"
   },
@@ -110938,7 +111038,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4277,
+   "order": 4280,
    "img": "img/offhand_ruinous_rapier.png",
    "imgPage": "File:Off-hand ruinous rapier detail.png"
   },
@@ -110967,7 +111067,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4278,
+   "order": 4281,
    "img": "img/primal_longsword.png",
    "imgPage": "File:Primal longsword detail.png"
   },
@@ -110996,7 +111096,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4279,
+   "order": 4282,
    "img": "img/primal_rapier.png",
    "imgPage": "File:Primal rapier detail.png"
   },
@@ -111026,7 +111126,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4280,
+   "order": 4283,
    "img": "img/promethium_longsword.png",
    "imgPage": "File:Promethium longsword detail.png"
   },
@@ -111056,7 +111156,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4281,
+   "order": 4284,
    "img": "img/promethium_rapier.png",
    "imgPage": "File:Promethium rapier detail.png"
   },
@@ -111083,7 +111183,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4282,
+   "order": 4285,
    "img": "img/tetsu_katana.png",
    "imgPage": "File:Tetsu katana detail.png"
   },
@@ -111110,7 +111210,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4283,
+   "order": 4286,
    "img": "img/tetsu_wakizashi.png",
    "imgPage": "File:Tetsu wakizashi detail.png"
   },
@@ -111138,7 +111238,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4284,
+   "order": 4287,
    "img": "img/vestas_longsword.png",
    "imgPage": "File:Vesta's longsword detail.png"
   },
@@ -111165,7 +111265,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4285,
+   "order": 4288,
    "img": "img/dominion_sword.png",
    "imgPage": "File:Dominion sword detail.png"
   },
@@ -111192,7 +111292,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4286,
+   "order": 4289,
    "img": "img/elder_rune_2h_sword.png",
    "imgPage": "File:Elder rune 2h sword detail.png"
   },
@@ -111222,7 +111322,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4287,
+   "order": 4290,
    "img": "img/primal_2h_sword.png",
    "imgPage": "File:Primal 2h sword detail.png"
   },
@@ -111253,7 +111353,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4288,
+   "order": 4291,
    "img": "img/promethium_2h_sword.png",
    "imgPage": "File:Promethium 2h sword detail.png"
   },
@@ -111282,7 +111382,7 @@
    },
    "collection": "Weapons: Axes",
    "file": "deck/items/weapons/axes.lua",
-   "order": 4289,
+   "order": 4292,
    "img": "img/offhand_primal_battleaxe.png",
    "imgPage": "File:Off-hand primal battleaxe detail.png"
   },
@@ -111312,7 +111412,7 @@
    },
    "collection": "Weapons: Axes",
    "file": "deck/items/weapons/axes.lua",
-   "order": 4290,
+   "order": 4293,
    "img": "img/offhand_promethium_battleaxe.png",
    "imgPage": "File:Off-hand promethium battleaxe detail.png"
   },
@@ -111341,7 +111441,7 @@
    },
    "collection": "Weapons: Axes",
    "file": "deck/items/weapons/axes.lua",
-   "order": 4291,
+   "order": 4294,
    "img": "img/primal_battleaxe.png",
    "imgPage": "File:Primal battleaxe detail.png"
   },
@@ -111371,9 +111471,37 @@
    },
    "collection": "Weapons: Axes",
    "file": "deck/items/weapons/axes.lua",
-   "order": 4292,
+   "order": 4295,
    "img": "img/promethium_battleaxe.png",
    "imgPage": "File:Promethium battleaxe detail.png"
+  },
+  {
+   "id": "statiuss_warhammer",
+   "name": "Statius's warhammer",
+   "kind": "item",
+   "rarity": "epic",
+   "desc": "This item degrades in combat, and will turn to dust.",
+   "tags": {
+    "regions": [
+     "wilderness"
+    ],
+    "skills": [
+     "attack"
+    ],
+    "category": [
+     "weapon",
+     "melee_gear",
+     "mace"
+    ],
+    "membership": [
+     "p2p"
+    ]
+   },
+   "collection": "Weapons: Maces",
+   "file": "deck/items/weapons/maces.lua",
+   "order": 4296,
+   "img": "img/statiuss_warhammer.png",
+   "imgPage": "File:Statius's warhammer detail.png"
   },
   {
    "id": "drygore_mace",
@@ -111399,7 +111527,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4293,
+   "order": 4297,
    "img": "img/drygore_mace.png",
    "imgPage": "File:Drygore mace detail.png"
   },
@@ -111427,7 +111555,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4294,
+   "order": 4298,
    "img": "img/offhand_drygore_mace.png",
    "imgPage": "File:Off-hand drygore mace detail.png"
   },
@@ -111457,7 +111585,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4295,
+   "order": 4299,
    "img": "img/offhand_promethium_warhammer.png",
    "imgPage": "File:Off-hand promethium warhammer detail.png"
   },
@@ -111486,7 +111614,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4296,
+   "order": 4300,
    "img": "img/primal_off_hand_warhammer.png",
    "imgPage": "File:Primal off hand warhammer (used) detail.png"
   },
@@ -111515,7 +111643,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4297,
+   "order": 4301,
    "img": "img/primal_warhammer.png",
    "imgPage": "File:Primal warhammer (Dungeoneering) detail.png"
   },
@@ -111545,7 +111673,7 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4298,
+   "order": 4302,
    "img": "img/promethium_warhammer.png",
    "imgPage": "File:Promethium warhammer detail.png"
   },
@@ -111574,7 +111702,7 @@
    },
    "collection": "Weapons: Spears",
    "file": "deck/items/weapons/spears.lua",
-   "order": 4299,
+   "order": 4303,
    "img": "img/primal_spear.png",
    "imgPage": "File:Primal spear detail.png"
   },
@@ -111604,7 +111732,7 @@
    },
    "collection": "Weapons: Spears",
    "file": "deck/items/weapons/spears.lua",
-   "order": 4300,
+   "order": 4304,
    "img": "img/promethium_spear.png",
    "imgPage": "File:Promethium spear detail.png"
   },
@@ -111634,7 +111762,7 @@
    },
    "collection": "Weapons: Halberds",
    "file": "deck/items/weapons/halberds.lua",
-   "order": 4301,
+   "order": 4305,
    "img": "img/attuned_crystal_halberd.png",
    "imgPage": "File:Attuned crystal halberd detail.png"
   },
@@ -111662,7 +111790,7 @@
    },
    "collection": "Weapons: Halberds",
    "file": "deck/items/weapons/halberds.lua",
-   "order": 4302,
+   "order": 4306,
    "img": "img/dragon_rider_lance.png",
    "imgPage": "File:Dragon Rider lance detail.png"
   },
@@ -111691,7 +111819,7 @@
    },
    "collection": "Weapons: Whips",
    "file": "deck/items/weapons/whips.lua",
-   "order": 4303,
+   "order": 4307,
    "img": "img/abyssal_scourge.png",
    "imgPage": "File:Abyssal scourge detail.png"
   },
@@ -111720,7 +111848,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4304,
+   "order": 4308,
    "img": "img/decimation.png",
    "imgPage": "File:Decimation detail.png"
   },
@@ -111746,7 +111874,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4305,
+   "order": 4309,
    "img": "img/elder_shortbow.png",
    "imgPage": "File:Elder shortbow detail.png"
   },
@@ -111772,7 +111900,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4306,
+   "order": 4310,
    "img": "img/eternal_magic_shortbow.png",
    "imgPage": "File:Eternal magic shortbow detail.png"
   },
@@ -111802,7 +111930,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4307,
+   "order": 4311,
    "img": "img/grave_creeper_shortbow.png",
    "imgPage": "File:Grave creeper shortbow detail.png"
   },
@@ -111831,7 +111959,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4308,
+   "order": 4312,
    "img": "img/sagittarian_shortbow.png",
    "imgPage": "File:Sagittarian shortbow detail.png"
   },
@@ -111861,7 +111989,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4309,
+   "order": 4313,
    "img": "img/attuned_crystal_bow.png",
    "imgPage": "File:Attuned crystal bow detail.png"
   },
@@ -111887,7 +112015,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4310,
+   "order": 4314,
    "img": "img/elder_longbow.png",
    "imgPage": "File:Elder longbow detail.png"
   },
@@ -111913,7 +112041,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4311,
+   "order": 4315,
    "img": "img/eternal_magic_longbow.png",
    "imgPage": "File:Eternal magic longbow detail.png"
   },
@@ -111943,7 +112071,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4312,
+   "order": 4316,
    "img": "img/grave_creeper_longbow.png",
    "imgPage": "File:Grave creeper longbow detail.png"
   },
@@ -111971,7 +112099,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4313,
+   "order": 4317,
    "img": "img/hellfire_bow.png",
    "imgPage": "File:Hellfire bow detail.png"
   },
@@ -112000,7 +112128,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4314,
+   "order": 4318,
    "img": "img/sagittarian_longbow.png",
    "imgPage": "File:Sagittarian longbow detail.png"
   },
@@ -112025,7 +112153,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4315,
+   "order": 4319,
    "img": "img/wyvern_crossbow.png",
    "imgPage": "File:Wyvern crossbow detail.png"
   },
@@ -112053,7 +112181,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4316,
+   "order": 4320,
    "img": "img/ascension_crossbow.png",
    "imgPage": "File:Ascension crossbow detail.png"
   },
@@ -112081,7 +112209,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4317,
+   "order": 4321,
    "img": "img/blightbound_crossbow.png",
    "imgPage": "File:Blightbound crossbow detail.png"
   },
@@ -112107,7 +112235,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4318,
+   "order": 4322,
    "img": "img/elder_2h_crossbow.png",
    "imgPage": "File:Elder 2h crossbow detail.png"
   },
@@ -112133,7 +112261,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4319,
+   "order": 4323,
    "img": "img/elder_crossbow.png",
    "imgPage": "File:Elder crossbow detail.png"
   },
@@ -112161,7 +112289,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4320,
+   "order": 4324,
    "img": "img/offhand_ascension_crossbow.png",
    "imgPage": "File:Off-hand ascension crossbow detail.png"
   },
@@ -112189,7 +112317,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4321,
+   "order": 4325,
    "img": "img/offhand_blightbound_crossbow.png",
    "imgPage": "File:Off-hand Blightbound crossbow detail.png"
   },
@@ -112215,7 +112343,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4322,
+   "order": 4326,
    "img": "img/offhand_elder_crossbow.png",
    "imgPage": "File:Off-hand elder crossbow detail.png"
   },
@@ -112241,7 +112369,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4323,
+   "order": 4327,
    "img": "img/offhand_primal_crossbow.png",
    "imgPage": "File:Off-hand primal crossbow detail.png"
   },
@@ -112269,7 +112397,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4324,
+   "order": 4328,
    "img": "img/offhand_ruinous_crossbow.png",
    "imgPage": "File:Off-hand ruinous crossbow detail.png"
   },
@@ -112295,7 +112423,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4325,
+   "order": 4329,
    "img": "img/primal_2h_crossbow.png",
    "imgPage": "File:Primal 2h crossbow detail.png"
   },
@@ -112321,7 +112449,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4326,
+   "order": 4330,
    "img": "img/primal_crossbow.png",
    "imgPage": "File:Primal crossbow detail.png"
   },
@@ -112349,7 +112477,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4327,
+   "order": 4331,
    "img": "img/ruinous_crossbow.png",
    "imgPage": "File:Ruinous crossbow detail.png"
   },
@@ -112377,7 +112505,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4328,
+   "order": 4332,
    "img": "img/bone_blowpipe.png",
    "imgPage": "File:Bone blowpipe detail.png"
   },
@@ -112405,7 +112533,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4329,
+   "order": 4333,
    "img": "img/morrigans_javelin.png",
    "imgPage": "File:Morrigan's javelin detail.png"
   },
@@ -112433,7 +112561,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4330,
+   "order": 4334,
    "img": "img/morrigans_throwing_axe.png",
    "imgPage": "File:Morrigan's throwing axe detail.png"
   },
@@ -112463,7 +112591,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4331,
+   "order": 4335,
    "img": "img/attuned_crystal_chakram.png",
    "imgPage": "File:Attuned crystal chakram detail.png"
   },
@@ -112489,7 +112617,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4332,
+   "order": 4336,
    "img": "img/death_lotus_dart.png",
    "imgPage": "File:Death Lotus dart detail.png"
   },
@@ -112515,7 +112643,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4333,
+   "order": 4337,
    "img": "img/elite_death_lotus_dart.png",
    "imgPage": "File:Elite Death Lotus dart detail.png"
   },
@@ -112544,7 +112672,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4334,
+   "order": 4338,
    "img": "img/primal_knife.png",
    "imgPage": "File:Primal knife detail.png"
   },
@@ -112574,7 +112702,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4335,
+   "order": 4339,
    "img": "img/promethium_knife.png",
    "imgPage": "File:Promethium knife detail.png"
   },
@@ -112602,7 +112730,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4336,
+   "order": 4340,
    "img": "img/pharaohs_sceptre.png",
    "imgPage": "File:Pharaoh's sceptre detail.png"
   },
@@ -112630,7 +112758,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4337,
+   "order": 4341,
    "img": "img/camel_staff.png",
    "imgPage": "File:Camel staff detail.png"
   },
@@ -112660,7 +112788,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4338,
+   "order": 4342,
    "img": "img/attuned_crystal_staff.png",
    "imgPage": "File:Attuned crystal staff detail.png"
   },
@@ -112689,7 +112817,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4339,
+   "order": 4343,
    "img": "img/celestial_catalytic_staff.png",
    "imgPage": "File:Celestial catalytic staff detail.png"
   },
@@ -112717,7 +112845,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4340,
+   "order": 4344,
    "img": "img/zuriels_staff.png",
    "imgPage": "File:Zuriel's staff detail.png"
   },
@@ -112747,7 +112875,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4341,
+   "order": 4345,
    "img": "img/empowered_catalytic_staff.png",
    "imgPage": "File:Empowered catalytic staff detail.png"
   },
@@ -112777,7 +112905,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4342,
+   "order": 4346,
    "img": "img/grave_creeper_staff.png",
    "imgPage": "File:Grave creeper staff detail.png"
   },
@@ -112806,7 +112934,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4343,
+   "order": 4347,
    "img": "img/greater_runic_staff.png",
    "imgPage": "File:Greater runic staff detail.png"
   },
@@ -112834,7 +112962,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4344,
+   "order": 4348,
    "img": "img/inquisitor_staff.png",
    "imgPage": "File:Inquisitor staff detail.png"
   },
@@ -112862,7 +112990,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4345,
+   "order": 4349,
    "img": "img/legatuss_emberstaff.png",
    "imgPage": "File:Legatus's Emberstaff detail.png"
   },
@@ -112891,7 +113019,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4346,
+   "order": 4350,
    "img": "img/ruinous_staff.png",
    "imgPage": "File:Ruinous staff detail.png"
   },
@@ -112921,7 +113049,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4347,
+   "order": 4351,
    "img": "img/sceptre_of_the_gods.png",
    "imgPage": "File:Sceptre of the gods detail.png"
   },
@@ -112949,7 +113077,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4348,
+   "order": 4352,
    "img": "img/wand_of_the_cywir_elders.png",
    "imgPage": "File:Wand of the Cywir elders detail.png"
   },
@@ -112979,7 +113107,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4349,
+   "order": 4353,
    "img": "img/attuned_crystal_wand.png",
    "imgPage": "File:Attuned crystal wand detail.png"
   },
@@ -113008,7 +113136,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4350,
+   "order": 4354,
    "img": "img/celestial_catalytic_wand.png",
    "imgPage": "File:Celestial catalytic wand detail.png"
   },
@@ -113038,7 +113166,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4351,
+   "order": 4355,
    "img": "img/elite_seasinger_kiba.png",
    "imgPage": "File:Elite seasinger kiba detail.png"
   },
@@ -113068,7 +113196,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4352,
+   "order": 4356,
    "img": "img/empowered_catalytic_wand.png",
    "imgPage": "File:Empowered catalytic wand detail.png"
   },
@@ -113098,7 +113226,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4353,
+   "order": 4357,
    "img": "img/grave_creeper_wand.png",
    "imgPage": "File:Grave creeper wand detail.png"
   },
@@ -113128,7 +113256,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4354,
+   "order": 4358,
    "img": "img/seasinger_kiba.png",
    "imgPage": "File:Seasinger kiba detail.png"
   },
@@ -113156,7 +113284,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4355,
+   "order": 4359,
    "img": "img/wand_of_the_praesul.png",
    "imgPage": "File:Wand of the praesul detail.png"
   },
@@ -113185,7 +113313,7 @@
    },
    "collection": "Weapons: Lanterns",
    "file": "deck/items/weapons/lanterns.lua",
-   "order": 4356,
+   "order": 4360,
    "img": "img/entropic_lantern.png",
    "imgPage": "File:Entropic lantern detail.png"
   },
@@ -113215,7 +113343,7 @@
    },
    "collection": "Weapons: Lanterns",
    "file": "deck/items/weapons/lanterns.lua",
-   "order": 4357,
+   "order": 4361,
    "img": "img/promethium_lantern.png",
    "imgPage": "File:Promethium lantern detail.png"
   },
@@ -113243,7 +113371,7 @@
    },
    "collection": "Weapons: Lanterns",
    "file": "deck/items/weapons/lanterns.lua",
-   "order": 4358,
+   "order": 4362,
    "img": "img/ruinous_lantern.png",
    "imgPage": "File:Ruinous lantern detail.png"
   },
@@ -113269,7 +113397,7 @@
    },
    "collection": "Weapons: Lanterns",
    "file": "deck/items/weapons/lanterns.lua",
-   "order": 4359,
+   "order": 4363,
    "img": "img/skull_lantern_tier_90.png",
    "imgPage": "File:Skull lantern (tier 90) detail.png"
   },
@@ -113299,7 +113427,7 @@
    },
    "collection": "Weapons: Siphons",
    "file": "deck/items/weapons/siphons.lua",
-   "order": 4360,
+   "order": 4364,
    "img": "img/promethium_guard.png",
    "imgPage": "File:Promethium guard detail.png"
   },
@@ -113328,7 +113456,7 @@
    },
    "collection": "Weapons: Siphons",
    "file": "deck/items/weapons/siphons.lua",
-   "order": 4361,
+   "order": 4365,
    "img": "img/entropic_guard.png",
    "imgPage": "File:Entropic guard detail.png"
   },
@@ -113357,7 +113485,7 @@
    },
    "collection": "Weapons: Siphons",
    "file": "deck/items/weapons/siphons.lua",
-   "order": 4362,
+   "order": 4366,
    "img": "img/ruinous_guard.png",
    "imgPage": "File:Ruinous guard detail.png"
   },
@@ -113383,7 +113511,7 @@
    },
    "collection": "Weapons: Siphons",
    "file": "deck/items/weapons/siphons.lua",
-   "order": 4363,
+   "order": 4367,
    "img": "img/death_guard_tier_90.png",
    "imgPage": "File:Death guard (tier 90) detail.png"
   },
@@ -113413,7 +113541,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4364,
+   "order": 4368,
    "img": "img/elite_seasinger_makigai.png",
    "imgPage": "File:Elite seasinger makigai detail.png"
   },
@@ -113441,7 +113569,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4365,
+   "order": 4369,
    "img": "img/imperium_core.png",
    "imgPage": "File:Imperium core detail.png"
   },
@@ -113471,7 +113599,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4366,
+   "order": 4370,
    "img": "img/seasinger_makigai.png",
    "imgPage": "File:Seasinger makigai detail.png"
   },
@@ -113499,7 +113627,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4367,
+   "order": 4371,
    "img": "img/orb_of_the_cywir_elders.png",
    "imgPage": "File:Orb of the Cywir elders detail.png"
   },
@@ -113529,7 +113657,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4368,
+   "order": 4372,
    "img": "img/attuned_crystal_orb.png",
    "imgPage": "File:Attuned crystal orb detail.png"
   },
@@ -113558,7 +113686,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4369,
+   "order": 4373,
    "img": "img/celestial_catalytic_orb.png",
    "imgPage": "File:Celestial catalytic orb detail.png"
   },
@@ -113588,7 +113716,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4370,
+   "order": 4374,
    "img": "img/empowered_catalytic_orb.png",
    "imgPage": "File:Empowered catalytic orb detail.png"
   },
@@ -113618,7 +113746,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4371,
+   "order": 4375,
    "img": "img/spiritbloom_orb.png",
    "imgPage": "File:Spiritbloom orb detail.png"
   },
@@ -113647,7 +113775,7 @@
    },
    "collection": "Weapons: Defenders",
    "file": "deck/items/weapons/defenders.lua",
-   "order": 4372,
+   "order": 4376,
    "img": "img/kalphite_defender.png",
    "imgPage": "File:Kalphite defender detail.png"
   },
@@ -113676,7 +113804,7 @@
    },
    "collection": "Weapons: Defenders",
    "file": "deck/items/weapons/defenders.lua",
-   "order": 4373,
+   "order": 4377,
    "img": "img/kalphite_repriser.png",
    "imgPage": "File:Kalphite repriser detail.png"
   },
@@ -113706,7 +113834,7 @@
    },
    "collection": "Weapons: Defenders",
    "file": "deck/items/weapons/defenders.lua",
-   "order": 4374,
+   "order": 4378,
    "img": "img/kalphite_rebounder.png",
    "imgPage": "File:Kalphite rebounder detail.png"
   },
@@ -113735,7 +113863,7 @@
    },
    "collection": "Weapons: Mauls",
    "file": "deck/items/weapons/mauls.lua",
-   "order": 4375,
+   "order": 4379,
    "img": "img/primal_maul.png",
    "imgPage": "File:Primal maul detail.png"
   },
@@ -113765,7 +113893,7 @@
    },
    "collection": "Weapons: Mauls",
    "file": "deck/items/weapons/mauls.lua",
-   "order": 4376,
+   "order": 4380,
    "img": "img/promethium_maul.png",
    "imgPage": "File:Promethium maul detail.png"
   },
@@ -113794,7 +113922,7 @@
    },
    "collection": "Weapons: Mauls",
    "file": "deck/items/weapons/mauls.lua",
-   "order": 4377,
+   "order": 4381,
    "img": "img/ruinous_maul.png",
    "imgPage": "File:Ruinous maul detail.png"
   },
@@ -113824,7 +113952,7 @@
    },
    "collection": "Armours: Back",
    "file": "deck/items/armours/back.lua",
-   "order": 4378,
+   "order": 4382,
    "img": "img/artisans_cape.png",
    "imgPage": "File:Artisan's cape detail.png"
   },
@@ -113853,7 +113981,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4379,
+   "order": 4383,
    "img": "img/refined_anima_core_helm_of_zaros.png",
    "imgPage": "File:Refined anima core helm of Zaros detail.png"
   },
@@ -113881,7 +114009,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4380,
+   "order": 4384,
    "img": "img/statiuss_full_helm.png",
    "imgPage": "File:Statius's full helm detail.png"
   },
@@ -113909,7 +114037,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4381,
+   "order": 4385,
    "img": "img/achto_teralith_helmet.png",
    "imgPage": "File:Achto Teralith helmet detail.png"
   },
@@ -113937,7 +114065,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4382,
+   "order": 4386,
    "img": "img/anima_core_helm_of_zaros.png",
    "imgPage": "File:Anima core helm of Zaros detail.png"
   },
@@ -113963,7 +114091,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4383,
+   "order": 4387,
    "img": "img/elder_rune_full_helm.png",
    "imgPage": "File:Elder rune full helm detail.png"
   },
@@ -113991,7 +114119,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4384,
+   "order": 4388,
    "img": "img/linzas_helm.png",
    "imgPage": "File:Linza's helm detail.png"
   },
@@ -114020,7 +114148,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4385,
+   "order": 4389,
    "img": "img/malevolent_helm.png",
    "imgPage": "File:Malevolent helm detail.png"
   },
@@ -114046,7 +114174,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4386,
+   "order": 4390,
    "img": "img/masterwork_melee_helm.png",
    "imgPage": "File:Masterwork melee helm detail.png"
   },
@@ -114072,7 +114200,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4387,
+   "order": 4391,
    "img": "img/primal_full_helm.png",
    "imgPage": "File:Primal full helm detail.png"
   },
@@ -114101,7 +114229,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4388,
+   "order": 4392,
    "img": "img/primal_full_helm_dungeoneering.png",
    "imgPage": "File:Primal full helm (Dungeoneering) detail.png"
   },
@@ -114131,7 +114259,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4389,
+   "order": 4393,
    "img": "img/promethium_full_helm.png",
    "imgPage": "File:Promethium full helm detail.png"
   },
@@ -114157,7 +114285,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4390,
+   "order": 4394,
    "img": "img/superior_tetsu_helm.png",
    "imgPage": "File:Superior tetsu helm.png"
   },
@@ -114185,7 +114313,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4391,
+   "order": 4395,
    "img": "img/teralith_helmet.png",
    "imgPage": "File:Teralith helmet detail.png"
   },
@@ -114211,7 +114339,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4392,
+   "order": 4396,
    "img": "img/tetsu_helm.png",
    "imgPage": "File:Tetsu helm detail.png"
   },
@@ -114237,7 +114365,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4393,
+   "order": 4397,
    "img": "img/torva_full_helm.png",
    "imgPage": "File:Torva full helm detail.png"
   },
@@ -114262,7 +114390,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4394,
+   "order": 4398,
    "img": "img/morrigans_coif.png",
    "imgPage": "File:Morrigan's coif detail.png"
   },
@@ -114291,7 +114419,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4395,
+   "order": 4399,
    "img": "img/dracolich_coif.png",
    "imgPage": "File:Dracolich coif detail.png"
   },
@@ -114321,7 +114449,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4396,
+   "order": 4400,
    "img": "img/sagittarian_coif.png",
    "imgPage": "File:Sagittarian coif detail.png"
   },
@@ -114352,7 +114480,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4397,
+   "order": 4401,
    "img": "img/tyrannoleather_coif.png",
    "imgPage": "File:Tyrannoleather coif detail.png"
   },
@@ -114381,7 +114509,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4398,
+   "order": 4402,
    "img": "img/refined_anima_core_helm_of_zamorak.png",
    "imgPage": "File:Refined anima core helm of Zamorak detail.png"
   },
@@ -114409,7 +114537,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4399,
+   "order": 4403,
    "img": "img/achto_tempest_cowl.png",
    "imgPage": "File:Achto Tempest cowl detail.png"
   },
@@ -114437,7 +114565,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4400,
+   "order": 4404,
    "img": "img/anima_core_helm_of_zamorak.png",
    "imgPage": "File:Anima core helm of Zamorak detail.png"
   },
@@ -114465,7 +114593,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4401,
+   "order": 4405,
    "img": "img/tempest_cowl.png",
    "imgPage": "File:Tempest cowl detail.png"
   },
@@ -114494,7 +114622,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4402,
+   "order": 4406,
    "img": "img/apex_hide_cowl.png",
    "imgPage": "File:Apex hide cowl detail.png"
   },
@@ -114520,7 +114648,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4403,
+   "order": 4407,
    "img": "img/death_lotus_hood.png",
    "imgPage": "File:Death Lotus hood detail.png"
   },
@@ -114549,7 +114677,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4404,
+   "order": 4408,
    "img": "img/dinosaurhide_cowl.png",
    "imgPage": "File:Dinosaurhide cowl detail.png"
   },
@@ -114578,7 +114706,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4405,
+   "order": 4409,
    "img": "img/pernix_cowl.png",
    "imgPage": "File:Pernix cowl detail.png"
   },
@@ -114604,7 +114732,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4406,
+   "order": 4410,
    "img": "img/sirenic_mask.png",
    "imgPage": "File:Sirenic mask detail.png"
   },
@@ -114630,7 +114758,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4407,
+   "order": 4411,
    "img": "img/superior_death_lotus_hood.png",
    "imgPage": "File:Superior Death Lotus hood detail.png"
   },
@@ -114660,7 +114788,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4408,
+   "order": 4412,
    "img": "img/celestial_hood.png",
    "imgPage": "File:Celestial hood detail.png"
   },
@@ -114691,7 +114819,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4409,
+   "order": 4413,
    "img": "img/spiritbloom_hood.png",
    "imgPage": "File:Spiritbloom hood detail.png"
   },
@@ -114719,7 +114847,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4410,
+   "order": 4414,
    "img": "img/zuriels_hood.png",
    "imgPage": "File:Zuriel's hood detail.png"
   },
@@ -114748,7 +114876,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4411,
+   "order": 4415,
    "img": "img/refined_anima_core_helm_of_seren.png",
    "imgPage": "File:Refined anima core helm of Seren detail.png"
   },
@@ -114776,7 +114904,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4412,
+   "order": 4416,
    "img": "img/achto_primeval_mask.png",
    "imgPage": "File:Achto Primeval mask detail.png"
   },
@@ -114804,7 +114932,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4413,
+   "order": 4417,
    "img": "img/anima_core_helm_of_seren.png",
    "imgPage": "File:Anima core helm of Seren detail.png"
   },
@@ -114830,7 +114958,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4414,
+   "order": 4418,
    "img": "img/tectonic_mask.png",
    "imgPage": "File:Tectonic mask detail.png"
   },
@@ -114859,7 +114987,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4415,
+   "order": 4419,
    "img": "img/virtus_mask.png",
    "imgPage": "File:Virtus mask detail.png"
   },
@@ -114888,7 +115016,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4416,
+   "order": 4420,
    "img": "img/infinity_hat.png",
    "imgPage": "File:Infinity hat detail.png"
   },
@@ -114914,7 +115042,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4417,
+   "order": 4421,
    "img": "img/masterwork_magic_hat.png",
    "imgPage": "File:Masterwork magic hat detail.png"
   },
@@ -114942,7 +115070,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4418,
+   "order": 4422,
    "img": "img/primeval_mask.png",
    "imgPage": "File:Primeval mask detail.png"
   },
@@ -114968,7 +115096,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4419,
+   "order": 4423,
    "img": "img/seasingers_hood.png",
    "imgPage": "File:Seasinger's hood detail.png"
   },
@@ -114994,7 +115122,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4420,
+   "order": 4424,
    "img": "img/starbloom_hat.png",
    "imgPage": "File:Starbloom hat detail.png"
   },
@@ -115020,7 +115148,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4421,
+   "order": 4425,
    "img": "img/superior_seasingers_hood.png",
    "imgPage": "File:Superior seasinger's hood detail.png"
   },
@@ -115050,7 +115178,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4422,
+   "order": 4426,
    "img": "img/deathdealer_hood_tier_90.png",
    "imgPage": "File:Deathdealer hood (tier 90) detail.png"
   },
@@ -115079,7 +115207,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4423,
+   "order": 4427,
    "img": "img/deathwarden_hood_tier_90.png",
    "imgPage": "File:Deathwarden hood (tier 90) detail.png"
   },
@@ -115110,7 +115238,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4424,
+   "order": 4428,
    "img": "img/deathbloom_hood.png",
    "imgPage": "File:Deathbloom hood detail.png"
   },
@@ -115140,7 +115268,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4425,
+   "order": 4429,
    "img": "img/entropic_hood.png",
    "imgPage": "File:Entropic hood detail.png"
   },
@@ -115169,7 +115297,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4426,
+   "order": 4430,
    "img": "img/crown_of_the_first_necromancer.png",
    "imgPage": "File:Crown of the First Necromancer detail.png"
   },
@@ -115197,7 +115325,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4427,
+   "order": 4431,
    "img": "img/seers_headband_4.png",
    "imgPage": "File:Seer's headband 4 detail.png"
   },
@@ -115222,7 +115350,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4428,
+   "order": 4432,
    "img": "img/attuned_crystal_helm.png",
    "imgPage": "File:Attuned crystal helm detail.png"
   },
@@ -115250,7 +115378,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4429,
+   "order": 4433,
    "img": "img/dragon_rider_helm.png",
    "imgPage": "File:Dragon Rider helm detail.png"
   },
@@ -115279,7 +115407,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4430,
+   "order": 4434,
    "img": "img/gemstone_helm.png",
    "imgPage": "File:Gemstone helm detail.png"
   },
@@ -115308,7 +115436,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4431,
+   "order": 4435,
    "img": "img/profound_decorative_helm.png",
    "imgPage": "File:Profound decorative helm detail.png"
   },
@@ -115337,7 +115465,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4432,
+   "order": 4436,
    "img": "img/refined_anima_core_helm_of_sliske.png",
    "imgPage": "File:Refined anima core helm of Sliske detail.png"
   },
@@ -115365,7 +115493,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4433,
+   "order": 4437,
    "img": "img/anima_core_helm_of_sliske.png",
    "imgPage": "File:Anima core helm of Sliske detail.png"
   },
@@ -115388,7 +115516,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4434,
+   "order": 4438,
    "img": "img/royal_sceptre.png",
    "imgPage": "File:Royal sceptre detail.png"
   },
@@ -115418,7 +115546,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4435,
+   "order": 4439,
    "img": "img/archglacor.png",
    "imgPage": "File:Arch-Glacor.png"
   },
@@ -115446,7 +115574,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4436,
+   "order": 4440,
    "img": "img/brassica_prime.png",
    "imgPage": "File:Brassica Prime.png"
   },
@@ -115473,7 +115601,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4437,
+   "order": 4441,
    "img": "img/croesus.png",
    "imgPage": "File:Croesus.png"
   },
@@ -115501,7 +115629,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4438,
+   "order": 4442,
    "img": "img/kerapac_the_bound.png",
    "imgPage": "File:Kerapac, the bound.png"
   },
@@ -115528,7 +115656,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4439,
+   "order": 4443,
    "img": "img/kezalam_the_wanderer.png",
    "imgPage": "File:Kezalam, the Wanderer.png"
   },
@@ -115556,7 +115684,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4440,
+   "order": 4444,
    "img": "img/nakatra_devourer_eternal.png",
    "imgPage": "File:Nakatra, Devourer Eternal.png"
   },
@@ -115586,7 +115714,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4441,
+   "order": 4445,
    "img": "img/nomad.png",
    "imgPage": "File:Nomad.png"
   },
@@ -115618,7 +115746,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4442,
+   "order": 4446,
    "img": "img/rasial_the_first_necromancer.png",
    "imgPage": "File:Rasial, the First Necromancer.png"
   },
@@ -115646,7 +115774,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4443,
+   "order": 4447,
    "img": "img/richie.png",
    "imgPage": "File:Richie (NPC).png"
   },
@@ -115676,7 +115804,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4444,
+   "order": 4448,
    "img": "img/tzkalzuk.png",
    "imgPage": "File:TzKal-Zuk.png"
   },
@@ -115705,7 +115833,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4445,
+   "order": 4449,
    "img": "img/tzekhaaraken.png",
    "imgPage": "File:TzekHaar-Aken.png"
   },
@@ -115734,7 +115862,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4446,
+   "order": 4450,
    "img": "img/tzekhaarjad.png",
    "imgPage": "File:TzekHaar-Jad.png"
   },
@@ -115762,7 +115890,7 @@
    },
    "collection": "NPCs: Misthalin",
    "file": "deck/npcs/misthalin.lua",
-   "order": 4447,
+   "order": 4451,
    "img": "img/zamorak_lord_of_chaos.png",
    "imgPage": "File:Zamorak, Lord of Chaos.png"
   },
@@ -115789,7 +115917,7 @@
    },
    "collection": "NPCs: Kandarin",
    "file": "deck/npcs/kandarin.lua",
-   "order": 4448,
+   "order": 4452,
    "img": "img/zaros.png",
    "imgPage": "File:Zaros (Sliske's Endgame).png"
   },
@@ -115816,7 +115944,7 @@
    },
    "collection": "NPCs: Kharidian Desert",
    "file": "deck/npcs/kharidian_desert.lua",
-   "order": 4449,
+   "order": 4453,
    "img": "img/amascut.png",
    "imgPage": "File:Amascut (Eclipse of the Heart).png"
   },
@@ -115842,7 +115970,7 @@
    },
    "collection": "NPCs: Kharidian Desert",
    "file": "deck/npcs/kharidian_desert.lua",
-   "order": 4450,
+   "order": 4454,
    "img": "img/gorvek.png",
    "imgPage": "File:Gorvek.png"
   },
@@ -115871,7 +115999,7 @@
    },
    "collection": "NPCs: Kharidian Desert",
    "file": "deck/npcs/kharidian_desert.lua",
-   "order": 4451,
+   "order": 4455,
    "img": "img/nymora_the_vengeful.png",
    "imgPage": "File:Nymora, the Vengeful.png"
   },
@@ -115893,7 +116021,7 @@
    },
    "collection": "NPCs: Wilderness",
    "file": "deck/npcs/wilderness.lua",
-   "order": 4452,
+   "order": 4456,
    "img": "img/king_dragon.png",
    "imgPage": "File:King Black Dragon.png"
   },
@@ -115917,7 +116045,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4453,
+   "order": 4457,
    "img": "img/ace.png",
    "imgPage": "File:Ace (pet).png"
   },
@@ -115941,7 +116069,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4454,
+   "order": 4458,
    "img": "img/gemi.png",
    "imgPage": "File:Gemi (pet).png"
   },
@@ -115965,7 +116093,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4455,
+   "order": 4459,
    "img": "img/rocky.png",
    "imgPage": "File:Rocky (pet).png"
   },
@@ -115989,7 +116117,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4456,
+   "order": 4460,
    "img": "img/smithy.png",
    "imgPage": "File:Smithy (pet).png"
   },
@@ -116013,7 +116141,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4457,
+   "order": 4461,
    "img": "img/sifu.png",
    "imgPage": "File:Sifu (pet).png"
   },
@@ -116037,7 +116165,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4458,
+   "order": 4462,
    "img": "img/rue.png",
    "imgPage": "File:Rue (pet).png"
   },
@@ -116061,7 +116189,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4459,
+   "order": 4463,
    "img": "img/ramsay.png",
    "imgPage": "File:Ramsay (pet).png"
   },
@@ -116085,7 +116213,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4460,
+   "order": 4464,
    "img": "img/ghostly.png",
    "imgPage": "File:Ghostly (pet).png"
   },
@@ -116109,7 +116237,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4461,
+   "order": 4465,
    "img": "img/shamini.png",
    "imgPage": "File:Shamini (pet).png"
   },
@@ -116133,7 +116261,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4462,
+   "order": 4466,
    "img": "img/archie.png",
    "imgPage": "File:Archie (pet).png"
   },
@@ -116156,7 +116284,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4463,
+   "order": 4467,
    "img": "img/baby_yagas_house.png",
    "imgPage": "File:Baby Yaga's House (pet).png"
   },
@@ -116179,7 +116307,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4464,
+   "order": 4468,
    "img": "img/bernie.png",
    "imgPage": "File:Bernie (pet).png"
   },
@@ -116203,7 +116331,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4465,
+   "order": 4469,
    "img": "img/brains.png",
    "imgPage": "File:Brains (pet).png"
   },
@@ -116227,7 +116355,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4466,
+   "order": 4470,
    "img": "img/bubbles.png",
    "imgPage": "File:Bubbles (pet).png"
   },
@@ -116251,7 +116379,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4467,
+   "order": 4471,
    "img": "img/crabbe.png",
    "imgPage": "File:Crabbe (pet).png"
   },
@@ -116274,7 +116402,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4468,
+   "order": 4472,
    "img": "img/flo.png",
    "imgPage": "File:Flo (pet).png"
   },
@@ -116298,7 +116426,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4469,
+   "order": 4473,
    "img": "img/gordie.png",
    "imgPage": "File:Gordie (pet).png"
   },
@@ -116322,7 +116450,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4470,
+   "order": 4474,
    "img": "img/herbert.png",
    "imgPage": "File:Herbert (pet).png"
   },
@@ -116346,7 +116474,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4471,
+   "order": 4475,
    "img": "img/kangali.png",
    "imgPage": "File:Kangali (pet).png"
   },
@@ -116370,7 +116498,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4472,
+   "order": 4476,
    "img": "img/malcolm.png",
    "imgPage": "File:Malcolm (pet).png"
   },
@@ -116394,7 +116522,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4473,
+   "order": 4477,
    "img": "img/morty.png",
    "imgPage": "File:Morty (pet).png"
   },
@@ -116418,7 +116546,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4474,
+   "order": 4478,
    "img": "img/newton.png",
    "imgPage": "File:Newton (pet).png"
   },
@@ -116442,7 +116570,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4475,
+   "order": 4479,
    "img": "img/omen.png",
    "imgPage": "File:Omen (pet).png"
   },
@@ -116466,7 +116594,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4476,
+   "order": 4480,
    "img": "img/ralph.png",
    "imgPage": "File:Ralph (pet).png"
   },
@@ -116490,7 +116618,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4477,
+   "order": 4481,
    "img": "img/sparky.png",
    "imgPage": "File:Sparky (pet).png"
   },
@@ -116514,7 +116642,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4478,
+   "order": 4482,
    "img": "img/wallace.png",
    "imgPage": "File:Wallace (pet).png"
   },
@@ -116538,7 +116666,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4479,
+   "order": 4483,
    "img": "img/willow.png",
    "imgPage": "File:Willow (pet).png"
   },
@@ -116561,7 +116689,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4480,
+   "order": 4484,
    "img": "img/woody.png",
    "imgPage": "File:Woody (pet).png"
   },
@@ -116585,7 +116713,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4481,
+   "order": 4485,
    "img": "img/dojo_mojo.png",
    "imgPage": "File:Dojo Mojo (pet).png"
   },
@@ -116609,7 +116737,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4482,
+   "order": 4486,
    "img": "img/golden_gnome.png",
    "imgPage": "File:Golden gnome pet.png"
   },
@@ -116633,7 +116761,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4483,
+   "order": 4487,
    "img": "img/azzanadra.png",
    "imgPage": "File:Azzanadra (Hardmode).png"
   },
@@ -116658,7 +116786,7 @@
    },
    "collection": "NPCs: General",
    "file": "deck/npcs/general.lua",
-   "order": 4484,
+   "order": 4488,
    "img": "img/armadyl.png",
    "imgPage": "File:Armadyl.png"
   },
@@ -116678,7 +116806,7 @@
    },
    "collection": "Items: General",
    "file": "deck/items/general.lua",
-   "order": 4485,
+   "order": 4489,
    "img": "img/half_full_wine_jug.png",
    "imgPage": "File:Half full wine jug detail.png"
   },
@@ -116695,7 +116823,7 @@
    },
    "collection": "Items: General",
    "file": "deck/items/general.lua",
-   "order": 4486,
+   "order": 4490,
    "img": "img/mod_hat.png",
    "imgPage": "File:Mod hat detail.png"
   },
@@ -116717,7 +116845,7 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 4487,
+   "order": 4491,
    "img": "img/pumpkin.png",
    "imgPage": "File:Pumpkin detail.png"
   },
@@ -116740,7 +116868,7 @@
    },
    "collection": "Items: Decoration",
    "file": "deck/items/decoration.lua",
-   "order": 4488,
+   "order": 4492,
    "img": "img/big_shark.png",
    "imgPage": "File:Big shark detail.png"
   },
@@ -116763,7 +116891,7 @@
    },
    "collection": "Items: Decoration",
    "file": "deck/items/decoration.lua",
-   "order": 4489,
+   "order": 4493,
    "img": "img/big_swordfish.png",
    "imgPage": "File:Big swordfish detail.png"
   },
@@ -116788,7 +116916,7 @@
    },
    "collection": "Processed Materials: Gems",
    "file": "deck/items/processed_materials/gems.lua",
-   "order": 4490,
+   "order": 4494,
    "img": "img/alchemical_hydrix.png",
    "imgPage": "File:Alchemical hydrix detail.png"
   },
@@ -116808,7 +116936,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4491,
+   "order": 4495,
    "img": "img/hawthorns_hatchet.png",
    "imgPage": "File:Hawthorn's hatchet detail.png"
   },
@@ -116828,7 +116956,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4492,
+   "order": 4496,
    "img": "img/tavias_fishing_rod.png",
    "imgPage": "File:Tavia's fishing rod detail.png"
   },
@@ -116851,7 +116979,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4493,
+   "order": 4497,
    "img": "img/guildmaster_tonys_mattock.png",
    "imgPage": "File:Guildmaster Tony's mattock detail.png"
   },
@@ -116874,7 +117002,7 @@
    },
    "collection": "Items: Containers",
    "file": "deck/items/containers.lua",
-   "order": 4494,
+   "order": 4498,
    "img": "img/blessed_flask.png",
    "imgPage": "File:Blessed flask detail.png"
   },
@@ -116900,7 +117028,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4495,
+   "order": 4499,
    "img": "img/secondage_sword.png",
    "imgPage": "File:Second-Age sword detail.png"
   },
@@ -116926,7 +117054,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4496,
+   "order": 4500,
    "img": "img/secondage_bow.png",
    "imgPage": "File:Second-Age bow detail.png"
   },
@@ -116952,7 +117080,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4497,
+   "order": 4501,
    "img": "img/secondage_staff.png",
    "imgPage": "File:Second-Age staff detail.png"
   },
@@ -116978,7 +117106,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4498,
+   "order": 4502,
    "img": "img/third_age_druidic_staff.png",
    "imgPage": "File:Third age druidic staff detail.png"
   },
@@ -117004,7 +117132,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4499,
+   "order": 4503,
    "img": "img/secondage_full_helm.png",
    "imgPage": "File:Second-Age full helm detail.png"
   },
@@ -117030,7 +117158,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4500,
+   "order": 4504,
    "img": "img/third_age_full_helmet.png",
    "imgPage": "File:Third age full helmet detail.png"
   },
@@ -117056,7 +117184,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4501,
+   "order": 4505,
    "img": "img/secondage_range_coif.png",
    "imgPage": "File:Second-Age range coif detail.png"
   },
@@ -117083,7 +117211,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4502,
+   "order": 4506,
    "img": "img/third_age_ranger_coif.png",
    "imgPage": "File:Third age ranger coif detail.png"
   },
@@ -117109,7 +117237,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4503,
+   "order": 4507,
    "img": "img/secondage_mage_mask.png",
    "imgPage": "File:Second-Age mage mask detail.png"
   },
@@ -117136,7 +117264,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4504,
+   "order": 4508,
    "img": "img/third_age_druidic_wreath.png",
    "imgPage": "File:Third age druidic wreath detail.png"
   },
@@ -117163,7 +117291,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4505,
+   "order": 4509,
    "img": "img/third_age_mage_hat.png",
    "imgPage": "File:Third age mage hat detail.png"
   },
@@ -117183,7 +117311,7 @@
    },
    "collection": "Items: Novelties",
    "file": "deck/items/novelties.lua",
-   "order": 4506,
+   "order": 4510,
    "img": "img/rubber_chicken.png",
    "imgPage": "File:Rubber chicken detail.png"
   },
@@ -117213,7 +117341,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4507,
+   "order": 4511,
    "img": "img/dark_sliver_of_leng.png",
    "imgPage": "File:Dark Sliver of Leng detail.png"
   },
@@ -117238,7 +117366,7 @@
    },
    "collection": "Weapons: Daggers",
    "file": "deck/items/weapons/daggers.lua",
-   "order": 4508,
+   "order": 4512,
    "img": "img/varanuss_mercy.png",
    "imgPage": "File:Varanus's Mercy detail.png"
   },
@@ -117268,7 +117396,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4509,
+   "order": 4513,
    "img": "img/dark_shard_of_leng.png",
    "imgPage": "File:Dark Shard of Leng detail.png"
   },
@@ -117296,7 +117424,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4510,
+   "order": 4514,
    "img": "img/superior_vestas_longsword.png",
    "imgPage": "File:Superior Vesta's longsword detail.png"
   },
@@ -117325,7 +117453,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4511,
+   "order": 4515,
    "img": "img/khopesh_of_elidinis.png",
    "imgPage": "File:Khopesh of Elidinis detail.png"
   },
@@ -117354,7 +117482,7 @@
    },
    "collection": "Weapons: Swords",
    "file": "deck/items/weapons/swords.lua",
-   "order": 4512,
+   "order": 4516,
    "img": "img/khopesh_of_tumeken.png",
    "imgPage": "File:Khopesh of Tumeken detail.png"
   },
@@ -117384,7 +117512,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4513,
+   "order": 4517,
    "img": "img/ekzekkil.png",
    "imgPage": "File:Ek-ZekKil detail.png"
   },
@@ -117410,7 +117538,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4514,
+   "order": 4518,
    "img": "img/swordy_mcswordface.png",
    "imgPage": "File:Swordy McSwordFace detail.png"
   },
@@ -117437,7 +117565,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4515,
+   "order": 4519,
    "img": "img/masterwork_2h_sword.png",
    "imgPage": "File:Masterwork 2h sword detail.png"
   },
@@ -117467,7 +117595,7 @@
    },
    "collection": "Weapons: Two Handed Swords",
    "file": "deck/items/weapons/two_handed_swords.lua",
-   "order": 4516,
+   "order": 4520,
    "img": "img/zaros_godsword.png",
    "imgPage": "File:Zaros godsword detail.png"
   },
@@ -117492,16 +117620,16 @@
    },
    "collection": "Weapons: Axes",
    "file": "deck/items/weapons/axes.lua",
-   "order": 4517,
+   "order": 4521,
    "img": "img/gud_raider_axe.png",
    "imgPage": "File:Gud raider axe detail.png"
   },
   {
-   "id": "statiuss_warhammer",
-   "name": "Statius's warhammer",
+   "id": "superior_statiuss_warhammer",
+   "name": "Superior Statius's warhammer",
    "kind": "item",
    "rarity": "legendary",
-   "desc": "This item degrades in combat, and will turn to dust.",
+   "desc": "Improved Ancient Warrior equipment from the Forinthry Dungeon.",
    "tags": {
     "regions": [
      "wilderness"
@@ -117520,37 +117648,9 @@
    },
    "collection": "Weapons: Maces",
    "file": "deck/items/weapons/maces.lua",
-   "order": 4518,
-   "img": "img/statiuss_warhammer.png",
-   "imgPage": "File:Statius's warhammer detail.png"
-  },
-  {
-   "id": "statiuss_warhammer_2",
-   "name": "Statius's warhammer",
-   "kind": "item",
-   "rarity": "legendary",
-   "desc": "This item degrades in combat, and will turn to dust.",
-   "tags": {
-    "regions": [
-     "wilderness"
-    ],
-    "skills": [
-     "attack"
-    ],
-    "category": [
-     "weapon",
-     "melee_gear",
-     "mace"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Weapons: Maces",
-   "file": "deck/items/weapons/maces.lua",
-   "order": 4519,
-   "img": "img/statiuss_warhammer_2.png",
-   "imgPage": "File:Statius's warhammer detail.png"
+   "order": 4522,
+   "img": "img/superior_statiuss_warhammer.png",
+   "imgPage": "File:Superior Statius's warhammer detail.png"
   },
   {
    "id": "superior_vestas_spear",
@@ -117576,7 +117676,7 @@
    },
    "collection": "Weapons: Spears",
    "file": "deck/items/weapons/spears.lua",
-   "order": 4520,
+   "order": 4523,
    "img": "img/superior_vestas_spear.png",
    "imgPage": "File:Superior Vesta's spear detail.png"
   },
@@ -117602,7 +117702,7 @@
    },
    "collection": "Weapons: Spears",
    "file": "deck/items/weapons/spears.lua",
-   "order": 4521,
+   "order": 4524,
    "img": "img/masterwork_spear_of_annihilation.png",
    "imgPage": "File:Masterwork Spear of Annihilation detail.png"
   },
@@ -117631,7 +117731,7 @@
    },
    "collection": "Weapons: Halberds",
    "file": "deck/items/weapons/halberds.lua",
-   "order": 4522,
+   "order": 4525,
    "img": "img/noxious_scythe.png",
    "imgPage": "File:Noxious scythe detail.png"
   },
@@ -117656,7 +117756,7 @@
    },
    "collection": "Weapons: Halberds",
    "file": "deck/items/weapons/halberds.lua",
-   "order": 4523,
+   "order": 4526,
    "img": "img/tumekens_light.png",
    "imgPage": "File:Tumeken's Light detail.png"
   },
@@ -117684,7 +117784,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4524,
+   "order": 4527,
    "img": "img/hexhunter_bow.png",
    "imgPage": "File:Hexhunter bow detail.png"
   },
@@ -117710,7 +117810,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4525,
+   "order": 4528,
    "img": "img/masterwork_bow.png",
    "imgPage": "File:Masterwork bow detail.png"
   },
@@ -117739,7 +117839,7 @@
    },
    "collection": "Weapons: Shortbows",
    "file": "deck/items/weapons/shortbows.lua",
-   "order": 4526,
+   "order": 4529,
    "img": "img/seren_godbow.png",
    "imgPage": "File:Seren godbow detail.png"
   },
@@ -117765,7 +117865,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4527,
+   "order": 4530,
    "img": "img/bow_of_the_last_guardian.png",
    "imgPage": "File:Bow of the Last Guardian detail.png"
   },
@@ -117793,7 +117893,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4528,
+   "order": 4531,
    "img": "img/gloomfire_bow.png",
    "imgPage": "File:Gloomfire bow detail.png"
   },
@@ -117822,7 +117922,7 @@
    },
    "collection": "Weapons: Longbows",
    "file": "deck/items/weapons/longbows.lua",
-   "order": 4529,
+   "order": 4532,
    "img": "img/noxious_longbow.png",
    "imgPage": "File:Noxious longbow detail.png"
   },
@@ -117851,7 +117951,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4530,
+   "order": 4533,
    "img": "img/eldritch_crossbow.png",
    "imgPage": "File:Eldritch crossbow detail.png"
   },
@@ -117879,7 +117979,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4531,
+   "order": 4534,
    "img": "img/malachis_claw.png",
    "imgPage": "File:Malachi's claw detail.png"
   },
@@ -117907,7 +118007,7 @@
    },
    "collection": "Weapons: Crossbows",
    "file": "deck/items/weapons/crossbows.lua",
-   "order": 4532,
+   "order": 4535,
    "img": "img/malachis_tooth.png",
    "imgPage": "File:Malachi's tooth detail.png"
   },
@@ -117935,7 +118035,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4533,
+   "order": 4536,
    "img": "img/superior_morrigans_javelin.png",
    "imgPage": "File:Superior Morrigan's javelin detail.png"
   },
@@ -117963,7 +118063,7 @@
    },
    "collection": "Weapons: Thrown",
    "file": "deck/items/weapons/thrown.lua",
-   "order": 4534,
+   "order": 4537,
    "img": "img/superior_morrigans_throwing_axe.png",
    "imgPage": "File:Superior Morrigan's throwing axe detail.png"
   },
@@ -117989,7 +118089,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4535,
+   "order": 4538,
    "img": "img/armadyl_battlestaff.png",
    "imgPage": "File:Armadyl battlestaff detail.png"
   },
@@ -118018,7 +118118,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4536,
+   "order": 4539,
    "img": "img/fractured_staff_of_armadyl.png",
    "imgPage": "File:Fractured Staff of Armadyl detail.png"
   },
@@ -118044,7 +118144,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4537,
+   "order": 4540,
    "img": "img/masterwork_staff.png",
    "imgPage": "File:Masterwork staff detail.png"
   },
@@ -118073,7 +118173,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4538,
+   "order": 4541,
    "img": "img/noxious_staff.png",
    "imgPage": "File:Noxious staff detail.png"
   },
@@ -118102,7 +118202,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4539,
+   "order": 4542,
    "img": "img/staff_of_sliske.png",
    "imgPage": "File:Staff of Sliske detail.png"
   },
@@ -118130,7 +118230,7 @@
    },
    "collection": "Weapons: Staffs",
    "file": "deck/items/weapons/staffs.lua",
-   "order": 4540,
+   "order": 4543,
    "img": "img/superior_zuriels_staff.png",
    "imgPage": "File:Superior Zuriel's staff detail.png"
   },
@@ -118158,7 +118258,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4541,
+   "order": 4544,
    "img": "img/roar_of_awakening.png",
    "imgPage": "File:Roar of Awakening detail.png"
   },
@@ -118186,7 +118286,7 @@
    },
    "collection": "Weapons: Wands",
    "file": "deck/items/weapons/wands.lua",
-   "order": 4542,
+   "order": 4545,
    "img": "img/seismic_wand.png",
    "imgPage": "File:Seismic wand detail.png"
   },
@@ -118214,7 +118314,7 @@
    },
    "collection": "Weapons: Lanterns",
    "file": "deck/items/weapons/lanterns.lua",
-   "order": 4543,
+   "order": 4546,
    "img": "img/soulbound_lantern.png",
    "imgPage": "File:Soulbound lantern detail.png"
   },
@@ -118242,7 +118342,7 @@
    },
    "collection": "Weapons: Siphons",
    "file": "deck/items/weapons/siphons.lua",
-   "order": 4544,
+   "order": 4547,
    "img": "img/devourers_guard.png",
    "imgPage": "File:Devourer's Guard detail.png"
   },
@@ -118270,7 +118370,7 @@
    },
    "collection": "Weapons: Siphons",
    "file": "deck/items/weapons/siphons.lua",
-   "order": 4545,
+   "order": 4548,
    "img": "img/omni_guard.png",
    "imgPage": "File:Omni guard detail.png"
   },
@@ -118298,7 +118398,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4546,
+   "order": 4549,
    "img": "img/ode_to_deceit.png",
    "imgPage": "File:Ode to Deceit detail.png"
   },
@@ -118326,7 +118426,7 @@
    },
    "collection": "Weapons: Orbs",
    "file": "deck/items/weapons/orbs.lua",
-   "order": 4547,
+   "order": 4550,
    "img": "img/seismic_singularity.png",
    "imgPage": "File:Seismic singularity detail.png"
   },
@@ -118353,7 +118453,7 @@
    },
    "collection": "Weapons: Mauls",
    "file": "deck/items/weapons/mauls.lua",
-   "order": 4548,
+   "order": 4551,
    "img": "img/terrasaur_maul.png",
    "imgPage": "File:Terrasaur maul detail.png"
   },
@@ -118381,7 +118481,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4549,
+   "order": 4552,
    "img": "img/superior_statiuss_full_helm.png",
    "imgPage": "File:Superior Statius's full helm detail.png"
   },
@@ -118406,7 +118506,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4550,
+   "order": 4553,
    "img": "img/cft_masterwork_melee_helm.png",
    "imgPage": "File:Custom-fit trimmed masterwork melee helm detail.png"
   },
@@ -118431,7 +118531,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4551,
+   "order": 4554,
    "img": "img/customfit_trimmed_spiked_masterwork_mel.png",
    "imgPage": "File:Custom-fit trimmed spiked masterwork melee helm detail.png"
   },
@@ -118457,7 +118557,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4552,
+   "order": 4555,
    "img": "img/trimmed_masterwork_melee_helm.png",
    "imgPage": "File:Trimmed masterwork melee helm detail.png"
   },
@@ -118485,7 +118585,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4553,
+   "order": 4556,
    "img": "img/vestments_of_havoc_hood.png",
    "imgPage": "File:Vestments of havoc hood detail.png"
   },
@@ -118513,7 +118613,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4554,
+   "order": 4557,
    "img": "img/superior_morrigans_coif.png",
    "imgPage": "File:Superior Morrigan's coif detail.png"
   },
@@ -118542,7 +118642,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4555,
+   "order": 4558,
    "img": "img/elite_dracolich_coif.png",
    "imgPage": "File:Elite Dracolich coif detail.png"
   },
@@ -118568,7 +118668,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4556,
+   "order": 4559,
    "img": "img/elite_sirenic_mask.png",
    "imgPage": "File:Elite sirenic mask detail.png"
   },
@@ -118594,7 +118694,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4557,
+   "order": 4560,
    "img": "img/masterwork_ranged_cowl.png",
    "imgPage": "File:Masterwork ranged cowl detail.png"
   },
@@ -118619,7 +118719,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4558,
+   "order": 4561,
    "img": "img/cf_masterwork_ranged_cowl.png",
    "imgPage": "File:Custom-fit masterwork ranged cowl detail.png"
   },
@@ -118647,7 +118747,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4559,
+   "order": 4562,
    "img": "img/superior_zuriels_hood.png",
    "imgPage": "File:Superior Zuriel's hood detail.png"
   },
@@ -118672,7 +118772,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4560,
+   "order": 4563,
    "img": "img/cf_masterwork_magic_hat.png",
    "imgPage": "File:Custom-fit masterwork magic hat detail.png"
   },
@@ -118698,7 +118798,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4561,
+   "order": 4564,
    "img": "img/elite_tectonic_mask.png",
    "imgPage": "File:Elite tectonic mask detail.png"
   },
@@ -118727,7 +118827,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4562,
+   "order": 4565,
    "img": "img/cryptbloom_helm.png",
    "imgPage": "File:Cryptbloom helm detail.png"
   },
@@ -118756,7 +118856,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4563,
+   "order": 4566,
    "img": "img/mask_of_tumekens_resplendence.png",
    "imgPage": "File:Mask of Tumeken's resplendence detail.png"
   },
@@ -118785,7 +118885,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4564,
+   "order": 4567,
    "img": "img/misalionars_death_mask.png",
    "imgPage": "File:Misalionar's death mask detail.png"
   },
@@ -118808,7 +118908,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4565,
+   "order": 4568,
    "img": "img/christmas_scythe.png",
    "imgPage": "File:Christmas scythe detail.png"
   },
@@ -118830,7 +118930,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4566,
+   "order": 4569,
    "img": "img/full_easter_basket.png",
    "imgPage": "File:Full Easter basket detail.png"
   },
@@ -118853,7 +118953,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4567,
+   "order": 4570,
    "img": "img/scythe.png",
    "imgPage": "File:Scythe detail.png"
   }
@@ -122585,13 +122685,13 @@
     "offhand_katagon_battleaxe",
     "honourable_kyzaj",
     "akrisaes_war_mace",
+    "corrupt_statiuss_warhammer",
     "superior_ancient_mace",
     "katagon_warhammer",
     "offhand_gorgonite_warhammer",
     "offhand_katagon_warhammer",
     "superior_dragon_mace",
     "superior_offhand_dragon_mace",
-    "superior_statiuss_warhammer",
     "veracs_flail",
     "linzas_hammer",
     "chaotic_spear",
@@ -122803,6 +122903,9 @@
     "lumberjack_hat",
     "master_runecrafter_hat",
     "witchdoctor_mask",
+    "sous_chefs_toque",
+    "farmers_hat",
+    "shamans_headdress",
     "king_roald",
     "crystal_impling",
     "curator_haig_halen",
@@ -123156,6 +123259,7 @@
     "offhand_promethium_battleaxe",
     "primal_battleaxe",
     "promethium_battleaxe",
+    "statiuss_warhammer",
     "drygore_mace",
     "offhand_drygore_mace",
     "offhand_promethium_warhammer",
@@ -123381,8 +123485,7 @@
     "masterwork_2h_sword",
     "zaros_godsword",
     "gud_raider_axe",
-    "statiuss_warhammer",
-    "statiuss_warhammer_2",
+    "superior_statiuss_warhammer",
     "superior_vestas_spear",
     "masterwork_spear_of_annihilation",
     "noxious_scythe",
@@ -125234,6 +125337,7 @@
     "gavel",
     "penance_master_trident",
     "fishing_hat",
+    "sous_chefs_toque",
     "hazeel",
     "hazelmere",
     "zanik",
@@ -125376,7 +125480,7 @@
     "wilderness_sword",
     "corrupt_dragon_scimitar",
     "corrupt_dragon_battleaxe",
-    "superior_statiuss_warhammer",
+    "corrupt_statiuss_warhammer",
     "corrupt_vestas_spear",
     "corrupt_dragon_spear",
     "lava_whip",
@@ -125395,6 +125499,7 @@
     "veilripper_ozharakha",
     "fury_shark",
     "vestas_longsword",
+    "statiuss_warhammer",
     "abyssal_scourge",
     "decimation",
     "hellfire_bow",
@@ -125406,8 +125511,7 @@
     "gemstone_helm",
     "king_dragon",
     "superior_vestas_longsword",
-    "statiuss_warhammer",
-    "statiuss_warhammer_2",
+    "superior_statiuss_warhammer",
     "superior_vestas_spear",
     "hexhunter_bow",
     "superior_morrigans_javelin",
@@ -125749,6 +125853,7 @@
     "uncooked_bog_n_hog_stew",
     "fenshell_knife",
     "mudborne_staff",
+    "shamans_headdress",
     "eternal_magic_logs",
     "petrified_logs",
     "raw_giant_chinchompa_meat",

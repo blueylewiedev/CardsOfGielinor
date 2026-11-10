@@ -98,7 +98,7 @@ each region's set has its own version.
 | | Boots | Not started |  |
 | | Off-hand | Not started |  |
 | | Back | Not started |  |
-| **Skill outfits** | Helmet | In Progress | Skill outfits and skill capes: `skill_outfit`, no combat style. Not carded yet: Sous chef's toque; Farmer's hat and Shaman's headdress are Treasure Hunter items |
+| **Skill outfits** | Helmet | Complete | Skill outfits and skill capes: `skill_outfit`, no combat style. All carded; Farmer's hat and Shaman's headdress are Treasure Hunter items now obtainable in game (the tool lets them through) |
 | | Body | Not started |  |
 | | Legs | Not started |  |
 | | Gloves | Not started |  |
