@@ -1022,7 +1022,7 @@ Set.cards = {
         tags = { regions = { "fremennik_province" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
-        id = "flamtaer_hood", name = "Flamtaer hood", kind = "item", rarity = "uncommon",
+        id = "flamtaer_hood", name = "Flamtaer hood", kind = "item", rarity = "rare",
         desc = "A hood worn by twisted necromancers.",
         art = { item = "HLR4M_NECROMANCER_HOOD", cam = { yaw = -6.11, pitch = 1.33, dist = 205, ty = -6, tx = 4 } },
         tags = { regions = { "morytania" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },

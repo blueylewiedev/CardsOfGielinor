@@ -583,5 +583,9 @@
   "flamtaer_robe_top": {
     "rarity": "rare",
     "why": "Rarity as reviewed by the owner (body slot magic batch, 2026-11-10); the rules' answer was uncommon"
+  },
+  "flamtaer_hood": {
+    "rarity": "rare",
+    "why": "Rare as set by the owner (2026-11-10): it needs a rare item to make, like the Flamtaer robe top"
   }
 }
