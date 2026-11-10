@@ -401,7 +401,8 @@ ARMOUR_STYLES = WEAPON_STYLES + ("other",)       # (other: a class that is none 
 ARMOUR_SLOT_OF = {"head": "head", "body": "body", "torso": "body", "legs": "legs", "hands": "hands", "gloves": "hands",
                   "feet": "feet", "boots": "feet", "shield": "shield", "off-hand": "shield", "off hand": "shield",
                   "cape": "cape", "back": "cape"}
-ARMOUR_SKIP = re.compile(r"^(augmented|golden|lucky)\s|\((?:charged|e|bugged|broken|degraded|passive|dyed)\)\s*$"
+# (custom-fit masterwork pieces: the owner keeps only the plain and the trimmed masterwork piece)
+ARMOUR_SKIP = re.compile(r"^(augmented|golden|lucky)\s|^custom-fit .*masterwork|\((?:charged|e|bugged|broken|degraded|passive|dyed)\)\s*$"
                          r"|\((?:class \d|Stealing Creation|Dominion Tower)[^)]*\)\s*$", re.I)
 
 
@@ -1098,7 +1099,7 @@ SKIPPED_TREASURE_HUNTER = "a Treasure Hunter item (real-money only)"
 # Treasure Hunter has been removed from the game, and these were given other ways of being earned
 # (the wiki still files them under Treasure Hunter), so they are carded after all. Add a page's
 # title here when the owner says a Treasure Hunter item can now be obtained in game.
-TREASURE_HUNTER_NOW_IN_GAME = {"Farmer's hat", "Shaman's headdress"}
+TREASURE_HUNTER_NOW_IN_GAME = {"Farmer's hat", "Shaman's headdress", "Farmer's jacket", "Shaman's poncho"}
 
 
 def treasure_hunter_item(text, fields, categories=()):

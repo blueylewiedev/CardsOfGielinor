@@ -398,18 +398,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
     },
     {
-        id = "cft_masterwork_melee_helm", name = "CFT Masterwork melee helm", kind = "item", rarity = "legendary",
-        desc = "A masterful helmet, made by a master smith which has been custom-fitted.",
-        art = { item = "MASTERWORK_UPGRADED_CUSTOM_HELM", cam = { yaw = -6.69, pitch = 0.38, dist = 205, ty = 43, tx = 9 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "customfit_trimmed_spiked_masterwork_mel", name = "CFT spiked masterwork helmet", kind = "item", rarity = "legendary",
-        desc = "A masterful helmet, spiked and custom-fitted by a master smith.",
-        art = { item = "MASTERWORK_UPGRADED_SPIKED_CUSTOM_HELM", cam = { yaw = -6.83, pitch = -0.03, dist = 248, ty = 75, tx = 15 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "elder_rune_full_helm", name = "Elder rune full helm", kind = "item", rarity = "epic",
         desc = "An elder rune full helm.",
         art = { item = "ELDER_RUNE_FULL_HELM", cam = { yaw = -6.60, pitch = 0.05, dist = 205, ty = 62, tx = 10 } },
@@ -1034,7 +1022,7 @@ Set.cards = {
         tags = { regions = { "fremennik_province" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
-        id = "flamtaer_hood", name = "Flamtaer hood", kind = "item", rarity = "uncommon",
+        id = "flamtaer_hood", name = "Flamtaer hood", kind = "item", rarity = "rare",
         desc = "A hood worn by twisted necromancers.",
         art = { item = "HLR4M_NECROMANCER_HOOD", cam = { yaw = -6.11, pitch = 1.33, dist = 205, ty = -6, tx = 4 } },
         tags = { regions = { "morytania" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
