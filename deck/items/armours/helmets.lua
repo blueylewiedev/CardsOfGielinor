@@ -452,12 +452,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
     },
     {
-        id = "tetsu_helm", name = "Tetsu helm", kind = "item", rarity = "epic",
-        desc = "Melee armour from the Eastern Lands.",
-        art = { item = "POP_MELEE_HELM_TRADEABLE", cam = { yaw = -6.92, pitch = 0.32, dist = 273, ty = 65, tx = 5 } },
-        tags = { skills = { "smithing", "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "torva_full_helm", name = "Torva full helm", kind = "item", rarity = "epic",
         desc = "An ancient warrior's full helm.",
         art = { item = "GODWARS2_HELM_MELEE_100", cam = { yaw = -6.71, pitch = 0.43, dist = 273, ty = 58, tx = 5 } },
@@ -756,12 +750,6 @@ Set.cards = {
         desc = "A cowl made from apex hide.",
         art = { item = "APEX_HEAD", cam = { yaw = -12.67, dist = 105, ty = -13, tx = 6 } },
         tags = { regions = { "havenhythe" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "death_lotus_hood", name = "Death Lotus hood", kind = "item", rarity = "epic",
-        desc = "Clothing fit for the deadliest of assassins.",
-        art = { item = "POP_RANGED_HELM_TRADEABLE", cam = { yaw = -7.44, pitch = 0.69, dist = 205, ty = 30, tx = 10 } },
-        tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
         id = "dinosaurhide_cowl", name = "Dinosaurhide cowl", kind = "item", rarity = "epic",
@@ -1184,12 +1172,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
-        id = "seasingers_hood", name = "Seasinger's hood", kind = "item", rarity = "epic",
-        desc = "A hood worn by the seasingers of the Eastern Lands.",
-        art = { item = "POP_MAGIC_HELM_TRADEABLE", cam = { yaw = -6.70, pitch = 0.39, dist = 169, ty = 50, tx = -9 } },
-        tags = { skills = { "runecrafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "starbloom_hat", name = "Starbloom hat", kind = "item", rarity = "epic",
         desc = "A magical hat.",
         art = { item = "STARBLOOM_HAT", cam = { yaw = -5.27, pitch = 0.39, dist = 273, ty = 24, tx = -1 } },
@@ -1376,7 +1358,7 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "defence", "necromancy" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
-        id = "ghost_hunter_goggles", name = "Ghost hunter goggles", kind = "item", rarity = "common",
+        id = "ghost_hunter_goggles", name = "Ghost hunter goggles", kind = "item", rarity = "rare",
         desc = "High-tech ghost-hunting equipment.",
         art = { item = "HW14_GHOST_HUNTER_HELM_TIER1", cam = { yaw = -6.84, pitch = 0.12, dist = 186, ty = 45, tx = 14 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "f2p" } },

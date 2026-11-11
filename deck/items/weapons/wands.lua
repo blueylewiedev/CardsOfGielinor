@@ -230,12 +230,6 @@ Set.cards = {
         tags = { regions = { "misthalin" }, skills = { "magic" }, category = { "weapon", "magic_gear", "wand" }, membership = { "p2p" } },
     },
     {
-        id = "seasinger_kiba", name = "Seasinger kiba", kind = "item", rarity = "epic",
-        desc = "A magical wand fashioned from a fossilised nautilus kami.",
-        art = { item = "POP3_MAGIC_WEAPON_NEW", cam = { yaw = -5.98, dist = 273, ty = 4, tx = -6 } },
-        tags = { regions = { "asgarnia" }, skills = { "runecrafting", "crafting", "magic" }, category = { "weapon", "magic_gear", "wand" }, membership = { "p2p" } },
-    },
-    {
         id = "seismic_wand", name = "Seismic wand", kind = "item", rarity = "legendary",
         desc = "A powerful wand from the depths.",
         art = { item = "LRC2_MAGIC_WAND_NEW", cam = { yaw = -5.98, dist = 363, ty = 4, tx = -6 } },

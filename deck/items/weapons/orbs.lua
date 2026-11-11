@@ -26,12 +26,6 @@ Set.cards = {
         tags = { regions = { "misthalin" }, skills = { "magic" }, category = { "weapon", "magic_gear", "orb" }, membership = { "p2p" } },
     },
     {
-        id = "seasinger_makigai", name = "Seasinger makigai", kind = "item", rarity = "epic",
-        desc = "A magical orb fashioned from a fossilised nautilus kami.",
-        art = { item = "POP3_MAGIC_WEAPON_O_NEW", cam = { dist = 205, ty = -4, tx = 6 } },
-        tags = { regions = { "asgarnia" }, skills = { "runecrafting", "crafting", "magic" }, category = { "weapon", "magic_gear", "orb" }, membership = { "p2p" } },
-    },
-    {
         id = "seismic_singularity", name = "Seismic singularity", kind = "item", rarity = "legendary",
         desc = "A powerful magical weapon from the depths - held in the off-hand.",
         art = { item = "LRC2_MAGIC_OFFHAND_NEW", cam = { dist = 169 } },
