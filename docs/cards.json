@@ -122139,8 +122139,8 @@
    "imgPage": "File:Crown of the First Necromancer detail.png"
   },
   {
-   "id": "seers_headband_4",
-   "name": "Seer's headband 4",
+   "id": "seers_headband",
+   "name": "Seer's headband",
    "kind": "item",
    "rarity": "epic",
    "desc": "A headband with an eye embroidered on it.",
@@ -122163,7 +122163,7 @@
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
    "order": 4662,
-   "img": "img/seers_headband_4.png",
+   "img": "img/seers_headband.png",
    "imgPage": "File:Seer's headband 4 detail.png"
   },
   {
@@ -132446,7 +132446,7 @@
     "deathbloom_hood",
     "entropic_hood",
     "crown_of_the_first_necromancer",
-    "seers_headband_4",
+    "seers_headband",
     "attuned_crystal_helm",
     "dragon_rider_helm",
     "gemstone_helm",
@@ -134556,7 +134556,7 @@
     "profound_decorative_sword",
     "ascension_crossbow",
     "offhand_ascension_crossbow",
-    "seers_headband_4",
+    "seers_headband",
     "profound_decorative_helm",
     "zaros"
    ]
