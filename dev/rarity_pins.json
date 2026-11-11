@@ -639,5 +639,9 @@
   "lumberjack_top": {
     "rarity": "rare",
     "why": "Skilling outfit pieces are rare: valuable and time-consuming to obtain"
+  },
+  "masterwork_ranged_cowl": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-11)"
   }
 }

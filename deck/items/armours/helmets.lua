@@ -794,7 +794,7 @@ Set.cards = {
         tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
-        id = "masterwork_ranged_cowl", name = "Masterwork ranged cowl", kind = "item", rarity = "legendary",
+        id = "masterwork_ranged_cowl", name = "Masterwork ranged cowl", kind = "item", rarity = "epic",
         desc = "Masterful ranged cowl made by a master crafter.",
         art = { item = "MASTERWORK_RANGED_HEAD", cam = { yaw = -6.29, dist = 186, ty = -11, tx = -3 } },
         tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
