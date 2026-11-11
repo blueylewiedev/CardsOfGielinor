@@ -12,7 +12,7 @@ Set.cards = {
         id = "blue_jewel", name = "Blue jewel", kind = "item", rarity = "common",
         desc = "It gives off a faint blue glow.",
         art = { item = "KHARSHAI_BLUEJEWEL", cam = { yaw = -0.80, pitch = 1.25, dist = 525, fov = 15 } },
-        tags = { regions = { "fremennik_province" }, category = { "quest_item", "fashion" }, membership = { "p2p" } },
+        tags = { regions = { "fremennik_province" }, category = { "fashion" }, membership = { "p2p" } },
     },
     {
         id = "enchanted_emerald", name = "Enchanted emerald", kind = "item", rarity = "common",
@@ -24,7 +24,7 @@ Set.cards = {
         id = "green_jewel", name = "Green jewel", kind = "item", rarity = "epic",
         desc = "It gives off a faint green glow.",
         art = { item = "KHARSHAI_GREENJEWEL", cam = { yaw = -0.80, pitch = 1.00, dist = 525, fov = 30, ty = 20 } },
-        tags = { category = { "fashion", "quest_item" }, membership = { "p2p" } },
+        tags = { category = { "fashion" }, membership = { "p2p" } },
     },
     {
         id = "ice_diamond", name = "Ice diamond", kind = "item", rarity = "common",

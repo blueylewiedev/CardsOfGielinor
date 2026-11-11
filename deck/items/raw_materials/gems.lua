@@ -101,7 +101,7 @@ Set.cards = {
         id = "red_jewel", name = "Red jewel", kind = "item", rarity = "epic",
         desc = "It gives off a faint red glow.",
         art = { item = "KHARSHAI_REDJEWEL", cam = { yaw = -0.80, pitch = 1.00, dist = 525, fov = 15 } },
-        tags = { category = { "quest_item", "fashion" }, membership = { "p2p" } },
+        tags = { category = { "fashion" }, membership = { "p2p" } },
     },
 }
 

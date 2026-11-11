@@ -185,7 +185,7 @@ Set.cards = {
         id = "detailed_decorative_sword", name = "Detailed decorative sword", kind = "item", rarity = "common",
         desc = "A sword with finely detailed decoration.",
         art = { item = "CASTLEWARS_SWORD_2", cam = { yaw = -9.00, dist = 603, fov = 35, ty = -20, tx = 30 } },
-        tags = { regions = { "kandarin" }, skills = { "attack" }, category = { "weapon", "melee_gear", "sword", "minigame", "fashion" }, membership = { "p2p" } },
+        tags = { regions = { "kandarin" }, skills = { "attack" }, category = { "minigame", "fashion" }, membership = { "p2p" } },
     },
     {
         id = "dragon_longsword", name = "Dragon longsword", kind = "item", rarity = "uncommon",

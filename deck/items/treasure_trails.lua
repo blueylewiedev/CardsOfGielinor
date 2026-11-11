@@ -23,7 +23,7 @@ Set.cards = {
         id = "briefcase", name = "Briefcase", kind = "item", rarity = "rare",
         desc = "A suitable container for secret documents.",
         art = { item = "TT14_BRIEFCASE_WEAPON", cam = { yaw = 0.40, dist = 346, fov = 45, tx = 40 } },
-        tags = { category = { "weapon", "melee_gear", "treasure_trail", "fashion" }, membership = { "f2p" } },
+        tags = { category = { "treasure_trail", "fashion" }, membership = { "f2p" } },
     },
     {
         id = "dragon_cane", name = "Dragon cane", kind = "item", rarity = "uncommon",
