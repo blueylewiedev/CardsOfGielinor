@@ -433,8 +433,8 @@
     "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was uncommon"
   },
   "seers_headband": {
-    "rarity": "epic",
-    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was common"
+    "rarity": "rare",
+    "why": "Achievement diary reward: one card covers all four tiers, rare (owner, 2026-11-11)"
   },
   "corrupt_statiuss_warhammer": {
     "rarity": "rare",
@@ -643,5 +643,13 @@
   "masterwork_ranged_cowl": {
     "rarity": "epic",
     "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-11)"
+  },
+  "varrock_armour": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one card covers all four tiers, rare (owner, 2026-11-11)"
+  },
+  "wilderness_sword": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one card covers all four tiers, rare (owner, 2026-11-11)"
   }
 }

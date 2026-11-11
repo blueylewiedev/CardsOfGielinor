@@ -486,6 +486,10 @@ Also:
   Historical sources, and rewards, shop stock and prizes that hand an item over indirectly, are left out.
 - **Pets** are legendary, however they are obtained. They are very hard to get.
 - **Discontinued or unobtainable items** (party hats, holiday rares) are legendary.
+- **Achievement diary rewards** (Varrock armour, Seer's headband, Wilderness sword) get one card for all four tiers,
+  with the elite version's picture and no tier number in the id or name, and are **rare**, pinned in
+  `dev/rarity_pins.json`. The rules cannot rate them: the level to wear a tier is low (Ardougne cloak 4 needs 35
+  Defence) and nothing has a price or a drop rate, while the diary itself is long. The description says which diary.
 - **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and
   pyre logs the same as the logs.
 - An item with none of these (cheap, no level, no drops) is **common**.

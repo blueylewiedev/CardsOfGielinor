@@ -297,7 +297,7 @@ Set.cards = {
     },
     {
         id = "wilderness_sword", name = "Wilderness sword", kind = "item", rarity = "rare",
-        desc = "The markings of the Wilderness adorn this longsword.",
+        desc = "Reward for the Wilderness achievement diary, from easy to elite.",
         art = { item = "ATWILD_REWARD_ELITE", cam = { yaw = -10.39, dist = 768, fov = 35, ty = -7, tx = -4 } },
         tags = { regions = { "wilderness" }, skills = { "attack" }, category = { "weapon", "melee_gear", "sword" }, membership = { "p2p" } },
     },
