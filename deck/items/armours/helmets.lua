@@ -1394,8 +1394,8 @@ Set.cards = {
         tags = { regions = { "asgarnia" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "f2p" } },
     },
     {
-        id = "seers_headband_4", name = "Seer's headband 4", kind = "item", rarity = "epic",
-        desc = "A headband with an eye embroidered on it.",
+        id = "seers_headband", name = "Seer's headband", kind = "item", rarity = "rare",
+        desc = "Reward for the Seers' Village achievement diary, from easy to elite.",
         art = { item = "ATSEER_SEERS_HEADBAND4", cam = { yaw = -6.30, pitch = 0.77, dist = 186, ty = -29, tx = -87 } },
         tags = { regions = { "kandarin" }, skills = { "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "p2p" } },
     },
