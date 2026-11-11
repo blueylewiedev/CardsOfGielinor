@@ -16,7 +16,7 @@ Set.cards = {
     {
         id = "abyssal_whip", name = "Abyssal whip", kind = "item", rarity = "rare",
         desc = "A weapon from the Abyss.",
-        art = { item = "ABYSSAL_WHIP" },
+        art = { item = "ABYSSAL_WHIP", cam = { tx = 20 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "whip" }, membership = { "p2p" } },
     },
     {

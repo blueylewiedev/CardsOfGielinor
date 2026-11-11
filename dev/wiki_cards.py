@@ -933,7 +933,7 @@ ITEM_CATEGORY_WORDS = {
     "ceremonial swords": ["sword"], "darts": ["thrown"], "javelins": ["thrown"],
     "defenders": ["defender"], "defender": ["defender"], "urns": ["consumable"],
     "2h sword": ["two_handed_sword"], "two-handed swords": ["two_handed_sword"], "battleaxe": ["axe"],
-    "battleaxes": ["axe"], "mace": ["mace"], "maces": ["mace"], "spear": ["spear"], "spears": ["spear"],
+    "battleaxes": ["axe"], "mace": ["mace"], "maces": ["mace"], "maul": ["maul"], "mauls": ["maul"], "spear": ["spear"], "spears": ["spear"],
     "halberd": ["halberd"], "halberds": ["halberd"], "whip": ["whip"], "claws": ["claw"], "shortbow": ["shortbow"],
     "longbow": ["longbow"], "longbows": ["longbow"], "crossbow": ["crossbow"], "crossbows": ["crossbow"],
     "thrown": ["thrown"], "staff": ["staff"], "staves": ["staff"], "wand": ["wand"], "wands": ["wand"],
@@ -1027,7 +1027,7 @@ NOVELTY_PAGES = {"tambourine", "mega-phonus", "rubber turkey", "off-hand rubber 
                  "pogo stick", "gavel", "walking stick"}
 
 
-WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "spear", "halberd", "whip",
+WEAPON_KIND_WORDS = {"dagger", "sword", "scimitar", "two_handed_sword", "axe", "mace", "maul", "spear", "halberd", "whip",
                      "claw", "shortbow", "longbow", "crossbow", "thrown", "staff", "wand", "lantern", "siphon", "orb", "book",
                      "defender"}
 # The kind of a weapon from its name (the last word), for a weapon whose wiki categories name no
@@ -1037,7 +1037,7 @@ WEAPON_NAME_KINDS = [
     (r"\bdefenders?$", "defender"),
     (r"\bscimitars?$", "scimitar"), (r"\b(?:long)?swords?(?: [ivx]+)?$|\brapiers?$", "sword"),
     (r"\b(?:darts?|javelins?|knife|knives|throwing (?:axes?|knives))$", "thrown"),
-    (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|mauls?|flails?)$", "mace"),
+    (r"\b(?:battle|great)?axes?$", "axe"), (r"\b(?:maces?|warhammers?|flails?)$", "mace"), (r"\bmauls?$", "maul"),
     (r"\b(?:spears?|hastas?|warspears?|lances?)$", "spear"), (r"\bhalberds?$", "halberd"),
     (r"\bwhips?$", "whip"), (r"\bshortbows?$", "shortbow"), (r"\blongbows?$", "longbow"),
     (r"\bcrossbows?$", "crossbow"), (r"\b(?:battle)?(?:staff|staves)$", "staff"), (r"\bwands?$", "wand"),
