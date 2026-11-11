@@ -127140,65 +127140,6 @@
    "imgPage": "File:Half full wine jug detail.png"
   },
   {
-   "id": "mod_hat",
-   "name": "Mod hat",
-   "kind": "item",
-   "rarity": "legendary",
-   "desc": "Makes you feel like a mod.",
-   "tags": {
-    "membership": [
-     "f2p"
-    ]
-   },
-   "collection": "Items: General",
-   "file": "deck/items/general.lua",
-   "order": 4851,
-   "img": "img/mod_hat.png",
-   "imgPage": "File:Mod hat detail.png"
-  },
-  {
-   "id": "mod_body",
-   "name": "Mod body",
-   "kind": "item",
-   "rarity": "legendary",
-   "desc": "Makes you feel like a mod.",
-   "tags": {
-    "category": [
-     "armour",
-     "body"
-    ],
-    "membership": [
-     "f2p"
-    ]
-   },
-   "collection": "Items: General",
-   "file": "deck/items/general.lua",
-   "order": 4852,
-   "img": "img/mod_body.png",
-   "imgPage": "File:Mod body detail.png"
-  },
-  {
-   "id": "mod_cape",
-   "name": "Mod cape",
-   "kind": "item",
-   "rarity": "legendary",
-   "desc": "Makes you feel like a mod.",
-   "tags": {
-    "category": [
-     "armour",
-     "back"
-    ],
-    "membership": [
-     "f2p"
-    ]
-   },
-   "collection": "Items: General",
-   "file": "deck/items/general.lua",
-   "order": 4853,
-   "img": "img/mod_cape.png",
-   "imgPage": "File:Mod cape detail.png"
-  },
-  {
    "id": "pumpkin",
    "name": "Pumpkin",
    "kind": "item",
@@ -127216,7 +127157,7 @@
    },
    "collection": "Food: Fruit Veg",
    "file": "deck/items/food/fruit_veg.lua",
-   "order": 4854,
+   "order": 4851,
    "img": "img/pumpkin.png",
    "imgPage": "File:Pumpkin detail.png"
   },
@@ -127239,7 +127180,7 @@
    },
    "collection": "Items: Decoration",
    "file": "deck/items/decoration.lua",
-   "order": 4855,
+   "order": 4852,
    "img": "img/big_shark.png",
    "imgPage": "File:Big shark detail.png"
   },
@@ -127262,7 +127203,7 @@
    },
    "collection": "Items: Decoration",
    "file": "deck/items/decoration.lua",
-   "order": 4856,
+   "order": 4853,
    "img": "img/big_swordfish.png",
    "imgPage": "File:Big swordfish detail.png"
   },
@@ -127287,7 +127228,7 @@
    },
    "collection": "Processed Materials: Gems",
    "file": "deck/items/processed_materials/gems.lua",
-   "order": 4857,
+   "order": 4854,
    "img": "img/alchemical_hydrix.png",
    "imgPage": "File:Alchemical hydrix detail.png"
   },
@@ -127307,7 +127248,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4858,
+   "order": 4855,
    "img": "img/hawthorns_hatchet.png",
    "imgPage": "File:Hawthorn's hatchet detail.png"
   },
@@ -127327,7 +127268,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4859,
+   "order": 4856,
    "img": "img/tavias_fishing_rod.png",
    "imgPage": "File:Tavia's fishing rod detail.png"
   },
@@ -127350,7 +127291,7 @@
    },
    "collection": "Items: Tools",
    "file": "deck/items/tools.lua",
-   "order": 4860,
+   "order": 4857,
    "img": "img/guildmaster_tonys_mattock.png",
    "imgPage": "File:Guildmaster Tony's mattock detail.png"
   },
@@ -127373,7 +127314,7 @@
    },
    "collection": "Items: Containers",
    "file": "deck/items/containers.lua",
-   "order": 4861,
+   "order": 4858,
    "img": "img/blessed_flask.png",
    "imgPage": "File:Blessed flask detail.png"
   },
@@ -127399,7 +127340,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4862,
+   "order": 4859,
    "img": "img/secondage_sword.png",
    "imgPage": "File:Second-Age sword detail.png"
   },
@@ -127425,7 +127366,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4863,
+   "order": 4860,
    "img": "img/secondage_bow.png",
    "imgPage": "File:Second-Age bow detail.png"
   },
@@ -127451,7 +127392,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4864,
+   "order": 4861,
    "img": "img/secondage_staff.png",
    "imgPage": "File:Second-Age staff detail.png"
   },
@@ -127477,7 +127418,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4865,
+   "order": 4862,
    "img": "img/third_age_druidic_staff.png",
    "imgPage": "File:Third age druidic staff detail.png"
   },
@@ -127503,7 +127444,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4866,
+   "order": 4863,
    "img": "img/secondage_full_helm.png",
    "imgPage": "File:Second-Age full helm detail.png"
   },
@@ -127529,7 +127470,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4867,
+   "order": 4864,
    "img": "img/third_age_full_helmet.png",
    "imgPage": "File:Third age full helmet detail.png"
   },
@@ -127555,7 +127496,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4868,
+   "order": 4865,
    "img": "img/secondage_range_coif.png",
    "imgPage": "File:Second-Age range coif detail.png"
   },
@@ -127582,7 +127523,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4869,
+   "order": 4866,
    "img": "img/third_age_ranger_coif.png",
    "imgPage": "File:Third age ranger coif detail.png"
   },
@@ -127608,7 +127549,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4870,
+   "order": 4867,
    "img": "img/secondage_mage_mask.png",
    "imgPage": "File:Second-Age mage mask detail.png"
   },
@@ -127635,7 +127576,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4871,
+   "order": 4868,
    "img": "img/third_age_druidic_wreath.png",
    "imgPage": "File:Third age druidic wreath detail.png"
   },
@@ -127662,7 +127603,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4872,
+   "order": 4869,
    "img": "img/third_age_mage_hat.png",
    "imgPage": "File:Third age mage hat detail.png"
   },
@@ -127688,7 +127629,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4873,
+   "order": 4870,
    "img": "img/secondage_platebody.png",
    "imgPage": "File:Second-Age platebody detail.png"
   },
@@ -127714,7 +127655,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4874,
+   "order": 4871,
    "img": "img/third_age_platebody.png",
    "imgPage": "File:Third age platebody detail.png"
   },
@@ -127740,7 +127681,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4875,
+   "order": 4872,
    "img": "img/secondage_range_top.png",
    "imgPage": "File:Second-Age range top detail.png"
   },
@@ -127767,7 +127708,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4876,
+   "order": 4873,
    "img": "img/third_age_ranger_body.png",
    "imgPage": "File:Third age ranger body detail.png"
   },
@@ -127793,7 +127734,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4877,
+   "order": 4874,
    "img": "img/secondage_robe_top.png",
    "imgPage": "File:Second-Age robe top detail.png"
   },
@@ -127820,7 +127761,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4878,
+   "order": 4875,
    "img": "img/third_age_druidic_robe_top.png",
    "imgPage": "File:Third age druidic robe top detail.png"
   },
@@ -127847,7 +127788,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4879,
+   "order": 4876,
    "img": "img/third_age_robe_top.png",
    "imgPage": "File:Third age robe top detail.png"
   },
@@ -127874,7 +127815,7 @@
    },
    "collection": "Items: Treasure Trails",
    "file": "deck/items/treasure_trails.lua",
-   "order": 4880,
+   "order": 4877,
    "img": "img/third_age_druidic_cloak.png",
    "imgPage": "File:Third age druidic cloak detail.png"
   },
@@ -127894,9 +127835,69 @@
    },
    "collection": "Items: Novelties",
    "file": "deck/items/novelties.lua",
-   "order": 4881,
+   "order": 4878,
    "img": "img/rubber_chicken.png",
    "imgPage": "File:Rubber chicken detail.png"
+  },
+  {
+   "id": "mod_hat",
+   "name": "Mod hat",
+   "kind": "item",
+   "rarity": "legendary",
+   "desc": "Makes you feel like a mod.",
+   "tags": {
+    "category": [
+     "novelty"
+    ],
+    "membership": [
+     "f2p"
+    ]
+   },
+   "collection": "Items: Novelties",
+   "file": "deck/items/novelties.lua",
+   "order": 4879,
+   "img": "img/mod_hat.png",
+   "imgPage": "File:Mod hat detail.png"
+  },
+  {
+   "id": "mod_body",
+   "name": "Mod body",
+   "kind": "item",
+   "rarity": "legendary",
+   "desc": "Makes you feel like a mod.",
+   "tags": {
+    "category": [
+     "novelty"
+    ],
+    "membership": [
+     "f2p"
+    ]
+   },
+   "collection": "Items: Novelties",
+   "file": "deck/items/novelties.lua",
+   "order": 4880,
+   "img": "img/mod_body.png",
+   "imgPage": "File:Mod body detail.png"
+  },
+  {
+   "id": "mod_cape",
+   "name": "Mod cape",
+   "kind": "item",
+   "rarity": "legendary",
+   "desc": "Makes you feel like a mod.",
+   "tags": {
+    "category": [
+     "novelty"
+    ],
+    "membership": [
+     "f2p"
+    ]
+   },
+   "collection": "Items: Novelties",
+   "file": "deck/items/novelties.lua",
+   "order": 4881,
+   "img": "img/mod_cape.png",
+   "imgPage": "File:Mod cape detail.png"
   },
   {
    "id": "dark_sliver_of_leng",
@@ -135025,9 +135026,6 @@
     "azzanadra",
     "armadyl",
     "half_full_wine_jug",
-    "mod_hat",
-    "mod_body",
-    "mod_cape",
     "pumpkin",
     "big_shark",
     "big_swordfish",
@@ -135056,6 +135054,9 @@
     "third_age_robe_top",
     "third_age_druidic_cloak",
     "rubber_chicken",
+    "mod_hat",
+    "mod_body",
+    "mod_cape",
     "dark_sliver_of_leng",
     "varanuss_mercy",
     "dark_shard_of_leng",

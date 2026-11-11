@@ -121,6 +121,24 @@ Set.cards = {
         art = { item = "MYQ7_LOST_TOYS_PLAYER_PLUSH", cam = { yaw = 0.32, pitch = 0.29, dist = 205, ty = 80, tx = 3 } },
         tags = { category = { "novelty" }, membership = { "p2p" } },
     },
+    {
+        id = "mod_hat", name = "Mod hat", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_HAT", cam = { yaw = -6.28, pitch = 1.04, dist = 169, ty = -6, tx = -1 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
+    {
+        id = "mod_body", name = "Mod body", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_BODY", cam = { yaw = -0.01, dist = 330, ty = -12, tx = 4 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
+    {
+        id = "mod_cape", name = "Mod cape", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_CAPE", cam = { yaw = -3.12, pitch = 0.62, dist = 942, ty = 290, tx = -4 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
 }
 
 return Set
