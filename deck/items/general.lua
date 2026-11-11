@@ -52,7 +52,13 @@ Set.cards = {
         art = { item = "JMOD_ARMOUR_HAT", cam = { yaw = -6.28, pitch = 1.04, dist = 169, ty = -6, tx = -1 } },
         tags = { membership = { "f2p" } },
     },
-    { id = "mod_body", name = "Mod body", kind = "item", rarity = "legendary", desc = "Makes you feel like a mod.", art = { item = "JMOD_ARMOUR_BODY", cam = { yaw = -0.01, dist = 330, ty = -12, tx = 4 } }, tags = { category = { "armour", "body" }, membership = { "f2p" } } },
+    {
+        id = "mod_body", name = "Mod body", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_BODY", cam = { yaw = -0.01, dist = 330, ty = -12, tx = 4 } },
+        tags = { category = { "armour", "body" }, membership = { "f2p" } },
+    },
+    { id = "mod_cape", name = "Mod cape", kind = "item", rarity = "legendary", desc = "Makes you feel like a mod.", art = { item = "JMOD_ARMOUR_CAPE", cam = { yaw = -3.12, pitch = 0.62, dist = 942, ty = 290, tx = -4 } }, tags = { category = { "armour", "back" }, membership = { "f2p" } } },
 }
 
 return Set

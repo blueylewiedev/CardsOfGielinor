@@ -812,18 +812,6 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "sword" }, membership = { "p2p" } },
     },
     {
-        id = "tetsu_katana", name = "Tetsu katana", kind = "item", rarity = "epic",
-        desc = "A razor-sharp longsword designed by the Gu masters of Wushanko.",
-        art = { item = "POP3_MELEE_WEAPON_NEW", cam = { yaw = 1.21, dist = 578, fov = 45, tx = 29 } },
-        tags = { skills = { "smithing", "crafting", "attack" }, category = { "weapon", "melee_gear", "sword" }, membership = { "p2p" } },
-    },
-    {
-        id = "tetsu_wakizashi", name = "Tetsu wakizashi", kind = "item", rarity = "epic",
-        desc = "A razor-sharp shortsword designed by the Gu masters of Wushanko.",
-        art = { item = "POP3_MELEE_WEAPON_O_NEW", cam = { yaw = -1.80, dist = 525, fov = 45 } },
-        tags = { skills = { "smithing", "crafting", "attack" }, category = { "weapon", "melee_gear", "sword" }, membership = { "p2p" } },
-    },
-    {
         id = "vestas_longsword", name = "Vesta's longsword", kind = "item", rarity = "epic",
         desc = "This item degrades in combat, and will turn to dust.",
         art = { item = "PVPW_LONGSWORD", cam = { yaw = -1.80, dist = 525, fov = 45, ty = -7, tx = 42 } },

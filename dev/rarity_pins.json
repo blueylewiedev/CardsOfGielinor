@@ -357,8 +357,8 @@
     "why": "Skilling outfit helmets are rare: valuable and time-consuming to obtain"
   },
   "ghost_hunter_goggles": {
-    "rarity": "common",
-    "why": "Rarity as reviewed by the owner (head slot necromancy, hybrid and skilling outfit batch, 2026-11-08); the rules' answer was epic"
+    "rarity": "rare",
+    "why": "Ghost hunter gear is rare (owner, 2026-11-11)"
   },
   "infinity_hat": {
     "rarity": "epic",
@@ -613,8 +613,8 @@
     "why": "Rarity as reviewed by the owner (body slot necromancy, hybrid and skilling batch, 2026-11-10); the rules' answer was uncommon"
   },
   "ghost_hunter_body": {
-    "rarity": "common",
-    "why": "Common like the Ghost hunter goggles (owner, 2026-11-10); the rules' answer was epic"
+    "rarity": "rare",
+    "why": "Ghost hunter gear is rare (owner, 2026-11-11)"
   },
   "archaeologists_jacket": {
     "rarity": "rare",
@@ -651,5 +651,69 @@
   "wilderness_sword": {
     "rarity": "rare",
     "why": "Achievement diary reward: one card covers all four tiers, rare (owner, 2026-11-11)"
+  },
+  "ghost_hunter_backpack": {
+    "rarity": "rare",
+    "why": "Ghost hunter gear is rare (owner, 2026-11-11)"
+  },
+  "explosive_barrel": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was epic"
+  },
+  "fire_cape": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was epic"
+  },
+  "obsidian_cape": {
+    "rarity": "uncommon",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was rare"
+  },
+  "ancient_cloak": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was uncommon"
+  },
+  "armadyl_cloak": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was uncommon"
+  },
+  "artisans_cape": {
+    "rarity": "legendary",
+    "why": "Skill-group capes (Artisan, Combatant, Gatherer, Support) are all legendary (owner, 2026-11-11); the rules' answer was epic"
+  },
+  "avas_alerter": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was uncommon"
+  },
+  "bandos_cloak": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was uncommon"
+  },
+  "combatants_cape": {
+    "rarity": "legendary",
+    "why": "Skill-group capes (Artisan, Combatant, Gatherer, Support) are all legendary (owner, 2026-11-11); the rules' answer was epic"
+  },
+  "dragon_rider_cape": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was rare"
+  },
+  "gatherers_cape": {
+    "rarity": "legendary",
+    "why": "Skill-group capes (Artisan, Combatant, Gatherer, Support) are all legendary (owner, 2026-11-11); the rules' answer was epic"
+  },
+  "igneous_kalzuk": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was epic"
+  },
+  "support_cape": {
+    "rarity": "legendary",
+    "why": "Skill-group capes (Artisan, Combatant, Gatherer, Support) are all legendary (owner, 2026-11-11); the rules' answer was epic"
+  },
+  "bag_of_clues": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was uncommon"
+  },
+  "soul_cape": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was common"
   }
 }
