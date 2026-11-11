@@ -800,12 +800,6 @@ Set.cards = {
         tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
-        id = "cf_masterwork_ranged_cowl", name = "CF masterwork ranged cowl", kind = "item", rarity = "legendary",
-        desc = "Masterful ranged cowl made by a master crafter which have been custom-fitted.",
-        art = { item = "MASTERWORK_RANGED_CUSTOM_HEAD", cam = { yaw = -6.29, dist = 186, ty = -11, tx = -3 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "magic_skull_mask", name = "Magic skull mask", kind = "item", rarity = "uncommon",
         desc = "Is it a skull mask that is magic, or a magic skull made into a mask?",
         art = { item = "WENDLE_GIANT_BOSS_SKULL_CROWN", cam = { pitch = 1.21, dist = 116, ty = -10, tx = -0 } },
@@ -1140,12 +1134,6 @@ Set.cards = {
         desc = "Armour infused with the might of Seren.",
         art = { item = "GWD2_MAGIC_HELM", cam = { yaw = -6.58, pitch = 0.39, dist = 225, ty = 56, tx = -1 } },
         tags = { regions = { "kharidian_desert" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "cf_masterwork_magic_hat", name = "CF masterwork magic hat", kind = "item", rarity = "legendary",
-        desc = "Masterful magic hat made by a master crafter which have been custom-fitted.",
-        art = { item = "MASTERWORK_MAGIC_CUSTOM_HAT", cam = { yaw = -6.60, pitch = 0.39, dist = 273, ty = 20, tx = 4 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
         id = "elite_tectonic_mask", name = "Elite tectonic mask", kind = "item", rarity = "legendary",

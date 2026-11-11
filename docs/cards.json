@@ -127295,31 +127295,6 @@
    "imgPage": "File:Masterwork ranged cowl detail.png"
   },
   {
-   "id": "cf_masterwork_ranged_cowl",
-   "name": "CF masterwork ranged cowl",
-   "kind": "item",
-   "rarity": "legendary",
-   "desc": "Masterful ranged cowl made by a master crafter which have been custom-fitted.",
-   "tags": {
-    "skills": [
-     "defence"
-    ],
-    "category": [
-     "armour",
-     "helmet",
-     "ranged_gear"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Armours: Helmets",
-   "file": "deck/items/armours/helmets.lua",
-   "order": 4853,
-   "img": "img/cf_masterwork_ranged_cowl.png",
-   "imgPage": "File:Custom-fit masterwork ranged cowl detail.png"
-  },
-  {
    "id": "superior_zuriels_hood",
    "name": "Superior Zuriel's hood",
    "kind": "item",
@@ -127343,34 +127318,9 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4854,
+   "order": 4853,
    "img": "img/superior_zuriels_hood.png",
    "imgPage": "File:Superior Zuriel's hood detail.png"
-  },
-  {
-   "id": "cf_masterwork_magic_hat",
-   "name": "CF masterwork magic hat",
-   "kind": "item",
-   "rarity": "legendary",
-   "desc": "Masterful magic hat made by a master crafter which have been custom-fitted.",
-   "tags": {
-    "skills": [
-     "defence"
-    ],
-    "category": [
-     "armour",
-     "helmet",
-     "magic_gear"
-    ],
-    "membership": [
-     "p2p"
-    ]
-   },
-   "collection": "Armours: Helmets",
-   "file": "deck/items/armours/helmets.lua",
-   "order": 4855,
-   "img": "img/cf_masterwork_magic_hat.png",
-   "imgPage": "File:Custom-fit masterwork magic hat detail.png"
   },
   {
    "id": "elite_tectonic_mask",
@@ -127394,7 +127344,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4856,
+   "order": 4854,
    "img": "img/elite_tectonic_mask.png",
    "imgPage": "File:Elite tectonic mask detail.png"
   },
@@ -127423,7 +127373,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4857,
+   "order": 4855,
    "img": "img/cryptbloom_helm.png",
    "imgPage": "File:Cryptbloom helm detail.png"
   },
@@ -127452,7 +127402,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4858,
+   "order": 4856,
    "img": "img/mask_of_tumekens_resplendence.png",
    "imgPage": "File:Mask of Tumeken's resplendence detail.png"
   },
@@ -127481,7 +127431,7 @@
    },
    "collection": "Armours: Helmets",
    "file": "deck/items/armours/helmets.lua",
-   "order": 4859,
+   "order": 4857,
    "img": "img/misalionars_death_mask.png",
    "imgPage": "File:Misalionar's death mask detail.png"
   },
@@ -127509,7 +127459,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4860,
+   "order": 4858,
    "img": "img/superior_vestas_chainbody.png",
    "imgPage": "File:Superior Vesta's Chainbody detail.png"
   },
@@ -127534,7 +127484,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4861,
+   "order": 4859,
    "img": "img/gud_raider_chainbody.png",
    "imgPage": "File:Gud raider chainbody detail.png"
   },
@@ -127562,7 +127512,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4862,
+   "order": 4860,
    "img": "img/superior_statiuss_platebody.png",
    "imgPage": "File:Superior Statius's platebody detail.png"
   },
@@ -127588,7 +127538,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4863,
+   "order": 4861,
    "img": "img/trimmed_masterwork_melee_platebody.png",
    "imgPage": "File:Trimmed masterwork melee platebody detail.png"
   },
@@ -127616,7 +127566,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4864,
+   "order": 4862,
    "img": "img/vestments_of_havoc_robe_top.png",
    "imgPage": "File:Vestments of havoc robe top detail.png"
   },
@@ -127644,7 +127594,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4865,
+   "order": 4863,
    "img": "img/superior_morrigans_leather_body.png",
    "imgPage": "File:Superior Morrigan's leather body detail.png"
   },
@@ -127673,7 +127623,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4866,
+   "order": 4864,
    "img": "img/elite_dracolich_hauberk.png",
    "imgPage": "File:Elite Dracolich hauberk detail.png"
   },
@@ -127699,7 +127649,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4867,
+   "order": 4865,
    "img": "img/elite_sirenic_hauberk.png",
    "imgPage": "File:Elite sirenic hauberk detail.png"
   },
@@ -127727,7 +127677,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4868,
+   "order": 4866,
    "img": "img/superior_zuriels_robe_top.png",
    "imgPage": "File:Superior Zuriel's robe top detail.png"
   },
@@ -127756,7 +127706,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4869,
+   "order": 4867,
    "img": "img/cryptbloom_top.png",
    "imgPage": "File:Cryptbloom top detail.png"
   },
@@ -127782,7 +127732,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4870,
+   "order": 4868,
    "img": "img/elite_tectonic_robe_top.png",
    "imgPage": "File:Elite tectonic robe top detail.png"
   },
@@ -127811,7 +127761,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4871,
+   "order": 4869,
    "img": "img/robe_top_of_tumekens_resplendence.png",
    "imgPage": "File:Robe top of Tumeken's resplendence detail.png"
   },
@@ -127840,7 +127790,7 @@
    },
    "collection": "Armours: Bodies",
    "file": "deck/items/armours/bodies.lua",
-   "order": 4872,
+   "order": 4870,
    "img": "img/robe_top_of_the_first_necromancer.png",
    "imgPage": "File:Robe top of the First Necromancer detail.png"
   },
@@ -127863,7 +127813,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4873,
+   "order": 4871,
    "img": "img/christmas_scythe.png",
    "imgPage": "File:Christmas scythe detail.png"
   },
@@ -127885,7 +127835,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4874,
+   "order": 4872,
    "img": "img/full_easter_basket.png",
    "imgPage": "File:Full Easter basket detail.png"
   },
@@ -127908,7 +127858,7 @@
    },
    "collection": "Fashions: General",
    "file": "deck/items/fashions/general.lua",
-   "order": 4875,
+   "order": 4873,
    "img": "img/scythe.png",
    "imgPage": "File:Scythe detail.png"
   }
@@ -132771,9 +132721,7 @@
     "elite_dracolich_coif",
     "elite_sirenic_mask",
     "masterwork_ranged_cowl",
-    "cf_masterwork_ranged_cowl",
     "superior_zuriels_hood",
-    "cf_masterwork_magic_hat",
     "elite_tectonic_mask",
     "cryptbloom_helm",
     "mask_of_tumekens_resplendence",
