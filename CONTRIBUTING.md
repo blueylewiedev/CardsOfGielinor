@@ -777,9 +777,11 @@ before the next review. The plugin ships with the whole deck and, when it starts
 `docs/overlay.jsonl`: the cards that are new or different since the last version Jagex approved. Only the
 project owner does this; contributors just submit cards as usual.
 
-- **Tag every submission** to Jagex as `v<version>` (for example `v0.2.0`, the version in `plugin.json`). The
-  overlay is built against the newest `v*` tag, so once a version is approved and the next one is tagged, the
-  overlay empties itself.
+- **Tag each version when Jagex approves it,** as `v<version>` (for example `v0.2.0`, the version in `plugin.json`)
+  on the commit that was submitted. Players keep running the old version while the new one is in review, so the
+  overlay must stay built against the old version until the new one is approved; tagging at submission would
+  empty it too early. The overlay is built against the newest `v*` tag, so tagging the approved version empties
+  it, ready for what comes next.
 - **Build it** with `python dev/build_overlay.py` and commit `docs/overlay.jsonl` in the pull request (merging
   to `main` publishes it through GitHub Pages). `--check` says whether the file is out of date; `--base TAG`
   builds against another tag, for trying it out.
