@@ -20,7 +20,7 @@ Set.cards = {
         tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "briefcase", name = "Briefcase", kind = "item", rarity = "rare",
+        id = "briefcase", name = "Briefcase", kind = "item", rarity = "uncommon",
         desc = "A suitable container for secret documents.",
         art = { item = "TT14_BRIEFCASE_WEAPON", cam = { yaw = 0.40, dist = 346, fov = 45, tx = 40 } },
         tags = { category = { "treasure_trail", "fashion" }, membership = { "f2p" } },
@@ -44,7 +44,7 @@ Set.cards = {
         tags = { category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "offhand_suitcase", name = "Off-hand suitcase", kind = "item", rarity = "uncommon",
+        id = "offhand_suitcase", name = "Off-hand suitcase", kind = "item", rarity = "common",
         desc = "A suitcase for traveling the world.",
         art = { item = "TT14_SUITCASE_WEAPON_O", cam = { yaw = -4.89, dist = 699, fov = 30, ty = -1, tx = 7 } },
         tags = { category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "f2p" } },
@@ -74,7 +74,7 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "sword", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "suitcase", name = "Suitcase", kind = "item", rarity = "uncommon",
+        id = "suitcase", name = "Suitcase", kind = "item", rarity = "common",
         desc = "A suitcase for traveling the world.",
         art = { item = "TT14_SUITCASE_WEAPON", cam = { yaw = -5.73, dist = 525, fov = 35, ty = 2, tx = 18 } },
         tags = { category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "f2p" } },
@@ -92,19 +92,19 @@ Set.cards = {
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "black_crossbow", name = "Black crossbow", kind = "item", rarity = "uncommon",
+        id = "black_crossbow", name = "Black crossbow", kind = "item", rarity = "common",
         desc = "A black crossbow.",
         art = { item = "TRAIL_BLACK_CROSSBOW", cam = { yaw = -5.93, pitch = 0.96, dist = 225, ty = 6, tx = 21 } },
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "offhand_black_crossbow", name = "Off-hand black crossbow", kind = "item", rarity = "uncommon",
+        id = "offhand_black_crossbow", name = "Off-hand black crossbow", kind = "item", rarity = "common",
         desc = "An off-hand black crossbow.",
         art = { item = "TRAIL_BLACK_CROSSBOW_O", cam = { yaw = -2.56, pitch = 0.08, dist = 205, ty = 9, tx = -6 } },
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "willow_composite_bow", name = "Willow composite bow", kind = "item", rarity = "uncommon",
+        id = "willow_composite_bow", name = "Willow composite bow", kind = "item", rarity = "common",
         desc = "A powerful bow made from willow.",
         art = { item = "TRAIL_COMPOSITE_BOW_WILLOW", cam = { yaw = -1.61, pitch = 0.98, dist = 532, ty = -51, tx = -5 } },
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
@@ -128,13 +128,13 @@ Set.cards = {
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "magic_composite_bow", name = "Magic composite bow", kind = "item", rarity = "rare",
+        id = "magic_composite_bow", name = "Magic composite bow", kind = "item", rarity = "common",
         desc = "A powerful bow made from magic logs.",
         art = { item = "TRAIL_COMPOSITE_BOW_MAGIC", cam = { yaw = -1.61, pitch = 0.98, dist = 532, ty = -51, tx = -5 } },
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "yew_composite_bow", name = "Yew composite bow", kind = "item", rarity = "uncommon",
+        id = "yew_composite_bow", name = "Yew composite bow", kind = "item", rarity = "common",
         desc = "A powerful bow made from yew.",
         art = { item = "TRAIL_COMPOSITE_BOW_YEW", cam = { yaw = -1.61, pitch = 0.98, dist = 532, ty = -51, tx = -5 } },
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "longbow", "treasure_trail" }, membership = { "p2p" } },
@@ -146,13 +146,13 @@ Set.cards = {
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "shortbow", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "bat_staff", name = "Bat staff", kind = "item", rarity = "uncommon",
+        id = "bat_staff", name = "Bat staff", kind = "item", rarity = "epic",
         desc = "This air staff displays the carved head of a fierce bat.",
         art = { item = "TRAIL_ANIMAL_AIR_STAFF", cam = { yaw = 0.19, ty = 125, tx = -73 } },
         tags = { skills = { "magic", "attack", "prayer", "defence" }, category = { "weapon", "magic_gear", "staff", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "cat_staff", name = "Cat staff", kind = "item", rarity = "uncommon",
+        id = "cat_staff", name = "Cat staff", kind = "item", rarity = "epic",
         desc = "This staff displays the carved head of an inquisitive cat.",
         art = { item = "TRAIL_ANIMAL_PLAIN_STAFF", cam = { yaw = 0.35, pitch = 1.37, dist = 273, ty = 154, tx = -44 } },
         tags = { skills = { "magic", "attack", "prayer", "defence" }, category = { "weapon", "magic_gear", "staff", "treasure_trail" }, membership = { "p2p" } },
@@ -170,7 +170,7 @@ Set.cards = {
         tags = { skills = { "magic" }, category = { "weapon", "magic_gear", "staff", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "penguin_staff", name = "Penguin staff", kind = "item", rarity = "uncommon",
+        id = "penguin_staff", name = "Penguin staff", kind = "item", rarity = "epic",
         desc = "This water staff displays the carved head of a proud penguin.",
         art = { item = "TRAIL_ANIMAL_WATER_STAFF", cam = { yaw = 0.15, ty = 124, tx = -63 } },
         tags = { skills = { "magic", "attack", "prayer", "defence" }, category = { "weapon", "magic_gear", "staff", "treasure_trail" }, membership = { "p2p" } },
@@ -260,7 +260,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "bandos_mitre", name = "Bandos mitre", kind = "item", rarity = "epic",
+        id = "bandos_mitre", name = "Bandos mitre", kind = "item", rarity = "rare",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_BANDOS_MITRE", cam = { yaw = -6.95, pitch = 0.39, dist = 186, ty = 33, tx = 6 } },
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -296,19 +296,19 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_full_helm_ancient", name = "Rune full helm (Ancient)", kind = "item", rarity = "uncommon",
+        id = "rune_full_helm_ancient", name = "Rune full helm (Ancient)", kind = "item", rarity = "epic",
         desc = "A rune full helmet in the colours of Zaros.",
         art = { item = "RUNE_FULL_HELM_ZAROS", cam = { yaw = -6.76, pitch = 0.22, dist = 273, ty = 78, tx = 13 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_full_helm_armadyl", name = "Rune full helm (Armadyl)", kind = "item", rarity = "uncommon",
+        id = "rune_full_helm_armadyl", name = "Rune full helm (Armadyl)", kind = "item", rarity = "epic",
         desc = "A rune full helmet in the colours of Armadyl.",
         art = { item = "RUNE_FULL_HELM_ARMADYL", cam = { yaw = -6.76, pitch = 0.22, dist = 273, ty = 78, tx = 13 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_full_helm_bandos", name = "Rune full helm (Bandos)", kind = "item", rarity = "uncommon",
+        id = "rune_full_helm_bandos", name = "Rune full helm (Bandos)", kind = "item", rarity = "epic",
         desc = "A rune full helmet in the colours of Bandos.",
         art = { item = "RUNE_FULL_HELM_BANDOS", cam = { yaw = -6.76, pitch = 0.22, dist = 273, ty = 78, tx = 13 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -326,13 +326,13 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "rune_full_helm_guthix", name = "Rune full helm (Guthix)", kind = "item", rarity = "uncommon",
+        id = "rune_full_helm_guthix", name = "Rune full helm (Guthix)", kind = "item", rarity = "rare",
         desc = "A rune full helmet in the colours of Guthix.",
         art = { item = "RUNE_FULL_HELM_GUTHIX", cam = { yaw = -6.76, pitch = 0.22, dist = 273, ty = 78, tx = 13 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_full_helm_saradomin", name = "Rune full helm (Saradomin)", kind = "item", rarity = "uncommon",
+        id = "rune_full_helm_saradomin", name = "Rune full helm (Saradomin)", kind = "item", rarity = "rare",
         desc = "A rune full helmet in the colours of Saradomin.",
         art = { item = "RUNE_FULL_HELM_SARADOMIN", cam = { yaw = -6.76, pitch = 0.22, dist = 273, ty = 78, tx = 13 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -344,7 +344,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_full_helm_zamorak", name = "Rune full helm (Zamorak)", kind = "item", rarity = "uncommon",
+        id = "rune_full_helm_zamorak", name = "Rune full helm (Zamorak)", kind = "item", rarity = "rare",
         desc = "A rune full helmet in the colours of Zamorak.",
         art = { item = "RUNE_FULL_HELM_ZAMORAK", cam = { yaw = -6.76, pitch = 0.22, dist = 273, ty = 78, tx = 13 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -404,7 +404,7 @@ Set.cards = {
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "guthix_mitre", name = "Guthix mitre", kind = "item", rarity = "rare",
+        id = "guthix_mitre", name = "Guthix mitre", kind = "item", rarity = "uncommon",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_GUTHIX_MITRE", cam = { yaw = -6.92, pitch = 0.32, dist = 205, ty = 35, tx = 10 } },
         tags = { skills = { "defence", "prayer" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -488,7 +488,7 @@ Set.cards = {
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "enchanted_hat", name = "Enchanted hat", kind = "item", rarity = "uncommon",
+        id = "enchanted_hat", name = "Enchanted hat", kind = "item", rarity = "rare",
         desc = "A three-pointed hat of magic.",
         art = { item = "ENCHANTED_HAT", cam = { yaw = -7.01, pitch = 0.50, dist = 248, ty = 54, tx = 4 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -560,7 +560,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "bandos_robe_top", name = "Bandos robe top", kind = "item", rarity = "epic",
+        id = "bandos_robe_top", name = "Bandos robe top", kind = "item", rarity = "uncommon",
         desc = "A vestment of Bandos.",
         art = { item = "TRAIL_BANDOS_ROBE_T", cam = { ty = -10, tx = 2 } },
         tags = { skills = { "defence", "prayer" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -596,19 +596,19 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platebody_ancient", name = "Rune platebody (Ancient)", kind = "item", rarity = "uncommon",
+        id = "rune_platebody_ancient", name = "Rune platebody (Ancient)", kind = "item", rarity = "epic",
         desc = "A rune platebody in the colours of Zaros.",
         art = { item = "RUNE_PLATEBODY_ZAROS", cam = { dist = 399, ty = -6, tx = -0 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platebody_armadyl", name = "Rune platebody (Armadyl)", kind = "item", rarity = "uncommon",
+        id = "rune_platebody_armadyl", name = "Rune platebody (Armadyl)", kind = "item", rarity = "epic",
         desc = "A rune platebody in the colours of Armadyl.",
         art = { item = "RUNE_PLATEBODY_ARMADYL", cam = { dist = 399, ty = -6, tx = -0 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platebody_bandos", name = "Rune platebody (Bandos)", kind = "item", rarity = "uncommon",
+        id = "rune_platebody_bandos", name = "Rune platebody (Bandos)", kind = "item", rarity = "epic",
         desc = "A rune platebody in the colours of Bandos.",
         art = { item = "RUNE_PLATEBODY_BANDOS", cam = { dist = 399, ty = -6, tx = -0 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -620,7 +620,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platebody_guthix", name = "Rune platebody (Guthix)", kind = "item", rarity = "uncommon",
+        id = "rune_platebody_guthix", name = "Rune platebody (Guthix)", kind = "item", rarity = "rare",
         desc = "A rune platebody in the colours of Guthix.",
         art = { item = "RUNE_PLATEBODY_GUTHIX", cam = { dist = 399, ty = -6, tx = -0 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -656,7 +656,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platebody_saradomin", name = "Rune platebody (Saradomin)", kind = "item", rarity = "uncommon",
+        id = "rune_platebody_saradomin", name = "Rune platebody (Saradomin)", kind = "item", rarity = "rare",
         desc = "A rune platebody in the colours of Saradomin.",
         art = { item = "RUNE_PLATEBODY_SARADOMIN", cam = { dist = 399, ty = -6, tx = -0 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -668,7 +668,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platebody_zamorak", name = "Rune platebody (Zamorak)", kind = "item", rarity = "uncommon",
+        id = "rune_platebody_zamorak", name = "Rune platebody (Zamorak)", kind = "item", rarity = "rare",
         desc = "A rune platebody in the colours of Zamorak.",
         art = { item = "RUNE_PLATEBODY_ZAMORAK", cam = { dist = 399, ty = -6, tx = -0 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -752,13 +752,13 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blue_dragonhide_body_g", name = "Blue dragonhide body (g)", kind = "item", rarity = "uncommon",
+        id = "blue_dragonhide_body_g", name = "Blue dragonhide body (g)", kind = "item", rarity = "rare",
         desc = "Made from 100% real dragonhide, with colourful trim!",
         art = { item = "BLUE_DRAGONHIDE_BODY_TRIM_GOLD", cam = { dist = 363, ty = -5, tx = 3 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "blue_dragonhide_body_t", name = "Blue dragonhide body (t)", kind = "item", rarity = "uncommon",
+        id = "blue_dragonhide_body_t", name = "Blue dragonhide body (t)", kind = "item", rarity = "rare",
         desc = "Made from 100% real dragonhide, with colourful trim!",
         art = { item = "BLUE_DRAGONHIDE_BODY_TRIM", cam = { dist = 363, ty = -5, tx = 3 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -776,7 +776,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "robin_hood_tunic", name = "Robin Hood tunic", kind = "item", rarity = "uncommon",
+        id = "robin_hood_tunic", name = "Robin Hood tunic", kind = "item", rarity = "epic",
         desc = "A tunic for the expert ranger.",
         art = { item = "TRAIL17_ROBIN_HOOD_TORSO", cam = { dist = 363, ty = -25, tx = 3 } },
         tags = { skills = { "ranged" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -818,7 +818,7 @@ Set.cards = {
         tags = { skills = { "defence", "prayer" }, category = { "armour", "body", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "enchanted_top", name = "Enchanted top", kind = "item", rarity = "uncommon",
+        id = "enchanted_top", name = "Enchanted top", kind = "item", rarity = "rare",
         desc = "Enchanted wizard robes.",
         art = { item = "ENCHANTED_ROBETOP", cam = { yaw = -0.01, dist = 363, ty = -17, tx = -2 } },
         tags = { skills = { "defence" }, category = { "armour", "body", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -992,7 +992,7 @@ Set.cards = {
         tags = { category = { "armour", "legs", "hybrid_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "ancient_robe_legs", name = "Ancient robe legs", kind = "item", rarity = "epic",
+        id = "ancient_robe_legs", name = "Ancient robe legs", kind = "item", rarity = "uncommon",
         desc = "Legs that match the Zaros vestment.",
         art = { item = "TRAIL_ZAROS_ROBE_L", cam = { yaw = -0.02, dist = 531, ty = -2, tx = -2 } },
         tags = { skills = { "defence", "prayer" }, category = { "armour", "legs", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -1076,13 +1076,13 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blue_dragonhide_chaps_g", name = "Blue dragonhide chaps (g)", kind = "item", rarity = "uncommon",
+        id = "blue_dragonhide_chaps_g", name = "Blue dragonhide chaps (g)", kind = "item", rarity = "rare",
         desc = "Made from 100% real dragonhide, with colourful trim!",
         art = { item = "BLUE_DRAGONHIDE_CHAPS_TRIM_GOLD", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "blue_dragonhide_chaps_t", name = "Blue dragonhide chaps (t)", kind = "item", rarity = "uncommon",
+        id = "blue_dragonhide_chaps_t", name = "Blue dragonhide chaps (t)", kind = "item", rarity = "rare",
         desc = "Made from 100% real dragonhide, with colourful trim!",
         art = { item = "BLUE_DRAGONHIDE_CHAPS_TRIM", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1100,7 +1100,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "robin_hood_tights", name = "Robin Hood tights", kind = "item", rarity = "uncommon",
+        id = "robin_hood_tights", name = "Robin Hood tights", kind = "item", rarity = "epic",
         desc = "Freedom of movement is especially important for the ranger on the go.",
         art = { item = "TRAIL17_ROBIN_HOOD_LEGS", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "ranged" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -1238,7 +1238,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "bandos_robe_legs", name = "Bandos robe legs", kind = "item", rarity = "epic",
+        id = "bandos_robe_legs", name = "Bandos robe legs", kind = "item", rarity = "uncommon",
         desc = "Legs that match the Bandos vestment.",
         art = { item = "TRAIL_BANDOS_ROBE_L", cam = { yaw = -0.02, dist = 581, ty = 9, tx = 9 } },
         tags = { skills = { "defence", "prayer" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -1304,19 +1304,19 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platelegs_ancient", name = "Rune platelegs (Ancient)", kind = "item", rarity = "uncommon",
+        id = "rune_platelegs_ancient", name = "Rune platelegs (Ancient)", kind = "item", rarity = "epic",
         desc = "Rune platelegs in the colours of Zaros.",
         art = { item = "RUNE_PLATELEGS_ZAROS", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platelegs_armadyl", name = "Rune platelegs (Armadyl)", kind = "item", rarity = "uncommon",
+        id = "rune_platelegs_armadyl", name = "Rune platelegs (Armadyl)", kind = "item", rarity = "epic",
         desc = "Rune platelegs in the colours of Armadyl.",
         art = { item = "RUNE_PLATELEGS_ARMADYL", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platelegs_bandos", name = "Rune platelegs (Bandos)", kind = "item", rarity = "uncommon",
+        id = "rune_platelegs_bandos", name = "Rune platelegs (Bandos)", kind = "item", rarity = "epic",
         desc = "Rune platelegs in the colours of Bandos.",
         art = { item = "RUNE_PLATELEGS_BANDOS", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1334,7 +1334,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "rune_platelegs_guthix", name = "Rune platelegs (Guthix)", kind = "item", rarity = "uncommon",
+        id = "rune_platelegs_guthix", name = "Rune platelegs (Guthix)", kind = "item", rarity = "rare",
         desc = "Rune platelegs in the colours of Guthix.",
         art = { item = "RUNE_PLATELEGS_GUTHIX", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1370,7 +1370,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platelegs_saradomin", name = "Rune platelegs (Saradomin)", kind = "item", rarity = "uncommon",
+        id = "rune_platelegs_saradomin", name = "Rune platelegs (Saradomin)", kind = "item", rarity = "rare",
         desc = "Rune platelegs in the colours of Saradomin.",
         art = { item = "RUNE_PLATELEGS_SARADOMIN", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1382,25 +1382,25 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_platelegs_zamorak", name = "Rune platelegs (Zamorak)", kind = "item", rarity = "uncommon",
+        id = "rune_platelegs_zamorak", name = "Rune platelegs (Zamorak)", kind = "item", rarity = "rare",
         desc = "Rune platelegs in the colours of Zamorak.",
         art = { item = "RUNE_PLATELEGS_ZAMORAK", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_plateskirt_ancient", name = "Rune plateskirt (Ancient)", kind = "item", rarity = "uncommon",
+        id = "rune_plateskirt_ancient", name = "Rune plateskirt (Ancient)", kind = "item", rarity = "epic",
         desc = "A rune plateskirt in the colours of Zaros.",
         art = { item = "RUNE_PLATESKIRT_ZAROS", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_plateskirt_armadyl", name = "Rune plateskirt (Armadyl)", kind = "item", rarity = "uncommon",
+        id = "rune_plateskirt_armadyl", name = "Rune plateskirt (Armadyl)", kind = "item", rarity = "epic",
         desc = "A rune plateskirt in the colours of Armadyl.",
         art = { item = "RUNE_PLATESKIRT_ARMADYL", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_plateskirt_bandos", name = "Rune plateskirt (Bandos)", kind = "item", rarity = "uncommon",
+        id = "rune_plateskirt_bandos", name = "Rune plateskirt (Bandos)", kind = "item", rarity = "epic",
         desc = "A rune plateskirt in the colours of Bandos.",
         art = { item = "RUNE_PLATESKIRT_BANDOS", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1418,7 +1418,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "rune_plateskirt_guthix", name = "Rune plateskirt (Guthix)", kind = "item", rarity = "uncommon",
+        id = "rune_plateskirt_guthix", name = "Rune plateskirt (Guthix)", kind = "item", rarity = "rare",
         desc = "A rune plateskirt in the colours of Guthix.",
         art = { item = "RUNE_PLATESKIRT_GUTHIX", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1454,7 +1454,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_plateskirt_saradomin", name = "Rune plateskirt (Saradomin)", kind = "item", rarity = "uncommon",
+        id = "rune_plateskirt_saradomin", name = "Rune plateskirt (Saradomin)", kind = "item", rarity = "rare",
         desc = "A rune plateskirt in the colours of Saradomin.",
         art = { item = "RUNE_PLATESKIRT_SARADOMIN", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1466,7 +1466,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_plateskirt_zamorak", name = "Rune plateskirt (Zamorak)", kind = "item", rarity = "uncommon",
+        id = "rune_plateskirt_zamorak", name = "Rune plateskirt (Zamorak)", kind = "item", rarity = "rare",
         desc = "A rune plateskirt in the colours of Zamorak.",
         art = { item = "RUNE_PLATESKIRT_ZAMORAK", cam = { yaw = -0.02, dist = 528, ty = 17, tx = -5 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1574,19 +1574,19 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_kiteshield_ancient", name = "Rune kiteshield (Ancient)", kind = "item", rarity = "uncommon",
+        id = "rune_kiteshield_ancient", name = "Rune kiteshield (Ancient)", kind = "item", rarity = "epic",
         desc = "A rune kiteshield in the colours of Zaros.",
         art = { item = "RUNE_KITESHIELD_ZAROS", cam = { dist = 585, ty = -17, tx = 0 } },
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_kiteshield_armadyl", name = "Rune kiteshield (Armadyl)", kind = "item", rarity = "uncommon",
+        id = "rune_kiteshield_armadyl", name = "Rune kiteshield (Armadyl)", kind = "item", rarity = "epic",
         desc = "A rune kiteshield in the colours of Armadyl.",
         art = { item = "RUNE_KITESHIELD_ARMADYL", cam = { dist = 585, ty = -17, tx = 0 } },
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_kiteshield_bandos", name = "Rune kiteshield (Bandos)", kind = "item", rarity = "uncommon",
+        id = "rune_kiteshield_bandos", name = "Rune kiteshield (Bandos)", kind = "item", rarity = "epic",
         desc = "A rune kiteshield in the colours of Bandos.",
         art = { item = "RUNE_KITESHIELD_BANDOS", cam = { dist = 585, ty = -1, tx = 0 } },
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1604,13 +1604,13 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "rune_kiteshield_guthix", name = "Rune kiteshield (Guthix)", kind = "item", rarity = "uncommon",
+        id = "rune_kiteshield_guthix", name = "Rune kiteshield (Guthix)", kind = "item", rarity = "rare",
         desc = "A rune kiteshield in the colours of Guthix.",
         art = { item = "RUNE_KITESHIELD_GUTHIX", cam = { dist = 707, ty = -10, tx = -3 } },
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_kiteshield_saradomin", name = "Rune kiteshield (Saradomin)", kind = "item", rarity = "uncommon",
+        id = "rune_kiteshield_saradomin", name = "Rune kiteshield (Saradomin)", kind = "item", rarity = "rare",
         desc = "A rune kiteshield in the colours of Saradomin.",
         art = { item = "RUNE_KITESHIELD_SARADOMIN", cam = { dist = 585, ty = -42, tx = -4 } },
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
@@ -1622,7 +1622,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "rune_kiteshield_zamorak", name = "Rune kiteshield (Zamorak)", kind = "item", rarity = "uncommon",
+        id = "rune_kiteshield_zamorak", name = "Rune kiteshield (Zamorak)", kind = "item", rarity = "rare",
         desc = "A rune kiteshield in the colours of Zamorak.",
         art = { item = "RUNE_KITESHIELD_ZAMORAK", cam = { dist = 531, ty = -12, tx = 0 } },
         tags = { skills = { "defence" }, category = { "armour", "off_hand", "melee_gear", "treasure_trail" }, membership = { "f2p" } },
