@@ -26,6 +26,7 @@ local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
+local DbLimit = require("dev/dblimit")
 
 local Dev = {}
 
@@ -45,6 +46,34 @@ end
 function Dev.onXp(skill, gain, state, earned, ticksSinceLoad)
     log("skill", skill, "gained", gain, "xp | pool:", state.xpPool, "| credits earned:", earned,
         "| total:", state.credits, "| ticks since load:", ticksSinceLoad)
+end
+
+-- "Delete saves" asks twice: the first click arms it for about ten seconds, the second does it.
+local resetArmedUntil = 0
+local logicTicks = 0
+Event.Logic.Subscribe("cardcollector_dev_reset", function()
+    logicTicks = logicTicks + 1
+end)
+
+local function deleteSaves(api, refresh)
+    if logicTicks > resetArmedUntil then
+        resetArmedUntil = logicTicks + 500       -- 50 ticks a second
+        log("DEV: click Delete saves again within 10 seconds to delete EVERY collection of this dev copy")
+        return
+    end
+    resetArmedUntil = 0
+    local deleted, why = Storage.deleteAllCollections()
+    if deleted == nil then
+        log("DEV: saves NOT deleted:", why)
+        return
+    end
+    log("DEV:", deleted, "save keys deleted. Log out and in again (the plugin still holds the old collection in memory)")
+    local state = api.getState()
+    if state ~= nil then
+        state.dirty = false                      -- or the next save would write the old one back
+        state.dirtyBuckets = {}
+    end
+    refresh()
 end
 
 -- The extra buttons for the Home window. `api` is the plugin's api (see main.lua) and
@@ -67,6 +96,8 @@ function Dev.buttons(api, refresh)
                 refresh()
             end
         end },
+        { label = "DB limit probe", action = DbLimit.run },
+        { label = "Delete saves (twice)", action = function() deleteSaves(api, refresh) end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
         { label = "Anim check", action = Builder.checkAnims },

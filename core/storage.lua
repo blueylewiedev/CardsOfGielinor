@@ -4,12 +4,23 @@
 -- PersistentDB is stored per plugin, not per account, so every character gets its own
 -- entry, keyed by character name. Without that, two accounts on one computer would
 -- share a single collection.
+--
+-- The client refuses a single value that is too big (see dev/dblimit.lua for the probe that finds
+-- where), and a full collection has thousands of entries. So a character has one main key (credits,
+-- XP pool, difficulty, stats) and the owned cards are spread over BUCKETS more keys, the bucket
+-- chosen by a hash of the card's id. A pack only rewrites the buckets it changed.
 
 local Cards = require("core/cards")
 
 local Storage = {}
 
-local DATA_VERSION = 3
+-- The layout of a save. Stays at 1 until there is a release candidate.
+local DATA_VERSION = 1
+
+-- How many keys the owned cards are spread over. A character's saved count is read back, so changing
+-- this loses nothing (the next save rewrites the buckets), but it is a lot of rewriting: leave it.
+local BUCKETS = 16
+Storage.BUCKETS = BUCKETS
 
 -- Added to the end of every key while the development tools are present (main.lua sets it).
 -- The dev copy of the plugin and a released copy on the same computer have the same plugin name,
@@ -38,6 +49,24 @@ function Storage.keyForTracking(trackingId)
     return "tracking_" .. clean(trackingId) .. profileSuffix
 end
 
+-- The key of one bucket of a collection (`key` is the main key). It starts with "bucket", which no main
+-- key does, so no character name can make a main key that is also somebody's bucket.
+function Storage.bucketKey(key, bucket)
+    return "bucket" .. bucket .. "_" .. key
+end
+
+-- Which bucket a variant key ("<card id>|<finish>") is kept in, from 1 to `count` (BUCKETS if omitted). It
+-- depends only on the card's id, so all of a card's variants share a bucket and moving cards between deck
+-- files changes nothing.
+function Storage.bucketOf(variantKey, count)
+    local cardId = Cards.parseKey(variantKey) or variantKey
+    local hash = 5381
+    for i = 1, #cardId do
+        hash = (hash * 33 + string.byte(cardId, i)) % 4294967296
+    end
+    return hash % (count or BUCKETS) + 1
+end
+
 -- A fresh, empty collection.
 --   credits : spendable credits
 --   difficulty : id of the pack price tier the player chose (see core/packs.lua), or nil
@@ -48,9 +77,12 @@ end
 --   stats   : lifetime numbers for the Stats window (see newStats). Only counted from the
 --             time they were added, so packs opened before that are not in them.
 --   dirty   : true when there are unsaved changes (never written to the database)
+--   dirtyBuckets : { [bucket] = true } for the buckets of `owned` that changed since they were saved
+--   staleBuckets : how many buckets the loaded save was spread over, if that is not BUCKETS (the keys
+--             past the new count are deleted once everything is saved again), else nil
 function Storage.newState()
     return { version = DATA_VERSION, credits = 0, xpPool = 0, difficulty = nil, owned = {},
-        stats = Storage.newStats(), dirty = false }
+        stats = Storage.newStats(), dirty = false, dirtyBuckets = {} }
 end
 
 -- Lifetime statistics.
@@ -77,6 +109,23 @@ local function loadCounts(saved)
     return counts
 end
 
+-- Adds the owned entries of one saved table to `owned`, keeping only sound ones: a "<card id>|<finish>"
+-- key with a known finish and a positive count. A card id the deck does not have is kept, so a card that
+-- goes missing and comes back still has its copies.
+local function loadOwned(owned, saved)
+    if type(saved) ~= "table" then
+        return
+    end
+    for variantKey, count in pairs(saved) do
+        if type(variantKey) == "string" and type(count) == "number" and count > 0 then
+            local _, finish = Cards.parseKey(variantKey)
+            if finish ~= nil and Cards.finishes[finish] ~= nil then
+                owned[variantKey] = (owned[variantKey] or 0) + math.floor(count)
+            end
+        end
+    end
+end
+
 -- Reads the collection stored under a key (see keyForName / keyForTracking), or returns a
 -- fresh one if nothing was saved yet.
 -- Values are checked and rounded so a damaged or hand-edited entry cannot crash the plugin.
@@ -96,31 +145,21 @@ function Storage.load(key)
     if type(saved.difficulty) == "string" then
         state.difficulty = saved.difficulty
     end
-    if type(saved.owned) == "table" then
-        for key, count in pairs(saved.owned) do
-            if type(key) == "string" and type(count) == "number" and count > 0 then
-                -- Older saves used other key shapes. Version 1 saved plain card ids (normal
-                -- finish); version 2 saved "<id>|<art>|<finish>", and art styles no longer
-                -- exist, so that becomes "<id>|<finish>" and any copies add together.
-                local variantKey = key
-                local oldId, _, oldFinish = string.match(key, "^([^|]+)|([^|]+)|([^|]+)$")
-                if oldId ~= nil then
-                    variantKey = oldId .. "|" .. oldFinish
-                elseif Cards.parseKey(key) == nil then
-                    variantKey = key .. "|normal"
-                end
-                -- Reverse holo and holo cards were taken out of the game, so copies saved
-                -- with those finishes count as normal copies.
-                local retiredId, retiredFinish = Cards.parseKey(variantKey)
-                if retiredFinish == "reverse" or retiredFinish == "holo" then
-                    variantKey = retiredId .. "|normal"
-                end
-                -- Anything that still is not a known finish is dropped.
-                local _, finish = Cards.parseKey(variantKey)
-                if finish ~= nil and Cards.finishes[finish] ~= nil then
-                    state.owned[variantKey] = (state.owned[variantKey] or 0) + math.floor(count)
-                end
-            end
+
+    -- The owned cards, from as many buckets as the save was made with.
+    local buckets = BUCKETS
+    if type(saved.buckets) == "number" and saved.buckets >= 1 then
+        buckets = math.floor(saved.buckets)
+    end
+    for bucket = 1, buckets do
+        loadOwned(state.owned, PersistentDB:GetStructuredData(Storage.bucketKey(key, bucket)))
+    end
+    if buckets ~= BUCKETS then
+        -- Saved under another count: every card moves, so write everything again.
+        state.staleBuckets = buckets
+        state.dirty = true
+        for bucket = 1, BUCKETS do
+            state.dirtyBuckets[bucket] = true
         end
     end
 
@@ -138,20 +177,90 @@ function Storage.load(key)
     return state
 end
 
--- Writes the collection under a key. Returns true if it was saved.
+-- Writes the collection under a key: the buckets that changed first, then the main key. Returns true if
+-- everything was saved; a write that the database refuses is logged and left dirty, so the next save
+-- tries it again.
 function Storage.save(key, state)
+    local allOk = true
+
+    -- Sort the owned cards into the dirty buckets.
+    local pending = {}
+    for bucket in pairs(state.dirtyBuckets) do
+        pending[bucket] = {}
+    end
+    if next(pending) ~= nil then
+        for variantKey, count in pairs(state.owned) do
+            local into = pending[Storage.bucketOf(variantKey)]
+            if into ~= nil then
+                into[variantKey] = count
+            end
+        end
+    end
+    for bucket, entries in pairs(pending) do
+        local bucketKey = Storage.bucketKey(key, bucket)
+        local ok
+        if next(entries) == nil then
+            ok = PersistentDB:Delete(bucketKey)       -- nothing in it: no key at all
+            ok = ok or not PersistentDB:CheckExists(bucketKey)
+        else
+            ok = PersistentDB:SetStructuredData(bucketKey, entries)
+        end
+        if ok then
+            state.dirtyBuckets[bucket] = nil
+        else
+            allOk = false
+            log("save FAILED for", bucketKey)
+        end
+    end
+
     local ok = PersistentDB:SetStructuredData(key, {
         version = state.version,
+        buckets = BUCKETS,
         credits = state.credits,
         xpPool = state.xpPool,
         difficulty = state.difficulty,
-        owned = state.owned,
         stats = state.stats,
     })
     if not ok then
+        allOk = false
         log("save FAILED for", key)
     end
-    return ok
+
+    -- A save made with another bucket count: its extra keys are not read any more.
+    if allOk and state.staleBuckets ~= nil then
+        for bucket = BUCKETS + 1, state.staleBuckets do
+            PersistentDB:Delete(Storage.bucketKey(key, bucket))
+        end
+        state.staleBuckets = nil
+    end
+    return allOk
+end
+
+-- Deletes every collection saved by this copy of the plugin (the keys that end with the profile suffix,
+-- so the dev copy leaves a released copy's collections alone): the main keys and their buckets. Nothing
+-- else in the database is touched. Returns how many keys were deleted, or nil and a reason. Only for the
+-- development tools; a copy with no suffix refuses.
+function Storage.deleteAllCollections()
+    if profileSuffix == "" then
+        return nil, "no profile suffix: only the dev copy may do this"
+    end
+    local doomed = {}
+    PersistentDB:IterateEntries(function(key)
+        if string.sub(key, -#profileSuffix) == profileSuffix then
+            local name = string.gsub(key, "^bucket%d+_", "")
+            if string.find(name, "^collection_") or string.find(name, "^tracking_") then
+                doomed[#doomed + 1] = key
+            end
+        end
+        return false
+    end)
+    local deleted = 0
+    for _, key in ipairs(doomed) do
+        if PersistentDB:Delete(key) then
+            deleted = deleted + 1
+        end
+    end
+    return deleted
 end
 
 -- Adds credits and marks the collection as needing a save.
@@ -219,6 +328,7 @@ end
 -- `variantKey` comes from Cards.variantKey(cardId, finish).
 function Storage.addCard(state, variantKey, count)
     state.owned[variantKey] = (state.owned[variantKey] or 0) + (count or 1)
+    state.dirtyBuckets[Storage.bucketOf(variantKey)] = true
     state.dirty = true
 end
 
