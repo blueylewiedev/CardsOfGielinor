@@ -139,6 +139,42 @@ Set.cards = {
         art = { item = "JMOD_ARMOUR_CAPE", cam = { yaw = -3.12, pitch = 0.62, dist = 942, ty = 290, tx = -4 } },
         tags = { category = { "novelty" }, membership = { "f2p" } },
     },
+    {
+        id = "mod_boots", name = "Mod boots", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_BOOTS", cam = { yaw = 0.05, pitch = 0.45, dist = 225, ty = 6, tx = 1 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
+    {
+        id = "mod_gloves", name = "Mod gloves", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_GLOVES", cam = { yaw = -3.16, dist = 643, ty = 39, tx = -2 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
+    {
+        id = "double_pirate_hooks", name = "Double pirate hooks", kind = "item", rarity = "legendary",
+        desc = "What's got two hooks and speaks pirate?",
+        art = { item = "PIRATEFINALE_DOUBLE_PIRATEHOOK", cam = { yaw = 0.76, pitch = 1.12, dist = 205, ty = -1, tx = -3 } },
+        tags = { regions = { "morytania" }, category = { "armour", "gloves", "melee_gear", "novelty" }, membership = { "p2p" } },
+    },
+    {
+        id = "pirate_hook_left", name = "Pirate hook (left)", kind = "item", rarity = "legendary",
+        desc = "You should see the shark...",
+        art = { item = "PIRATEHOOK", cam = { yaw = 0.19, pitch = 1.12, dist = 205, ty = -5, tx = 10 } },
+        tags = { regions = { "karamja" }, category = { "armour", "gloves", "melee_gear", "novelty" }, membership = { "p2p" } },
+    },
+    {
+        id = "crabclaw_and_hook", name = "Crabclaw and hook", kind = "item", rarity = "common",
+        desc = "Tied together so they don't come apart.",
+        art = { item = "PIRATE_CRABCLAW_HOOK", cam = { yaw = -0.17, pitch = 1.12, dist = 273, ty = -10, tx = -17 } },
+        tags = { regions = { "morytania" }, category = { "armour", "gloves", "melee_gear", "novelty" }, membership = { "p2p" } },
+    },
+    {
+        id = "mod_legs", name = "Mod legs", kind = "item", rarity = "legendary",
+        desc = "Makes you feel like a mod.",
+        art = { item = "JMOD_ARMOUR_LEGS", cam = { dist = 531, ty = -43, tx = 5 } },
+        tags = { category = { "novelty" }, membership = { "f2p" } },
+    },
 }
 
 return Set

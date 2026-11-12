@@ -236,10 +236,6 @@
     "rarity": "rare",
     "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
   },
-  "elite_robin_hood_hat": {
-    "rarity": "epic",
-    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
-  },
   "elite_tectonic_mask": {
     "rarity": "legendary",
     "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was epic"
@@ -536,10 +532,6 @@
     "rarity": "rare",
     "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was uncommon"
   },
-  "elite_robin_hood_tunic": {
-    "rarity": "epic",
-    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
-  },
   "refined_anima_core_body_of_zamorak": {
     "rarity": "epic",
     "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
@@ -715,5 +707,249 @@
   "soul_cape": {
     "rarity": "epic",
     "why": "Rarity as reviewed by the owner (legs, hands, feet, shield and cape batch, 2026-11-11); the rules' answer was common"
+  },
+  "masterwork_ranged_boots": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "masterwork_ranged_chaps": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "masterwork_ranged_vambraces": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "masterwork_magic_robe_bottom": {
+    "rarity": "epic",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "mod_boots": {
+    "rarity": "legendary",
+    "why": "Mod armour is legendary like the other Mod pieces (owner, 2026-11-11)"
+  },
+  "statiuss_platelegs": {
+    "rarity": "epic",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "vestas_plateskirt": {
+    "rarity": "epic",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "morrigans_leather_chaps": {
+    "rarity": "epic",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "superior_statiuss_platelegs": {
+    "rarity": "legendary",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "superior_vestas_plateskirt": {
+    "rarity": "legendary",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "superior_morrigans_leather_chaps": {
+    "rarity": "legendary",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "superior_zuriels_robe_bottom": {
+    "rarity": "legendary",
+    "why": "Statius/Vesta/Morrigan/Zuriel set: corrupt rare, normal epic, superior legendary (owner, 2026-11-10)"
+  },
+  "dracolich_chaps": {
+    "rarity": "epic",
+    "why": "Dracolich/Sirenic set: normal epic, elite legendary (owner, 2026-11-10)"
+  },
+  "trimmed_masterwork_melee_boots": {
+    "rarity": "legendary",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "trimmed_masterwork_melee_gloves": {
+    "rarity": "legendary",
+    "why": "Masterwork gear: normal masterwork epic, trimmed masterwork legendary (owner, 2026-11-10)"
+  },
+  "ghost_hunter_legs": {
+    "rarity": "rare",
+    "why": "Ghost hunter gear is rare (owner, 2026-11-11)"
+  },
+  "falador_shield_4": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one card covers all four tiers, rare (owner, 2026-11-11)"
+  },
+  "morytania_legs_4": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one card covers all four tiers, rare (owner, 2026-11-11)"
+  },
+  "anima_core_legs_of_seren": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "anima_core_legs_of_sliske": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "anima_core_legs_of_zamorak": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "anima_core_legs_of_zaros": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "refined_anima_core_legs_of_seren": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "refined_anima_core_legs_of_sliske": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "refined_anima_core_legs_of_zamorak": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "refined_anima_core_legs_of_zaros": {
+    "rarity": "epic",
+    "why": "Anima core armour: every piece epic, plain and refined (owner, 2026-11-12)"
+  },
+  "dragon_rider_chaps": {
+    "rarity": "epic",
+    "why": "Dragon Rider armour: epic, the drop rate is 1/1500 (owner, 2026-11-12)"
+  },
+  "dragon_rider_boots": {
+    "rarity": "epic",
+    "why": "Dragon Rider armour: epic, the drop rate is 1/1500 (owner, 2026-11-12)"
+  },
+  "dragon_rider_gloves": {
+    "rarity": "epic",
+    "why": "Dragon Rider armour: epic, the drop rate is 1/1500 (owner, 2026-11-12)"
+  },
+  "superior_dragon_rider_boots": {
+    "rarity": "epic",
+    "why": "Dragon Rider armour: epic, the drop rate is 1/1500 (owner, 2026-11-12)"
+  },
+  "superior_dragon_rider_gloves": {
+    "rarity": "epic",
+    "why": "Dragon Rider armour: epic, the drop rate is 1/1500 (owner, 2026-11-12)"
+  },
+  "virtus_boots": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "virtus_gloves": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "gemstone_gauntlets": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "gud_raider_shield": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "attuned_crystal_boots": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "attuned_crystal_gloves": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "attuned_crystal_legs": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "infinity_top": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "infinity_boots": {
+    "rarity": "epic",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "foot_wraps_of_the_first_necromancer": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules said epic"
+  },
+  "hand_wrap_of_the_first_necromancer": {
+    "rarity": "legendary",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules said epic"
+  },
+  "nightmare_gauntlets": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "pirate_hook_right": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "enchanted_robe": {
+    "rarity": "rare",
+    "why": "Rarity as reviewed by the owner (legs, hands, feet and shield batch, 2026-11-12); the rules gave a different answer on purpose"
+  },
+  "dark_mystic_boots": {
+    "rarity": "uncommon",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "dark_mystic_gloves": {
+    "rarity": "uncommon",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "light_mystic_boots": {
+    "rarity": "uncommon",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "light_mystic_gloves": {
+    "rarity": "uncommon",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "elite_black_platelegs": {
+    "rarity": "uncommon",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "dragonstone_gauntlets": {
+    "rarity": "rare",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "dragonstone_greaves": {
+    "rarity": "rare",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "flamtaer_robe_bottom": {
+    "rarity": "rare",
+    "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "ardougne_cloak": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
+  },
+  "karamja_gloves": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
+  },
+  "fremennik_sea_boots": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
+  },
+  "globetrotter_jacket": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_backpack": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_boots": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_arm_guards": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_shorts": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
   }
 }

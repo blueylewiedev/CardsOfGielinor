@@ -12,6 +12,11 @@ most common drop rate (dev/drop_items.json, else dev/wiki_cache/drops.json) and 
 
 - A pin in dev/rarity_pins.json (card id: rarity and why) replaces the rules' answer: it is for a
   rarity the wiki data cannot show (an effort, a tier of staff). Pins are kept when this is re-run.
+- A treasure trail reward (tagged `treasure_trail`) with a clue tier in dev/clue_tiers.json takes the rarity of that tier
+  (owner, 2026-11-12): beginner and easy common, medium uncommon, hard rare, elite and master epic. A card the other
+  rules make legendary (a third age piece, a discontinued item) stays legendary, and a pin still wins. dev/clue_tiers.json
+  holds the lowest tier the item comes from: its "Reward casket (elite)" style drop sources, else its wiki page's
+  treasure chest category or clue links (written by dev/clue_tiers.py); a card with no tier there keeps the rarity from the rules.
 - A card whose page gives no level, price, drop rate or source at all has nothing to work from, so it
   keeps its rarity, as does a card with no page in the cache, or one the tool skips. They are listed.
 
@@ -32,7 +37,9 @@ sys.path.insert(0, str(ROOT / "dev"))
 import wiki_cards as W
 
 PINS = ROOT / "dev" / "rarity_pins.json"
+CLUE_TIERS = ROOT / "dev" / "clue_tiers.json"
 ORDER = W.RARITIES
+TIER_RARITY = {"beginner": "common", "easy": "common", "medium": "uncommon", "hard": "rare", "elite": "epic", "master": "epic"}
 
 
 def page_names(name):
@@ -48,6 +55,16 @@ def page_names(name):
     out += {"Wilderness sword": ["Wilderness sword 4"], "Blisterwood crossbow": ["Blisterwood stake-thrower crossbow"],
             "coins": ["Coins"], "Rod of ivandis (1)": ["Rod of Ivandis"]}.get(name, [])
     return [title.lower() for title in dict.fromkeys(out)]
+
+
+def mapped_pages():
+    """{ card id: its wiki page title in lower case } from dev/wiki_pages.json, where a card's name is not the
+    wiki's (Blessed d'hide coif is Blessed dragonhide coif)."""
+    path = ROOT / "dev" / "wiki_pages.json"
+    if not path.exists():
+        return {}
+    return {k: v["page"].lower() for k, v in json.loads(path.read_text(encoding="utf-8")).items()
+            if isinstance(v, dict) and v.get("page")}
 
 
 def cached_pages():
@@ -66,6 +83,7 @@ def work_out(cards):
     """({ card id: {the signals, "new", "by"} } for the cards that could be rated, { card id: why not }).
     "by" is "rules", "pin" or "no signal"."""
     pages = cached_pages()
+    mapped = mapped_pages()
     drops = json.loads(W.DROPS.read_text(encoding="utf-8")) if W.DROPS.exists() else {}
     pins = {k: v for k, v in json.loads(PINS.read_text(encoding="utf-8")).items() if not k.startswith("_")}
     names, words = W.npc_names(), W.allowed_words()
@@ -86,7 +104,8 @@ def work_out(cards):
             if card["id"] in pins:
                 rated[card["id"]] = {"new": pins[card["id"]]["rarity"], "by": "pin"}
                 continue
-            page = next((pages[title] for title in page_names(card["name"]) if title in pages), None)
+            page = next((pages[title] for title in [mapped.get(card["id"])] + page_names(card["name"])
+                         if title in pages), None)
             if page is None:
                 left[card["id"]] = "no page in the cache"
                 continue
@@ -145,6 +164,30 @@ def share_with_base(cards, rated):
     return moved
 
 
+def apply_clue_tiers(cards, rated):
+    """Treasure trail rewards take the rarity of their clue tier (TIER_RARITY), unless the rules made them legendary or a
+    pin set them. `rated` is changed in place; returns how many cards it moved."""
+    tiers = {k: v for k, v in json.loads(CLUE_TIERS.read_text(encoding="utf-8")).items() if not k.startswith("_")}         if CLUE_TIERS.exists() else {}
+    moved = 0
+    for card in cards:
+        own = rated.get(card["id"])
+        tier = tiers.get(card["id"])
+        if own is None or tier is None or own["by"] == "pin" or "treasure_trail" not in card["tags"].get("category", []):
+            continue
+        rules = own.get("rules")
+        if rules == "legendary":
+            new, note = "legendary", f"{tier} clue, but legendary by the rules"
+            own["by"] = "rules"
+        else:
+            new, note = TIER_RARITY[tier], f"{tier} clue ({TIER_RARITY[tier]})"
+            own["by"] = "clue"
+        if own["new"] != new:
+            moved += 1
+        own["new"] = new
+        own["why"] = list(own.get("why", [])) + [note]
+    return moved
+
+
 def rewrite_deck(new):
     """Sets rarity = "..." on each card in `new` ({ id: rarity }) in the deck files. Returns the ids done."""
     done = set()
@@ -173,7 +216,11 @@ def main():
     cards = [c for c in json.loads((ROOT / "docs" / "cards.json").read_text(encoding="utf-8"))["cards"]
              if c["kind"] == "item"]
     rated, left = work_out(cards)
+    for r in rated.values():
+        if r["by"] == "rules":
+            r["rules"] = r["new"]       # (what the rules alone say, for the clue tier rule to check)
     shared = share_with_base(cards, rated)
+    clued = apply_clue_tiers(cards, rated)
     old = {c["id"]: c["rarity"] for c in cards}
     name = {c["id"]: c["name"] for c in cards}
     changes = {cid: r["new"] for cid, r in rated.items() if r["new"] != old[cid]}
@@ -183,7 +230,8 @@ def main():
     print("  from the rules:", sum(r["by"] == "rules" for r in rated.values()),
           "| pinned:", sum(r["by"] == "pin" for r in rated.values()),
           "| no signal, kept:", sum(r["by"] == "no signal" for r in rated.values()),
-          "| shared with a base item:", sum(r["by"] == "set" for r in rated.values()))
+          "| shared with a base item:", sum(r["by"] == "set" for r in rated.values()),
+          "| by clue tier:", sum(r["by"] == "clue" for r in rated.values()))
     print("  new spread:", ", ".join(f"{k} {100 * share[k] / len(rated):.1f}%" for k in ORDER))
     moves = collections.Counter((old[c], new) for c, new in changes.items())
     print(f"  {len(changes)} cards change:")
