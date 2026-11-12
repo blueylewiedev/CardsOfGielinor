@@ -770,6 +770,26 @@ else works from a fork. Either way:
   game. Run `prf` then `prl` in the developer console after adding new files such as images.
 - Releases are made by the project owner.
 
+### Card updates between reviews (the overlay)
+
+Plugin versions are reviewed by Jagex about every two weeks, so card fixes and new cards can also reach players
+before the next review. The plugin ships with the whole deck and, when it starts, fetches
+`docs/overlay.jsonl`: the cards that are new or different since the last version Jagex approved. Only the
+project owner does this; contributors just submit cards as usual.
+
+- **Tag each version when Jagex approves it,** as `v<version>` (for example `v0.2.0`, the version in `plugin.json`)
+  on the commit that was submitted. Players keep running the old version while the new one is in review, so the
+  overlay must stay built against the old version until the new one is approved; tagging at submission would
+  empty it too early. The overlay is built against the newest `v*` tag, so tagging the approved version empties
+  it, ready for what comes next.
+- **Build it** with `python dev/build_overlay.py` and commit `docs/overlay.jsonl` in the pull request (merging
+  to `main` publishes it through GitHub Pages). `--check` says whether the file is out of date; `--base TAG`
+  builds against another tag, for trying it out.
+- The plugin applies the overlay only if its own version is the overlay's `base`, so an overlay never reaches a
+  version it was not built for. A card in the overlay replaces the card with the same id; a deprecated one is
+  taken out of the game (players keep their copies in their saves).
+- An id that has been published, in an approved version or in an overlay, is never renamed or reused.
+
 ---
 
 ## Licence and ownership
