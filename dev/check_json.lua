@@ -128,7 +128,15 @@ do
 end
 
 -- The real card data ------------------------------------------------------------------------------------
+-- docs/cards.json is a big, real file to decode: it must decode and be a list of cards. That it matches the
+-- deck is only a warning: it is the website's copy, regenerated with python dev/build_site.py, and a pull
+-- request that changes cards does not have to regenerate it.
 do
+    local onGitHub = os.getenv("GITHUB_ACTIONS") == "true"
+    local function warn(text)
+        print(onGitHub and ("::warning title=docs/cards.json::" .. text) or ("warning: " .. text))
+    end
+
     local file = io.open("docs/cards.json", "rb")
     if file == nil then
         io.stderr:write("note: docs/cards.json not found, skipping the real-data check\n")
@@ -140,18 +148,35 @@ do
         local took = os.clock() - started
         check(data ~= nil, "docs/cards.json decodes (" .. tostring(err) .. ")")
         if data ~= nil then
-            check(#data.cards == #Cards.list, "docs/cards.json holds as many cards as the deck (" .. #data.cards
-                .. " and " .. #Cards.list .. "): run python dev/build_site.py")
-            local wrong = 0
-            for i, card in ipairs(data.cards) do
-                local own = Cards.list[i]
-                if own == nil or card.id ~= own.id or card.name ~= own.name or card.rarity ~= own.rarity
-                    or card.desc ~= own.desc then
-                    wrong = wrong + 1
+            local shaped = type(data.cards) == "table" and #data.cards > 0
+            for _, card in ipairs(shaped and data.cards or {}) do
+                if type(card) ~= "table" or type(card.id) ~= "string" then
+                    shaped = false
+                    break
                 end
             end
-            check(wrong == 0, wrong .. " cards in docs/cards.json differ from the deck")
-            print(string.format("decoded docs/cards.json: %d bytes, %d cards in %.2f s", #text, #data.cards, took))
+            check(shaped, "docs/cards.json holds a list of cards, each with a text id")
+            print(string.format("decoded docs/cards.json: %d bytes, %d cards in %.2f s", #text,
+                shaped and #data.cards or 0, took))
+
+            if shaped then
+                if #data.cards ~= #Cards.list then
+                    warn("it holds " .. #data.cards .. " cards and the deck has " .. #Cards.list
+                        .. ": run python dev/build_site.py")
+                else
+                    local wrong = 0
+                    for i, card in ipairs(data.cards) do
+                        local own = Cards.list[i]
+                        if card.id ~= own.id or card.name ~= own.name or card.rarity ~= own.rarity
+                            or card.desc ~= own.desc then
+                            wrong = wrong + 1
+                        end
+                    end
+                    if wrong > 0 then
+                        warn(wrong .. " cards differ from the deck: run python dev/build_site.py")
+                    end
+                end
+            end
         end
     end
 end
