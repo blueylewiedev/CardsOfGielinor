@@ -19,3 +19,5 @@ jobs:
         run: lua5.4 dev/check_storage.lua
       - name: JSON decoder (core/json.lua)
         run: lua5.4 dev/check_json.lua
+      - name: Cards can be added, replaced and retired (core/cards.lua)
+        run: lua5.4 dev/check_registry.lua
