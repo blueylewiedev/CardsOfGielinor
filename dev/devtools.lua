@@ -10,6 +10,8 @@ local DevTools = {}
 local COLUMNS = 2
 local BUTTON_W, BUTTON_H, GAP = 180, 28, 10          -- the width is of the drawn button; labels must fit it
 local WIDTH = COLUMNS * BUTTON_W + (COLUMNS - 1) * GAP + 44      -- the frame and padding take 44
+local LEFT = 12            -- the buttons start this far in: the content area starts near the frame's edge, so with
+                           -- none the left gap was a few pixels and the right gap about 30
 
 local buttons = {}                  -- { label, action, style, tooltip }, set by setButtons
 local window, content = nil, nil
@@ -33,7 +35,7 @@ function DevTools.show()
         rows * (BUTTON_H + GAP) + 16 + Kit.titleBarHeight(), function() DevTools.hide() end, 0.15, 0.2)
     for i, tool in ipairs(buttons) do
         local column, row = (i - 1) % COLUMNS, math.floor((i - 1) / COLUMNS)
-        Kit.buttonAt(content, tool.label, column * (BUTTON_W + GAP), 4 + row * (BUTTON_H + GAP), BUTTON_W, BUTTON_H,
+        Kit.buttonAt(content, tool.label, LEFT + column * (BUTTON_W + GAP), 4 + row * (BUTTON_H + GAP), BUTTON_W, BUTTON_H,
             tool.action, tool.style, tool.tooltip)
     end
 end
