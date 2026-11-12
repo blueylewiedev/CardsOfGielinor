@@ -26,7 +26,6 @@ local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
-local DbLimit = require("dev/dblimit")
 
 local Dev = {}
 
@@ -128,7 +127,6 @@ function Dev.buttons(api, refresh)
                 refresh()
             end
         end },
-        { label = "DB limit probe", action = DbLimit.run },
         { label = "Give every card", action = function() giveEveryCard(api, refresh) end },
         { label = "Delete saves (twice)", action = function() deleteSaves(api, refresh) end },
         { label = "Preview", action = Preview.toggle },
