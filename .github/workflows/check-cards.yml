@@ -21,3 +21,5 @@ jobs:
         run: lua5.4 dev/check_json.lua
       - name: Cards can be added, replaced and retired (core/cards.lua)
         run: lua5.4 dev/check_registry.lua
+      - name: The deck survives the overlay format (dev/export_overlay.lua)
+        run: lua5.4 dev/check_overlay.lua
