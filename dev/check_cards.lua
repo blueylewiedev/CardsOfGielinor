@@ -18,6 +18,17 @@ if not ok then
     os.exit(1)
 end
 
+-- A card, file or pack the plugin leaves out is not a failure in the released plugin, but it must not get that far.
+if #result.loadProblems > 0 then
+    local lines = {}
+    for _, message in ipairs(result.loadProblems) do
+        lines[#lines + 1] = "  " .. message
+    end
+    io.stderr:write("The deck has " .. #result.loadProblems .. " problem(s); the plugin would leave these out:\n"
+        .. table.concat(lines, "\n") .. "\n")
+    os.exit(1)
+end
+
 local long = {}
 for _, list in ipairs({ result.list, result.drafts }) do
     for _, card in ipairs(list) do

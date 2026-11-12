@@ -136,29 +136,90 @@ do
     check(snapshot() == orderBefore, "and in its old order")
 end
 
--- The deck is still strict: a bad card stops the plugin loading, and the message names the card ---------------
-local function loadDeck(cards)
+-- A deck with something wrong in it still loads: what is wrong is left out and described in Cards.loadProblems --
+-- (dev/check_cards.lua turns a problem into a failure for the pull request check, and the dev copy of the plugin
+-- stops on one; a released plugin carries on).
+-- `files` is { file name = what it returns }; `packs` is what deck/packs.lua returns.
+local function loadDeck(files, packs)
     package.loaded["core/cards"] = nil
-    package.loaded["deck/index"] = { "fake_deck_file" }
-    package.loaded["fake_deck_file"] = { cards = cards }
-    local ok, err = pcall(require, "core/cards")
-    return ok, tostring(err)
+    local names = {}
+    for name, value in pairs(files) do
+        names[#names + 1] = name
+        package.loaded[name] = nil
+        package.preload[name] = function()
+            if value == "error" then
+                error("boom")
+            end
+            return value
+        end
+    end
+    table.sort(names)
+    package.loaded["deck/index"] = names
+    package.loaded["deck/packs"] = packs or {}
+    local ok, result = pcall(require, "core/cards")
+    return ok, result
+end
+
+local function mentions(loaded, text)
+    for _, message in ipairs(loaded.loadProblems or {}) do
+        if string.find(message, text, 1, true) then
+            return true
+        end
+    end
+    return false
 end
 
 do
     local sound = { id = "a", name = "A", rarity = "common" }
-    local ok, err = loadDeck({ sound })
-    check(ok, "a sound one-card deck loads (" .. err .. ")")
-    ok, err = loadDeck({ sound, { id = "a", name = "Again", rarity = "common" } })
-    check(not ok and string.find(err, "used by two cards", 1, true) ~= nil, "a duplicate id stops the load (" .. err .. ")")
-    ok, err = loadDeck({ { id = "b", name = "B", rarity = "mythic" } })
-    check(not ok and string.find(err, "Unknown rarity on card b", 1, true) ~= nil, "an unknown rarity stops the load (" .. err .. ")")
-    ok, err = loadDeck({ { id = "c", name = "C", rarity = "common", tags = { skills = { "no_such_skill" } } } })
-    check(not ok and string.find(err, "unknown skills tag", 1, true) ~= nil, "an unknown tag word stops the load (" .. err .. ")")
-    ok, err = loadDeck({ { id = "d|e", name = "D", rarity = "common" } })
-    check(not ok and string.find(err, "cannot contain", 1, true) ~= nil, "an id with a bar stops the load (" .. err .. ")")
-    ok, err = loadDeck({ { id = "f", name = "F", rarity = "common", tags = { skills = { false } } } })
-    check(not ok and string.find(err, "must be text", 1, true) ~= nil, "a tag word that is not text stops the load (" .. err .. ")")
+    local ok, loaded = loadDeck({ fake_a = { cards = { sound } } })
+    check(ok and #loaded.list == 1 and #loaded.loadProblems == 0, "a sound one-card deck loads with no problems")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "a", name = "Again", rarity = "common" } } } })
+    check(ok and #loaded.list == 1 and loaded.byId["a"].name == "A" and mentions(loaded, "used by two cards"),
+        "a duplicate id: the first card stays and the second is reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "b", name = "B", rarity = "mythic" } } } })
+    check(ok and #loaded.list == 1 and loaded.byId["b"] == nil and mentions(loaded, "Unknown rarity on card b"),
+        "an unknown rarity: the card is left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "c", name = "C", rarity = "common",
+        tags = { skills = { "no_such_skill" } } } } } })
+    check(ok and #loaded.list == 1 and mentions(loaded, "unknown skills tag"), "an unknown tag word: left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "d|e", name = "D", rarity = "common" } } } })
+    check(ok and #loaded.list == 1 and mentions(loaded, "cannot contain"), "an id with a bar: left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "f", name = "F", rarity = "common",
+        tags = { skills = { false } } } } } })
+    check(ok and #loaded.list == 1 and mentions(loaded, "must be text"), "a tag word that is not text: left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, "not a card", { name = "no id" } } } })
+    check(ok and #loaded.list == 1 and #loaded.loadProblems == 2, "a card that is not a table, or has no id: left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "g", name = "G", art = { npc = "" },
+        tags = { skills = { "no_such_skill" } } } } } })
+    check(ok and #loaded.drafts == 0 and mentions(loaded, "unknown skills tag"), "a draft with a bad tag is left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound } }, fake_b = "error", fake_c = { cards = { { id = "h", name = "H",
+        rarity = "common" } } } })
+    check(ok and #loaded.list == 2 and mentions(loaded, "fake_b did not load"),
+        "a deck file that fails to load is left out and the other files still load")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "mine", name = "Mine", minRarity = "mythic" } })
+    check(ok and loaded.packTypes["mine"] == nil and mentions(loaded, "Unknown minRarity on pack mine"),
+        "a pack with an unknown minRarity is left out and reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "mine2", name = "M", filter = { skills = { "nope" } } } })
+    check(ok and loaded.packTypes["mine2"] == nil and mentions(loaded, "filters on unknown"), "a pack filtering on a bad word is left out")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "dup", name = "1" }, { id = "dup", name = "2" } })
+    check(ok and loaded.packTypes["dup"].name == "1" and mentions(loaded, "Duplicate pack type id dup"), "a duplicate pack id is reported")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { name = "no id" } })
+    check(ok and mentions(loaded, "has no id"), "a pack with no id is left out")
+
+    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "standard", name = "Renamed standard" } })
+    check(ok and loaded.packTypes.standard.name == "Renamed standard", "a line for a pack type that exists still changes it")
 end
 
 if failures > 0 then
