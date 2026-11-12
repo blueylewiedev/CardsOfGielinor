@@ -129,7 +129,8 @@ local function toolButtons(api, refresh)
                 refresh()
             end
         end },
-        { label = "Give every card", action = function() giveEveryCard(api, refresh) end },
+        { label = "Fill deck", action = function() giveEveryCard(api, refresh) end,
+            tooltip = "Gives one copy of every card and saves, to try a full-size collection" },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
         { label = "Anim check", action = Builder.checkAnims },
