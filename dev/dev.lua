@@ -76,6 +76,38 @@ local function deleteSaves(api, refresh)
     refresh()
 end
 
+-- Puts one normal copy of every card in the collection and saves it, to try a full-size save. The
+-- log says how many cards there are in all and how full the buckets are; log out and in again and the
+-- "loaded collection" line should show the same count. "Delete saves (twice)" clears it afterwards.
+local function giveEveryCard(api, refresh)
+    local state = api.getState()
+    if state == nil then
+        log("DEV: log in to a character first")
+        return
+    end
+    local added = 0
+    for _, card in ipairs(Cards.list) do
+        local variant = Cards.variantKey(card.id, "normal")
+        if Storage.countOwned(state, variant) == 0 then
+            Storage.addCard(state, variant, 1)
+            added = added + 1
+        end
+    end
+    local sizes = {}
+    for variant in pairs(state.owned) do
+        local bucket = Storage.bucketOf(variant)
+        sizes[bucket] = (sizes[bucket] or 0) + 1
+    end
+    local least, most = math.huge, 0
+    for bucket = 1, Storage.BUCKETS do
+        least, most = math.min(least, sizes[bucket] or 0), math.max(most, sizes[bucket] or 0)
+    end
+    api.saveNow()
+    log("DEV: gave", added, "cards;", Storage.countVariantsOwned(state), "variants owned of", #Cards.list,
+        "cards | buckets hold", least, "to", most, "entries | unsaved:", tostring(state.dirty))
+    refresh()
+end
+
 -- The extra buttons for the Home window. `api` is the plugin's api (see main.lua) and
 -- `refresh` redraws the Home window.
 function Dev.buttons(api, refresh)
@@ -97,6 +129,7 @@ function Dev.buttons(api, refresh)
             end
         end },
         { label = "DB limit probe", action = DbLimit.run },
+        { label = "Give every card", action = function() giveEveryCard(api, refresh) end },
         { label = "Delete saves (twice)", action = function() deleteSaves(api, refresh) end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
