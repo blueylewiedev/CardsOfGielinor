@@ -65,38 +65,38 @@ each region's set has its own version.
 | | Necromancy | Complete | |
 | **Armour: melee** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file |
 | | Body | Complete | Includes the treasure trail versions. Masterwork: only the plain (epic) and trimmed (legendary), no custom-fit |
-| | Legs | Not started | |
-| | Gloves | Not started | |
-| | Boots | Not started | |
-| | Off-hand | Not started | |
+| | Legs | Complete | Includes the treasure trail versions. Tetsu gear: superior only. Masterwork: plain and trimmed only, no custom-fit |
+| | Gloves | Complete | Includes the treasure trail versions. Tetsu gear: superior only. Masterwork: plain and trimmed only, no custom-fit |
+| | Boots | Complete | Includes the treasure trail versions. Tetsu gear: superior only. Masterwork: plain and trimmed only, no custom-fit |
+| | Off-hand | Complete | Includes the treasure trail versions, the heraldic shields and the Dungeoneering shields |
 | | Back | Complete | |
 | **Armour: ranged** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file. Masterwork: plain only, no custom-fit |
 | | Body | Complete | Includes the treasure trail versions. Masterwork: plain only, no custom-fit |
-| | Legs | Not started | |
-| | Gloves | Not started | |
-| | Boots | Not started | |
-| | Off-hand | Not started | |
+| | Legs | Complete | Includes the treasure trail versions. Death Lotus gear: superior only. Masterwork: plain only, no custom-fit |
+| | Gloves | Complete | Includes the treasure trail versions. Death Lotus gear: superior only. Masterwork: plain only, no custom-fit |
+| | Boots | Complete | Includes the treasure trail versions. Death Lotus gear: superior only. Masterwork: plain only, no custom-fit |
+| | Off-hand | Complete | Includes the treasure trail versions |
 | | Back | Complete | |
 | **Armour: magic** | Helmet | Complete | Includes the treasure trail versions, filed in the treasure trail file. Masterwork: plain only, no custom-fit |
 | | Body | Complete | Includes the treasure trail versions. Masterwork: plain only, no custom-fit |
-| | Legs | Not started | |
-| | Gloves | Not started | |
-| | Boots | Not started | |
-| | Off-hand | Not started | |
+| | Legs | Complete | Includes the treasure trail versions. Seasinger gear: superior only. Masterwork: plain only, no custom-fit |
+| | Gloves | Complete | Includes the treasure trail versions. Seasinger gear: superior only. Masterwork: plain only, no custom-fit |
+| | Boots | Complete | Includes the treasure trail versions. Seasinger gear: superior only. Masterwork: plain only, no custom-fit |
+| | Off-hand | Complete | Includes the treasure trail versions |
 | | Back | Complete | |
 | **Armour: necromancy** | Helmet | Complete | Same slots as melee |
 | | Body | Complete | Includes the treasure trail versions |
-| | Legs | Not started | |
-| | Gloves | Not started | |
-| | Boots | Not started | |
-| | Off-hand | Not started | |
+| | Legs | Complete | |
+| | Gloves | Complete | |
+| | Boots | Complete | |
+| | Off-hand | Complete | |
 | | Back | Complete | |
 | **Armour: hybrid** | Helmet | Complete | Pieces with no single combat style (`hybrid_gear`) |
 | | Body | Complete |  |
-| | Legs | Not started |  |
-| | Gloves | Not started |  |
-| | Boots | Not started |  |
-| | Off-hand | Not started |  |
+| | Legs | Complete | |
+| | Gloves | Complete | |
+| | Boots | Complete | |
+| | Off-hand | Complete | |
 | | Back | Complete | Max, completionist and quest capes (one card for each version, hooded art), the achievement diary cloaks (one card for all tiers) and the clan, Warpriest and treasure trail capes. Not carded: milestone capes, the plain master capes (the skill cape cards cover the 99 and master cape), Soul Wars and tutorial capes |
 | **Skill outfits** | Helmet | Complete | Skill outfits and skill capes: `skill_outfit`, no combat style. All carded; Farmer's hat and Shaman's headdress are Treasure Hunter items now obtainable in game (the tool lets them through) |
 | | Body | Complete | Includes the Treasure Hunter pieces now obtainable in game; the First age and a few other outfits' pieces are not carded yet |

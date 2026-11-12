@@ -187,10 +187,30 @@ Set.cards = {
         art = { item = "RAG_RAM_HELM", cam = { yaw = -5.81, pitch = -0.23, dist = 248, ty = 73, tx = -4 } },
         tags = { skills = { "defence" }, category = { "armour", "helmet", "fashion" }, membership = { "p2p" } },
     },
-    { id = "veteran_cape_10_year", name = "Veteran cape (10 year)", kind = "item", rarity = "legendary", desc = "A cape worn by those who've spent ten or more years in Gielinor.", art = { item = "SKILLCAPE_VETERAN_10_YEAR", cam = { yaw = -2.31, dist = 483, ty = -26, tx = 3 } }, tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } } },
-    { id = "veteran_cape_15_year", name = "Veteran cape (15 year)", kind = "item", rarity = "common", desc = "A cape worn by those who've spent fifteen or more years in Gielinor.", art = { item = "SKILLCAPE_VETERAN_15_YEAR", cam = { yaw = -6.16, pitch = 0.17, dist = 779, ty = 386, tx = 13 } }, tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } } },
-    { id = "veteran_cape_20_year", name = "Veteran cape (20 year)", kind = "item", rarity = "legendary", desc = "A cape worn by those who've spent twenty or more years in Gielinor.", art = { item = "SKILLCAPE_VETERAN_20_YEAR", cam = { yaw = -5.67, dist = 779, ty = -20, tx = 9 } }, tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } } },
-    { id = "veteran_cape_5_year", name = "Veteran cape (5 year)", kind = "item", rarity = "epic", desc = "A cape worn by those who've spent five or more years in Gielinor.", art = { item = "SKILLCAPE_VETERAN", cam = { yaw = -3.13, dist = 585, ty = -3, tx = -13 } }, tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } } },
+    {
+        id = "veteran_cape_10_year", name = "Veteran cape (10 year)", kind = "item", rarity = "legendary",
+        desc = "A cape worn by those who've spent ten or more years in Gielinor.",
+        art = { item = "SKILLCAPE_VETERAN_10_YEAR", cam = { yaw = -2.31, dist = 483, ty = -26, tx = 3 } },
+        tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } },
+    },
+    {
+        id = "veteran_cape_15_year", name = "Veteran cape (15 year)", kind = "item", rarity = "common",
+        desc = "A cape worn by those who've spent fifteen or more years in Gielinor.",
+        art = { item = "SKILLCAPE_VETERAN_15_YEAR", cam = { yaw = -6.16, pitch = 0.17, dist = 779, ty = 386, tx = 13 } },
+        tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } },
+    },
+    {
+        id = "veteran_cape_20_year", name = "Veteran cape (20 year)", kind = "item", rarity = "legendary",
+        desc = "A cape worn by those who've spent twenty or more years in Gielinor.",
+        art = { item = "SKILLCAPE_VETERAN_20_YEAR", cam = { yaw = -5.67, dist = 779, ty = -20, tx = 9 } },
+        tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } },
+    },
+    {
+        id = "veteran_cape_5_year", name = "Veteran cape (5 year)", kind = "item", rarity = "epic",
+        desc = "A cape worn by those who've spent five or more years in Gielinor.",
+        art = { item = "SKILLCAPE_VETERAN", cam = { yaw = -3.13, dist = 585, ty = -3, tx = -13 } },
+        tags = { regions = { "misthalin" }, category = { "armour", "back", "fashion" }, membership = { "f2p" } },
+    },
 }
 
 return Set

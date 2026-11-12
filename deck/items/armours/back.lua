@@ -529,9 +529,24 @@ Set.cards = {
         art = { item = "POP2_TANK_CAPE_UNTRADEABLE", cam = { yaw = -5.74, dist = 644, ty = -43, tx = -19 } },
         tags = { regions = { "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "back", "hybrid_gear" }, membership = { "p2p" } },
     },
-    { id = "support_cape", name = "Support cape", kind = "item", rarity = "legendary", desc = "A cape for those with great support skills.", art = { item = "NJCAPES_SUPPORT_CAPE", cam = { yaw = -9.40, pitch = -0.23, dist = 708, ty = 362, tx = 1 } }, tags = { skills = { "agility", "dungeoneering", "slayer", "thieving" }, category = { "armour", "back" }, membership = { "p2p" } } },
-    { id = "thieving_cape", name = "Thieving cape", kind = "item", rarity = "epic", desc = "A cape worn by those who have mastered Thieving.", art = { item = "SKILLCAPE_120_THIEVING", cam = { yaw = -5.77, dist = 585, ty = -3, tx = -5 } }, tags = { regions = { "asgarnia" }, skills = { "thieving" }, category = { "armour", "back" }, membership = { "p2p" } } },
-    { id = "woodcutting_cape", name = "Woodcutting cape", kind = "item", rarity = "epic", desc = "A cape worn by those who have mastered Woodcutting.", art = { item = "SKILLCAPE_120_WOODCUTTING", cam = { yaw = -5.77, dist = 585, ty = -3, tx = -5 } }, tags = { regions = { "asgarnia" }, skills = { "woodcutting" }, category = { "armour", "back" }, membership = { "p2p" } } },
+    {
+        id = "support_cape", name = "Support cape", kind = "item", rarity = "legendary",
+        desc = "A cape for those with great support skills.",
+        art = { item = "NJCAPES_SUPPORT_CAPE", cam = { yaw = -9.40, pitch = -0.23, dist = 708, ty = 362, tx = 1 } },
+        tags = { skills = { "agility", "dungeoneering", "slayer", "thieving" }, category = { "armour", "back" }, membership = { "p2p" } },
+    },
+    {
+        id = "thieving_cape", name = "Thieving cape", kind = "item", rarity = "epic",
+        desc = "A cape worn by those who have mastered Thieving.",
+        art = { item = "SKILLCAPE_120_THIEVING", cam = { yaw = -5.77, dist = 585, ty = -3, tx = -5 } },
+        tags = { regions = { "asgarnia" }, skills = { "thieving" }, category = { "armour", "back" }, membership = { "p2p" } },
+    },
+    {
+        id = "woodcutting_cape", name = "Woodcutting cape", kind = "item", rarity = "epic",
+        desc = "A cape worn by those who have mastered Woodcutting.",
+        art = { item = "SKILLCAPE_120_WOODCUTTING", cam = { yaw = -5.77, dist = 585, ty = -3, tx = -5 } },
+        tags = { regions = { "asgarnia" }, skills = { "woodcutting" }, category = { "armour", "back" }, membership = { "p2p" } },
+    },
 }
 
 return Set

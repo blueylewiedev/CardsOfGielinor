@@ -998,7 +998,7 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "body", "magic_gear" }, membership = { "p2p" } },
     },
     {
-        id = "infinity_top", name = "Infinity top", kind = "item", rarity = "rare",
+        id = "infinity_top", name = "Infinity top", kind = "item", rarity = "epic",
         desc = "Mystical robes.",
         art = { item = "MAGICTRAINING_INFINITYTOP", cam = { yaw = -0.01, dist = 363, ty = -57, tx = -2 } },
         tags = { regions = { "kharidian_desert" }, skills = { "defence", "magic" }, category = { "armour", "body", "magic_gear" }, membership = { "p2p" } },
