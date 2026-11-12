@@ -7,8 +7,9 @@
 -- NPCs that have no card (dev/uncarded.lua), the Output window,
 -- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
 -- dev/wikifetch.lua), the saved camera
--- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
--- toggles), and a few debug extras at login and when XP is gained.
+-- tuning for card art, a "Dev tools" button on the Home window that opens the Dev tools window
+-- (dev/devtools.lua: +20 credits, reset setup, the tool toggles, the save tools), and a few debug
+-- extras at login and when XP is gained.
 
 local Cards = require("core/cards")
 local Storage = require("core/storage")
@@ -26,6 +27,7 @@ local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
+local DevTools = require("dev/devtools")
 
 local Dev = {}
 
@@ -107,9 +109,9 @@ local function giveEveryCard(api, refresh)
     refresh()
 end
 
--- The extra buttons for the Home window. `api` is the plugin's api (see main.lua) and
--- `refresh` redraws the Home window.
-function Dev.buttons(api, refresh)
+-- The tools and debug actions, as the buttons of the Dev tools window. `api` is the plugin's api (see
+-- main.lua) and `refresh` redraws the Home window.
+local function toolButtons(api, refresh)
     return {
         { label = "+20 Credits", action = function()
             local state = api.getState()
@@ -142,6 +144,14 @@ function Dev.buttons(api, refresh)
     }
 end
 
+-- The extra buttons for the Home window: one, which opens the Dev tools window.
+function Dev.buttons(api, refresh)
+    DevTools.setButtons(toolButtons(api, refresh))
+    return {
+        { label = "Dev tools", action = DevTools.toggle },
+    }
+end
+
 -- Reports draft cards in the log, once, when the plugin starts.
 function Dev.start()
     if #Cards.drafts > 0 then
@@ -165,6 +175,7 @@ function Dev.setActive(active)
 end
 
 function Dev.shutdown()
+    DevTools.hide()
     Preview.hide()
     Builder.hide()
     WikiReview.hide()
