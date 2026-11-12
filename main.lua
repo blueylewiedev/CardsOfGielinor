@@ -29,6 +29,16 @@ if not devLoaded then
     Dev = nil
 end
 
+-- A card, deck file or pack that is not sound is left out and the plugin loads without it (core/cards.lua).
+-- Each is logged; the dev copy stops instead, as a problem is to be fixed before release, not carried.
+local Cards = require("core/cards")
+for _, problem in ipairs(Cards.loadProblems) do
+    log("DECK PROBLEM (left out):", problem)
+end
+if Dev ~= nil and #Cards.loadProblems > 0 then
+    error("The deck has " .. #Cards.loadProblems .. " problem(s), the first: " .. Cards.loadProblems[1], 0)
+end
+
 -- The dev copy and a released copy of the plugin share one PersistentDB, so the dev copy keeps
 -- its collections under their own keys.
 if Dev ~= nil then

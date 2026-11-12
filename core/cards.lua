@@ -427,23 +427,39 @@ function Cards.isDraft(card)
     return card.art.npc == ""
 end
 
+-- A card, file or pack that cannot be used is left out, not allowed to stop the plugin loading, and described in
+-- Cards.loadProblems. The dev copy of the plugin (main.lua) and dev/check_cards.lua, which the pull request
+-- check runs, treat any problem as an error, so one is found before release.
+Cards.loadProblems = {}
+local function leaveOut(message)
+    Cards.loadProblems[#Cards.loadProblems + 1] = message
+end
+
 for _, setName in ipairs(Cards.sets) do
-    local set = require(setName)
+    local loaded, set = pcall(require, setName)
+    if not loaded or type(set) ~= "table" then
+        leaveOut("The deck file " .. tostring(setName) .. " did not load: " .. tostring(set))
+        set = {}
+    end
     for _, card in ipairs(set.cards or {}) do
-        if set.defaults ~= nil then
-            addTags(card, set.defaults)
-        end
-        if Cards.isDraft(card) then
-            Cards.drafts[#Cards.drafts + 1] = card
+        if type(card) ~= "table" then
+            leaveOut("A card in " .. tostring(setName) .. " is not a table")
         else
-            Cards.list[#Cards.list + 1] = card
+            if type(set.defaults) == "table" then
+                addTags(card, set.defaults)
+            end
+            if Cards.isDraft(card) then
+                Cards.drafts[#Cards.drafts + 1] = card
+            else
+                Cards.list[#Cards.list + 1] = card
+            end
         end
     end
 end
 
 -- Lowest rarity first, keeping the order of the files within a rarity, so the collection and the
--- card preview go from common to legendary.
-do
+-- card preview go from common to legendary. Run again after cards are added (Cards.register).
+function Cards.resort()
     local position = {}
     for index, card in ipairs(Cards.list) do
         position[card] = index
@@ -456,6 +472,7 @@ do
         return position[a] < position[b]
     end)
 end
+Cards.resort()
 
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
 -- "hans|normal".
@@ -579,82 +596,233 @@ local function isKnownWord(tagKind, word, cardKind)
 end
 Cards.isKnownWord = isKnownWord
 
-local function checkTags(card)
+-- Why a card's tags are not sound, as a message that names the card, or nil if they are.
+local function tagsProblem(card)
+    local id = tostring(id)
     if card.tags == nil then
-        return
+        return nil
+    end
+    if type(card.tags) ~= "table" then
+        return "Tags on card " .. id .. " must be a table"
     end
     for tagKind, words in pairs(card.tags) do
-        assert(type(tagKind) == "string" and type(words) == "table",
-            "Tags on card " .. card.id .. " must be lists of words, e.g. skills = { \"thieving\" }")
-        for _, word in ipairs(words) do
-            assert(type(word) == "string", "Tag words on card " .. card.id .. " must be text")
-            assert(isKnownWord(tagKind, word, Cards.kindOf(card)),
-                "Card " .. card.id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" for "
-                .. (Cards.kindOf(card) == "item" and "an item" or "an NPC") .. " card (add it to Cards.tagWords?)")
+        if not (type(tagKind) == "string" and type(words) == "table") then
+            return "Tags on card " .. id .. " must be lists of words, e.g. skills = { \"thieving\" }"
         end
-        assert(not (tagKind == "membership" and #words > 1),
-            "Card " .. card.id .. ": membership is one word, f2p or p2p")
-        assert(not (tagKind == "regions" and Cards.kindOf(card) == "item" and #words > Cards.MAX_ITEM_REGIONS),
-            "Card " .. card.id .. ": an item takes at most " .. Cards.MAX_ITEM_REGIONS .. " regions (leave it empty if it comes from more)")
+        for _, word in ipairs(words) do
+            if type(word) ~= "string" then
+                return "Tag words on card " .. id .. " must be text"
+            end
+            if not isKnownWord(tagKind, word, Cards.kindOf(card)) then
+                return "Card " .. id .. ": unknown " .. tagKind .. " tag \"" .. word .. "\" for "
+                    .. (Cards.kindOf(card) == "item" and "an item" or "an NPC") .. " card (add it to Cards.tagWords?)"
+            end
+        end
+        if tagKind == "membership" and #words > 1 then
+            return "Card " .. id .. ": membership is one word, f2p or p2p"
+        end
+        if tagKind == "regions" and Cards.kindOf(card) == "item" and #words > Cards.MAX_ITEM_REGIONS then
+            return "Card " .. id .. ": an item takes at most " .. Cards.MAX_ITEM_REGIONS
+                .. " regions (leave it empty if it comes from more)"
+        end
         -- (an NPC's regions here include its deck file's, added before the cards are checked)
-        assert(not (tagKind == "regions" and Cards.kindOf(card) ~= "item" and #words > Cards.MAX_NPC_REGIONS),
-            "Card " .. card.id .. ": an NPC is in at most " .. Cards.MAX_NPC_REGIONS .. " regions, its deck file's and one"
-            .. " in `regions` (one found in more goes in deck/npcs/general.lua with none)")
+        if tagKind == "regions" and Cards.kindOf(card) ~= "item" and #words > Cards.MAX_NPC_REGIONS then
+            return "Card " .. id .. ": an NPC is in at most " .. Cards.MAX_NPC_REGIONS .. " regions, its deck file's and one"
+                .. " in `regions` (one found in more goes in deck/npcs/general.lua with none)"
+        end
         -- A word from a group with a `requires` (such as a weapon kind) needs that word too.
         local missing = Cards.missingRequired(Cards.kindOf(card), tagKind, words)[1]
-        assert(missing == nil, "Card " .. card.id .. ": the " .. tagKind .. " tag \"" .. tostring(missing and missing.word)
-            .. "\" needs \"" .. tostring(missing and missing.needs) .. "\" on the card too")
+        if missing ~= nil then
+            return "Card " .. id .. ": the " .. tagKind .. " tag \"" .. tostring(missing.word)
+                .. "\" needs \"" .. tostring(missing.needs) .. "\" on the card too"
+        end
     end
-end
--- Drafts are checked too, so a typo is found before the card goes live.
-for _, card in ipairs(Cards.drafts) do
-    checkTags(card)
+    return nil
 end
 
-Cards.byId = {}
-for _, card in ipairs(Cards.list) do
-    assert(not string.find(card.id, "|", 1, true), "Card id cannot contain '|': " .. card.id)
-    assert(Cards.rarities[card.rarity], "Unknown rarity on card " .. card.id)
-    assert(Cards.byId[card.id] == nil, "Card id \"" .. card.id .. "\" is used by two cards. NPC and item cards share "
-        .. "one set of ids, so give one of them another id (an item can name its object in art.item)")
-    assert(card.kind == nil or card.kind == "npc" or card.kind == "item", "Unknown kind on card " .. card.id)
-    checkTags(card)
+-- Why a card is not sound, as a message that names it, or nil if it is: the checks every card must pass, whether
+-- it is in the deck (where a problem stops the plugin loading) or comes from the overlay (where the card is
+-- skipped). That its id is not used by another card is checked where cards are added.
+function Cards.problem(card)
+    if type(card) ~= "table" then
+        return "a card must be a table"
+    end
+    if type(card.id) ~= "string" or card.id == "" then
+        return "a card has no id"
+    end
+    if string.find(card.id, "|", 1, true) then
+        return "Card id cannot contain '|': " .. card.id
+    end
+    if type(card.name) ~= "string" or card.name == "" then
+        return "Card " .. card.id .. " has no name"
+    end
+    if not Cards.rarities[card.rarity] then
+        return "Unknown rarity on card " .. card.id
+    end
+    if not (card.kind == nil or card.kind == "npc" or card.kind == "item") then
+        return "Unknown kind on card " .. card.id
+    end
+    if card.art ~= nil and type(card.art) ~= "table" then
+        return "The art of card " .. card.id .. " must be a table"
+    end
+    local tags = tagsProblem(card)
+    if tags ~= nil then
+        return tags
+    end
     if card.variants ~= nil then
-        assert(#card.variants > 0, "variants on card " .. card.id .. " cannot be empty")
+        if type(card.variants) ~= "table" or #card.variants == 0 then
+            return "variants on card " .. card.id .. " cannot be empty"
+        end
         for _, entry in ipairs(card.variants) do
             local needed = card.kind == "item" and "item" or "npc"
-            assert(type(entry) == "table" and entry[needed] ~= nil, "Every variant of " .. card.id .. " needs an " .. needed)
+            if type(entry) ~= "table" or entry[needed] == nil then
+                return "Every variant of " .. card.id .. " needs an " .. needed
+            end
         end
     end
-    Cards.byId[card.id] = card
+    return nil
+end
+
+-- Drafts are checked too, so a typo is found before the card goes live.
+do
+    local kept = {}
+    for _, card in ipairs(Cards.drafts) do
+        local problem = tagsProblem(card)
+        if problem ~= nil then
+            leaveOut(problem)
+        else
+            kept[#kept + 1] = card
+        end
+    end
+    Cards.drafts = kept
+end
+
+-- The live cards: one that is not sound, or whose id another card has, is left out (the first one with an id
+-- stays). The list is filled again in place, in the same order.
+Cards.byId = {}
+do
+    local kept = {}
+    for _, card in ipairs(Cards.list) do
+        local problem = Cards.problem(card)
+        if problem == nil and Cards.byId[card.id] ~= nil then
+            problem = "Card id \"" .. card.id .. "\" is used by two cards. NPC and item cards share "
+                .. "one set of ids, so give one of them another id (an item can name its object in art.item)"
+        end
+        if problem ~= nil then
+            leaveOut(problem)
+        else
+            Cards.byId[card.id] = card
+            kept[#kept + 1] = card
+        end
+    end
+    for index = #Cards.list, 1, -1 do
+        Cards.list[index] = nil
+    end
+    for index, card in ipairs(kept) do
+        Cards.list[index] = card
+    end
+end
+
+-- Adds a card that is not in the deck (one from the overlay), or replaces the card with the same id. A replaced
+-- card is changed in place, so anything holding it sees the new version. Returns true, or nil and why not: a
+-- card that is not sound, or a draft, is refused and nothing changes. Call Cards.resort() after a batch, as
+-- a new rarity or a new card changes the order.
+function Cards.register(card)
+    local problem = Cards.problem(card)
+    if problem ~= nil then
+        return nil, problem
+    end
+    if Cards.isDraft(card) then
+        return nil, "Card " .. card.id .. " is a draft"
+    end
+    local existing = Cards.byId[card.id]
+    if existing == nil then
+        Cards.list[#Cards.list + 1] = card
+        Cards.byId[card.id] = card
+        return true
+    end
+    for field in pairs(existing) do
+        existing[field] = nil
+    end
+    for field, value in pairs(card) do
+        existing[field] = value
+    end
+    return true
+end
+
+-- Takes a card out of the game (a card the overlay retires). A player's copies stay in their save and come back
+-- if the card does. Returns true if there was such a card.
+function Cards.deprecate(cardId)
+    local card = Cards.byId[cardId]
+    if card == nil then
+        return false
+    end
+    Cards.byId[cardId] = nil
+    for index, listed in ipairs(Cards.list) do
+        if listed == card then
+            table.remove(Cards.list, index)
+            break
+        end
+    end
+    return true
 end
 Cards.THEMED_PRICE_FACTOR = 1.25
--- A line in deck/packs.lua with the id of a pack type already here (such as "standard") changes
--- that pack's fields (its name and look) and keeps the rest; any other is a new themed pack.
-local listed = {}
-for _, packType in ipairs(require("deck/packs")) do
-    assert(type(packType.id) == "string" and packType.id ~= "", "A pack in deck/packs.lua has no id")
-    assert(not listed[packType.id], "Duplicate pack type id " .. packType.id)
-    listed[packType.id] = true
-    local existing = Cards.packTypes[packType.id]
-    if existing ~= nil then
-        for field, value in pairs(packType) do
-            existing[field] = value
-        end
-    else
-        packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
-        Cards.packTypes[packType.id] = packType
+-- Why a pack type is not sound, or nil. Filter words from a closed list must be on it, so a typo can't make an
+-- empty pack.
+local function packProblem(packType)
+    if type(packType) ~= "table" or type(packType.id) ~= "string" or packType.id == "" then
+        return "A pack in deck/packs.lua has no id"
     end
-end
-for key, packType in pairs(Cards.packTypes) do
-    assert(packType.id == key, "Pack type id must match its key: " .. key)
-    assert(packType.minRarity == nil or Cards.rarities[packType.minRarity], "Unknown minRarity on pack " .. key)
-    -- Filter words from a closed list must be on it, so a typo can't make an empty pack.
+    if packType.minRarity ~= nil and not Cards.rarities[packType.minRarity] then
+        return "Unknown minRarity on pack " .. packType.id
+    end
+    if packType.filter ~= nil and type(packType.filter) ~= "table" then
+        return "The filter of pack " .. packType.id .. " must be a table"
+    end
     for kind, wanted in pairs(packType.filter or {}) do
         for _, word in ipairs(type(wanted) == "table" and wanted or { wanted }) do
-            assert(isKnownWord(kind, word), "Pack " .. key .. " filters on unknown " .. kind .. " word " .. tostring(word))
+            if not isKnownWord(kind, word) then
+                return "Pack " .. packType.id .. " filters on unknown " .. kind .. " word " .. tostring(word)
+            end
         end
     end
+    return nil
+end
+
+-- A line in deck/packs.lua with the id of a pack type already here (such as "standard") changes
+-- that pack's fields (its name and look) and keeps the rest; any other is a new themed pack. A line that is
+-- not sound is left out.
+local listed = {}
+local packsLoaded, deckPacks = pcall(require, "deck/packs")
+if not packsLoaded or type(deckPacks) ~= "table" then
+    leaveOut("deck/packs.lua did not load: " .. tostring(deckPacks))
+    deckPacks = {}
+end
+for _, packType in ipairs(deckPacks) do
+    local problem = packProblem(packType)
+    if problem == nil and listed[packType.id] then
+        problem = "Duplicate pack type id " .. packType.id
+    end
+    if problem ~= nil then
+        leaveOut(problem)
+    else
+        listed[packType.id] = true
+        local existing = Cards.packTypes[packType.id]
+        if existing ~= nil then
+            for field, value in pairs(packType) do
+                existing[field] = value
+            end
+        else
+            packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
+            Cards.packTypes[packType.id] = packType
+        end
+    end
+end
+-- (the pack types written in this file are code, not data, so a mistake in one is an error)
+for key, packType in pairs(Cards.packTypes) do
+    assert(packType.id == key, "Pack type id must match its key: " .. key)
+    local problem = packProblem(packType)
+    assert(problem == nil, problem)
 end
 for finish in pairs(Cards.odds.finish) do
     assert(Cards.finishes[finish], "Odds mention unknown finish " .. finish)
