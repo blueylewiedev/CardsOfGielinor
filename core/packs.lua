@@ -122,10 +122,13 @@ function Packs.poolFor(packType)
     return groups, count, kinds
 end
 
--- How many cards a pack type can give (0 means it cannot be opened). The cards don't change
--- while the plugin runs, so each pack type is counted once.
-local poolSizes = {}
+-- How many cards a pack type can give (0 means it cannot be opened). The cards only change when an overlay
+-- is applied (Cards.revision), so each pack type is counted once until then.
+local poolSizes, poolSizesAt = {}, -1
 function Packs.poolSize(packTypeId)
+    if poolSizesAt ~= Cards.revision then
+        poolSizes, poolSizesAt = {}, Cards.revision
+    end
     local size = poolSizes[packTypeId]
     if size == nil then
         local packType = Packs.typeById(packTypeId)
