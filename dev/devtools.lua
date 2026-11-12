@@ -8,13 +8,13 @@ local Kit = require("ui/kit")
 local DevTools = {}
 
 local COLUMNS = 2
-local BUTTON_W, BUTTON_H, GAP = 200, 28, 6
-local WIDTH = COLUMNS * (BUTTON_W + GAP) + 44        -- the frame and padding take 44
+local BUTTON_W, BUTTON_H, GAP = 180, 28, 10          -- the width is of the drawn button; labels must fit it
+local WIDTH = COLUMNS * BUTTON_W + (COLUMNS - 1) * GAP + 44      -- the frame and padding take 44
 
-local buttons = {}                  -- { label, action }, set by setButtons
+local buttons = {}                  -- { label, action, style, tooltip }, set by setButtons
 local window, content = nil, nil
 
--- The tools to show: a list of { label, action }. If the window is open it is redrawn.
+-- The tools to show: a list of { label, action, style (optional), tooltip (optional) }. If the window is open it is redrawn.
 function DevTools.setButtons(list)
     buttons = list or {}
     if window ~= nil then
@@ -33,8 +33,8 @@ function DevTools.show()
         rows * (BUTTON_H + GAP) + 16 + Kit.titleBarHeight(), function() DevTools.hide() end, 0.15, 0.2)
     for i, tool in ipairs(buttons) do
         local column, row = (i - 1) % COLUMNS, math.floor((i - 1) / COLUMNS)
-        Kit.button(content, tool.label, column * (BUTTON_W + GAP), 4 + row * (BUTTON_H + GAP), BUTTON_W, BUTTON_H,
-            tool.action)
+        Kit.buttonAt(content, tool.label, column * (BUTTON_W + GAP), 4 + row * (BUTTON_H + GAP), BUTTON_W, BUTTON_H,
+            tool.action, tool.style, tool.tooltip)
     end
 end
 

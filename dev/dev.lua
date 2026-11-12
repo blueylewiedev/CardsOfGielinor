@@ -130,7 +130,6 @@ local function toolButtons(api, refresh)
             end
         end },
         { label = "Give every card", action = function() giveEveryCard(api, refresh) end },
-        { label = "Delete saves (twice)", action = function() deleteSaves(api, refresh) end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
         { label = "Anim check", action = Builder.checkAnims },
@@ -138,9 +137,11 @@ local function toolButtons(api, refresh)
         { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
-        { label = "Uncarded NPCs", action = Uncarded.toggle },
+        { label = "Uncarded", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
         { label = "Output", action = OutputWindow.toggle },
+        { label = "Delete saves", action = function() deleteSaves(api, refresh) end, style = "negative",
+            tooltip = "Deletes every collection of this dev copy. Click twice within 10 seconds" },
     }
 end
 
