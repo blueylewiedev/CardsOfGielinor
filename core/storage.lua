@@ -5,8 +5,9 @@
 -- entry, keyed by character name. Without that, two accounts on one computer would
 -- share a single collection.
 --
--- The client refuses a single value that is too big (see dev/dblimit.lua for the probe that finds
--- where), and a full collection has thousands of entries. So a character has one main key (credits,
+-- The client refuses a single value that is too big. Measured with dev/dblimit.lua (2026-11-12): a table
+-- of 2,000 entries is accepted and 3,000 refused; a string of 100,000 letters is accepted and 131,056
+-- refused. A full collection has thousands of entries. So a character has one main key (credits,
 -- XP pool, difficulty, stats) and the owned cards are spread over BUCKETS more keys, the bucket
 -- chosen by a hash of the card's id. A pack only rewrites the buckets it changed.
 

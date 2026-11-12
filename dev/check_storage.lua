@@ -14,7 +14,7 @@ function log() end          -- the client's log function
 -- too big if it has more than `maxEntries` entries in all.
 -- ---------------------------------------------------------------------------------------------------
 local db, writes, failKeys = {}, {}, {}
-local maxEntries = 1000
+local maxEntries = 2000          -- measured: 2,000 entries are accepted and 3,000 refused
 
 local function copy(value)
     if type(value) ~= "table" then
@@ -140,6 +140,7 @@ do
         biggest = math.max(biggest, saved and count(saved) or 0)
     end
     check(biggest > 0 and biggest <= maxEntries, "no bucket is over the limit (biggest " .. biggest .. ")")
+    check(biggest <= maxEntries / 2, "every bucket has room to double (biggest " .. biggest .. " of " .. maxEntries .. "): time for more buckets")
     local back = Storage.load("collection_a")
     check(sameOwned(back.owned, state.owned), "every owned card comes back with its count")
     check(back.credits == 42 and back.xpPool == 7 and back.difficulty == "normal" and back.stats.packsOpened == 9,
