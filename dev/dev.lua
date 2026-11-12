@@ -7,8 +7,9 @@
 -- NPCs that have no card (dev/uncarded.lua), the Output window,
 -- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
 -- dev/wikifetch.lua), the saved camera
--- tuning for card art, extra buttons on the Home window (+20 credits, reset setup, the tool
--- toggles), and a few debug extras at login and when XP is gained.
+-- tuning for card art, a "Dev tools" button on the Home window that opens the Dev tools window
+-- (dev/devtools.lua: +20 credits, reset setup, the tool toggles, the save tools), and a few debug
+-- extras at login and when XP is gained.
 
 local Cards = require("core/cards")
 local Storage = require("core/storage")
@@ -26,6 +27,7 @@ local ItemProbe = require("dev/itemprobe")
 local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
+local DevTools = require("dev/devtools")
 
 local Dev = {}
 
@@ -107,9 +109,9 @@ local function giveEveryCard(api, refresh)
     refresh()
 end
 
--- The extra buttons for the Home window. `api` is the plugin's api (see main.lua) and
--- `refresh` redraws the Home window.
-function Dev.buttons(api, refresh)
+-- The tools and debug actions, as the buttons of the Dev tools window. `api` is the plugin's api (see
+-- main.lua) and `refresh` redraws the Home window.
+local function toolButtons(api, refresh)
     return {
         { label = "+20 Credits", action = function()
             local state = api.getState()
@@ -127,8 +129,8 @@ function Dev.buttons(api, refresh)
                 refresh()
             end
         end },
-        { label = "Give every card", action = function() giveEveryCard(api, refresh) end },
-        { label = "Delete saves (twice)", action = function() deleteSaves(api, refresh) end },
+        { label = "Fill deck", action = function() giveEveryCard(api, refresh) end,
+            tooltip = "Gives one copy of every card and saves, to try a full-size collection" },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
         { label = "Anim check", action = Builder.checkAnims },
@@ -136,9 +138,19 @@ function Dev.buttons(api, refresh)
         { label = "Pack Maker", action = PackMaker.toggle },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
-        { label = "Uncarded NPCs", action = Uncarded.toggle },
+        { label = "Uncarded", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
         { label = "Output", action = OutputWindow.toggle },
+        { label = "Delete saves", action = function() deleteSaves(api, refresh) end, style = "negative",
+            tooltip = "Deletes every collection of this dev copy. Click twice within 10 seconds" },
+    }
+end
+
+-- The extra buttons for the Home window: one, which opens the Dev tools window.
+function Dev.buttons(api, refresh)
+    DevTools.setButtons(toolButtons(api, refresh))
+    return {
+        { label = "Dev tools", action = DevTools.toggle },
     }
 end
 
@@ -165,6 +177,7 @@ function Dev.setActive(active)
 end
 
 function Dev.shutdown()
+    DevTools.hide()
     Preview.hide()
     Builder.hide()
     WikiReview.hide()
