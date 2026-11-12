@@ -15,3 +15,5 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y lua5.4
       - name: Every card loads (its tags are in core/cards.lua)
         run: lua5.4 dev/check_cards.lua
+      - name: Collections save and load (core/storage.lua)
+        run: lua5.4 dev/check_storage.lua

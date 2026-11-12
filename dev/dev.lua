@@ -47,6 +47,66 @@ function Dev.onXp(skill, gain, state, earned, ticksSinceLoad)
         "| total:", state.credits, "| ticks since load:", ticksSinceLoad)
 end
 
+-- "Delete saves" asks twice: the first click arms it for about ten seconds, the second does it.
+local resetArmedUntil = 0
+local logicTicks = 0
+Event.Logic.Subscribe("cardcollector_dev_reset", function()
+    logicTicks = logicTicks + 1
+end)
+
+local function deleteSaves(api, refresh)
+    if logicTicks > resetArmedUntil then
+        resetArmedUntil = logicTicks + 500       -- 50 ticks a second
+        log("DEV: click Delete saves again within 10 seconds to delete EVERY collection of this dev copy")
+        return
+    end
+    resetArmedUntil = 0
+    local deleted, why = Storage.deleteAllCollections()
+    if deleted == nil then
+        log("DEV: saves NOT deleted:", why)
+        return
+    end
+    log("DEV:", deleted, "save keys deleted. Log out and in again (the plugin still holds the old collection in memory)")
+    local state = api.getState()
+    if state ~= nil then
+        state.dirty = false                      -- or the next save would write the old one back
+        state.dirtyBuckets = {}
+    end
+    refresh()
+end
+
+-- Puts one normal copy of every card in the collection and saves it, to try a full-size save. The
+-- log says how many cards there are in all and how full the buckets are; log out and in again and the
+-- "loaded collection" line should show the same count. "Delete saves (twice)" clears it afterwards.
+local function giveEveryCard(api, refresh)
+    local state = api.getState()
+    if state == nil then
+        log("DEV: log in to a character first")
+        return
+    end
+    local added = 0
+    for _, card in ipairs(Cards.list) do
+        local variant = Cards.variantKey(card.id, "normal")
+        if Storage.countOwned(state, variant) == 0 then
+            Storage.addCard(state, variant, 1)
+            added = added + 1
+        end
+    end
+    local sizes = {}
+    for variant in pairs(state.owned) do
+        local bucket = Storage.bucketOf(variant)
+        sizes[bucket] = (sizes[bucket] or 0) + 1
+    end
+    local least, most = math.huge, 0
+    for bucket = 1, Storage.BUCKETS do
+        least, most = math.min(least, sizes[bucket] or 0), math.max(most, sizes[bucket] or 0)
+    end
+    api.saveNow()
+    log("DEV: gave", added, "cards;", Storage.countVariantsOwned(state), "variants owned of", #Cards.list,
+        "cards | buckets hold", least, "to", most, "entries | unsaved:", tostring(state.dirty))
+    refresh()
+end
+
 -- The extra buttons for the Home window. `api` is the plugin's api (see main.lua) and
 -- `refresh` redraws the Home window.
 function Dev.buttons(api, refresh)
@@ -67,6 +127,8 @@ function Dev.buttons(api, refresh)
                 refresh()
             end
         end },
+        { label = "Give every card", action = function() giveEveryCard(api, refresh) end },
+        { label = "Delete saves (twice)", action = function() deleteSaves(api, refresh) end },
         { label = "Preview", action = Preview.toggle },
         { label = "Builder", action = Builder.toggle },
         { label = "Anim check", action = Builder.checkAnims },
