@@ -512,7 +512,7 @@ Set.cards = {
         tags = { skills = { "invention", "crafting", "runecrafting" }, category = { "tool" }, membership = { "p2p" } },
     },
     {
-        id = "fishing_rodomatic_e", name = "Fishing rod-o-matic (e)", kind = "item", rarity = "rare",
+        id = "fishing_rodomatic_e", name = "Fishing rod-o-matic (e)", kind = "item", rarity = "epic",
         desc = "With this device, you think you could fish almost anywhere.",
         art = { item = "INVENT_ENHANCED_FISHING_ROD_UNUSED", cam = { yaw = 0.24, pitch = 0.96, dist = 585, ty = -0, tx = -15 } },
         tags = { skills = { "invention", "crafting" }, category = { "tool" }, membership = { "p2p" } },

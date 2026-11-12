@@ -57,6 +57,16 @@ def page_names(name):
     return [title.lower() for title in dict.fromkeys(out)]
 
 
+def mapped_pages():
+    """{ card id: its wiki page title in lower case } from dev/wiki_pages.json, where a card's name is not the
+    wiki's (Blessed d'hide coif is Blessed dragonhide coif)."""
+    path = ROOT / "dev" / "wiki_pages.json"
+    if not path.exists():
+        return {}
+    return {k: v["page"].lower() for k, v in json.loads(path.read_text(encoding="utf-8")).items()
+            if isinstance(v, dict) and v.get("page")}
+
+
 def cached_pages():
     pages = {}
     for path in (W.CACHE / "pages").glob("*.json"):
@@ -73,6 +83,7 @@ def work_out(cards):
     """({ card id: {the signals, "new", "by"} } for the cards that could be rated, { card id: why not }).
     "by" is "rules", "pin" or "no signal"."""
     pages = cached_pages()
+    mapped = mapped_pages()
     drops = json.loads(W.DROPS.read_text(encoding="utf-8")) if W.DROPS.exists() else {}
     pins = {k: v for k, v in json.loads(PINS.read_text(encoding="utf-8")).items() if not k.startswith("_")}
     names, words = W.npc_names(), W.allowed_words()
@@ -93,7 +104,8 @@ def work_out(cards):
             if card["id"] in pins:
                 rated[card["id"]] = {"new": pins[card["id"]]["rarity"], "by": "pin"}
                 continue
-            page = next((pages[title] for title in page_names(card["name"]) if title in pages), None)
+            page = next((pages[title] for title in [mapped.get(card["id"])] + page_names(card["name"])
+                         if title in pages), None)
             if page is None:
                 left[card["id"]] = "no page in the cache"
                 continue

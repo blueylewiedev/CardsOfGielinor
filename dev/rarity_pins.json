@@ -927,5 +927,17 @@
   "flamtaer_robe_bottom": {
     "rarity": "rare",
     "why": "In line with the rest of its set (owner, 2026-11-12)"
+  },
+  "ardougne_cloak": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
+  },
+  "karamja_gloves": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
+  },
+  "fremennik_sea_boots": {
+    "rarity": "rare",
+    "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
   }
 }

@@ -62,15 +62,20 @@ def main():
     for f in glob.glob(str(ROOT / "dev" / "wiki_cache" / "pages" / "*.json")):
         page = load_json(f)
         pages[page["title"].lower()] = page
+    mapped = {}
+    if (ROOT / "dev" / "wiki_pages.json").exists():
+        mapped = {k: v["page"] for k, v in load_json(ROOT / "dev" / "wiki_pages.json").items()
+                  if isinstance(v, dict) and v.get("page")}
     tiers, by_drops, by_page, none = {}, 0, 0, []
     for c in cards:
         if c["kind"] != "item" or "treasure_trail" not in c["tags"].get("category", []):
             continue
-        found = from_drops(rows, c["name"])
+        title = mapped.get(c["id"], c["name"])       # the wiki's name, where the card's is shortened
+        found = from_drops(rows, title)
         if found:
             by_drops += 1
         else:
-            found = from_page(pages, c["name"])
+            found = from_page(pages, title)
             by_page += bool(found)
         if found:
             tiers[c["id"]] = min(found, key=ORDER.index)
