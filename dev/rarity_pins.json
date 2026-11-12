@@ -236,10 +236,6 @@
     "rarity": "rare",
     "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was uncommon"
   },
-  "elite_robin_hood_hat": {
-    "rarity": "epic",
-    "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was rare"
-  },
   "elite_tectonic_mask": {
     "rarity": "legendary",
     "why": "Rarity as reviewed by the owner (head slot ranged and magic batch, 2026-11-08); the rules' answer was epic"
@@ -535,10 +531,6 @@
   "armadyl_robe_top": {
     "rarity": "rare",
     "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was uncommon"
-  },
-  "elite_robin_hood_tunic": {
-    "rarity": "epic",
-    "why": "Rarity as reviewed by the owner (body slot ranged batch, 2026-11-10); the rules' answer was rare"
   },
   "refined_anima_core_body_of_zamorak": {
     "rarity": "epic",
@@ -939,5 +931,25 @@
   "fremennik_sea_boots": {
     "rarity": "rare",
     "why": "Achievement diary reward: one rare card per set (owner policy); the item page gives a low level (2026-11-12)"
+  },
+  "globetrotter_jacket": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_backpack": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_boots": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_arm_guards": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
+  },
+  "globetrotter_shorts": {
+    "rarity": "epic",
+    "why": "Globetrotter outfit: epic (owner, 2026-11-12); no clue tier, bought from the Treasure Trails shop"
   }
 }

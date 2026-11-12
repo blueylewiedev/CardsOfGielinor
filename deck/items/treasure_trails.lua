@@ -14,12 +14,6 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "blue_logs", name = "Blue logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical covered wooden logs.",
-        art = { item = "BLUE_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail" }, membership = { "p2p" } },
-    },
-    {
         id = "briefcase", name = "Briefcase", kind = "item", rarity = "uncommon",
         desc = "A suitable container for secret documents.",
         art = { item = "TT14_BRIEFCASE_WEAPON", cam = { yaw = 0.40, dist = 346, fov = 45, tx = 40 } },
@@ -32,12 +26,6 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "green_logs", name = "Green logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical covered wooden logs.",
-        art = { item = "GREEN_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
-    },
-    {
         id = "offhand_briefcase", name = "Off-hand briefcase", kind = "item", rarity = "uncommon",
         desc = "A suitable container for secret documents.",
         art = { item = "TT14_BRIEFCASE_WEAPON_O", cam = { yaw = -5.03, dist = 477, fov = 30, ty = -1, tx = 24 } },
@@ -48,18 +36,6 @@ Set.cards = {
         desc = "A suitcase for traveling the world.",
         art = { item = "TT14_SUITCASE_WEAPON_O", cam = { yaw = -4.89, dist = 699, fov = 30, ty = -1, tx = 7 } },
         tags = { category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "f2p" } },
-    },
-    {
-        id = "purple_logs", name = "Purple logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical- covered wooden logs.",
-        art = { item = "TRAIL_LOGS_PURPLE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
-    },
-    {
-        id = "red_logs", name = "Red logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical covered wooden logs.",
-        art = { item = "RED_LOGS", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
     },
     {
         id = "rune_cane", name = "Rune cane", kind = "item", rarity = "rare",
@@ -78,12 +54,6 @@ Set.cards = {
         desc = "A suitcase for traveling the world.",
         art = { item = "TT14_SUITCASE_WEAPON", cam = { yaw = -5.73, dist = 525, fov = 35, ty = 2, tx = 18 } },
         tags = { category = { "weapon", "melee_gear", "mace", "treasure_trail" }, membership = { "f2p" } },
-    },
-    {
-        id = "white_logs", name = "White logs", kind = "item", rarity = "rare",
-        desc = "A number of chemical-covered wooden logs.",
-        art = { item = "TRAIL_LOGS_WHITE", cam = { yaw = 0.60, pitch = 0.20, dist = 300, fov = 60, ty = 60, tx = 10 } },
-        tags = { skills = { "firemaking" }, category = { "raw_material", "treasure_trail", "log" }, membership = { "p2p" } },
     },
     {
         id = "black_2h_crossbow", name = "Black 2h crossbow", kind = "item", rarity = "common",
@@ -476,12 +446,6 @@ Set.cards = {
         tags = { skills = { "ranged" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "elite_robin_hood_hat", name = "Elite Robin Hood hat", kind = "item", rarity = "epic",
-        desc = "Endorsed by Robin Hood.",
-        art = { item = "TRAIL17_ROBINHOODHAT_UPGRADED_NEW", cam = { yaw = -6.70, pitch = 0.22, dist = 186, ty = 18, tx = 20 } },
-        tags = { skills = { "defence", "ranged" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
-    },
-    {
         id = "ancient_mitre", name = "Ancient mitre", kind = "item", rarity = "rare",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_ZAROS_MITRE", cam = { yaw = -6.92, pitch = 0.16, dist = 186, ty = 43, tx = 5 } },
@@ -794,12 +758,6 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
     },
     {
-        id = "elite_robin_hood_tunic", name = "Elite Robin Hood tunic", kind = "item", rarity = "epic",
-        desc = "A tunic for the expert ranger.",
-        art = { item = "TRAIL17_ROBIN_HOOD_TORSO_UPGRADED_NEW", cam = { dist = 363, ty = -25, tx = 3 } },
-        tags = { skills = { "defence", "ranged" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
-    },
-    {
         id = "secondage_range_top", name = "Second-Age range top", kind = "item", rarity = "legendary",
         desc = "Ancient range protection crafted in the Second-Age.",
         art = { item = "TRAIL17_SECONDAGE_RANGE_BODY", cam = { dist = 363, ty = -5, tx = 3 } },
@@ -930,12 +888,6 @@ Set.cards = {
         desc = "Lightweight boots ideal for rangers.",
         art = { item = "BOOTS_RANGER", cam = { yaw = -0.50, pitch = 0.50, dist = 273, ty = 8, tx = 14 } },
         tags = { skills = { "ranged" }, category = { "armour", "boots", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
-    },
-    {
-        id = "elite_ranger_boots", name = "Elite ranger boots", kind = "item", rarity = "rare",
-        desc = "Lightweight boots ideal for rangers.",
-        art = { item = "TRAIL17_BOOTS_RANGER_UPGRADED_NEW", cam = { yaw = -0.64, pitch = 0.50, dist = 273, ty = 8, tx = 11 } },
-        tags = { skills = { "defence", "ranged" }, category = { "armour", "boots", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
         id = "globetrotter_arm_guards", name = "Globetrotter arm guards", kind = "item", rarity = "epic",
@@ -1116,12 +1068,6 @@ Set.cards = {
         desc = "Those studs should provide a bit more protection. Nice trim too!",
         art = { item = "STUDDED_CHAPS_TRIM_FUR", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "f2p" } },
-    },
-    {
-        id = "elite_robin_hood_tights", name = "Elite Robin Hood tights", kind = "item", rarity = "rare",
-        desc = "Freedom of movement is especially important for the ranger on the go.",
-        art = { item = "TRAIL17_ROBIN_HOOD_LEGS_UPGRADED_NEW", cam = { yaw = -0.02, dist = 531, ty = -9, tx = 9 } },
-        tags = { skills = { "defence", "ranged" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
         id = "secondage_range_legs", name = "Second-Age range legs", kind = "item", rarity = "legendary",
