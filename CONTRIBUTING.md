@@ -492,7 +492,7 @@ Also:
   Defence) and nothing has a price or a drop rate, while the diary itself is long. The description says which diary.
 - **Treasure trail rewards** (anything tagged `treasure_trail`) take the rarity of their clue tier: beginner and easy
   common, medium uncommon, hard rare, elite and master epic. A reward the other rules make legendary (a third age
-  piece) stays legendary, and a pin still wins. `dev/clue_tiers.json` holds the tier of each card (the highest tier
+  piece) stays legendary, and a pin still wins. `dev/clue_tiers.json` holds the tier of each card (the lowest tier
   its wiki page names: the "treasure chest" category, or a "Clue scroll" or "Reward casket" link); `apply_rarity.py`
   uses it. A reward whose page names no tier is not in the file and keeps the rarity from the rules.
 - **Variants take the rarity of the item they come from**: a grimy herb is the same as the clean herb, and

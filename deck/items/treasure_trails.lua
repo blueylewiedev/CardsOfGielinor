@@ -398,7 +398,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "armadyl_mitre", name = "Armadyl mitre", kind = "item", rarity = "epic",
+        id = "armadyl_mitre", name = "Armadyl mitre", kind = "item", rarity = "rare",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_ARMADYL_MITRE", cam = { yaw = -6.92, pitch = 0.32, dist = 205, ty = 35, tx = 10 } },
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -410,13 +410,13 @@ Set.cards = {
         tags = { skills = { "defence", "prayer" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "saradomin_mitre", name = "Saradomin mitre", kind = "item", rarity = "rare",
+        id = "saradomin_mitre", name = "Saradomin mitre", kind = "item", rarity = "uncommon",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_SARADOMIN_MITRE", cam = { yaw = -6.92, pitch = 0.32, dist = 205, ty = 35, tx = 10 } },
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "zamorak_mitre", name = "Zamorak mitre", kind = "item", rarity = "rare",
+        id = "zamorak_mitre", name = "Zamorak mitre", kind = "item", rarity = "uncommon",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_ZAMORAK_MITRE", cam = { yaw = -6.92, pitch = 0.32, dist = 205, ty = 35, tx = 10 } },
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -482,7 +482,7 @@ Set.cards = {
         tags = { skills = { "defence", "ranged" }, category = { "armour", "helmet", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "ancient_mitre", name = "Ancient mitre", kind = "item", rarity = "epic",
+        id = "ancient_mitre", name = "Ancient mitre", kind = "item", rarity = "rare",
         desc = "A blessed mitre.",
         art = { item = "TRAIL_ZAROS_MITRE", cam = { yaw = -6.92, pitch = 0.16, dist = 186, ty = 43, tx = 5 } },
         tags = { skills = { "prayer", "defence" }, category = { "armour", "helmet", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -812,7 +812,7 @@ Set.cards = {
         tags = { skills = { "defence", "ranged" }, category = { "armour", "body", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "ancient_robe_top", name = "Ancient robe top", kind = "item", rarity = "epic",
+        id = "ancient_robe_top", name = "Ancient robe top", kind = "item", rarity = "uncommon",
         desc = "A vestment of Zaros.",
         art = { item = "TRAIL_ZAROS_ROBE_T", cam = { yaw = -0.01, ty = -17, tx = -2 } },
         tags = { skills = { "defence", "prayer" }, category = { "armour", "body", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -896,7 +896,7 @@ Set.cards = {
         tags = { category = { "armour", "back", "hybrid_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "backstab_cape", name = "Backstab cape", kind = "item", rarity = "epic",
+        id = "backstab_cape", name = "Backstab cape", kind = "item", rarity = "rare",
         desc = "Just walk it off.",
         art = { item = "TT14_BACKSTAB_CAPE", cam = { yaw = -3.05, dist = 400, ty = 25, tx = 3 } },
         tags = { category = { "armour", "back", "hybrid_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -944,13 +944,13 @@ Set.cards = {
         tags = { category = { "armour", "gloves", "hybrid_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blessed_dragonhide_vambraces_armadyl", name = "Blessed dragonhide vambraces (Armadyl)", kind = "item", rarity = "rare",
+        id = "blessed_dragonhide_vambraces_armadyl", name = "Blessed dragonhide vambraces (Armadyl)", kind = "item", rarity = "epic",
         desc = "Blessed dragonhide vambraces.",
         art = { item = "TRAIL_ARMADYL_VAMBRACES", cam = { yaw = 0.42, pitch = 1.31, dist = 205, ty = 17, tx = -11 } },
         tags = { skills = { "defence" }, category = { "armour", "gloves", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blessed_dragonhide_vambraces_bandos", name = "Blessed dragonhide vambraces (Bandos)", kind = "item", rarity = "rare",
+        id = "blessed_dragonhide_vambraces_bandos", name = "Blessed dragonhide vambraces (Bandos)", kind = "item", rarity = "epic",
         desc = "Blessed dragonhide vambraces.",
         art = { item = "TRAIL_BANDOS_VAMBRACES", cam = { yaw = 0.42, pitch = 1.31, dist = 205, ty = 17, tx = -11 } },
         tags = { skills = { "defence" }, category = { "armour", "gloves", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -974,7 +974,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "gloves", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blessed_dragonhide_vambraces_zaros", name = "Blessed dragonhide vambraces (Zaros)", kind = "item", rarity = "rare",
+        id = "blessed_dragonhide_vambraces_zaros", name = "Blessed dragonhide vambraces (Zaros)", kind = "item", rarity = "epic",
         desc = "Zaros blessed dragonhide vambraces.",
         art = { item = "TRAIL_ZAROS_VAMBRACES", cam = { yaw = 0.42, pitch = 1.31, dist = 205, ty = 17, tx = -11 } },
         tags = { skills = { "defence" }, category = { "armour", "gloves", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -1034,19 +1034,19 @@ Set.cards = {
         tags = { skills = { "defence", "magic" }, category = { "armour", "legs", "magic_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "armadyl_robe_legs", name = "Armadyl robe legs", kind = "item", rarity = "epic",
+        id = "armadyl_robe_legs", name = "Armadyl robe legs", kind = "item", rarity = "uncommon",
         desc = "Legs that match the Armadyl vestment.",
         art = { item = "TRAIL_ARMADYL_ROBE_L", cam = { yaw = -0.02, dist = 531, ty = 7, tx = -3 } },
         tags = { skills = { "defence", "prayer" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blessed_dragonhide_chaps_armadyl", name = "Blessed dragonhide chaps (Armadyl)", kind = "item", rarity = "rare",
+        id = "blessed_dragonhide_chaps_armadyl", name = "Blessed dragonhide chaps (Armadyl)", kind = "item", rarity = "epic",
         desc = "Blessed dragonhide chaps.",
         art = { item = "TRAIL_ARMADYL_CHAPS", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blessed_dragonhide_chaps_bandos", name = "Blessed dragonhide chaps (Bandos)", kind = "item", rarity = "rare",
+        id = "blessed_dragonhide_chaps_bandos", name = "Blessed dragonhide chaps (Bandos)", kind = "item", rarity = "epic",
         desc = "Blessed dragonhide chaps.",
         art = { item = "TRAIL_BANDOS_CHAPS", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
@@ -1070,7 +1070,7 @@ Set.cards = {
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },
     },
     {
-        id = "blessed_dragonhide_chaps_zaros", name = "Blessed dragonhide chaps (Zaros)", kind = "item", rarity = "rare",
+        id = "blessed_dragonhide_chaps_zaros", name = "Blessed dragonhide chaps (Zaros)", kind = "item", rarity = "epic",
         desc = "Zaros blessed dragonhide chaps.",
         art = { item = "TRAIL_ZAROS_CHAPS", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
         tags = { skills = { "defence" }, category = { "armour", "legs", "ranged_gear", "treasure_trail" }, membership = { "p2p" } },

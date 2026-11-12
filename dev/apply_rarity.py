@@ -15,7 +15,7 @@ most common drop rate (dev/drop_items.json, else dev/wiki_cache/drops.json) and 
 - A treasure trail reward (tagged `treasure_trail`) with a clue tier in dev/clue_tiers.json takes the rarity of that tier
   (owner, 2026-11-12): beginner and easy common, medium uncommon, hard rare, elite and master epic. A card the other
   rules make legendary (a third age piece, a discontinued item) stays legendary, and a pin still wins. dev/clue_tiers.json
-  holds the highest tier the wiki page names (its "treasure chest" category, a "Clue scroll (hard)" or "Reward casket (easy)" link);
+  holds the lowest tier the wiki page names (its "treasure chest" category, a "Clue scroll (hard)" or "Reward casket (easy)" link);
   a card with no tier there keeps the rarity from the rules.
 - A card whose page gives no level, price, drop rate or source at all has nothing to work from, so it
   keeps its rarity, as does a card with no page in the cache, or one the tool skips. They are listed.
