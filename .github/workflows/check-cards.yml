@@ -17,3 +17,5 @@ jobs:
         run: lua5.4 dev/check_cards.lua
       - name: Collections save and load (core/storage.lua)
         run: lua5.4 dev/check_storage.lua
+      - name: JSON decoder (core/json.lua)
+        run: lua5.4 dev/check_json.lua
