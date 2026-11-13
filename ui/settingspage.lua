@@ -15,11 +15,14 @@ local Kit = require("ui/kit")
 local SettingsPage = {}
 
 local SUBSCRIBER = "cardcollector_settings"
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 385
-local DEV_HEIGHT = 40    -- extra height for the Developer options, when the development tools are there
 -- The divider line sits low in its box, so a negative space above pulls it up under the note and
--- the space below keeps the "Effects" heading off it. Adjust these to move it.
+-- the space below keeps the next heading off it. Adjust these to move it.
 local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
+local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
+-- Three dividers separate the page's four parts: difficulty, effects, card updates and (with the
+-- development tools) the developer options.
+local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 385 + DIVIDER_STEP
+local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
 
 -- api.getState() and api.saveNow(), as for the pack window; api.devTools (true when the
 -- development tools are there) and api.onSettingChanged(id, on), called after an option changes.
@@ -65,7 +68,10 @@ local function build(key, parent, width, height)
     page.widgets.note = view:AddText("")
 
     -- PrettyUI's divider is 60 units tall by default; `height` shrinks it if it is supported.
-    view:AddDivider({ height = DIVIDER_HEIGHT, marginTop = DIVIDER_ABOVE, marginBottom = DIVIDER_BELOW })
+    local function divider()
+        view:AddDivider({ height = DIVIDER_HEIGHT, marginTop = DIVIDER_ABOVE, marginBottom = DIVIDER_BELOW })
+    end
+    divider()
 
     -- The options, as checkboxes: the effects, then (only with the development tools) theirs.
     local function checkboxes(heading, dev)
@@ -86,9 +92,11 @@ local function build(key, parent, width, height)
         })
     end
     page.widgets.effects = checkboxes("Effects", false)
+    divider()
     view:AddText("Card updates")
     page.widgets.updates = view:AddText("")
     if api.devTools then
+        divider()
         page.widgets.dev = checkboxes("Developer (hides the dev tools)", true)
     end
 end
