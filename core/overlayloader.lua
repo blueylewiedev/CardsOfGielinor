@@ -146,6 +146,17 @@ function Loader.tick()
     end
 end
 
+-- The tick as the client calls it. An error in here must not repeat 50 times a second or touch the game: it is
+-- logged once and the loader stops for this session, so the plugin carries on with the cards it shipped with.
+function Loader.safeTick()
+    local ok, err = pcall(Loader.tick)
+    if not ok then
+        settle("failed", "an error in the loader: " .. tostring(err))
+        state.job = nil
+        log("card updates: stopped for this session:", state.message)
+    end
+end
+
 -- Gets ready to fetch (the first look for the permission is on the next tick). Tests call this and tick by hand.
 function Loader.begin()
     reset()
@@ -169,7 +180,7 @@ function Loader.start(devCopy)
     Loader.begin()
     if not subscribed then
         subscribed = true
-        Event.Logic.Subscribe(SUBSCRIBER, function() Loader.tick() end)
+        Event.Logic.Subscribe(SUBSCRIBER, function() Loader.safeTick() end)
     end
 end
 

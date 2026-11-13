@@ -22,9 +22,13 @@ if manifest == nil then
     os.exit(1)
 end
 
-if manifest.version ~= Version then
-    io.stderr:write("The version in plugin.json is " .. tostring(manifest.version) .. " but core/version.lua says "
-        .. tostring(Version) .. ": change them together\n")
+if type(Version) ~= "table" or type(Version.number) ~= "string" then
+    io.stderr:write("core/version.lua must return a table with the version as its number (the client's require gives nothing back for a module that returns text)\n")
     os.exit(1)
 end
-print("Version " .. Version .. " in plugin.json and core/version.lua.")
+if manifest.version ~= Version.number then
+    io.stderr:write("The version in plugin.json is " .. tostring(manifest.version) .. " but core/version.lua says "
+        .. tostring(Version.number) .. ": change them together\n")
+    os.exit(1)
+end
+print("Version " .. Version.number .. " in plugin.json and core/version.lua.")

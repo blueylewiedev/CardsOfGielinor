@@ -47,7 +47,7 @@ end
 -- Returns a job for Overlay.step, or nil and the reason it is not applied (an empty or damaged header, a format
 -- this plugin does not read, or an overlay built for another version).
 function Overlay.begin(text, version)
-    version = version or Version
+    version = version or Version.number
     if type(text) ~= "string" then
         return nil, "no overlay text"
     end

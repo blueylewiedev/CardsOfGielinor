@@ -39,7 +39,7 @@ local function deepCopy(value)
 end
 
 local function header(fields)
-    local head = { base = Version, format = 1, revision = 1 }
+    local head = { base = Version.number, format = 1, revision = 1 }
     for key, value in pairs(fields or {}) do
         head[key] = value
     end
@@ -85,6 +85,9 @@ local function snapshot()
 end
 
 local startCount, startSnapshot = cardCount(), snapshot()
+
+-- The client's require gives nothing back for a module that returns text, so the version must be a table
+check(type(Version) == "table" and type(Version.number) == "string", "core/version.lua returns a table with a text number")
 
 -- Overlay.begin: when an overlay is not for this plugin -------------------------------------------------------------
 do
@@ -408,6 +411,23 @@ Loader.http = { new = function() error("no network") end }
 tick(1)
 check(Loader.status().phase == "retrying", "an error making the request is a failure, not a crash")
 Loader.http = FakeRequest
+
+-- an error inside the loader is caught: it stops for the session and is logged once
+do
+    local booby = setmetatable({}, { __index = function() error("boom") end })
+    Loader.http = { new = function() return { Get = function(_, completion) completion(booby) end } end }
+    fresh()
+    local logged, realLog = 0, log
+    log = function() logged = logged + 1 end
+    Loader.safeTick()                    -- sends the request; the pretend one answers at once
+    Loader.safeTick()                    -- reads the answer: reading it raises an error
+    log = realLog
+    check(Loader.status().phase == "failed" and logged == 1, "an error inside the loader stops it and is logged once (" .. logged .. ")")
+    Loader.safeTick()
+    Loader.safeTick()
+    check(Loader.status().phase == "failed", "and it stays stopped")
+    Loader.http = FakeRequest
+end
 
 -- fetching again
 fresh()
