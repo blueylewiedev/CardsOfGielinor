@@ -64,6 +64,21 @@ do
     check(type(message) == "string" and string.find(message, "zz_test_card", 1, true) ~= nil, "a message names the card")
 end
 
+-- every kind of problem names the card (in the client `id` is the game's table, which is how a slip here showed)
+for _, wrong in ipairs({
+    { tags = { category = { "no_such_word" } } },
+    { tags = { category = "armour" } },
+    { tags = { category = { 7 } } },
+    { tags = { membership = { "f2p", "p2p" } } },
+    { tags = { regions = { "misthalin", "asgarnia", "kandarin" } } },
+    { rarity = "mythic" },
+    { variants = {} },
+}) do
+    local message = Cards.problem(card(wrong))
+    check(type(message) == "string" and string.find(message, "zz_test_card", 1, true) ~= nil,
+        "the message names the card: " .. tostring(message))
+end
+
 -- Cards.register: a new card ---------------------------------------------------------------------------------
 do
     local ok, why = Cards.register(card())
