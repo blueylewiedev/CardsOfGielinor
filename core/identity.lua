@@ -7,6 +7,7 @@
 -- (Player.GetTrackingID docs), so it is polled from a ServerLogic handler until it arrives.
 
 local Storage = require("core/storage")
+local PluginId = require("core/pluginid")
 
 local Identity = {}
 
@@ -55,8 +56,8 @@ end
 function Identity.start(devCopy)
     if devCopy and DEV_GRANTS_PERMISSION then
         local ok, err = pcall(function()
-            ExecuteConsoleCommand("ppr CardCollector")
-            ExecuteConsoleCommand("ppe CardCollector trackingAccess")
+            PluginId.command("ppr")
+            PluginId.command("ppe", "trackingAccess")
         end)
         if not ok then
             log("could not ask for the trackingAccess permission:", err)

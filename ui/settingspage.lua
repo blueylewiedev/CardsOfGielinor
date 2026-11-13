@@ -7,6 +7,7 @@
 --   "window" : a window of its own, opened by the Settings button in the main window
 
 local Packs = require("core/packs")
+local PluginId = require("core/pluginid")
 local Settings = require("core/settings")
 local Storage = require("core/storage")
 local OverlayLoader = require("core/overlayloader")
@@ -46,7 +47,7 @@ local function build(key, parent, width, height)
     local view = prettyui.SimpleView.new(parent, { width = width, height = height })
     local page = { view = view, widgets = {} }
     pages[key] = page
-    view:AddTitle("Card Collector")
+    view:AddTitle(PluginId.TITLE)
 
     view:AddText("Pack difficulty")
     local choices = {}

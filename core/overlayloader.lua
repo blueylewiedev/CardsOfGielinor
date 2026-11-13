@@ -14,6 +14,7 @@
 -- player may grant it later); the dev copy asks for it on every start, as core/identity.lua does for tracking.
 
 local Overlay = require("core/overlay")
+local PluginId = require("core/pluginid")
 
 local Loader = {}
 
@@ -170,8 +171,8 @@ function Loader.start(devCopy)
     end
     if devCopy and DEV_GRANTS_PERMISSION then
         local ok, err = pcall(function()
-            ExecuteConsoleCommand("ppr CardCollector")
-            ExecuteConsoleCommand("ppe CardCollector httpAccess")
+            PluginId.command("ppr")
+            PluginId.command("ppe", "httpAccess")
         end)
         if not ok then
             log("could not ask for the httpAccess permission:", err)

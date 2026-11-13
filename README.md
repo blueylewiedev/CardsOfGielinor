@@ -1,4 +1,4 @@
-# Card Collector
+# Cards of Gielinor
 
 A plugin for the RuneScape 3 Client API: earn credits from XP, open packs and collect cards.
 

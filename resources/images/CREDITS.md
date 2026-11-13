@@ -1,6 +1,6 @@
 # Artwork credits
 
-All artwork is used in Card Collector with the permission of whoever made it. Some of it is AI-generated.
+All artwork is used in Cards of Gielinor with the permission of whoever made it. Some of it is AI-generated.
 It is not covered by the licence in the repository's `LICENSE` file.
 
 | File(s) | Artist | Added |

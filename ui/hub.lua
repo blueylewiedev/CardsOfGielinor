@@ -3,6 +3,8 @@
 -- It appears inside the client's Plugins window and is the way to get the main window back
 -- after closing it. It has buttons for the main window, the collection and the statistics.
 
+local PluginId = require("core/pluginid")
+
 local Hub = {}
 
 local SUBSCRIBER = "cardcollector_hub"
@@ -26,7 +28,7 @@ end
 local function build(parent)
     destroyView()
     view = prettyui.SimpleView.new(parent, { width = parent.width, height = parent.height })
-    view:AddTitle("Card Collector")
+    view:AddTitle(PluginId.TITLE)
     widgets.credits = view:AddText("")
     -- The same width for all three, so the buttons line up whatever their labels are.
     view:AddFancyButton("Open", function() api.openMain() end, { variant = "positive", width = BUTTON_WIDTH })

@@ -1,5 +1,5 @@
 -- main.lua
--- Card Collector (working title)
+-- Cards of Gielinor
 -- Earn credits, open packs, collect cards.
 --
 -- Folders:
@@ -13,6 +13,7 @@
 -- Lua console with log().
 
 local Storage = require("core/storage")
+local PluginId = require("core/pluginid")
 local Identity = require("core/identity")
 local Earning = require("core/earning")
 local PackWindow = require("ui/packwindow")
@@ -226,4 +227,4 @@ if Dev ~= nil then
     Dev.start()
 end
 
-log("Card Collector started")
+log(PluginId.TITLE .. " started")
