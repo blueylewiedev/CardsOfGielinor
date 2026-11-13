@@ -603,7 +603,7 @@ Cards.isKnownWord = isKnownWord
 
 -- Why a card's tags are not sound, as a message that names the card, or nil if they are.
 local function tagsProblem(card)
-    local id = tostring(id)
+    local id = tostring(card.id)
     if card.tags == nil then
         return nil
     end

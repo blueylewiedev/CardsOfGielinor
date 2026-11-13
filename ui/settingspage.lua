@@ -9,12 +9,13 @@
 local Packs = require("core/packs")
 local Settings = require("core/settings")
 local Storage = require("core/storage")
+local OverlayLoader = require("core/overlayloader")
 local Kit = require("ui/kit")
 
 local SettingsPage = {}
 
 local SUBSCRIBER = "cardcollector_settings"
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 330
+local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 385
 local DEV_HEIGHT = 40    -- extra height for the Developer options, when the development tools are there
 -- The divider line sits low in its box, so a negative space above pulls it up under the note and
 -- the space below keeps the "Effects" heading off it. Adjust these to move it.
@@ -85,6 +86,8 @@ local function build(key, parent, width, height)
         })
     end
     page.widgets.effects = checkboxes("Effects", false)
+    view:AddText("Card updates")
+    page.widgets.updates = view:AddText("")
     if api.devTools then
         page.widgets.dev = checkboxes("Developer (hides the dev tools)", true)
     end
@@ -107,6 +110,11 @@ local function refreshPage(page)
     end
     if widgets.note.content ~= note then
         widgets.note.content = note
+    end
+
+    local updates = OverlayLoader.playerText()
+    if widgets.updates.content ~= updates then
+        widgets.updates.content = updates
     end
 
     local shown = tier and tier.id or nil

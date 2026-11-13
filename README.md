@@ -6,6 +6,8 @@ A plugin for the RuneScape 3 Client API: earn credits from XP, open packs and co
 
 New cards and artwork are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+How versions go to Jagex and how card fixes reach players between reviews (the project owner): [RELEASING.md](RELEASING.md).
+
 # Card progress
 
 Which parts of the game have cards. **Not started**, **In progress** or **Complete**. Update a row

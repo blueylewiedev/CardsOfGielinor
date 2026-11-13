@@ -772,6 +772,8 @@ else works from a fork. Either way:
 
 ### Card updates between reviews (the overlay)
 
+(The full process, with the checklists, is in [RELEASING.md](RELEASING.md).)
+
 Plugin versions are reviewed by Jagex about every two weeks, so card fixes and new cards can also reach players
 before the next review. The plugin ships with the whole deck and, when it starts, fetches
 `docs/overlay.jsonl`: the cards that are new or different since the last version Jagex approved. Only the
