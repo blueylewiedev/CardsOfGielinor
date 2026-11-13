@@ -25,3 +25,7 @@ jobs:
         run: lua5.4 dev/check_overlay.lua
       - name: Overlay build logic (dev/build_overlay.py)
         run: python3 dev/test_build_overlay.py
+      - name: Overlay applying and fetching (core/overlay.lua, core/overlayloader.lua)
+        run: lua5.4 dev/check_loader.lua
+      - name: Plugin version matches plugin.json (core/version.lua)
+        run: lua5.4 dev/check_version.lua

@@ -457,9 +457,14 @@ for _, setName in ipairs(Cards.sets) do
     end
 end
 
+-- Counts every change to the cards after the deck has loaded (Cards.register, Cards.deprecate, Cards.resort), so
+-- code that keeps something worked out from the cards (the pack sizes) knows when to work it out again.
+Cards.revision = 0
+
 -- Lowest rarity first, keeping the order of the files within a rarity, so the collection and the
 -- card preview go from common to legendary. Run again after cards are added (Cards.register).
 function Cards.resort()
+    Cards.revision = Cards.revision + 1
     local position = {}
     for index, card in ipairs(Cards.list) do
         position[card] = index
@@ -735,6 +740,7 @@ function Cards.register(card)
     if Cards.isDraft(card) then
         return nil, "Card " .. card.id .. " is a draft"
     end
+    Cards.revision = Cards.revision + 1
     local existing = Cards.byId[card.id]
     if existing == nil then
         Cards.list[#Cards.list + 1] = card
@@ -758,6 +764,7 @@ function Cards.deprecate(cardId)
         return false
     end
     Cards.byId[cardId] = nil
+    Cards.revision = Cards.revision + 1
     for index, listed in ipairs(Cards.list) do
         if listed == card then
             table.remove(Cards.list, index)

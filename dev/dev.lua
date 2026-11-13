@@ -28,6 +28,7 @@ local Tuning = require("dev/tuning")
 local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
 local DevTools = require("dev/devtools")
+local OverlayLoader = require("core/overlayloader")
 
 local Dev = {}
 
@@ -141,6 +142,14 @@ local function toolButtons(api, refresh)
         { label = "Uncarded", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
         { label = "Output", action = OutputWindow.toggle },
+        { label = "Fetch updates", action = function()
+            if OverlayLoader.refetch() then
+                log("DEV: fetching the card overlay again")
+            else
+                local status = OverlayLoader.status()
+                log("DEV: card updates are", status.phase, "-", status.message, "(attempt", status.attempt .. ")")
+            end
+        end, tooltip = "Fetches and applies the card overlay again; if one is under way, says what it is doing" },
         { label = "Delete saves", action = function() deleteSaves(api, refresh) end, style = "negative",
             tooltip = "Deletes every collection of this dev copy. Click twice within 10 seconds" },
     }

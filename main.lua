@@ -21,6 +21,7 @@ local Stats = require("ui/stats")
 local Settings = require("core/settings")
 local SettingsPage = require("ui/settingspage")
 local Hub = require("ui/hub")
+local OverlayLoader = require("core/overlayloader")
 
 -- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
 -- That folder is left out of the released plugin, so there Dev is nil and nothing below runs.
@@ -47,6 +48,11 @@ end
 
 -- Starts looking for the tracking id (see core/identity.lua).
 Identity.start(Dev ~= nil)
+
+-- Fetches the card overlay (card fixes and new cards since the approved version) and applies it a few lines at a
+-- time (core/overlayloader.lua). With no httpAccess permission, or if anything goes wrong, the plugin simply has
+-- the cards it shipped with.
+OverlayLoader.start(Dev ~= nil)
 
 -- True while the development tools are in use (see applyDevTools below).
 local function devOn()
@@ -157,6 +163,7 @@ end)
 
 -- Called by the client when the plugin is disabled or reloaded.
 function PluginShutdown()
+    OverlayLoader.shutdown()
     SettingsPage.shutdown()
     Hub.shutdown()
     PackWindow.hide()
