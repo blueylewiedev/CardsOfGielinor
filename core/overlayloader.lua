@@ -133,7 +133,7 @@ function Loader.tick()
         if Overlay.step(state.job, LINES_PER_TICK) then
             local job = state.job
             settle("done", Overlay.summary(job))
-            state.revision, state.job = job.revision, nil
+            state.revision, state.changes, state.job = job.revision, job.added + job.replaced + job.retired, nil
             say(state.message)
             for _, problem in ipairs(job.problems) do
                 say("skipped", problem)
@@ -203,9 +203,35 @@ function Loader.shutdown()
     end
 end
 
--- What it is doing: { phase, message, attempt, revision }.
+-- What it is doing: { phase, message, attempt, revision, changes (cards added, changed or retired by the overlay),
+-- needsPermission (waiting for httpAccess, which the player has not granted) }.
 function Loader.status()
-    return { phase = state.phase, message = state.message, attempt = state.attempt, revision = state.revision }
+    return { phase = state.phase, message = state.message, attempt = state.attempt, revision = state.revision,
+        changes = state.changes, needsPermission = state.phase == "waiting" and state.warned }
+end
+
+-- One line for the player (the settings page): are card updates on, and are they working.
+function Loader.playerText()
+    local status = Loader.status()
+    local phase = status.phase
+    if status.needsPermission then
+        return "Off - allow the httpAccess permission to turn on"
+    elseif phase == "done" then
+        local changes = status.changes or 0
+        if changes == 0 then
+            return "On - the cards are up to date"
+        end
+        return "On - " .. changes .. (changes == 1 and " card" or " cards") .. " updated"
+    elseif phase == "ignored" then
+        return "On - no updates for this version"
+    elseif phase == "failed" then
+        return "Could not reach the update server"
+    elseif phase == "retrying" then
+        return "Could not reach the update server, trying again"
+    elseif phase == "off" then
+        return "Off - not available"
+    end
+    return "Checking for card updates..."
 end
 
 return Loader

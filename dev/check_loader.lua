@@ -294,6 +294,7 @@ local good = overlayText(header({ revision = 4 }), { testCard("zz_loaded") })
 -- the whole happy path
 fresh()
 check(Loader.status().phase == "waiting", "the loader starts out waiting")
+check(Loader.playerText() == "Checking for card updates...", "and the player sees it checking")
 tick(1)
 check(#requests == 1 and requests[1].base == "https://example.test" and requests[1].path == "/CardsOfGielinor/overlay.jsonl",
     "it asks for the overlay file on the cards url")
@@ -306,6 +307,7 @@ tick(1)
 check(Loader.status().phase == "applying" or Loader.status().phase == "done", "the next tick reads the answer")
 tick(2)
 check(Loader.status().phase == "done" and Cards.byId["zz_loaded"] ~= nil, "the overlay is applied")
+check(Loader.playerText() == "On - 1 card updated", "the player is told one card was updated (" .. Loader.playerText() .. ")")
 check(Loader.status().revision == 4, "the revision is reported")
 Cards.deprecate("zz_loaded")
 
@@ -336,6 +338,8 @@ fresh()
 granted = false
 tick(1500)
 check(#requests == 0 and Loader.status().phase == "waiting", "without the permission it makes no request")
+check(string.find(Loader.playerText(), "Off", 1, true) ~= nil and string.find(Loader.playerText(), "httpAccess", 1, true) ~= nil,
+    "the player is told how to turn updates on (" .. Loader.playerText() .. ")")
 granted = true
 tick(100)
 check(#requests == 1, "it fetches once the permission is granted")
@@ -345,6 +349,7 @@ fresh()
 Plugin.urls = {}
 tick(1)
 check(Loader.status().phase == "off" and #requests == 0, "with no cards url it is off")
+check(string.find(Loader.playerText(), "Off", 1, true) == 1, "and the player is told it is off (" .. Loader.playerText() .. ")")
 
 -- a 404 is not an overlay; it tries again, then works
 fresh()
@@ -352,6 +357,7 @@ tick(1)
 complete(requests[1], 404, "<html>Not found</html>", false)
 tick(1)
 check(Loader.status().phase == "retrying" and Cards.byId["zz_loaded"] == nil, "a 404 is a failure, not an overlay")
+check(string.find(Loader.playerText(), "trying again", 1, true) ~= nil, "the player is told it will try again (" .. Loader.playerText() .. ")")
 tick(2900)
 check(#requests == 1, "it waits a minute before trying again")
 tick(150)
@@ -383,6 +389,7 @@ tick(15100)
 complete(requests[3], 500, "", false)
 tick(2)
 check(#requests == 3 and Loader.status().phase == "failed", "after three failures it gives up")
+check(Loader.playerText() == "Could not reach the update server", "and says so (" .. Loader.playerText() .. ")")
 tick(40000)
 check(#requests == 3, "and does not try a fourth time")
 
@@ -403,6 +410,7 @@ for _, other in ipairs({ header({ base = "9.9.9" }), header({ format = 2 }), "ga
     tick(3)
     check(Loader.status().phase == "ignored" and Cards.byId["zz_loaded"] == nil and #requests == 1,
         "an overlay that is not for this version is ignored (" .. Loader.status().message .. ")")
+    check(Loader.playerText() == "On - no updates for this version", "and the player is told (" .. Loader.playerText() .. ")")
 end
 
 -- a request that cannot even be made
