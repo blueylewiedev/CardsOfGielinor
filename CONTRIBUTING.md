@@ -1,6 +1,6 @@
-# Contributing to Card Collector
+# Contributing to Cards of Gielinor
 
-Thank you for wanting to help! Card Collector is a plugin for the RuneScape 3 Client API (Lua)
+Thank you for wanting to help! Cards of Gielinor (formerly Card Collector) is a plugin for the RuneScape 3 Client API (Lua)
 where you earn credits from XP, open packs and collect cards of NPCs from the game.
 
 This guide covers the two kinds of contribution that are welcome:
@@ -34,7 +34,7 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
    world, then put the plugin's folder (the one containing `main.lua` and `plugin.json`) in the
    BETA folder's `dev_plugins/` directory. The simplest way is to clone the repository straight
    into `dev_plugins/` (or link the folder there).
-3. **Make sure PrettyUI is installed and enabled.** Card Collector needs the PrettyUI plugin
+3. **Make sure PrettyUI is installed and enabled.** Cards of Gielinor needs the PrettyUI plugin
    (mod.io id 6398181) for its windows.
 4. **Load the plugin.** Open the developer console and run `prf` (refresh the plugin list) and
    then `prl` (reload the plugin). Run `prl` again every time you change a file.
@@ -808,10 +808,10 @@ is the only change to the code the licence allows.
 
 **Cards.** By sending a card (its id, name, description, tags and art settings) you confirm that
 the text is your own writing, and you give the project owner a non-exclusive, perpetual,
-worldwide, royalty-free right to use, change and distribute it as part of Card Collector.
+worldwide, royalty-free right to use, change and distribute it as part of Cards of Gielinor (formerly Card Collector).
 
 **Artwork.** You keep ownership of any artwork you create. By sending it you give the project owner
-a non-exclusive, worldwide, royalty-free licence to include it in Card Collector, to resize or
+a non-exclusive, worldwide, royalty-free licence to include it in Cards of Gielinor (formerly Card Collector), to resize or
 adjust it so that it fits, and to distribute it as part of the plugin, and for no other purpose.
 It will not be sold. You are free to use your artwork anywhere else.
 

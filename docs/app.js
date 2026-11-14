@@ -1,4 +1,4 @@
-/* Card Collector card browser. Plain JavaScript, no libraries: it loads cards.json (made by
+/* Cards of Gielinor card browser. Plain JavaScript, no libraries: it loads cards.json (made by
    dev/build_site.py from the deck files) and filters it in the browser. */
 (function () {
   "use strict";

@@ -97,8 +97,9 @@ Nothing needs its own branch: `main` carries on as normal while a version is in 
    plugin cannot read its own version from the API, so it keeps its own copy. `lua dev/check_version.lua` (and the
    Check cards workflow) fails if they differ.
 3. Set a real `contactEmailAddress` in `plugin.json` (`dev/build_release.py` reminds you).
-4. Build the package: `python dev/build_release.py <plugin folder> <output folder>` (leaves out `dev/`, `docs/`
-   and the Markdown files).
+4. Build the package: `python dev/build_release.py <plugin folder> <output folder>` (copies only `main.lua`, `plugin.json`,
+   `LICENSE` and the `core`, `ui`, `deck` and `resources` folders, leaving out hidden files, Markdown files and
+   everything else, and stops with a message if the result is wrong).
 5. **Write down the commit hash** the package was built from (`git rev-parse HEAD`). You tag that commit when the
    version is approved.
 6. Upload it. The plugin asks for the optional `httpAccess` permission and declares one url,

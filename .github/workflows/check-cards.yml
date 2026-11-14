@@ -31,3 +31,5 @@ jobs:
         run: lua5.4 dev/check_loader.lua
       - name: Plugin version matches plugin.json (core/version.lua)
         run: lua5.4 dev/check_version.lua
+      - name: Release package is clean (dev/build_release.py)
+        run: python3 dev/test_build_release.py
