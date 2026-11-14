@@ -43,7 +43,7 @@ import wiki_pages
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "dev" / ".card_queue_state.json"
 CARDS = ROOT / "core" / "cards.lua"
-PLUGIN = "CardCollector"
+PLUGIN = "Cards of Gielinor"        # the plugin's id in the client's data: the name in plugin.json (was CardCollector)
 # the client's plugin data (or the CARD_DB environment variable's)
 DEFAULT_DB = os.environ.get("CARD_DB") or r"C:/ProgramData/Jagex/RuneScape-BETA/plugins/PluginData.db"
 KEY_PREFIX = "dev_card_queue_"
