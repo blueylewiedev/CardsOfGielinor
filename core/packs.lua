@@ -82,6 +82,24 @@ local function pickWeighted(weights)
     return keys[#keys]
 end
 
+-- Picks one card from a list of cards (all of one rarity), each in proportion to its `weight` (1 if it has none, see
+-- core/cards.lua). With no weights this is a plain uniform pick. `roll` is a number from 0 up to but not including 1;
+-- it defaults to math.random() and is a parameter so the odds can be checked exactly.
+function Packs.pickCard(list, roll)
+    local total = 0
+    for _, card in ipairs(list) do
+        total = total + (card.weight or 1)
+    end
+    local left = (roll or math.random()) * total
+    for _, card in ipairs(list) do
+        left = left - (card.weight or 1)
+        if left < 0 then
+            return card
+        end
+    end
+    return list[#list]
+end
+
 -- How likely each kind of card is to be the one drawn, for every card in a pack: a card is
 -- first drawn as an NPC or an item (in proportion to these), then by rarity, then which card.
 -- There is no slot kept for either kind, and as items are added they do not crowd the NPCs out.
@@ -139,7 +157,8 @@ function Packs.poolSize(packTypeId)
 end
 
 -- Rolls one card: its kind (NPC or item, see Packs.kindWeights), then its rarity, then which
--- card of that rarity, then its finish. The rolls are separate, so they stack. `pool` and `kinds`
+-- card of that rarity (all alike unless a card has a weight, see Packs.pickCard), then its
+-- finish. The rolls are separate, so they stack. `pool` and `kinds`
 -- come from Packs.poolFor (default: the standard pack). Without `kinds` the kind is not rolled
 -- and the card comes from `pool` alone. Returns { card, finish, key } where key is the variant
 -- key used for saving.
@@ -167,8 +186,7 @@ function Packs.rollCard(pool, kinds)
         end
     end
     local rarity = pickWeighted(rarityWeights)
-    local list = pool[rarity]
-    local card = list[math.random(#list)]
+    local card = Packs.pickCard(pool[rarity])
 
     local finish = pickWeighted(Cards.odds.finish)
 

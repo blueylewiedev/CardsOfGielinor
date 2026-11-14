@@ -49,6 +49,11 @@ Cards.odds = {
 --            shows three lines and cuts off anything longer (dev/check_cards.lua lists them).
 --   kind   : optional, what the card shows: "npc" (the default) or "item" (an object in the
 --            game's data, called an Obj by the API).
+--   weight : optional, how much more (or less) likely this card is than the others of its rarity, in
+--            the pack roll that picks a card once its kind and rarity are drawn (see Packs.rollCard).
+--            Leave it out for 1, the same as every other card. A card with weight 10 is ten times as
+--            likely as an ordinary card of its rarity, so it is for the few cards every player should
+--            meet early, such as coins. A number above 0, at most Cards.MAX_WEIGHT.
 --   tags   : optional. Groups the card for themed packs. Each key is a kind of tag and holds
 --            a list of lower case words, for example
 --              tags = { skills = { "thieving" }, regions = { "misthalin" }, category = { "humanoid" } }
@@ -80,6 +85,10 @@ Cards.list = {}
 
 -- The longest description that fits on a card (see desc above).
 Cards.MAX_DESC = 80
+
+-- The largest `weight` a card may have (see weight above). A mistyped weight cannot make one card swallow its
+-- whole rarity.
+Cards.MAX_WEIGHT = 1000
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
@@ -669,6 +678,10 @@ function Cards.problem(card)
     end
     if card.art ~= nil and type(card.art) ~= "table" then
         return "The art of card " .. card.id .. " must be a table"
+    end
+    -- (a number that is not above 0, or is not a number at all, fails this; so does NaN)
+    if card.weight ~= nil and not (type(card.weight) == "number" and card.weight > 0 and card.weight <= Cards.MAX_WEIGHT) then
+        return "The weight of card " .. card.id .. " must be a number above 0 and at most " .. Cards.MAX_WEIGHT
     end
     local tags = tagsProblem(card)
     if tags ~= nil then
