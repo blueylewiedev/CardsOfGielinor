@@ -21,6 +21,8 @@ jobs:
         run: lua5.4 dev/check_json.lua
       - name: Cards can be added, replaced and retired (core/cards.lua)
         run: lua5.4 dev/check_registry.lua
+      - name: Card weights and the pick inside a rarity (core/packs.lua)
+        run: lua5.4 dev/check_packs.lua
       - name: The deck survives the overlay format (dev/export_overlay.lua)
         run: lua5.4 dev/check_overlay.lua
       - name: Overlay build logic (dev/build_overlay.py)
