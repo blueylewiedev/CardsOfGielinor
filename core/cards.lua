@@ -5,15 +5,16 @@
 local Cards = {}
 
 -- Rarity tiers.
---   weight : relative chance of pulling this tier from a pack (used when packs are added)
+--   weight : relative chance of pulling this tier from a pack. They add up to 100, so each is also its percentage:
+--            an epic about every 50 cards (10 packs of 5), a legendary about every 167 cards (33 packs)
 --   colour : 0xRRGGBBAA colour used for the card frame and the pack opening pips
 --   glow   : 0..1, how strongly a flipped card of this rarity glows in the pack opening
 Cards.rarities = {
-    common    = { name = "Common",    weight = 60, colour = 0x9AA0A6FF, glow = 0.0 },
+    common    = { name = "Common",    weight = 63, colour = 0x9AA0A6FF, glow = 0.0 },
     uncommon  = { name = "Uncommon",  weight = 25, colour = 0x4CAF50FF, glow = 0.6 },
-    rare      = { name = "Rare",      weight = 10, colour = 0x2196F3FF, glow = 0.75 },
-    epic      = { name = "Epic",      weight = 4,  colour = 0x9C27B0FF, glow = 0.9 },
-    legendary = { name = "Legendary", weight = 1,  colour = 0xFFC107FF, glow = 1.0 },
+    rare      = { name = "Rare",      weight = 9.4, colour = 0x2196F3FF, glow = 0.75 },
+    epic      = { name = "Epic",      weight = 2,  colour = 0x9C27B0FF, glow = 0.9 },
+    legendary = { name = "Legendary", weight = 0.6, colour = 0xFFC107FF, glow = 1.0 },
 }
 
 -- The rarities from lowest to highest. Used by packs that guarantee a minimum rarity.
