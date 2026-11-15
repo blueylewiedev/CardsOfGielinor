@@ -94,7 +94,7 @@ do
     check(Cards.byId["zz_test_card"] == held, "it is the same table, changed in place")
     check(held.name == "Renamed" and held.rarity == "legendary" and held.desc == "New words.", "its fields are the new ones")
     check(#Cards.list == liveBefore + 1, "the count did not change")
-    local replaced = Cards.register(card({ desc = false, art = nil }))
+    local replaced = Cards.register(card({ desc = "", art = nil }))
     check(replaced == true and held.name == "Test card" and held.rarity == "common", "an older field does not survive a replace")
     local extra = card()
     extra.variants = { { item = "A" } }
@@ -235,6 +235,57 @@ do
 
     ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "standard", name = "Renamed standard" } })
     check(ok and loaded.packTypes.standard.name == "Renamed standard", "a line for a pack type that exists still changes it")
+end
+
+-- A deck whose data is the wrong shape must not make loading throw: what cannot be used is left out and reported,
+-- and the sound cards beside it still load. (Each of these threw before.)
+do
+    local function fresh() return { id = "a", name = "A", rarity = "common" } end
+    local function badCard(fields)
+        local made = { id = "z", name = "Z", rarity = "common" }
+        for key, value in pairs(fields) do made[key] = value end
+        return made
+    end
+    local withDefaults = { regions = { "asgarnia" } }
+    local cases = {
+        { "art that is a number", { cards = { fresh(), badCard({ art = 5 }) } }, "art of card z must be a table" },
+        { "tags that are a string beside defaults", { defaults = withDefaults, cards = { fresh(), badCard({ tags = "x" }) } }, "Card z" },
+        { "tags that are a number beside defaults", { defaults = withDefaults, cards = { fresh(), badCard({ tags = 5 }) } }, "Card z" },
+        { "a tag kind that is not a list, beside defaults", { defaults = withDefaults, cards = { fresh(), badCard({ tags = { regions = 5 } }) } }, "Card z" },
+        { "cards that are a number", { cards = 5 }, "cards must be a table" },
+        { "defaults that are a string", { defaults = "x", cards = { fresh() } }, "defaults must be a table" },
+        { "a defaults list that is a number", { defaults = { regions = 5 }, cards = { fresh() } }, "defaults must be lists of words" },
+        { "a defaults word that is a table", { defaults = { regions = { {} } }, cards = { fresh() } }, "must be text" },
+    }
+    for _, case in ipairs(cases) do
+        local ok, loaded = loadDeck({ fake_a = case[2] })
+        check(ok, case[1] .. ": loading does not throw (" .. tostring(not ok and loaded or "") .. ")")
+        if ok then
+            check(mentions(loaded, case[3]), case[1] .. ": reported (" .. case[3] .. ")")
+            check(loaded.byId["z"] == nil, case[1] .. ": the bad card is left out")
+        end
+    end
+    -- the sound card in the same file as a bad one stays
+    local ok, loaded = loadDeck({ fake_a = { defaults = withDefaults, cards = { fresh(), badCard({ tags = "x" }) } } })
+    check(ok and loaded.byId["a"] ~= nil, "a sound card beside a bad one still loads")
+    -- a bad file does not stop the next one
+    ok, loaded = loadDeck({ fake_a = { cards = 5 }, fake_b = { cards = { fresh() } } })
+    check(ok and loaded.byId["a"] ~= nil, "a file of the wrong shape does not stop the next file")
+
+    -- what a card draws must be the kind of value the card view expects
+    local sound = { id = "s", name = "S", rarity = "common", kind = "item", art = { item = "X", cam = { yaw = 1 } }, desc = "ok" }
+    check(Cards.problem(sound) == nil, "a card with text, an item name and a camera table is sound")
+    local function refused(fields, text)
+        local made = {}
+        for key, value in pairs(sound) do made[key] = value end
+        for key, value in pairs(fields) do made[key] = value end
+        local problem = Cards.problem(made)
+        check(problem ~= nil and string.find(problem, text, 1, true), text .. " (" .. tostring(problem) .. ")")
+    end
+    refused({ desc = 5 }, "description of card s must be text")
+    refused({ art = { item = 5 } }, "art.item of card s must be text")
+    refused({ kind = "npc", art = { npc = {} } }, "art.npc of card s must be text")
+    refused({ art = { item = "X", cam = "close" } }, "art.cam of card s must be a table")
 end
 
 if failures > 0 then
