@@ -7,6 +7,7 @@
 --   a plain rectangle layout is used instead.
 
 local Cards = require("core/cards")
+local Logger = require("core/logger")
 
 local CardView = {}
 
@@ -93,12 +94,16 @@ function CardView.frameResource(rarity)
     end
     local ok, resource = pcall(function() return Plugin.resources.images["frame_" .. rarity] end)
     if not ok or resource == nil then
-        log("card frame: no image for", rarity, "(resources/images/frame_" .. rarity .. ".png) - using the plain layout")
+        Logger.error("card frame: no image for", rarity, "(resources/images/frame_" .. rarity .. ".png) - using the plain layout")
         frameCache[rarity] = false
         return nil
     end
     local loaded, result = pcall(function() return resource:Load() end)
-    log("card frame: loaded", rarity, loaded and tostring(result) or ("FAILED: " .. tostring(result)))
+    if loaded then
+        Logger.debug("card frame: loaded", rarity, tostring(result))
+    else
+        Logger.error("card frame: could not load", rarity, tostring(result))
+    end
     frameCache[rarity] = resource
     return resource
 end
@@ -207,7 +212,7 @@ function CardView.playAnimation(model, animId)
         model:RestartAnimation(0)
     end)
     if not ok then
-        log("card animation failed:", tostring(err))
+        Logger.error("card animation failed:", tostring(err))
     end
     return ok
 end
@@ -227,7 +232,7 @@ local function addItemIcon(parent, objId, box)
     if ok then
         return sprite
     end
-    log("card art: item icon failed for", objId, tostring(sprite))
+    Logger.error("card art: item icon failed for", objId, tostring(sprite))
     return nil
 end
 
@@ -258,7 +263,7 @@ local function addArt(parent, card, box, bodyOverride)
     if isItem then
         local ok, objId = pcall(function() return id.Obj[art.item] end)
         if not ok or not Cards.isValidObjId(objId) then
-            log("card art: item not found for", card.id, tostring(art.item), "->", tostring(objId))
+            Logger.error("card art: item not found for", card.id, tostring(art.item), "->", tostring(objId))
             return nil
         end
         modelId, modelType = objId, ui.ModelType.OBJECT
@@ -268,7 +273,7 @@ local function addArt(parent, card, box, bodyOverride)
     else
         local ok, npcID = pcall(function() return id.NPC[art.npc] end)
         if not ok or not Cards.isValidNpcId(npcID) then
-            log("card art: NPC not found for", card.id, art.npc, "->", tostring(npcID))
+            Logger.error("card art: NPC not found for", card.id, art.npc, "->", tostring(npcID))
             return nil
         end
         modelId, modelType = npcID, ui.ModelType[body and "NPC_MODEL" or "NPC_HEAD"]
@@ -299,14 +304,14 @@ local function addArt(parent, card, box, bodyOverride)
     if built then
         return model, cam
     end
-    log("card art: camera failed for", card.id, "- showing a plain model:", tostring(model))
+    Logger.error("card art: camera failed for", card.id, "- showing a plain model:", tostring(model))
 
     local plain = ui.Model.new(parent)
     plain:SetPos(box.x, box.y)
     plain:SetSize(box.w, box.h)
     local shown, err = pcall(function() plain:SetModel(modelType, modelId) end)
     if not shown then
-        log("card art: SetModel failed for", card.id, err)
+        Logger.error("card art: SetModel failed for", card.id, err)
         plain:Destroy()
         if isItem then
             return addItemIcon(parent, modelId, box)

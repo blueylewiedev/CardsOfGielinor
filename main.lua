@@ -10,10 +10,12 @@
 --   dev/    developer tools, left out of the released plugin
 --
 -- Saves a collection per character, earns credits from XP and from Slayer tasks, and logs its progress to the
--- Lua console with log().
+-- Lua console through core/logger.lua (quiet unless something fails or detailed logging is on).
 
 local Storage = require("core/storage")
+local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
+local Version = require("core/version")
 local Identity = require("core/identity")
 local Earning = require("core/earning")
 local SlayerEvents = require("core/slayerevents")
@@ -33,11 +35,13 @@ if not devLoaded then
     Dev = nil
 end
 
+Logger.setDevCopy(Dev ~= nil)
+
 -- A card, deck file or pack that is not sound is left out and the plugin loads without it (core/cards.lua).
 -- Each is logged; the dev copy stops instead, as a problem is to be fixed before release, not carried.
 local Cards = require("core/cards")
 for _, problem in ipairs(Cards.loadProblems) do
-    log("DECK PROBLEM (left out):", problem)
+    Logger.error("DECK PROBLEM (left out):", problem)
 end
 if Dev ~= nil and #Cards.loadProblems > 0 then
     error("The deck has " .. #Cards.loadProblems .. " problem(s), the first: " .. Cards.loadProblems[1], 0)
@@ -102,7 +106,7 @@ local function startSession(profile)
     session = { name = profile.name, key = profile.key, state = Storage.load(profile.key) }
     ticksSinceSave = 0
     ticksSinceLoad = 0
-    log("loaded collection for", profile.name, "(" .. profile.key .. ", " .. profile.how .. ") - credits:",
+    Logger.debug("loaded collection for", profile.name, "(" .. profile.key .. ", " .. profile.how .. ") - credits:",
         session.state.credits,
         "unique cards:", Storage.countUniqueOwned(session.state),
         "variants:", Storage.countVariantsOwned(session.state))
@@ -200,7 +204,7 @@ api.onMainClosed = function() Settings.set("mainOpen", false) end
 local function openMain()
     local ok, err = pcall(PackWindow.show, api)
     if not ok then
-        log("pack window failed:", err)
+        Logger.error("pack window failed:", err)
     end
 end
 
@@ -215,7 +219,7 @@ end
 local function showCredits()
     local ok, err = pcall(CreditsWindow.show, api)
     if not ok then
-        log("credits overlay failed:", err)
+        Logger.error("credits overlay failed:", err)
     end
     return ok
 end
@@ -270,7 +274,7 @@ Hub.init({
 })
 
 -- Listens for Slayer kills and completions (core/slayerevents.lua); it pays credits once a character is loaded.
-SlayerEvents.start(api, Dev ~= nil)
+SlayerEvents.start(api)
 
 -- With the development tools in use, their buttons go on the Home window.
 applyDevTools()
@@ -286,4 +290,6 @@ if Dev ~= nil then
     Dev.start()
 end
 
-log(PluginId.TITLE .. " started")
+Logger.note(PluginId.TITLE .. " " .. Version.number .. " started: " .. #Cards.list .. " cards"
+    .. (#Cards.loadProblems > 0 and (", " .. #Cards.loadProblems .. " left out (see above)") or "")
+    .. (Dev ~= nil and " (development copy)" or ""))

@@ -9,6 +9,7 @@
 -- The number is written by Format.credits (core/format.lua), which is tested on its own.
 
 local Kit = require("ui/kit")
+local Logger = require("core/logger")
 local Format = require("core/format")
 
 local CreditsWindow = {}
@@ -32,7 +33,6 @@ local api = nil              -- api.getState() : the logged-in character's colle
                              -- api.openMain() : opens the main window (when the bar is clicked)
 local parent = nil           -- the screen layer it is drawn on
 local root, grip = nil, nil     -- root is a layer that holds the bar's parts; grip catches the mouse
-local talk = false             -- log what the mouse does (the development copy), to find out why it does not move
 local numberText = nil
 local posX, posY = 0, 0      -- where the bar is, from the top left of the screen
 local drag = nil             -- while it is being moved: { mouse x and y, bar x and y when the press began }
@@ -76,7 +76,7 @@ local function savePosition()
         PersistentDB:SetStructuredData(POSITION_KEY, { x = posX, y = posY })
     end)
     if not ok then
-        log("credits window: could not save where it is")
+        Logger.error("credits window: could not save where it is")
     end
 end
 
@@ -110,7 +110,7 @@ local function addIcon(bar)
     if ok then
         return sprite
     end
-    log("credits window: the coins icon failed:", tostring(sprite))
+    Logger.error("credits window: the coins icon failed:", tostring(sprite))
     return nil
 end
 
@@ -129,10 +129,7 @@ local function addGrip()
         if x == nil or drag ~= nil then
             return
         end
-        drag = { x = x, y = y, barX = posX, barY = posY, held = 0, moved = false }
-        if talk then
-            log("credits overlay: pressed at", x, y, "(bar at", posX .. ",", posY .. ")")
-        end
+        drag = { x = x, y = y, barX = posX, barY = posY, moved = false }
         layer:SetPos(0, 0)
         layer:SetSize(0, 0, 1, 1)
         pcall(function() layer:MoveToFront() end)
@@ -148,10 +145,6 @@ local function addGrip()
         if drag.moved then
             place(drag.barX + x - drag.x, drag.barY + y - drag.y)
         end
-        drag.held = drag.held + 1
-        if talk and drag.held == 1 then
-            log("credits overlay: held, mouse at", x, y, "so the bar goes to", posX .. ",", posY)
-        end
     end)
     layer:Subscribe(ui.Hook.ONRELEASE, function()
         if drag == nil then
@@ -160,15 +153,12 @@ local function addGrip()
         local moved = drag.moved
         drag = nil
         rest()
-        if talk then
-            log("credits overlay: released,", moved and "moved to" or "a click; the bar stays at", posX .. ",", posY)
-        end
         if moved then
             savePosition()
         elseif api ~= nil and api.openMain ~= nil then
             local ok, err = pcall(api.openMain)
             if not ok then
-                log("credits overlay: opening the main window failed:", tostring(err))
+                Logger.error("credits overlay: opening the main window failed:", tostring(err))
             end
         end
     end)
@@ -202,7 +192,6 @@ function CreditsWindow.show(newApi)
         return
     end
     api = newApi
-    talk = newApi ~= nil and newApi.devTools == true
     parent = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     posX, posY = clamp(startingPosition())
 

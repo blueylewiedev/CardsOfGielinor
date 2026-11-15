@@ -12,6 +12,7 @@
 -- down and flipped over one at a time. It only shows what core/packs.lua already rolled.
 
 local Cards = require("core/cards")
+local Logger = require("core/logger")
 local Storage = require("core/storage")
 local Packs = require("core/packs")
 local CardView = require("ui/cardview")
@@ -688,7 +689,7 @@ local function showFaceDown()
     -- for the burst.
     setHidden(reveal.view.root, true)
     CardView.uncover(reveal.view, 0)
-    log("reveal:", result.card.id, result.finish, "model", tostring(reveal.view.model ~= nil))
+    Logger.debug("reveal:", result.card.id, result.finish, "model", tostring(reveal.view.model ~= nil))
 
     reveal.back = cardBack(layer)
     reveal.back:SetPos(x, CARD_Y)
@@ -985,7 +986,7 @@ local function onOpenPack()
     local packTypeId = currentPack()
     local results, reason = Packs.open(state, packTypeId)
     if results == nil then
-        log("pack not opened:", reason)
+        Logger.debug("pack not opened:", reason)
         PackWindow.refresh()
         return
     end
