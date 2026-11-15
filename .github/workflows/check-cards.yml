@@ -35,6 +35,8 @@ jobs:
         run: lua5.4 dev/check_version.lua
       - name: Quiet console, failures logged once (core/logger.lua)
         run: lua5.4 dev/check_logger.lua
+      - name: Collection viewer search, filters and sorts (core/browse.lua)
+        run: lua5.4 dev/check_viewer.lua
       - name: The credits text (core/format.lua)
         run: lua5.4 dev/check_format.lua
       - name: Release package is clean (dev/build_release.py)
