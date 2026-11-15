@@ -37,6 +37,8 @@ jobs:
         run: lua5.4 dev/check_logger.lua
       - name: Collection viewer search, filters and sorts (core/browse.lua)
         run: lua5.4 dev/check_viewer.lua
+      - name: Collection viewer controls against a stand-in client (ui/viewer.lua)
+        run: lua5.4 dev/check_viewer_ui.lua
       - name: The credits text (core/format.lua)
         run: lua5.4 dev/check_format.lua
       - name: Release package is clean (dev/build_release.py)

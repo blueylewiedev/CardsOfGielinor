@@ -1,204 +1,648 @@
 -- ui/viewer.lua
--- The collection viewer: a paged grid of the cards the player owns.
+-- The collection viewer: every card in the game, searchable and filterable, whether the player has it or not.
 --
--- Every variant the player owns (a card + finish) gets its own slot. Only the normal finish
--- exists for now, so that is one slot per card. A toggle adds a dimmed placeholder
--- for every variant of every card that is not owned yet, which turns the grid into a
--- checklist.
+-- Two views of the same cards, switched by the swap button in the title bar:
+--   list  a tile for each card (name, rarity, how many copies) tinted by its rarity, with the picked card shown large
+--         beside it, and what is known about it under that.
+--   grid  the cards themselves, 8 a page, each with its count underneath. Clicking one opens it in the list.
 --
--- Cards are created directly in the window, one layer deep, as the preview window does.
+-- Everything sits on four equal columns (COLUMN_W wide): the filters, the list (two columns), the picked card (two
+-- columns) and the grid (one card to a column), so the edges line up from the top to the bottom.
+--
+-- A card the player does not have shows no picture and no description (its card is the "?" placeholder), only its
+-- name, rarity and tags, so browsing the deck gives nothing away.
+--
+-- Which cards show, and in what order, is core/browse.lua (tested on its own). This file only draws and takes the
+-- mouse and keyboard. The filters are kept while the plugin runs, so closing and opening the viewer does not lose them.
 
 local Cards = require("core/cards")
-local Browse = require("core/browse")
 local Storage = require("core/storage")
+local Browse = require("core/browse")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
 
 local Viewer = {}
 
-local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
 local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
-local DIM = Vector4.new(0.60, 0.60, 0.65, 1.0)
+local DIM = Vector4.new(0.55, 0.55, 0.60, 1.0)
 local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
-local CYAN = Vector4.new(0.45, 0.90, 1.0, 1.0)
-local PURPLE = Vector4.new(0.80, 0.55, 1.0, 1.0)
-local BAR_BACK = Vector4.new(0.10, 0.10, 0.13, 1.0)
-local BAR_BASE = Vector4.new(0.55, 0.70, 0.80, 1.0)
+local DARK = { 0.07, 0.07, 0.09 }                       -- what a tile's rarity colour is mixed into
+local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)  -- the same dark bar and brown border as the credits overlay
+local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
+local SELECTED_BORDER = Vector4.new(1.0, 1.0, 1.0, 0.95)
+local CHIP_BACK = Vector4.new(0.18, 0.16, 0.13, 0.95)
+local CHIP_BORDER = Vector4.new(0.50, 0.40, 0.24, 0.95)
+local CHIP_GOLD_BORDER = Vector4.new(0.85, 0.68, 0.16, 0.95)
+local CHIP_ACTIVE_BACK = Vector4.new(0.40, 0.30, 0.10, 0.98)   -- a chip whose filter is on
 
--- Layout. Change COLS and ROWS to fit more or fewer cards on a page. The buttons and counts
--- sit in a panel down the right-hand side.
-local COLS, ROWS = 3, 2
-local TILE_W = CardView.WIDTH + 10
-local TILE_H = CardView.HEIGHT + 40     -- the card, then a variant line and a count line
-local TOP = 10
-local SIDE_W = 184                       -- width of the side panel; PrettyUI buttons are as wide as their label needs (about 168 for "Unowned") or this, whichever is larger
-local LEFT = Kit.available() and 5 or 10   -- left margin: PrettyUI's content area already starts further in
--- Gap between the last card column and the side panel. With PrettyUI the buttons draw wider than
--- the panel box, so this is small: it makes the gap left of the buttons match the one to their right.
-local SIDE_GAP = Kit.available() and -1 or 10
-local SIDE_X = LEFT + COLS * TILE_W + SIDE_GAP   -- left edge of the side panel
-local WIDTH = SIDE_X + SIDE_W + (Kit.available() and 26 or 10)   -- the extra keeps the window as wide as before
-local HEIGHT = TOP + ROWS * TILE_H + 10
-local PER_PAGE = COLS * ROWS
+-- Layout, in the window's content area. Filters across the top, then the cards, then the counts and page buttons.
+local COLUMNS, COLUMN_W, GAP = 4, 216, 12
+local CONTENT_W = COLUMNS * COLUMN_W + (COLUMNS - 1) * GAP
+local WINDOW_SLACK = 30                -- the window's frame takes this much of the width it is made with
+local LEFT = Kit.available() and 4 or 10
+local FILTER_Y = { 4, 40, 76 }         -- the three rows of filters
+local FILTER_H = 28
+local BODY_Y = 118                     -- where the list or grid starts
+local DETAIL_SCALE = 2.0               -- the picked card is drawn this big (a card in the grid is CardView.SCALE)
+local DETAIL_W_CARD = math.floor(160 * DETAIL_SCALE)
+local DETAIL_H_CARD = math.floor(224 * DETAIL_SCALE)
+local ROW_H, ROW_STEP = 46, 50         -- a tile in the list, and the distance from one to the next
+local LIST_ROWS = 13
+local LIST_W = 2 * COLUMN_W + GAP      -- the list takes the first two columns
+local GRID_COLS, GRID_ROWS = COLUMNS, 2
+local TILE_H = CardView.HEIGHT + 44    -- the card, then its caption
+local BODY_H = math.max(LIST_ROWS * ROW_STEP, GRID_ROWS * TILE_H)
+local FOOTER_Y = BODY_Y + BODY_H + 8
+local HEIGHT = FOOTER_Y + 42
+local FOOTER_SHIFT = 22                -- Prev and Next sit this far left of their column, or Next is clipped by the frame
+local GRID_PER_PAGE = GRID_COLS * GRID_ROWS
+local CHIP_H, CHIP_STEP = 22, 28       -- a chip, and the distance from one line of chips to the next
+local CHIP_GAP = 6                     -- between chips on a line
+local CHIP_CHAR_W, CHIP_PAD = 8.5, 9   -- a letter's width and the space either side of it: a chip is sized round its text
+local INFO_LABEL_W = 96                -- the field names in the info panel take this much, the chips the rest
 
-local api = nil          -- api.getState() : the logged-in character's collection, or nil
-local window = nil
-local content = nil      -- the component inside the window frame that everything is built in
-local widgets = {}
-local parts = {}         -- everything drawn for the current page, destroyed on page change
+local ANY = "any"                      -- the value of a drop-down's "no filter" entry
+
+-- Where column `number` (1 to 4) starts.
+local function columnX(number)
+    return LEFT + (number - 1) * (COLUMN_W + GAP)
+end
+local DETAIL_X = columnX(3)            -- the picked card is over the last two columns
+local DETAIL_W = 2 * COLUMN_W + GAP
+
+local api = nil                        -- api.getState() : the logged-in character's collection, or nil
+local window, content = nil, nil
+local widgets = {}                     -- text and buttons that stay while the window is open
+local dropdowns = {}
+local rows = {}                        -- the list's tiles, made once
+local gridParts = {}                   -- what the grid draws for the current page
+local detailParts = {}                 -- what the detail panel draws for the picked card
+local detailKey = nil                  -- which card that is (so typing in the search does not rebuild the same card)
+local titleButton = nil                -- the swap button in the title bar
+
+-- What the player has chosen. Kept between openings.
+local filter = { owned = "all", sort = "rarity" }
+local filterStarted = false               -- the filter starts from the default the first time the viewer opens
+local gridView = false
 local page = 1
-local pages = 1
-local shown = 0          -- how many slots the current page is showing
-local showUnowned = false
+local selectedKey = nil                -- "<card id>|<finish>" of the card shown beside the list
+local entries = {}                     -- what the filter finds, worked out when the filter changes
 
--- The slots to show, in order: { card, finish, count, locked }. With `includeUnowned`, every variant a card can be
--- pulled in that the player does not own gets a `locked` placeholder (count 0). Variants the player owns always show,
--- even if the card's data no longer offers them. The work is core/browse.lua's, which also does the search and filters.
-function Viewer.buildEntries(state, includeUnowned)
-    return Browse.entries(state, { owned = includeUnowned and "all" or "owned" })
+-- Where the filter starts, and what Clear filters goes back to: the cards the player owns, or all of them while they
+-- own none (an empty list on a first visit would look broken).
+local function defaultFilter()
+    local state = api ~= nil and api.getState() or nil
+    local owning = state ~= nil and Browse.counts(state, {}).owned > 0
+    return { owned = owning and "owned" or "all", sort = "rarity" }
 end
 
-local makeText = Kit.text
-
--- Buttons live in the window's content area.
-local function makeButton(label, x, y, w, h, onPress)
-    return Kit.button(content, label, x, y, w, h, onPress)
+local function setHidden(component, hidden)
+    pcall(function() component.hidden = hidden end)
 end
 
--- Progress bars in the side panel: how much of the base set (and of everything) is collected.
--- Each is a text line with a bar under it: a dark rectangle with a coloured one on top that
--- is as wide as the fraction collected.
-local BAR_W, BAR_H = SIDE_W - 24, 12
-local BARS = {
-    { key = "normal",  label = "Base set",     colour = BAR_BASE },
-    { key = "all",     label = "Total",        colour = GOLD },
-}
-local BARS_TOP = 200
-local BAR_STEP = 44
-
--- Creates the four bars (text, dark back and coloured fill) in the side panel.
-local function buildBars()
-    for i, bar in ipairs(BARS) do
-        local y = BARS_TOP + (i - 1) * BAR_STEP
-        local x = SIDE_X + (SIDE_W - BAR_W) // 2
-        bar.text = makeText(content, SIDE_X, y, SIDE_W, 20, "", WHITE)
-        bar.back = ui.Rectangle.new(content)
-        bar.back:SetPos(x, y + 22)
-        bar.back:SetSize(BAR_W, BAR_H)
-        bar.back.fill = true
-        bar.back.colour = BAR_BACK
-        bar.fill = ui.Rectangle.new(content)
-        bar.fill:SetPos(x, y + 22)
-        bar.fill:SetSize(1, BAR_H)
-        bar.fill.fill = true
-        bar.fill.colour = bar.colour
-        bar.x = x
+local function destroyAll(list)
+    for index = #list, 1, -1 do
+        pcall(function() list[index]:Destroy() end)
+        list[index] = nil
     end
 end
 
--- Sets each bar's text and fill width from how much of the collection the player has.
-local function updateBars(state)
-    local progress = Storage.progress(state)
-    for _, bar in ipairs(BARS) do
-        local p = progress[bar.key]
-        bar.text.content = bar.label .. ": " .. p.owned .. " / " .. p.total
-        local width = (p.total > 0) and math.floor(BAR_W * p.owned / p.total + 0.5) or 0
-        pcall(function() bar.fill.hidden = (width <= 0) end)
-        bar.fill:SetSize(math.max(width, 1), BAR_H)
-    end
+-- 0xRRGGBBAA -> the Vector4 the components take, with an alpha of your own.
+local function toVec4(hex, alpha)
+    return Vector4.new(((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255, alpha or 1.0)
 end
 
--- Removes the bars from the screen.
-local function destroyBars()
-    for _, bar in ipairs(BARS) do
-        for _, part in ipairs({ bar.text, bar.back, bar.fill }) do
-            pcall(function() part:Destroy() end)
+-- A rarity's colour mixed into the dark background: `amount` 0 is all dark, 1 is all the rarity colour.
+local function tint(hex, amount, alpha)
+    local r, g, b = ((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255
+    return Vector4.new(DARK[1] + (r - DARK[1]) * amount, DARK[2] + (g - DARK[2]) * amount,
+        DARK[3] + (b - DARK[3]) * amount, alpha)
+end
+
+local function entryKey(entry)
+    return entry.card.id .. "|" .. entry.finish
+end
+
+local function perPage()
+    return gridView and GRID_PER_PAGE or LIST_ROWS
+end
+
+local function pageCount()
+    return math.max(1, math.ceil(#entries / perPage()))
+end
+
+-- A dark box with a thin border, as a layer to put texts in. Returns the layer, the background and the border.
+local function panel(parent, x, y, w, h)
+    local layer = ui.Layer.new(parent)
+    layer:SetPos(x, y)
+    layer:SetSize(w, h, 0, 0)
+    local back = ui.Rectangle.new(layer)
+    back:SetPos(0, 0)
+    back:SetSize(w, h, 0, 0)
+    back.fill = true
+    back.colour = PANEL_BACK
+    local border = ui.Rectangle.new(layer)
+    border:SetPos(0, 0)
+    border:SetSize(w, h, 0, 0)
+    border.fill = false
+    border.outlineThickness = 1
+    border.colour = PANEL_BORDER
+    return layer, back, border
+end
+
+-- The word list a tag filter offers, as { label, value } entries: "any" first, then the words by their label.
+local function wordEntries(anyLabel, words)
+    local list = {}
+    for _, word in ipairs(words or {}) do
+        list[#list + 1] = { label = Browse.label(word), value = word }
+    end
+    table.sort(list, function(a, b) return a.label < b.label end)
+    table.insert(list, 1, { label = anyLabel, value = ANY })
+    return list
+end
+
+-- The categories are the longest list (over 200). PrettyUI's drop-down that can be typed in takes longer for every
+-- entry it has (it rebuilds the whole list for each one when it opens, and gave up after a second), so this one is the
+-- plain, sorted kind (see Kit.dropdown), which sorts "Any category" in with the rest: the space in front keeps it at
+-- the top.
+local ANY_CATEGORY = " Any category"
+
+-- The categories to offer: the ones that cards matching the other filters have (so every one finds something), and the
+-- one chosen now, whatever the other filters are, so the box never shows a choice that is not in its list.
+local function categoryEntries()
+    local state = api ~= nil and api.getState() or nil
+    local present = state ~= nil and Browse.words(state, filter, "category") or nil
+    local words = {}
+    for _, word in ipairs(Cards.wordsFor(filter.kind, "category") or {}) do
+        if present == nil or present[word] or word == filter.category then
+            words[#words + 1] = word
         end
-        bar.text, bar.back, bar.fill = nil, nil, nil
+    end
+    return wordEntries(ANY_CATEGORY, words)
+end
+
+-- Puts the category list right for the filters as they are now (not when it is already so: setting a drop-down's list
+-- is not free).
+local shownCategories = nil
+local function updateCategories()
+    if dropdowns.category == nil then
+        return
+    end
+    local list = categoryEntries()
+    local values = {}
+    for _, entry in ipairs(list) do
+        values[#values + 1] = entry.value
+    end
+    local key = table.concat(values, ",") .. "|" .. tostring(filter.category)
+    if key == shownCategories then
+        return
+    end
+    shownCategories = key
+    pcall(function() dropdowns.category.set(list, filter.category or ANY) end)
+end
+
+local MEMBERSHIP_NAMES = { f2p = "Free to play", p2p = "Members" }
+
+-- A tag's words as chips: { text, field, value }, where field and value are what clicking the chip sets in the filter.
+-- One "-" (that does nothing when clicked) if the card has none.
+local function tagItems(card, tagKind, field)
+    local items = {}
+    for _, word in ipairs(card.tags and card.tags[tagKind] or {}) do
+        items[#items + 1] = { text = tagKind == "membership" and MEMBERSHIP_NAMES[word] or Browse.label(word),
+            field = field, value = word }
+    end
+    if #items == 0 then
+        items[1] = { text = "-" }
+    end
+    return items
+end
+
+-- A category chosen with the kind of card that does not have it is dropped.
+local function dropInvalidCategory()
+    local valid = false
+    for _, word in ipairs(Cards.wordsFor(filter.kind, "category") or {}) do
+        valid = valid or word == filter.category
+    end
+    if not valid then
+        filter.category = nil
     end
 end
 
--- Removes the cards and text of the current page, ready to draw another.
-local function clearPage()
-    for _, part in ipairs(parts) do
-        part:Destroy()
+-- A chip was clicked: its field is set to its value in the filter, or cleared if it already was. The drop-downs follow.
+-- (The owned / not collected chip does nothing: it only says what the player has.)
+local function toggleFilter(field, value)
+    if filter[field] == value then
+        filter[field] = nil
+    else
+        filter[field] = value
     end
-    parts = {}
-    shown = 0
+    if field == "kind" then
+        dropInvalidCategory()
+    end
+    if dropdowns[field] ~= nil then
+        pcall(function() dropdowns[field].select(filter[field] or ANY) end)
+    end
+    Viewer.refilter(true)
 end
 
--- The text under a card: which variant it is, coloured so special ones stand out.
-local function variantLabel(entry)
-    local names = {}
-    if entry.finish ~= "normal" then
-        names[#names + 1] = Cards.finishes[entry.finish].name
-    end
-    if entry.locked then
-        return (#names == 0) and "Standard" or table.concat(names, " "), DIM
-    end
-    if #names == 0 then
-        return "Standard", GREY
-    end
-    return table.concat(names, " "), CYAN
+local function chipWidth(text)
+    return math.floor(#text * CHIP_CHAR_W + 2 * CHIP_PAD)
 end
 
--- Draws the current page: the cards, their variant and count lines, the bars and the page text.
-local function showPage()
+-- Where chips go when laid out left to right, wrapping onto a new line when the next would pass `maxW`: a list of
+-- { x, y, w } (from the top left of the area), and the height the lines take.
+local function flow(texts, maxW)
+    local places, x, y = {}, 0, 0
+    for index, text in ipairs(texts) do
+        local w = chipWidth(text)
+        if x > 0 and x + w > maxW then
+            x, y = 0, y + CHIP_STEP
+        end
+        places[index] = { x = x, y = y, w = w }
+        x = x + w + CHIP_GAP
+    end
+    return places, y + CHIP_STEP
+end
+
+-- One chip: its text in a small box with a thin border, a shade lighter than the panel behind it.
+local function chip(parent, x, y, w, text, colour, border, backColour)
+    local layer, back, edge = panel(parent, x, y, w, CHIP_H)
+    back.colour = backColour or CHIP_BACK
+    edge.colour = border or CHIP_BORDER
+    Kit.text(layer, 0, 0, w, CHIP_H, text, colour or WHITE)
+    return layer
+end
+
+-- ----- the list ---------------------------------------------------------------------------------------------
+
+local function pick(key)
+    selectedKey = key
+    Viewer.refreshView()
+end
+
+-- Makes the list's tiles once. A tile is a rarity-tinted box with its name (in capitals) and rarity, and the
+-- copies owned at the right, with an invisible layer on top that takes the click.
+local function buildRows()
+    for index = 1, LIST_ROWS do
+        local y = BODY_Y + (index - 1) * ROW_STEP
+        local row = {}
+        row.root, row.back, row.border = panel(content, LEFT, y, LIST_W, ROW_H)
+        row.name = Kit.text(row.root, 56, 2, LIST_W - 112, 24, "", WHITE, ui.AlignMode.CENTRE)
+        row.rarity = Kit.text(row.root, 56, 23, LIST_W - 112, 20, "", WHITE, ui.AlignMode.CENTRE)
+        row.count = Kit.text(row.root, LIST_W - 56, 0, 50, ROW_H, "", GOLD, ui.AlignMode.CENTRE)
+        row.grip = ui.Layer.new(content)
+        row.grip.clickthrough = false
+        row.grip:SetPos(LEFT, y)
+        row.grip:SetSize(LIST_W, ROW_H, 0, 0)
+        row.grip:Subscribe(ui.Hook.ONCLICK, function()
+            local entry = row.entry
+            if entry ~= nil then
+                pick(entryKey(entry))
+            end
+        end)
+        rows[index] = row
+    end
+end
+
+local function setRowsHidden(hidden)
+    for _, row in ipairs(rows) do
+        setHidden(row.root, hidden)
+        setHidden(row.grip, hidden)
+    end
+end
+
+local function showRows()
+    local first = (page - 1) * LIST_ROWS
+    for index, row in ipairs(rows) do
+        local entry = entries[first + index]
+        row.entry = entry
+        if entry == nil then
+            setHidden(row.root, true)
+            setHidden(row.grip, true)
+        else
+            setHidden(row.root, false)
+            setHidden(row.grip, false)
+            local card = entry.card
+            local rarity = Cards.rarities[card.rarity]
+            local locked = entry.locked
+            local name = string.upper(card.name)
+            if entry.finish ~= "normal" then
+                name = name .. " (" .. string.upper(Cards.finishes[entry.finish].name) .. ")"
+            end
+            row.name.content = name
+            row.name.colour = locked and DIM or WHITE
+            row.rarity.content = rarity.name
+            row.rarity.colour = locked and DIM or toVec4(rarity.colour)
+            row.count.content = locked and "-" or ("x" .. entry.count)
+            row.count.colour = locked and DIM or GOLD
+            local amount = card.rarity == "common" and 0.10 or 0.30
+            row.back.colour = tint(rarity.colour, locked and amount * 0.5 or amount, 0.92)
+            if entryKey(entry) == selectedKey then
+                row.border.colour = SELECTED_BORDER
+                row.border.outlineThickness = 2
+            else
+                row.border.colour = toVec4(rarity.colour, locked and 0.35 or 0.7)
+                row.border.outlineThickness = 1
+            end
+        end
+    end
+end
+
+-- What the detail panel shows depends on the picked card and on the filters its chips set; this changes when either does.
+local function detailStamp()
+    return table.concat({ tostring(selectedKey), tostring(filter.kind),
+        tostring(filter.membership), tostring(filter.region), tostring(filter.skill), tostring(filter.category) }, "|")
+end
+
+-- The card picked in the list, large, with what is known about it under it.
+local function showDetail()
+    if gridView then
+        destroyAll(detailParts)
+        detailKey = nil
+        return
+    end
+    local picked = nil
+    for _, entry in ipairs(entries) do
+        if entryKey(entry) == selectedKey then
+            picked = entry
+            break
+        end
+    end
+    if picked ~= nil and detailKey == detailStamp() and #detailParts > 0 then
+        return
+    end
+    destroyAll(detailParts)
+    detailKey = picked ~= nil and detailStamp() or nil
+    if picked == nil then
+        detailParts[#detailParts + 1] = Kit.text(content, DETAIL_X, BODY_Y + 20, DETAIL_W, 24,
+            #entries == 0 and "No card matches." or "Click a card to see it.", GREY)
+        return
+    end
+
+    local x = DETAIL_X + (DETAIL_W - DETAIL_W_CARD) // 2
+    local view = CardView.create(content, picked.card, { locked = picked.locked, finish = picked.finish, scale = DETAIL_SCALE })
+    view.root:SetPos(x, BODY_Y)
+    detailParts[#detailParts + 1] = view.root
+
+    -- What is known about the card, as chips: how many the player has, the type and whether it is members only on the
+    -- first line, then a line for each of region, skill and category (a chip for each word, wrapping onto more lines
+    -- when there are too many for one). Clicking a chip sets that filter (or clears it if it is on),
+    -- except the first, which only says what the player has.
+    local card = picked.card
+    local kindWord = Cards.kindOf(card) == "item" and "item" or "npc"
+    local rowsToShow = {
+        { items = {
+            { text = picked.locked and "Not collected" or ("Owned: " .. picked.count), colour = picked.locked and DIM or GOLD,
+                border = (not picked.locked) and CHIP_GOLD_BORDER or nil },
+            { text = kindWord == "item" and "Item" or "NPC", field = "kind", value = kindWord },
+            tagItems(card, "membership", "membership")[1],
+        } },
+        { label = "Region", items = tagItems(card, "regions", "region") },
+        { label = "Skill", items = tagItems(card, "skills", "skill") },
+        { label = "Category", items = tagItems(card, "category", "category") },
+    }
+    local y = 8
+    for _, row in ipairs(rowsToShow) do
+        local texts = {}
+        for index, item in ipairs(row.items) do
+            texts[index] = item.text
+        end
+        row.x0 = row.label ~= nil and INFO_LABEL_W or 10
+        row.places, row.height = flow(texts, DETAIL_W - row.x0 - 10)
+        row.y = y
+        y = y + row.height + 2
+    end
+    local info = panel(content, DETAIL_X, BODY_Y + DETAIL_H_CARD + 10, DETAIL_W, y + 6)
+    detailParts[#detailParts + 1] = info
+    for _, row in ipairs(rowsToShow) do
+        if row.label ~= nil then
+            Kit.text(info, 10, row.y, INFO_LABEL_W - 14, CHIP_H, row.label, GREY, ui.AlignMode.TOPLEFT)
+        end
+        for index, place in ipairs(row.places) do
+            local item = row.items[index]
+            local active = item.field ~= nil and filter[item.field] == item.value
+            local x, cy = row.x0 + place.x, row.y + place.y
+            chip(info, x, cy, place.w, item.text, item.colour or WHITE, active and SELECTED_BORDER or item.border,
+                active and CHIP_ACTIVE_BACK or nil)
+            if item.field ~= nil then
+                local grip = ui.Layer.new(info)
+                grip.clickthrough = false
+                grip:SetPos(x, cy)
+                grip:SetSize(place.w, CHIP_H, 0, 0)
+                local field, value = item.field, item.value
+                grip:Subscribe(ui.Hook.ONCLICK, function()
+                    toggleFilter(field, value)
+                end)
+            end
+        end
+    end
+end
+
+-- ----- the grid ---------------------------------------------------------------------------------------------
+
+local function showGrid()
+    destroyAll(gridParts)
+    if not gridView then
+        return
+    end
+    local first = (page - 1) * GRID_PER_PAGE
+    for slot = 1, GRID_PER_PAGE do
+        local entry = entries[first + slot]
+        if entry == nil then
+            break
+        end
+        local x = columnX((slot - 1) % GRID_COLS + 1) + (COLUMN_W - CardView.WIDTH) // 2
+        local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
+        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = entry.finish })
+        view.root:SetPos(x, y)
+        gridParts[#gridParts + 1] = view.root
+
+        -- the caption: a bar under the card in the rarity's own colour
+        local rarity = Cards.rarities[entry.card.rarity]
+        local caption, back, border = panel(content, x, y + CardView.HEIGHT + 6, CardView.WIDTH, 30)
+        back.colour = tint(rarity.colour, entry.locked and 0.08 or 0.22, 0.92)
+        border.colour = toVec4(rarity.colour, entry.locked and 0.35 or 0.8)
+        local text = entry.locked and "Not collected" or ("Owned: " .. entry.count)
+        if entry.finish ~= "normal" then
+            text = Cards.finishes[entry.finish].name .. "  |  " .. text
+        end
+        Kit.text(caption, 0, 0, CardView.WIDTH, 30, text, entry.locked and DIM or GOLD)
+        gridParts[#gridParts + 1] = caption
+
+        -- a click anywhere on the card or its caption opens it in the list
+        local grip = ui.Layer.new(content)
+        grip.clickthrough = false
+        grip:SetPos(x, y)
+        grip:SetSize(CardView.WIDTH, CardView.HEIGHT + 36, 0, 0)
+        local key = entryKey(entry)
+        grip:Subscribe(ui.Hook.ONCLICK, function()
+            Viewer.showInList(key)
+        end)
+        gridParts[#gridParts + 1] = grip
+    end
+    if #entries == 0 then
+        gridParts[#gridParts + 1] = Kit.text(content, LEFT, BODY_Y + 20, CONTENT_W, 24, "No card matches.", GREY)
+    end
+end
+
+-- ----- the page ---------------------------------------------------------------------------------------------
+
+-- Shows the list (from the grid, or already there) with `key` picked, on the page it is on.
+function Viewer.showInList(key)
+    if window == nil then
+        return
+    end
+    selectedKey = key
+    gridView = false
+    for index, entry in ipairs(entries) do
+        if entryKey(entry) == key then
+            page = (index - 1) // LIST_ROWS + 1
+            break
+        end
+    end
+    Viewer.refreshView()
+end
+
+-- The swap button: from the list to the grid, and back. Going to the grid shows the page the picked card is on; going
+-- back to the list picks the first card the grid was showing.
+local function swapView()
+    if gridView then
+        local first = entries[(page - 1) * GRID_PER_PAGE + 1]
+        Viewer.showInList(first ~= nil and entryKey(first) or selectedKey)
+        return
+    end
+    local index = 1
+    for position, entry in ipairs(entries) do
+        if entryKey(entry) == selectedKey then
+            index = position
+            break
+        end
+    end
+    gridView = true
+    page = (index - 1) // GRID_PER_PAGE + 1
+    Viewer.refreshView()
+end
+
+-- Draws what the current page, view and picked card need. Called when any of those change (when the filter does,
+-- Viewer.refilter works out the cards again first).
+function Viewer.refreshView()
+    if window == nil then
+        return
+    end
+    page = math.max(1, math.min(page, pageCount()))
+    if gridView then
+        setRowsHidden(true)
+    else
+        showRows()
+    end
+    showGrid()
+    showDetail()
+    widgets.pageText.content = "Page " .. page .. " of " .. pageCount()
+end
+
+-- Works out the cards the filter finds, and shows them from the first page (or, with `follow`, the page the picked card
+-- is on, when it is still among them).
+function Viewer.refilter(follow)
+    if window == nil then
+        return
+    end
     local state = api.getState()
     if state == nil then
         Viewer.close()
         return
     end
-
-    local entries = Viewer.buildEntries(state, showUnowned)
-    pages = math.max(1, math.ceil(#entries / PER_PAGE))
-    if page > pages then page = pages end
-    if page < 1 then page = 1 end
-
-    clearPage()
-    local first = (page - 1) * PER_PAGE
-    for slot = 1, PER_PAGE do
-        local entry = entries[first + slot]
-        if entry == nil then
+    updateCategories()
+    entries = Browse.entries(state, filter)
+    local counts = Browse.counts(state, filter)
+    local progress = Storage.progress(state).normal
+    widgets.counts.content = counts.owned .. " of " .. counts.cards .. " cards owned"
+        .. "   |   Whole collection: " .. progress.owned .. " / " .. progress.total
+    page = 1
+    local keep, position = false, nil
+    for index, entry in ipairs(entries) do
+        if entryKey(entry) == selectedKey then
+            keep, position = true, index
             break
         end
-        local col = (slot - 1) % COLS
-        local row = (slot - 1) // COLS
-        local x = LEFT + col * TILE_W
-        local y = TOP + row * TILE_H
-
-        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = entry.finish })
-        view.root:SetPos(x, y)
-        parts[#parts + 1] = view.root
-
-        local variantText, colour = variantLabel(entry)
-        parts[#parts + 1] = makeText(content, x, y + CardView.HEIGHT + 2, CardView.WIDTH, 18, variantText, colour)
-        if entry.locked then
-            parts[#parts + 1] = makeText(content, x, y + CardView.HEIGHT + 20, CardView.WIDTH, 18,
-                "Not collected", DIM)
-        else
-            parts[#parts + 1] = makeText(content, x, y + CardView.HEIGHT + 20, CardView.WIDTH, 18,
-                "Owned: " .. entry.count, WHITE)
-        end
-        shown = shown + 1
     end
-    if #entries == 0 then
-        parts[#parts + 1] = makeText(content, LEFT, TOP + 20, COLS * TILE_W, 24, "No cards yet. Open a pack!", GREY)
+    if not keep then
+        selectedKey = entries[1] ~= nil and entryKey(entries[1]) or nil
+    elseif follow then
+        page = (position - 1) // perPage() + 1    -- the picked card stays in view
     end
-
-    updateBars(state)
-    widgets.pageText.content = "Page " .. page .. " of " .. pages
-    -- PrettyUI buttons are too narrow for "Unowned: Off", so there the state shows as a colour
-    -- (green when on); plain buttons spell it out.
-    if Kit.available() then
-        -- The label is never changed here: changing a PrettyUI button's text after it is made
-        -- resizes it to fit the text, which breaks the alignment with the buttons above it.
-        Kit.setStyle(widgets.toggle, showUnowned and "positive" or "neutral")
-    else
-        Kit.setLabel(widgets.toggle, "Unowned: " .. (showUnowned and "On" or "Off"))
-    end
+    Viewer.refreshView()
 end
+
+-- ----- the filter bar ---------------------------------------------------------------------------------------
+
+-- A drop-down that sets one field of the filter. `list` is { label, value } entries; "any" clears the field.
+-- The width has to fit the longest label (about 9 units a letter, and 45 for the arrow), or the label is cut.
+-- `sorted` makes it the plain kind that is sorted by label and cannot be typed in, for a long list.
+local function filterDropdown(field, x, y, w, list, afterChange, sorted)
+    local dropdown = Kit.dropdown(content, x, y, w, FILTER_H, list, filter[field] or ANY, function(value)
+        filter[field] = (value ~= ANY) and value or nil
+        if afterChange ~= nil then
+            afterChange()
+        end
+        Viewer.refilter()
+    end, sorted)
+    dropdowns[field] = dropdown
+    return dropdown
+end
+
+local function clearFilters()
+    filter = defaultFilter()
+    if widgets.search ~= nil then
+        pcall(function() widgets.search.content = "" end)
+    end
+    for field, dropdown in pairs(dropdowns) do
+        pcall(function() dropdown.select(filter[field] or ANY) end)
+    end
+    Viewer.refilter()
+end
+
+local function buildFilters()
+    -- Row 1: the search over the first two columns, then the sort, then Clear filters.
+    Kit.text(content, columnX(1), FILTER_Y[1], 56, FILTER_H, "Search", GREY, ui.AlignMode.TOPLEFT)
+    widgets.search = Kit.inputField(content, columnX(1) + 60, FILTER_Y[1], 2 * COLUMN_W + GAP - 60, FILTER_H, 40, false)
+    widgets.search.content = filter.search or ""
+    widgets.search:Subscribe(ui.Hook.ONCONTENTCHANGED, function()
+        local text = widgets.search.content
+        filter.search = (text ~= nil and text ~= "") and text or nil
+        Viewer.refilter()
+    end)
+    filterDropdown("sort", columnX(3), FILTER_Y[1], COLUMN_W, {
+        { label = "Lowest rarity first", value = "rarity" },
+        { label = "Highest rarity first", value = "rarity_desc" },
+        { label = "Name A to Z", value = "name" },
+        { label = "Most owned first", value = "owned" } })
+    widgets.clear = Kit.buttonAt(content, "Clear filters", columnX(4), FILTER_Y[1], COLUMN_W, FILTER_H, clearFilters)
+
+    -- Row 2: who has it, what kind, how rare, free or members.
+    filterDropdown("owned", columnX(1), FILTER_Y[2], COLUMN_W, {
+        { label = "All cards", value = "all" }, { label = "Owned", value = "owned" },
+        { label = "Not owned", value = "unowned" } })
+    -- The kind is a filter too, and decides which categories there are to choose from.
+    filterDropdown("kind", columnX(2), FILTER_Y[2], COLUMN_W, {
+        { label = "NPCs and items", value = ANY }, { label = "NPCs", value = "npc" }, { label = "Items", value = "item" } },
+        dropInvalidCategory)    -- (the category list itself is put right by refilter)
+    local rarities = { { label = "Any rarity", value = ANY } }
+    for _, rarityId in ipairs(Cards.rarityOrder) do
+        rarities[#rarities + 1] = { label = Cards.rarities[rarityId].name, value = rarityId }
+    end
+    filterDropdown("rarity", columnX(3), FILTER_Y[2], COLUMN_W, rarities)
+    filterDropdown("membership", columnX(4), FILTER_Y[2], COLUMN_W, {
+        { label = "Any membership", value = ANY }, { label = "Free to play", value = "f2p" },
+        { label = "Members", value = "p2p" } })
+
+    -- Row 3: where, which skill, what it is.
+    filterDropdown("region", columnX(1), FILTER_Y[3], COLUMN_W, wordEntries("Any region", Cards.tagWords.regions))
+    filterDropdown("skill", columnX(2), FILTER_Y[3], COLUMN_W, wordEntries("Any skill", Cards.tagWords.skills))
+    filterDropdown("category", columnX(3), FILTER_Y[3], COLUMN_W, categoryEntries(), nil, true)
+end
+
+-- ----- open and close ---------------------------------------------------------------------------------------
 
 -- Opens the viewer. `newApi` needs getState().
 function Viewer.open(newApi)
@@ -211,51 +655,64 @@ function Viewer.open(newApi)
     end
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    window, content = Kit.window(gameWindow, "Collection", WIDTH, HEIGHT + Kit.titleBarHeight(), function()
+    local width = CONTENT_W + (Kit.available() and WINDOW_SLACK or 0)
+    window, content = Kit.window(gameWindow, "Collection", width, HEIGHT + Kit.titleBarHeight(), function()
         Viewer.close()
-    end, 0.35, 0.05)
+    end, 0.3, 0.02)
 
-    -- Side panel, top to bottom: page number, Prev / Next, the unowned toggle, Close.
-    local bx, bw = SIDE_X, SIDE_W
-    widgets.pageText = makeText(content, bx, 10, bw, 24, "", GREY)
-    makeButton("Prev", bx, 40, bw, 32, function()
-        page = page - 1
-        if page < 1 then page = pages end
-        showPage()
-    end)
-    makeButton("Next", bx, 80, bw, 32, function()
-        page = page + 1
-        if page > pages then page = 1 end
-        showPage()
-    end)
-    widgets.toggle = makeButton(Kit.available() and "Unowned" or "", bx, 140, bw, 32, function()
-        showUnowned = not showUnowned
-        page = 1
-        showPage()
-    end)
-    -- Without PrettyUI there is no title bar close button, so keep a Close button.
-    if not Kit.available() then
-        makeButton("Close", bx, HEIGHT - 42, bw, 32, function()
-            Viewer.close()
-        end)
+    -- The swap button goes in the title bar. Without PrettyUI there is no such bar, so it is a button on the bottom
+    -- row of filters instead.
+    titleButton = Kit.titleButton(window, "SWAP", swapView, "Switch between the list and the grid")
+    if titleButton == nil then
+        widgets.swap = Kit.buttonAt(content, "List / grid", columnX(4), FILTER_Y[3], COLUMN_W, FILTER_H, swapView)
     end
 
-    buildBars()
-    page = 1
-    showPage()
+    -- The page buttons and counts first, then the list, then the filters: a drop-down's list is drawn over what is
+    -- made before it. The counts are under the first two columns, the page and its buttons under the last two.
+    local half = (COLUMN_W - GAP) // 2
+    widgets.counts = Kit.text(content, columnX(1), FOOTER_Y + 4, 2 * COLUMN_W + GAP, 28, "", GREY, ui.AlignMode.TOPLEFT)
+    widgets.pageText = Kit.text(content, columnX(3), FOOTER_Y + 4, COLUMN_W, 28, "", GREY)
+    Kit.buttonAt(content, "Prev", columnX(4) - FOOTER_SHIFT, FOOTER_Y, half, 32, function()
+        page = page - 1
+        if page < 1 then page = pageCount() end
+        Viewer.refreshView()
+    end)
+    Kit.buttonAt(content, "Next", columnX(4) + half + GAP - FOOTER_SHIFT, FOOTER_Y, half, 32, function()
+        page = page + 1
+        if page > pageCount() then page = 1 end
+        Viewer.refreshView()
+    end)
+    if not filterStarted then
+        filter, filterStarted = defaultFilter(), true
+    end
+    buildRows()
+    buildFilters()
+    Viewer.refilter()
 end
 
--- Closes the window and forgets what was drawn.
+-- Closes the window and forgets what was drawn (the filters are kept).
 function Viewer.close()
-    destroyBars()
+    destroyAll(gridParts)
+    destroyAll(detailParts)
+    for _, dropdown in pairs(dropdowns) do
+        pcall(function() dropdown.destroy() end)
+    end
+    for _, row in ipairs(rows) do
+        pcall(function() row.grip:Destroy() end)
+        pcall(function() row.root:Destroy() end)
+    end
+    if titleButton ~= nil then
+        pcall(function() titleButton:Destroy() end)
+        titleButton = nil
+    end
     if window ~= nil then
         pcall(function() window:Destroy() end)
     end
-    window = nil
-    content = nil
-    widgets = {}
-    parts = {}
-    shown = 0
+    window, content = nil, nil
+    widgets, dropdowns, rows = {}, {}, {}
+    entries = {}
+    detailKey = nil
+    shownCategories = nil
 end
 
 -- True while the window is open.
@@ -263,9 +720,10 @@ function Viewer.isOpen()
     return window ~= nil
 end
 
--- Page state, for tests.
+-- What is showing, for tests.
 function Viewer.debugInfo()
-    return { open = window ~= nil, page = page, pages = pages, shown = shown, showUnowned = showUnowned }
+    return { open = window ~= nil, page = page, pages = pageCount(), matches = #entries, grid = gridView, filter = filter,
+        selected = selectedKey }
 end
 
 return Viewer

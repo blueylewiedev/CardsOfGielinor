@@ -179,6 +179,49 @@ check(itemCounts.cards == items, "counts follow the filter")
 check(Browse.counts(state, { kind = "item", owned = "unowned", sort = "name" }).cards == items, "counts ignore owned and sort")
 check(Browse.counts({ owned = {} }, nil).owned == 0, "counts: nothing owned")
 
+-- words: what a tag drop-down can offer. Compared with the tags of the cards that Browse.entries finds without that
+-- tag's own filter, which is what the list is for.
+local function wordsOfEntries(entries, tagKind)
+    local words = {}
+    for _, entry in ipairs(entries) do
+        for _, word in ipairs(entry.card.tags and entry.card.tags[tagKind] or {}) do
+            words[word] = true
+        end
+    end
+    return words
+end
+local function sameWords(a, b)
+    for word in pairs(a) do if not b[word] then return false end end
+    for word in pairs(b) do if not a[word] then return false end end
+    return true
+end
+local regionWord, skillWord = firstWord("regions"), firstWord("skills")
+local wordCases = {
+    { {}, "no filter" },
+    { { kind = "item" }, "kind" },
+    { { region = regionWord }, "region" },
+    { { region = regionWord, skill = skillWord }, "region and skill" },
+    { { owned = "owned" }, "owned" },
+    { { owned = "unowned", kind = "npc" }, "unowned NPCs" },
+    { { search = "dragon" }, "search" },
+    { { rarity = "rare", membership = "p2p" }, "rarity and membership" },
+    { { category = "food", region = regionWord }, "a category already chosen is left out of its own list" },
+}
+for _, case in ipairs(wordCases) do
+    local filter, what = case[1], case[2]
+    local got = Browse.words(state, filter, "category")
+    local without = {}
+    for key, value in pairs(filter) do if key ~= "category" then without[key] = value end end
+    local want = wordsOfEntries(Browse.entries(state, without), "category")
+    check(sameWords(got, want), "words(category) for " .. what .. " are the categories of the matching cards")
+end
+check(next(Browse.words(state, { region = "no_such_region" }, "category")) == nil, "words: a filter that matches nothing offers nothing")
+local everything = Browse.words(state, {}, "category")
+local narrowed = Browse.words(state, { region = regionWord }, "category")
+local countWords = function(set) local n = 0; for _ in pairs(set) do n = n + 1 end; return n end
+check(countWords(narrowed) < countWords(everything), "a region narrows the categories (" .. countWords(narrowed) .. " of " .. countWords(everything) .. ")")
+check(sameWords(Browse.words(state, { region = regionWord }, "regions"), Browse.words(state, {}, "regions")), "the tag's own filter is ignored for its own words")
+
 -- label
 check(Browse.label("kharidian_desert") == "Kharidian desert" and Browse.label("f2p") == "F2p" and Browse.label("food") == "Food",
     "a tag word is labelled for a list")
