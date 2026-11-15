@@ -43,7 +43,9 @@ Cards.odds = {
 --            id.NPC.<ID>, so "king_dragon" shows id.NPC.KING_DRAGON. Use the NPC's config
 --            name, in lower case. Item cards work the same way with id.Obj: the id
 --            "abyssal_whip" shows id.Obj.ABYSSAL_WHIP.
---   name   : name shown on the card
+--   name   : the card's name: what it is called in the viewer's list and search, and on the card
+--   title  : optional, the text printed on the card's face instead of `name`, for a name too long for it (see
+--            Cards.MAX_TITLE). The viewer's list, the big card's caption and the search still use `name`.
 --   rarity : a key of Cards.rarities
 --   desc   : short flavour text, at most Cards.MAX_DESC letters: the frame's text panel
 --            shows three lines and cuts off anything longer (dev/check_cards.lua lists them).
@@ -85,6 +87,11 @@ Cards.list = {}
 
 -- The longest description that fits on a card (see desc above).
 Cards.MAX_DESC = 80
+
+-- The most letters the title of a card (its `title`, or its `name` if it has none) can have before the card cuts it off.
+-- The title steps down to the smallest font (ui/cardview.lua), and about 32 letters of it fit between the card's edges
+-- (measured in the client); a few more are cut. dev/check_cards.lua lists the titles longer than this.
+Cards.MAX_TITLE = 32
 
 -- The largest `weight` a card may have (see weight above). A mistyped weight cannot make one card swallow its
 -- whole rarity.
@@ -704,6 +711,9 @@ function Cards.problem(card)
     end
     if type(card.name) ~= "string" or card.name == "" then
         return "Card " .. card.id .. " has no name"
+    end
+    if card.title ~= nil and (type(card.title) ~= "string" or card.title == "") then
+        return "The title of card " .. card.id .. " must be text, and not empty"
     end
     if not Cards.rarities[card.rarity] then
         return "Unknown rarity on card " .. card.id

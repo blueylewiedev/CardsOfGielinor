@@ -9,6 +9,7 @@ Set.cards = {
     },
     {
         id = "antidragon_shield_dungeoneering", name = "Anti-dragon shield (Dungeoneering)", kind = "item", rarity = "common",
+        title = "Anti-dragon shield (Dg)",
         desc = "This provides partial protection from dragonbreath attacks.",
         art = { item = "RAND_ANTIDRAGONBREATHSHIELD", cam = { yaw = -0.10, dist = 439 } },
         tags = { regions = { "daemonheim" }, skills = { "dungeoneering" }, category = { "armour", "off_hand", "hybrid_gear" }, membership = { "f2p" } },
@@ -483,6 +484,7 @@ Set.cards = {
     },
     {
         id = "primal_kiteshield_dungeoneering", name = "Primal kiteshield (Dungeoneering)", kind = "item", rarity = "epic",
+        title = "Primal kiteshield (Dg)",
         desc = "A large metal shield.",
         art = { item = "RAND_KITESHIELD_11", cam = { yaw = 0.02, dist = 585, ty = -0, tx = -11 } },
         tags = { regions = { "daemonheim" }, skills = { "defence", "dungeoneering" }, category = { "armour", "off_hand", "melee_gear" }, membership = { "p2p" } },

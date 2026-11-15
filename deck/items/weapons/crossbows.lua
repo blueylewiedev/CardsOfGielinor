@@ -273,6 +273,7 @@ Set.cards = {
     },
     {
         id = "karils_offhand_pistol_crossbow", name = "Karil's off-hand pistol crossbow", kind = "item", rarity = "rare",
+        title = "Karil's off-hand crossbow",
         desc = "Karil the Tainted's off-hand pistol crossbow.",
         art = { item = "XBOWS_CROSSBOW_KARIL_O", cam = { yaw = -0.10, pitch = 0.59, dist = 330, ty = 44, tx = -13 } },
         tags = { regions = { "morytania" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },

@@ -86,7 +86,6 @@ do
     check(font == 11 and fits == false, "a name too long for any size gets the smallest and is reported as not fitting")
     check(select(2, CardView.nameFont(30, 165, fonts)) == true, "30 letters fit at the smallest size")
     check(pick(34, 264) == 15, "a wider title (the big card) keeps the normal size for longer")
-    check(CardView.longestName(165, fonts) == 30, "the longest name that is not cut off")
     check(pick(26, 165) == 11 and CardView.nameFont(26, 165, { fonts[1], fonts[3] }) == 11, "a size the client lacks is skipped")
 end
 

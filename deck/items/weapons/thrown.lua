@@ -345,6 +345,7 @@ Set.cards = {
     },
     {
         id = "superior_morrigans_throwing_axe", name = "Superior Morrigan's throwing axe", kind = "item", rarity = "legendary",
+        title = "Sup. Morrigan's throwing axe",
         desc = "Improved Ancient Warrior equipment from the Forinthry Dungeon.",
         art = { item = "DMBH_ANCIENT_RANGED_WEAPON_THROWNAXE", cam = { yaw = -6.09, dist = 359, fov = 35, ty = -5, tx = 17 } },
         tags = { regions = { "wilderness" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },

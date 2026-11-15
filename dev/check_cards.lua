@@ -4,7 +4,8 @@
 -- unknown rarity, and the rest of its checks), naming the card. Run it before opening a pull
 -- request; the "Check cards" workflow runs it on every pull request too.
 --
--- It also warns about a description longer than Cards.MAX_DESC, which the card cuts off. That
+-- It also warns about a description longer than Cards.MAX_DESC, and about a card title (its `title`, or its
+-- `name`) longer than Cards.MAX_TITLE, which the card cuts off. That
 -- doesn't stop the plugin loading, so the check still passes (on GitHub each one is shown on the
 -- pull request as a warning). So is an id in dev/wiki_pages.json that no card has.
 --
@@ -42,6 +43,21 @@ local onGitHub = os.getenv("GITHUB_ACTIONS") == "true"
 for _, card in ipairs(long) do
     local text = card.id .. ": the description is " .. #card.desc .. " letters; cards show " .. result.MAX_DESC
     print(onGitHub and ("::warning title=Long description::" .. text) or ("warning: " .. text))
+end
+
+-- A title longer than the card face can show (a card with a `title` is judged by that, not by its name)
+local longTitles = {}
+for _, card in ipairs(result.list) do
+    if #(card.title or card.name) > result.MAX_TITLE then
+        longTitles[#longTitles + 1] = card
+    end
+end
+table.sort(longTitles, function(a, b) return a.id < b.id end)
+for _, card in ipairs(longTitles) do
+    local shown = card.title or card.name
+    local text = card.id .. ": the title \"" .. shown .. "\" is " .. #shown .. " letters; cards show " .. result.MAX_TITLE
+        .. (card.title == nil and " (give the card a shorter `title`)" or "")
+    print(onGitHub and ("::warning title=Long title::" .. text) or ("warning: " .. text))
 end
 
 -- dev/wiki_pages.json (one card to a line): an id no card has is left from a renamed or removed card

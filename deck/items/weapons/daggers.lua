@@ -297,6 +297,7 @@ Set.cards = {
     },
     {
         id = "superior_offhand_dragon_dagger", name = "Superior off-hand dragon dagger", kind = "item", rarity = "rare",
+        title = "Sup. off-hand dragon dagger",
         desc = "A very, very powerful off-hand dagger.",
         art = { item = "DMBH_DRAGON_DAGGER_O", cam = { yaw = -2.17, dist = 525, fov = 30, ty = 8, tx = 2 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
