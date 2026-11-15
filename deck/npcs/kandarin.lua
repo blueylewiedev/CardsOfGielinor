@@ -121,7 +121,7 @@ Set.cards = {
         id = "guard", name = "Guard (Catherby)", rarity = "common",
         desc = "Maintaining order in the market",
         art = { npc = "OMGE_MARKET_GUARD", anim = 808, cam = { pitch = 0.15, dist = 859, ty = 480 } },
-        tags = { location = { "catherby" }, category = { "humanoid", "guard", "monster" } },
+        tags = { location = { "catherby" }, category = { "humanoid", "guard", "monster" }, membership = { "p2p" } },
     },
     
     {

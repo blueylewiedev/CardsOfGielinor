@@ -174,7 +174,7 @@ Set.cards = {
         id = "imphide_shield", name = "Imphide shield", kind = "item", rarity = "common",
         desc = "A mighty shield made from an imp's hide.",
         art = { item = "IMPHIDE_SHIELD", cam = { yaw = -0.46, dist = 205, ty = 12, tx = 10 } },
-        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "off_hand", "magic_gear" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "defence" }, category = { "armour", "off_hand", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "spider_silk_shield", name = "Spider silk shield", kind = "item", rarity = "common",
@@ -342,7 +342,7 @@ Set.cards = {
         id = "carapace_shield", name = "Carapace shield", kind = "item", rarity = "common",
         desc = "Superior protection for entomophiliacs.",
         art = { item = "COCKROACH_SHIELD", cam = { yaw = -2.41, dist = 399, ty = -21, tx = -8 } },
-        tags = { regions = { "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "off_hand", "ranged_gear" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin", "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "off_hand", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "hard_leather_shield", name = "Hard leather shield", kind = "item", rarity = "common",

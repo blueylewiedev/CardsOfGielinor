@@ -191,7 +191,7 @@ Set.cards = {
         id = "imphide_boots", name = "Imphide boots", kind = "item", rarity = "common",
         desc = "The latest fashion.",
         art = { item = "IMPHIDE_BOOTS", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 11, tx = 30 } },
-        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "defence" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "spider_silk_boots", name = "Spider silk boots", kind = "item", rarity = "common",
@@ -866,7 +866,7 @@ Set.cards = {
         id = "carapace_boots", name = "Carapace boots", kind = "item", rarity = "common",
         desc = "Some boots crafted from a carapace.",
         art = { item = "COCKROACH_BOOTS", cam = { yaw = 0.11, pitch = 0.50, dist = 225, ty = 1, tx = 2 } },
-        tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin", "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "frogleather_boots", name = "Frog-leather boots", kind = "item", rarity = "common",

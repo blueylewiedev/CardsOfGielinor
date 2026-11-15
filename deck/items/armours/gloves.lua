@@ -239,7 +239,7 @@ Set.cards = {
         id = "imphide_gloves", name = "Imphide gloves", kind = "item", rarity = "common",
         desc = "Will keep your hands toasty warm.",
         art = { item = "IMPHIDE_GLOVES", cam = { yaw = 2.19, pitch = 1.24, dist = 186, ty = 15, tx = -10 } },
-        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "gloves", "magic_gear" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "defence" }, category = { "armour", "gloves", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "spider_silk_gloves", name = "Spider silk gloves", kind = "item", rarity = "common",
@@ -861,7 +861,7 @@ Set.cards = {
         id = "carapace_gloves", name = "Carapace gloves", kind = "item", rarity = "common",
         desc = "Some gloves crafted from a carapace.",
         art = { item = "COCKROACH_GLOVES", cam = { yaw = -2.06, pitch = 1.11, dist = 186, ty = 12, tx = -16 } },
-        tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "gloves", "ranged_gear" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin", "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "gloves", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "hard_leather_gloves", name = "Hard leather gloves", kind = "item", rarity = "common",

@@ -13,7 +13,7 @@ Set.cards = {
         id = "chicken", name = "Chicken", rarity = "common",
         desc = "Forever crossing roads for no reason.",
         art = { npc = "CHICKEN", anim = 27953, cam = { yaw = -0.60, dist = 859, fov = 25, ty = 140, tx = 40 } },
-        tags = { category = { "animal", "monster" } },
+        tags = { category = { "animal", "monster" }, membership = { "f2p" } },
     },
 
 
@@ -21,7 +21,7 @@ Set.cards = {
         id = "sheep", name = "Sheep", rarity = "common",
         desc = "Gives wool and little else.",
         art = { npc = "SHEEP", anim = 32190, cam = { yaw = -0.60, dist = 988, ty = 220 } },
-        tags = { category = { "animal" } },
+        tags = { category = { "animal" }, membership = { "f2p" } },
     },
 
 
@@ -29,7 +29,7 @@ Set.cards = {
         id = "giant_rat", name = "Giant rat", rarity = "common",
         desc = "Larger than a rat should be.",
         art = { npc = "LUMBRIDGE_GIANTRAT_BROWN", anim = 33921, cam = { pitch = 0.15, dist = 859, ty = 100, tx = -70 } },
-        tags = { category = { "animal", "monster" } },
+        tags = { category = { "animal", "monster" }, membership = { "f2p" } },
     },
 
     
@@ -38,21 +38,21 @@ Set.cards = {
         id = "dog_stray", name = "Stray dog", rarity = "common",
         desc = "Follows anyone who might have snacks.",
         art = { npc = "DOG_STRAY", anim = 22417, cam = { yaw = 0.60, dist = 748, fov = 35, ty = 180, tx = -20 } },
-        tags = { category = { "animal" } },
+        tags = { category = { "animal" }, membership = { "f2p" } },
     },
 
     {
         id = "giant_spider", name = "Giant spider", rarity = "common",
         desc = "Aaaaargh! It's Huge!",
         art = { npc = "LUMBRIDGE_GIANTSPIDER", anim = 5326, cam = { pitch = 0.30, dist = 748, fov = 40, ty = 40 } },
-        tags = { skills = { "slayer" }, category = { "monster", "insect" } },
+        tags = { skills = { "slayer" }, category = { "monster", "insect" }, membership = { "f2p" } },
     },
 
     {
         id = "cave_bug", name = "Cave bug", rarity = "uncommon",
         desc = "A nasty crawling critter",
         art = { npc = "SWAMP_CAVE_BUG", anim = 6077, cam = { yaw = 0.40, pitch = 0.15, dist = 650, fov = 40, ty = 120 } },
-        tags = { location = { "lumbridge", "dorgesh_kaan", "burthorpe", "chaos_tunnels" }, skills = { "slayer" }, category = { "insect", "monster" } },
+        tags = { location = { "lumbridge", "dorgesh_kaan", "burthorpe", "chaos_tunnels" }, skills = { "slayer" }, category = { "insect", "monster" }, membership = { "p2p" } },
     },
 
 
@@ -594,7 +594,7 @@ Set.cards = {
         id = "centaur", name = "Centaur", rarity = "common",
         desc = "Horseplay.",
         art = { npc = "FAIRY2_CENTAUR_FEMALE", anim = 4311, cam = { yaw = -0.60, dist = 2630, fov = 30, ty = 480, tx = 60 } },
-        tags = { location = { "enchanted_valley" }, membership = { "p2p" } },
+        tags = { location = { "enchanted_valley" }, category = { "beast" }, membership = { "p2p" } },
     },
     {
         id = "confused_automaton", name = "Confused automaton", rarity = "uncommon",
@@ -618,7 +618,7 @@ Set.cards = {
         id = "fire_spirit", name = "Fire spirit", rarity = "uncommon",
         desc = "It has been freed from the logs you were burning.",
         art = { npc = "BONFIRE_FIRE_SPIRIT", anim = 15626, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 320 } },
-        tags = { membership = { "f2p" } },
+        tags = { category = { "spirit" }, membership = { "f2p" } },
     },
     {
         id = "flo", name = "Flo", rarity = "legendary",
@@ -708,13 +708,13 @@ Set.cards = {
         id = "star_sprite", name = "Star sprite", rarity = "uncommon",
         desc = "A shiny, happy star sprite.",
         art = { npc = "STAR_SPRITE_PLAIN", anim = 6686, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 180 } },
-        tags = { membership = { "f2p" } },
+        tags = { category = { "spirit" }, membership = { "f2p" } },
     },
     {
         id = "tool_leprechaun", name = "Tool leprechaun", rarity = "common",
         desc = "Looks after your Farming tools.",
         art = { npc = "FARMING_TOOLS_LEPRECHAUN", anim = 103, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 260 } },
-        tags = { membership = { "p2p" } },
+        tags = { category = { "leprechaun" }, membership = { "p2p" } },
     },
     {
         id = "wallace", name = "Wallace", rarity = "legendary",

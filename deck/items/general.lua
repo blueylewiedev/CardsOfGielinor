@@ -44,7 +44,7 @@ Set.cards = {
         id = "extra_spicy_crunchies", name = "Extra spicy crunchies", kind = "item", rarity = "common",
         desc = "Fiery-hot, spicy crunchies, made with tender loving care.",
         art = { item = "DUEL_ARENA_REMOVAL_EXTRA_SPICY_CRUNCHIES", cam = { yaw = 1.03, pitch = 0.89, dist = 186, fov = 60, ty = -4, tx = 8 } },
-        tags = { skills = { "cooking" }, membership = { "p2p" } },
+        tags = { skills = { "cooking" }, category = { "food", "meal" }, membership = { "p2p" } },
     },
 }
 

@@ -252,7 +252,7 @@ Set.cards = {
         id = "imphide_robe_bottom", name = "Imphide robe bottom", kind = "item", rarity = "common",
         desc = "Imphide for your own hide!",
         art = { item = "IMPHIDE_ROBE_BOTTOM", cam = { yaw = -0.02, dist = 483, ty = -33, tx = 1 } },
-        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "legs", "magic_gear" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "defence" }, category = { "armour", "legs", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "mycelium_leggings_web", name = "Mycelium leggings web", kind = "item", rarity = "common",
@@ -682,7 +682,7 @@ Set.cards = {
         id = "carapace_legs", name = "Carapace legs", kind = "item", rarity = "common",
         desc = "They look better on you than the bug.",
         art = { item = "COCKROACH_LEGS", cam = { yaw = -0.02, dist = 531, ty = -27, tx = 9 } },
-        tags = { regions = { "asgarnia" }, skills = { "crafting", "defence" }, category = { "armour", "legs", "ranged_gear" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin", "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "legs", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "frogleather_chaps", name = "Frog-leather chaps", kind = "item", rarity = "common",
