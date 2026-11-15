@@ -9,6 +9,7 @@
 -- Cards are created directly in the window, one layer deep, as the preview window does.
 
 local Cards = require("core/cards")
+local Browse = require("core/browse")
 local Storage = require("core/storage")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
@@ -41,9 +42,6 @@ local WIDTH = SIDE_X + SIDE_W + (Kit.available() and 26 or 10)   -- the extra ke
 local HEIGHT = TOP + ROWS * TILE_H + 10
 local PER_PAGE = COLS * ROWS
 
--- Display order for a card's variants: standard first, then by finish.
-local FINISH_ORDER = { normal = 1 }
-
 local api = nil          -- api.getState() : the logged-in character's collection, or nil
 local window = nil
 local content = nil      -- the component inside the window frame that everything is built in
@@ -54,52 +52,11 @@ local pages = 1
 local shown = 0          -- how many slots the current page is showing
 local showUnowned = false
 
--- Builds the list of slots to show, in order. Each slot is
---   { card, finish, count, locked }
--- With `includeUnowned`, every variant a card can be pulled in that the player does not own
--- gets a `locked` placeholder slot (count 0): one for each finish.
--- Variants the player owns always show, even if the card's data no longer offers them.
--- Pure function of the collection, so it can be tested without any UI.
+-- The slots to show, in order: { card, finish, count, locked }. With `includeUnowned`, every variant a card can be
+-- pulled in that the player does not own gets a `locked` placeholder (count 0). Variants the player owns always show,
+-- even if the card's data no longer offers them. The work is core/browse.lua's, which also does the search and filters.
 function Viewer.buildEntries(state, includeUnowned)
-    local ownedByCard = {}
-    for key, count in pairs(state.owned) do
-        local cardId, finish = Cards.parseKey(key)
-        if cardId ~= nil and Cards.byId[cardId] ~= nil then
-            local list = ownedByCard[cardId]
-            if list == nil then
-                list = {}
-                ownedByCard[cardId] = list
-            end
-            list[finish] = { finish = finish, count = count, locked = false }
-        end
-    end
-
-    local entries = {}
-    for _, card in ipairs(Cards.list) do
-        local slots = ownedByCard[card.id] or {}
-        if includeUnowned then
-            for finish in pairs(Cards.finishes) do
-                if slots[finish] == nil then
-                    slots[finish] = { finish = finish, count = 0, locked = true }
-                end
-            end
-        end
-
-        local list = {}
-        for _, slot in pairs(slots) do
-            slot.card = card
-            list[#list + 1] = slot
-        end
-        table.sort(list, function(a, b)
-            local finA, finB = FINISH_ORDER[a.finish] or 99, FINISH_ORDER[b.finish] or 99
-            if finA ~= finB then return finA < finB end
-            return a.finish < b.finish
-        end)
-        for _, slot in ipairs(list) do
-            entries[#entries + 1] = slot
-        end
-    end
-    return entries
+    return Browse.entries(state, { owned = includeUnowned and "all" or "owned" })
 end
 
 local makeText = Kit.text
