@@ -261,6 +261,7 @@ Set.cards = {
     },
     {
         id = "superior_void_knight_melee_helm", name = "Superior void knight melee helm", kind = "item", rarity = "uncommon",
+        title = "Sup. void knight melee helm",
         desc = "An improved melee helm from the order of the Void Knights.",
         art = { item = "PC14_MELEE_HELM_UPGRADED", cam = { yaw = -7.08, pitch = 0.73, dist = 273, ty = 50, tx = 7 } },
         tags = { regions = { "asgarnia" }, skills = { "attack", "strength", "defence", "constitution", "ranged", "magic", "prayer" }, category = { "armour", "helmet", "melee_gear", "minigame" }, membership = { "p2p" } },
@@ -357,6 +358,7 @@ Set.cards = {
     },
     {
         id = "refined_anima_core_helm_of_zaros", name = "Refined anima core helm of Zaros", kind = "item", rarity = "epic",
+        title = "Refined anima helm of Zaros",
         desc = "Armour infused with the might of Zaros.",
         art = { item = "GWD2_MELEE_HELM_UPGRADED", cam = { yaw = -6.82, pitch = 0.64, dist = 225, ty = 52, tx = 3 } },
         tags = { regions = { "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
@@ -429,6 +431,7 @@ Set.cards = {
     },
     {
         id = "primal_full_helm_dungeoneering", name = "Primal full helm (Dungeoneering)", kind = "item", rarity = "epic",
+        title = "Primal full helm (Dg)",
         desc = "A full face helmet.",
         art = { item = "RAND_FULL_HELM_11", cam = { yaw = -6.76, pitch = 0.48, dist = 248, ty = 57, tx = -6 } },
         tags = { regions = { "daemonheim" }, skills = { "defence", "dungeoneering" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
@@ -459,6 +462,7 @@ Set.cards = {
     },
     {
         id = "trimmed_masterwork_melee_helm", name = "Trimmed masterwork melee helm", kind = "item", rarity = "legendary",
+        title = "Trimmed masterwork helm",
         desc = "A masterful helmet made by a master smith.",
         art = { item = "MASTERWORK_UPGRADED_HELM", cam = { yaw = -6.75, pitch = 0.43, dist = 225, ty = 41, tx = 10 } },
         tags = { skills = { "smithing", "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
@@ -693,6 +697,7 @@ Set.cards = {
     },
     {
         id = "superior_void_knight_ranger_helm", name = "Superior void knight ranger helm", kind = "item", rarity = "uncommon",
+        title = "Sup. void knight ranger helm",
         desc = "An improved ranger helm from the order of the Void Knights.",
         art = { item = "PC14_ARCHER_HELM_UPGRADED", cam = { yaw = -6.29, pitch = 0.96, dist = 205, ty = 35, tx = 1 } },
         tags = { regions = { "asgarnia" }, skills = { "attack", "strength", "defence", "constitution", "ranged", "magic", "prayer" }, category = { "armour", "helmet", "ranged_gear", "minigame" }, membership = { "p2p" } },
@@ -723,6 +728,7 @@ Set.cards = {
     },
     {
         id = "refined_anima_core_helm_of_zamorak", name = "Refined anima core helm of Zamorak", kind = "item", rarity = "epic",
+        title = "Refined anima helm of Zamorak",
         desc = "Armour infused with the might of Zamorak.",
         art = { item = "GWD2_RANGED_HELM_UPGRADED", cam = { yaw = -6.57, pitch = 0.75, dist = 273, ty = 35, tx = 5 } },
         tags = { regions = { "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
@@ -1107,6 +1113,7 @@ Set.cards = {
     },
     {
         id = "refined_anima_core_helm_of_seren", name = "Refined anima core helm of Seren", kind = "item", rarity = "epic",
+        title = "Refined anima helm of Seren",
         desc = "Armour infused with the might of Seren.",
         art = { item = "GWD2_MAGIC_HELM_UPGRADED", cam = { yaw = -6.51, pitch = 0.43, dist = 248, ty = 63, tx = -10 } },
         tags = { regions = { "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
@@ -1155,6 +1162,7 @@ Set.cards = {
     },
     {
         id = "mask_of_tumekens_resplendence", name = "Mask of Tumeken's resplendence", kind = "item", rarity = "legendary",
+        title = "Tumeken's mask",
         desc = "Shines with the light of Tumeken, God of the Sun.",
         art = { item = "MAGIC_DEVOURER_HEAD_T95", cam = { yaw = -6.30, dist = 205, ty = 9, tx = 12 } },
         tags = { regions = { "kharidian_desert" }, skills = { "defence", "magic" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
@@ -1215,72 +1223,84 @@ Set.cards = {
     },
     {
         id = "deathwarden_hood_tier_10", name = "Deathwarden hood (tier 10)", kind = "item", rarity = "common",
+        title = "Deathwarden hood (T10)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T1", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "f2p" } },
     },
     {
         id = "deathwarden_hood_tier_20", name = "Deathwarden hood (tier 20)", kind = "item", rarity = "common",
+        title = "Deathwarden hood (T20)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T20", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_30", name = "Deathwarden hood (tier 30)", kind = "item", rarity = "common",
+        title = "Deathwarden hood (T30)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T30", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_40", name = "Deathwarden hood (tier 40)", kind = "item", rarity = "uncommon",
+        title = "Deathwarden hood (T40)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T40", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_50", name = "Deathwarden hood (tier 50)", kind = "item", rarity = "uncommon",
+        title = "Deathwarden hood (T50)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T50", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_60", name = "Deathwarden hood (tier 60)", kind = "item", rarity = "uncommon",
+        title = "Deathwarden hood (T60)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T60", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathdealer_hood_tier_70", name = "Deathdealer hood (tier 70)", kind = "item", rarity = "rare",
+        title = "Deathdealer hood (T70)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_POWER_HEAD_T70", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence", "necromancy" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathdealer_hood_tier_80", name = "Deathdealer hood (tier 80)", kind = "item", rarity = "rare",
+        title = "Deathdealer hood (T80)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_POWER_HEAD_T80", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence", "necromancy" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_70", name = "Deathwarden hood (tier 70)", kind = "item", rarity = "rare",
+        title = "Deathwarden hood (T70)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T70", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_80", name = "Deathwarden hood (tier 80)", kind = "item", rarity = "rare",
+        title = "Deathwarden hood (T80)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T80", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathdealer_hood_tier_90", name = "Deathdealer hood (tier 90)", kind = "item", rarity = "epic",
+        title = "Deathdealer hood (T90)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_POWER_HEAD_T90", cam = { yaw = -6.30, dist = 186, ty = -23, tx = -2 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence", "necromancy" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
         id = "deathwarden_hood_tier_90", name = "Deathwarden hood (tier 90)", kind = "item", rarity = "epic",
+        title = "Deathwarden hood (T90)",
         desc = "A necromancer hood.",
         art = { item = "NECRO_UNDERWORLD_HEAD_T90", cam = { yaw = -6.30, dist = 186, ty = -18, tx = -4 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
@@ -1347,6 +1367,7 @@ Set.cards = {
     },
     {
         id = "crown_of_the_first_necromancer", name = "Crown of the First Necromancer", kind = "item", rarity = "epic",
+        title = "First Necromancer crown",
         desc = "Rasial, the First Necromancer's crown.",
         art = { item = "NECRO_RASIAL_HEAD_T95", cam = { yaw = -6.29, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "misthalin" }, skills = { "defence", "necromancy" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
@@ -1533,6 +1554,7 @@ Set.cards = {
     },
     {
         id = "refined_anima_core_helm_of_sliske", name = "Refined anima core helm of Sliske", kind = "item", rarity = "epic",
+        title = "Refined anima helm of Sliske",
         desc = "Armour infused with the might of Sliske.",
         art = { item = "GWD2_HYBRID_HELM_UPGRADED", cam = { yaw = -6.30, pitch = 0.57, dist = 225, ty = 54, tx = -1 } },
         tags = { regions = { "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "p2p" } },

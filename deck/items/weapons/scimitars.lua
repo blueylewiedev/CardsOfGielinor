@@ -147,6 +147,7 @@ Set.cards = {
     },
     {
         id = "superior_offhand_dragon_scimitar", name = "Superior off-hand dragon scimitar", kind = "item", rarity = "rare",
+        title = "Sup. off-hand dragon scimitar",
         desc = "A very, very powerful off-hand scimitar.",
         art = { item = "DMBH_DRAGON_SCIMITAR_O", cam = { yaw = -5.44, dist = 456, fov = 40, ty = -17, tx = 15 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar" }, membership = { "p2p" } },

@@ -20,6 +20,48 @@ CardView.HEIGHT = math.floor(224 * S)
 
 local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
 
+-- A font in the client by its name, or nil if the client has none of that name.
+local function fontNamed(name)
+    local ok, value = pcall(function() return id.Font[name] end)
+    if ok and value ~= nil then
+        return value
+    end
+    return nil
+end
+
+-- The sizes of text a card's title steps down through when it is too long: the normal size first, then smaller ones.
+-- `perLetter` is how much room (in card units) a letter takes at that size, on average, measured from cards in the
+-- client (about 8.2, 7.0 and 6.2). The client cannot measure text, so how many letters fit is a guess from this. A size
+-- the client does not have is left out.
+local NAME_FONTS = {}
+for _, size in ipairs({ { FONT, 8.2 }, { fontNamed("MUSEO_SANS_13PT_REGULAR"), 7.0 },
+        { fontNamed("MUSEO_SANS_11PT_REGULAR"), 6.2 } }) do
+    if size[1] ~= nil then
+        NAME_FONTS[#NAME_FONTS + 1] = { font = size[1], perLetter = size[2] }
+    end
+end
+
+-- The font for a name of `length` letters in a title `width` card units wide: the largest size it fits in, or the
+-- smallest there is when it fits in none. `fonts` is a list of { font, perLetter } (default: the sizes above). Returns the
+-- font, and whether the name fits in it.
+function CardView.nameFont(length, width, fonts)
+    fonts = fonts or NAME_FONTS
+    for index, size in ipairs(fonts) do
+        if length * size.perLetter <= width then
+            return size.font, true
+        end
+        if index == #fonts then
+            return size.font, false
+        end
+    end
+    return FONT, true
+end
+
+-- What the card's face says at the top: its `title` if it has one, else its name.
+local function titleOf(card)
+    return card.title or card.name
+end
+
 local PANEL_COLOUR = Vector4.new(0.08, 0.08, 0.10, 1.0)
 local ART_COLOUR   = Vector4.new(0.16, 0.16, 0.20, 1.0)
 local TEXT_COLOUR  = Vector4.new(1.0, 1.0, 1.0, 1.0)
@@ -48,11 +90,11 @@ local function solid(parent, x, y, w, h, wPct, hPct, colour)
 end
 
 -- A line of text. `vAlign` is optional (centred if omitted).
-local function label(parent, x, y, w, h, content, colour, vAlign, maxLines)
+local function label(parent, x, y, w, h, content, colour, vAlign, maxLines, font)
     local text = ui.Text.new(parent)
     text:SetPos(x, y)
     text:SetSize(w, h, 1.0, 0.0)
-    text.font = FONT
+    text.font = font or FONT
     text.content = content
     text.colour = colour
     text.isShadowed = true
@@ -388,7 +430,8 @@ local function buildFramed(root, card, opts, locked, frameImage, rarity, rarityC
     part(frame, 0, 0, W, H)
 
     local text = holder()
-    label(text.inner, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, card.name, nameColour)
+    label(text.inner, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, titleOf(card), nameColour, nil, nil,
+        (CardView.nameFont(#titleOf(card), zones.title.w)))
     label(text.inner, zones.rarity.x, zones.rarity.y, zones.rarity.w - W, zones.rarity.h, rarity.name,
         locked and DIM_TEXT_COLOUR or rarityColour)
     label(text.inner, zones.desc.x, zones.desc.y, zones.desc.w - W, zones.desc.h,
@@ -516,7 +559,7 @@ function CardView.create(parent, card, opts)
     solid(root, 4, 4, -8, -8, 1.0, 1.0, PANEL_COLOUR)        -- inner panel
 
     -- Plain layout, used when there is no frame image.
-    label(root, 8, 8, -16, 22, card.name, nameColour)        -- name
+    label(root, 8, 8, -16, 22, titleOf(card), nameColour, nil, nil, (CardView.nameFont(#titleOf(card), W - 16)))        -- title
 
     solid(root, 10, 34 * S, -20, 110 * S, 1.0, 0.0, ART_COLOUR)      -- art box
     local model, cam = nil, nil

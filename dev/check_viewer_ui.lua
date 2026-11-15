@@ -74,6 +74,21 @@ local function check(ok, what)
     if not ok then failures = failures + 1; print("FAIL: " .. what) end
 end
 
+-- the size of a card's name steps down with its length (CardView.nameFont); fonts here are stand-in numbers
+do
+    local CardView = require("ui/cardview")
+    local fonts = { { font = 15, perLetter = 7.5 }, { font = 13, perLetter = 6.5 }, { font = 11, perLetter = 5.5 } }
+    local function pick(length, width) return (CardView.nameFont(length, width, fonts)) end
+    check(pick(10, 165) == 15 and pick(22, 165) == 15, "a short name keeps the normal size (up to 22 letters on a 165 wide title)")
+    check(pick(23, 165) == 13 and pick(25, 165) == 13, "a longer name steps down once")
+    check(pick(26, 165) == 11 and pick(30, 165) == 11, "and again")
+    local font, fits = CardView.nameFont(31, 165, fonts)
+    check(font == 11 and fits == false, "a name too long for any size gets the smallest and is reported as not fitting")
+    check(select(2, CardView.nameFont(30, 165, fonts)) == true, "30 letters fit at the smallest size")
+    check(pick(34, 264) == 15, "a wider title (the big card) keeps the normal size for longer")
+    check(pick(26, 165) == 11 and CardView.nameFont(26, 165, { fonts[1], fonts[3] }) == 11, "a size the client lacks is skipped")
+end
+
 local state = { owned = {}, credits = 0, stats = {}, dirtyBuckets = {} }
 for i = 1, 40, 3 do state.owned[Cards.variantKey(Cards.list[i].id, "normal")] = i end
 local api = { getState = function() return state end }
