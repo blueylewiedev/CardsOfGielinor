@@ -350,6 +350,46 @@ function Kit.iconButton(parent, sprite, x, y, onPress, tooltip, fallbackLabel, f
     return plainButton(parent, fallbackLabel or sprite, x - (w - 24), y, w, 26, onPress)
 end
 
+-- How far a title-bar button sits from the window's right edge: the close button (20 wide, 8 in) and a gap, then
+-- the button's own width.
+local TITLE_BUTTON_RIGHT = 62
+
+-- A small icon button in a PrettyUI window's title bar, to the left of the close button. `spriteName` is one of
+-- PrettyUI's sprite buttons (such as "SWAP"). Returns a handle whose Destroy() removes it, or nil if there is no
+-- PrettyUI or it failed, so the caller can put a button somewhere else.
+--
+-- The title bar is covered by a layer PrettyUI uses to drag the window, which sits on the game's layer above the
+-- window itself, so a button made inside the window never gets the click. This button is made on the game's layer
+-- too and registered with the window as one of its overlays: the window then keeps it on top and calls `place` to put
+-- it back over the title bar whenever the window moves (PrettyUI's own scroll bar does the same).
+function Kit.titleButton(window, spriteName, onPress, tooltip)
+    if not (Kit.available() and prettyui.SpriteButton ~= nil and window ~= nil and window.parent ~= nil) then
+        return nil
+    end
+    local ok, handle = pcall(function()
+        local button = prettyui.SpriteButton.new(window.parent, spriteName, function() onPress() end, {
+            x = 0, y = 0, tooltip = tooltip,
+        })
+        local function place()
+            button.root:SetPos(window.root.x + window.root.width - TITLE_BUTTON_RIGHT, window.root.y + 4)
+        end
+        place()
+        window:_RegisterOverlay(button.root, nil, place)
+        button.root:MoveToFront()
+        return {
+            Destroy = function()
+                pcall(function() window:_UnregisterOverlay(button.root) end)
+                pcall(function() button:Destroy() end)
+            end,
+        }
+    end)
+    if ok and handle ~= nil then
+        return handle
+    end
+    Logger.error("Kit.titleButton: PrettyUI sprite button failed:", tostring(handle))
+    return nil
+end
+
 -- A box to type in, at a fixed position. This is the client's own input box (PrettyUI also has
 -- a text field, but the plugin relies on the client's box: it can be selected and copied).
 -- `numeric` allows only digits. `maxLength` is the most characters it takes.

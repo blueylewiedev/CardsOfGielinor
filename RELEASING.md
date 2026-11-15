@@ -209,6 +209,7 @@ commands refresh the plugin list and reload it):
 | `lua dev/check_version.lua` | `core/version.lua` equals the version in `plugin.json` |
 | `lua dev/check_logger.lua` | detail is only logged when asked for, a failure is logged once, and no shipped file bypasses the logger |
 | `lua dev/check_viewer.lua` | the collection viewer's search, filters and sorts, compared with a plain loop over the real deck |
+| `lua dev/check_viewer_ui.lua` | the viewer's controls (search, drop-downs, rows, grid, paging) against a stand-in client; no looks |
 | `lua dev/check_slayer.lua` | the Slayer credits against recorded game events (kills, AOE, completion, cancel, skip), and that combat XP earns nothing |
 | `python dev/test_build_overlay.py` | what goes in the overlay and when `revision` changes |
 | `lua dev/check_format.lua` | the credits text the overlay shows (`19 249`) |

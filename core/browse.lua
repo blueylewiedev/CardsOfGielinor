@@ -171,6 +171,49 @@ function Browse.entries(state, filter)
     return entries
 end
 
+-- True if a card the player has `have` (a { finish = count } table, or nil) of has an entry under this `owned` mode.
+local function hasEntry(have, mode)
+    if mode == "owned" then
+        return have ~= nil
+    end
+    if mode == "unowned" then
+        for finish in pairs(Cards.finishes) do
+            if have == nil or have[finish] == nil then
+                return true
+            end
+        end
+        return false
+    end
+    return true
+end
+
+-- The words of one tag kind ("category", "region"...) that the cards matching `filter` have, as { word = true }: what a
+-- drop-down for that tag can offer so that every word in it finds something. The filter's own choice for that tag is
+-- left out of it (or the list would offer nothing but the word already chosen).
+function Browse.words(state, filter, tagKind)
+    local rest = {}
+    for key, value in pairs(filter or {}) do
+        rest[key] = value
+    end
+    for field, kind in pairs(TAG_FIELDS) do
+        if kind == tagKind then
+            rest[field] = nil
+        end
+    end
+    local terms, tagFilter = searchTerms(rest.search), tagFilterOf(rest)
+    local mode = rest.owned or "all"
+    local owned = ownedByCard(state)
+    local present = {}
+    for _, card in ipairs(Cards.list) do
+        if cardMatches(card, rest, terms, tagFilter) and hasEntry(owned[card.id], mode) then
+            for _, word in ipairs(card.tags and card.tags[tagKind] or {}) do
+                present[word] = true
+            end
+        end
+    end
+    return present
+end
+
 -- How much of the cards that match `filter` the player has: { cards = how many match, owned = how many of those they
 -- have at least one variant of }. The filter's `owned` and `sort` are ignored: it is the progress of the set shown.
 function Browse.counts(state, filter)
