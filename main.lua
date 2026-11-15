@@ -3,19 +3,20 @@
 -- Earn credits, open packs, collect cards.
 --
 -- Folders:
---   core/   the logic: cards (format, rarities, pack types), packs, storage, earning, settings
+--   core/   the logic: cards (format, rarities, pack types), packs, storage, earning, Slayer credits, settings
 --   ui/     everything that draws: kit (PrettyUI wrapper), cardview, the pack, collection,
 --           statistics and settings windows, and the ribbon page
 --   deck/   the cards themselves, by region (see deck/index.lua)
 --   dev/    developer tools, left out of the released plugin
 --
--- Saves a collection per character, earns credits from XP, and logs its progress to the
+-- Saves a collection per character, earns credits from XP and from Slayer tasks, and logs its progress to the
 -- Lua console with log().
 
 local Storage = require("core/storage")
 local PluginId = require("core/pluginid")
 local Identity = require("core/identity")
 local Earning = require("core/earning")
+local SlayerEvents = require("core/slayerevents")
 local PackWindow = require("ui/packwindow")
 local Viewer = require("ui/viewer")
 local Stats = require("ui/stats")
@@ -109,10 +110,14 @@ local function startSession(profile)
         Dev.onLogin(session.state)
         saveSession()
     end
+
+    -- Slayer credits follow this character's task from where it stands now.
+    SlayerEvents.begin()
 end
 
 -- Saves and forgets the current character, e.g. on logout.
 local function endSession()
+    SlayerEvents.finish()
     saveSession()
     session = nil
 end
@@ -165,6 +170,7 @@ end)
 -- Called by the client when the plugin is disabled or reloaded.
 function PluginShutdown()
     OverlayLoader.shutdown()
+    SlayerEvents.shutdown()
     SettingsPage.shutdown()
     Hub.shutdown()
     PackWindow.hide()
@@ -219,6 +225,9 @@ Hub.init({
     openCollection = function() Viewer.open(api) end,
     toggleStats = function() Stats.toggle(api) end,
 })
+
+-- Listens for Slayer kills and completions (core/slayerevents.lua); it pays credits once a character is loaded.
+SlayerEvents.start(api, Dev ~= nil)
 
 -- With the development tools in use, their buttons go on the Home window.
 applyDevTools()

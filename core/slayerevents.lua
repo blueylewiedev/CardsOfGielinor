@@ -1,0 +1,270 @@
+-- core/slayerevents.lua
+-- Connects the Slayer credits (core/slayer.lua) to the game: it listens for the Slayer variables, Slayer XP and
+-- NPCs leaving the world, reads what the tracker needs from the game's data, and pays the credits into the
+-- logged-in character's collection. No permission is needed for any of it.
+--
+-- Used by main.lua: start() once, begin() when a character's collection has loaded, finish() when it is
+-- unloaded, shutdown() when the plugin stops.
+
+local Slayer = require("core/slayer")
+local Storage = require("core/storage")
+
+local SlayerEvents = {}
+
+local SUBSCRIBERS = {
+    var = "cardsofgielinor_slayer_var",
+    skill = "cardsofgielinor_slayer_xp",
+    removed = "cardsofgielinor_slayer_removed",
+    tick = "cardsofgielinor_slayer_tick",
+}
+local TASK_LIST_ENUM = 1563     -- SMKI_CRITTER_NAMES: the Slayer tasks by number
+local MASTER_LIST_ENUM = 1553   -- SLAYER_MASTER_ENUM: each Slayer master's own list of tasks
+local STRUCTS_PER_TICK = 25     -- task entries looked at each server tick while the example monsters are read
+
+local api = nil                 -- api.getState() : the logged-in character's collection, or nil
+local verbose = false           -- log what the tracker sees (the development copy)
+local tracker = nil             -- set while a character is logged in
+local names = {}                -- number in the task list -> the task's name in lower case
+local namesLoaded = false       -- true once the list has been read (it is tried again until it has)
+local isMember, unitsOf = nil, nil
+local categoryParam = nil
+local exampleLevel = {}         -- task number -> combat level of the task's example monster
+local exampleQueue, exampleNext = nil, 1
+
+-- A property of anything, or nil if it cannot be read.
+local function prop(thing, name)
+    if thing == nil then
+        return nil
+    end
+    local ok, value = pcall(function() return thing[name] end)
+    if ok then
+        return value
+    end
+    return nil
+end
+
+-- The value of a player variable, or nil.
+local function readVar(varId)
+    local ok, value = pcall(function() return var.VarPlayer.FromID(varId).value end)
+    if ok and type(value) == "number" then
+        return value
+    end
+    return nil
+end
+
+-- Reads the game's Slayer task list once: the name of each task number.
+local function loadNames()
+    if namesLoaded then
+        return
+    end
+    local found = {}
+    local ok, err = pcall(function()
+        for _, pair in ipairs(config.Enum.FromID(TASK_LIST_ENUM).values or {}) do
+            if type(pair[1]) == "number" and type(pair[2]) == "string" then
+                found[pair[1]] = string.lower(pair[2])
+            end
+        end
+    end)
+    if next(found) ~= nil then
+        names = found
+        namesLoaded = true
+    elseif not ok then
+        log("slayer credits: could not read the Slayer task list (will try again):", tostring(err))
+    end
+    isMember = Slayer.membership(names)
+    unitsOf = Slayer.unitsOf(names)
+end
+
+-- The Slayer category of an NPC config (the number of its Slayer task), or nil if it has none or the number is not
+-- a task (a few monsters carry other values).
+local function categoryOf(cfg)
+    if cfg == nil then
+        return nil
+    end
+    if categoryParam == nil then
+        local ok, param = pcall(function() return config.Param.SLAYER_CATEGORY end)
+        if not ok or param == nil then
+            return nil
+        end
+        categoryParam = param
+    end
+    local okHas, has = pcall(function() return cfg:HasParam(categoryParam) end)
+    if not okHas or not has then
+        return nil
+    end
+    local okValue, value = pcall(function() return cfg:GetParamValue(categoryParam) end)
+    if okValue and type(value) == "number" and names[value] ~= nil then
+        return value
+    end
+    return nil
+end
+
+-- Reading each Slayer master's task entries, a few every tick, for the level of each task's example monster (used
+-- only when a kill's monster was not seen).
+local function startExamples()
+    exampleQueue, exampleNext = {}, 1
+    pcall(function()
+        for _, pair in ipairs(config.Enum.FromID(MASTER_LIST_ENUM).values or {}) do
+            for _, entry in ipairs(prop(pair[2], "values") or {}) do
+                exampleQueue[#exampleQueue + 1] = entry[2]
+            end
+        end
+    end)
+end
+
+local function exampleStep()
+    if exampleQueue == nil or exampleNext > #exampleQueue then
+        return
+    end
+    local okTypes, typeParam, npcParam = pcall(function()
+        return config.Param.SLAYER_TYPE, config.Param.SLAYER_EXAMPLE_NPC
+    end)
+    local last = math.min(exampleNext + STRUCTS_PER_TICK - 1, #exampleQueue)
+    if okTypes and typeParam ~= nil and npcParam ~= nil then
+        for position = exampleNext, last do
+            pcall(function()
+                local struct = exampleQueue[position]
+                if struct:HasParam(typeParam) and struct:HasParam(npcParam) then
+                    local task = struct:GetParamValue(typeParam)
+                    local level = prop(struct:GetParamValue(npcParam), "visibleCombatLevel")
+                    if type(task) == "number" and type(level) == "number" and level >= 1 and exampleLevel[task] == nil then
+                        exampleLevel[task] = level
+                    end
+                end
+            end)
+        end
+    end
+    exampleNext = last + 1
+end
+
+-- Pays what the tracker decides, into the logged-in character's collection.
+local function award(kind, credits, info)
+    local state = api.getState()
+    if state == nil then
+        return
+    end
+    Storage.earnCredits(state, credits)
+    if verbose then
+        local task = info.task ~= nil and names[info.task] or tostring(info.task)
+        log("slayer credits: +" .. credits, kind, "(level", info.level .. ", task", task .. (info.fallback and ", monster not seen" or "") .. ")")
+    end
+end
+
+local function onVariable(e)
+    if tracker == nil then
+        return
+    end
+    local ok, err = pcall(function()
+        local varId = prop(prop(e, "var"), "id")
+        if varId == Slayer.COUNT_VAR then
+            tracker:onCount(e.oldValue, e.newValue)
+        elseif varId == Slayer.TASK_VAR then
+            tracker:onTask(e.oldValue, e.newValue)
+        elseif varId == Slayer.STREAK_VAR then
+            tracker:onStreak(e.oldValue, e.newValue)
+        end
+    end)
+    if not ok then
+        log("slayer credits: variable handler failed:", tostring(err))
+    end
+end
+
+local function onSkill(e)
+    if tracker == nil then
+        return
+    end
+    local ok, err = pcall(function()
+        local isSlayer = false
+        if SkillType ~= nil and SkillType.SLAYER ~= nil then
+            isSlayer = e.skill == SkillType.SLAYER
+        end
+        if isSlayer and type(e.newXP) == "number" and type(e.oldXP) == "number" then
+            tracker:onSlayerXp(e.newXP - e.oldXP)
+        end
+    end)
+    if not ok then
+        log("slayer credits: XP handler failed:", tostring(err))
+    end
+end
+
+-- A monster left the world. Only matters while a count drop is waiting for its monster, so otherwise it is not
+-- even read (monsters leave view all the time).
+local function onRemoved(e)
+    if tracker == nil or tracker:pending() == 0 then
+        return
+    end
+    local ok, err = pcall(function()
+        local entity = e.npcEntity
+        local cfg, parent = prop(entity, "config"), prop(entity, "parentConfig")
+        local level = prop(cfg, "visibleCombatLevel")
+        if type(level) ~= "number" or level < 1 then
+            level = prop(parent, "visibleCombatLevel")
+        end
+        tracker:onRemoved({ category = categoryOf(cfg) or categoryOf(parent), level = level })
+    end)
+    if not ok then
+        log("slayer credits: NPC handler failed:", tostring(err))
+    end
+end
+
+local function onTick()
+    if tracker ~= nil then
+        local ok, err = pcall(function() tracker:advance() end)
+        if not ok then
+            log("slayer credits: tick failed:", tostring(err))
+        end
+    end
+    exampleStep()
+end
+
+-- Starts listening. `newApi` needs getState(). `loud` logs what the tracker sees (the development copy).
+function SlayerEvents.start(newApi, loud)
+    api = newApi
+    verbose = loud == true
+    loadNames()
+    startExamples()
+    Event.VarTransmit.Subscribe(SUBSCRIBERS.var, onVariable)
+    Event.SkillTransmit.Subscribe(SUBSCRIBERS.skill, onSkill)
+    Event.NPCEntityRemoved.Subscribe(SUBSCRIBERS.removed, onRemoved)
+    Event.ServerLogic.Subscribe(SUBSCRIBERS.tick, onTick)
+end
+
+-- A character's collection has loaded: starts following their task from where it stands now.
+function SlayerEvents.begin()
+    loadNames()
+    tracker = Slayer.new({
+        count = readVar(Slayer.COUNT_VAR),
+        task = readVar(Slayer.TASK_VAR),
+        streak = readVar(Slayer.STREAK_VAR),
+        isMember = isMember,
+        unitsOf = unitsOf,
+        fallbackLevel = function(task) return exampleLevel[task] end,
+        award = award,
+        log = verbose and function(...) log("slayer:", ...) end or nil,
+    })
+end
+
+-- The collection has been unloaded (logout, or another character).
+function SlayerEvents.finish()
+    tracker = nil
+end
+
+-- Stops listening. Called when the plugin is shut down.
+function SlayerEvents.shutdown()
+    tracker = nil
+    for _, name in pairs(SUBSCRIBERS) do
+        pcall(function()
+            if name == SUBSCRIBERS.var then
+                Event.VarTransmit.Unsubscribe(name)
+            elseif name == SUBSCRIBERS.skill then
+                Event.SkillTransmit.Unsubscribe(name)
+            elseif name == SUBSCRIBERS.removed then
+                Event.NPCEntityRemoved.Unsubscribe(name)
+            else
+                Event.ServerLogic.Unsubscribe(name)
+            end
+        end)
+    end
+end
+
+return SlayerEvents
