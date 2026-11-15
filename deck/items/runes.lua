@@ -32,12 +32,6 @@ Set.cards = {
         tags = { regions = { "asgarnia" }, skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "air_rune_dungeoneering", name = "Air rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "One of the four basic elemental runes.",
-        art = { item = "RAND_AIRRUNE", cam = { tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "armadyl_rune", name = "Armadyl rune", kind = "item", rarity = "rare",
         desc = "It looks like a strange air rune.",
         art = { item = "MAH5_ARMADYL_RUNE", cam = { tx = 10 } },
@@ -50,22 +44,10 @@ Set.cards = {
         tags = { regions = { "fremennik_province" }, skills = { "runecrafting" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
-        id = "astral_rune_dungeoneering", name = "Astral rune (Dungeoneering)", kind = "item", rarity = "uncommon",
-        desc = "Used for Lunar spells.",
-        art = { item = "RAND_ASTRALRUNE", cam = { tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
         id = "blood_rune", name = "Blood rune", kind = "item", rarity = "rare",
         desc = "A high level catalytic rune.",
         art = { item = "BLOODRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
-        id = "blood_rune_dungeoneering", name = "Blood rune (Dungeoneering)", kind = "item", rarity = "rare",
-        desc = "A high level catalytic rune.",
-        art = { item = "RAND_BLOODRUNE", cam = { yaw = 2.80, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
         id = "body_rune", name = "Body rune", kind = "item", rarity = "common",
@@ -74,22 +56,10 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "body_rune_dungeoneering", name = "Body rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "A basic level catalytic rune.",
-        art = { item = "RAND_BODYRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "bone_rune", name = "Bone rune", kind = "item", rarity = "common",
         desc = "A low-level necromancy rune.",
         art = { item = "BONERUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
-        id = "bone_rune_dungeoneering", name = "Bone rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "A low-level necromancy rune.",
-        art = { item = "RAND_BONERUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
         id = "catalytic_rune", name = "Catalytic rune", kind = "item", rarity = "common",
@@ -104,34 +74,16 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "chaos_rune_dungeoneering", name = "Chaos rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "A medium level catalytic rune.",
-        art = { item = "RAND_CHAOSRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "cosmic_rune", name = "Cosmic rune", kind = "item", rarity = "common",
         desc = "Used for enchant spells.",
         art = { item = "COSMICRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "cosmic_rune_dungeoneering", name = "Cosmic rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "Used for enchant spells.",
-        art = { item = "RAND_COSMICRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "death_rune", name = "Death rune", kind = "item", rarity = "uncommon",
         desc = "A medium level catalytic rune.",
         art = { item = "DEATHRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
-        id = "death_rune_dungeoneering", name = "Death rune (Dungeoneering)", kind = "item", rarity = "uncommon",
-        desc = "A medium level catalytic rune.",
-        art = { item = "RAND_DEATHRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
         id = "dust_rune", name = "Dust rune", kind = "item", rarity = "common",
@@ -146,12 +98,6 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "earth_rune_dungeoneering", name = "Earth rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "One of the four basic elemental runes.",
-        art = { item = "RAND_EARTHRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "elemental_rune", name = "Elemental rune", kind = "item", rarity = "common",
         desc = "A generic elemental rune.",
         art = { item = "HVH_ELEMENTAL_RUNE", cam = { yaw = 3.20, tx = 10 } },
@@ -164,22 +110,10 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "fire_rune_dungeoneering", name = "Fire rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "One of the four basic elemental runes.",
-        art = { item = "RAND_FIRERUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "flesh_rune", name = "Flesh rune", kind = "item", rarity = "uncommon",
         desc = "A mid-level necromancy rune.",
         art = { item = "FLESHRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
-        id = "flesh_rune_dungeoneering", name = "Flesh rune (Dungeoneering)", kind = "item", rarity = "uncommon",
-        desc = "A mid-level necromancy rune.",
-        art = { item = "RAND_FLESHRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
         id = "lava_rune", name = "Lava rune", kind = "item", rarity = "common",
@@ -194,34 +128,16 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "law_rune_dungeoneering", name = "Law rune (Dungeoneering)", kind = "item", rarity = "uncommon",
-        desc = "Used for teleport spells.",
-        art = { item = "RAND_LAWRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "miasma_rune", name = "Miasma rune", kind = "item", rarity = "uncommon",
         desc = "A high-level necromancy rune.",
         art = { item = "MIASMARUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
-        id = "miasma_rune_dungeoneering", name = "Miasma rune (Dungeoneering)", kind = "item", rarity = "uncommon",
-        desc = "A high-level necromancy rune.",
-        art = { item = "RAND_MIASMARUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
         id = "mind_rune", name = "Mind rune", kind = "item", rarity = "common",
         desc = "A basic level catalytic rune.",
         art = { item = "MINDRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
-        id = "mind_rune_dungeoneering", name = "Mind rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "A basic level catalytic rune.",
-        art = { item = "RAND_MINDRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
         id = "mist_rune", name = "Mist rune", kind = "item", rarity = "common",
@@ -242,12 +158,6 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
     },
     {
-        id = "nature_rune_dungeoneering", name = "Nature rune (Dungeoneering)", kind = "item", rarity = "uncommon",
-        desc = "Used for alchemy spells.",
-        art = { item = "RAND_NATURERUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
         id = "smoke_rune", name = "Smoke rune", kind = "item", rarity = "common",
         desc = "A combined air and fire rune.",
         art = { item = "SMOKERUNE", cam = { yaw = 3.20, tx = 10 } },
@@ -260,22 +170,10 @@ Set.cards = {
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
-        id = "soul_rune_dungeoneering", name = "Soul rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "Used for powerful curse spells.",
-        art = { item = "RAND_SOULRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "dungeoneering" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
         id = "spirit_rune", name = "Spirit rune", kind = "item", rarity = "common",
         desc = "A general use necromancy rune.",
         art = { item = "SPIRITRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
-    },
-    {
-        id = "spirit_rune_dungeoneering", name = "Spirit rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "A general use necromancy rune.",
-        art = { item = "RAND_SPIRITRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering", "necromancy" }, category = { "rune" }, membership = { "p2p" } },
     },
     {
         id = "steam_rune", name = "Steam rune", kind = "item", rarity = "common",
@@ -294,12 +192,6 @@ Set.cards = {
         desc = "One of the four basic elemental runes. Used in Magic (5).",
         art = { item = "WATERRUNE", cam = { yaw = 3.20, tx = 10 } },
         tags = { skills = { "runecrafting" }, category = { "rune" }, membership = { "f2p" } },
-    },
-    {
-        id = "water_rune_dungeoneering", name = "Water rune (Dungeoneering)", kind = "item", rarity = "common",
-        desc = "One of the four basic elemental runes.",
-        art = { item = "RAND_WATERRUNE", cam = { yaw = 3.20, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "runecrafting", "dungeoneering" }, category = { "rune" }, membership = { "f2p" } },
     },
 }
 
