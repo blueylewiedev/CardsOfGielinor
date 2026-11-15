@@ -9,7 +9,7 @@ Set.cards = {
         id = "king_dragon", name = "King Black Dragon", rarity = "legendary",
         desc = "Three heads, all of them hungry.",
         art = { npc = "KING_DRAGON", anim = 17777, cam = { yaw = 0.20, pitch = 0.15, dist = 6244, fov = 25, ty = 1260, tx = 120, near = 0.25 } },
-        tags = { category = { "dragon", "boss", "monster" } },
+        tags = { category = { "dragon", "boss", "monster" }, membership = { "f2p" } },
     },
     {
         id = "foal", name = "Foal", rarity = "common",
