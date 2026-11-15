@@ -269,7 +269,7 @@ Set.cards = {
         id = "offhand_crystal_dagger", name = "Off-hand crystal dagger", kind = "item", rarity = "rare",
         desc = "An off-hand dagger fashioned from crystal.",
         art = { item = "ELFCITY_CRYSTAL_DAGGER_O_100", cam = { yaw = -6.12, dist = 326, fov = 30, ty = 4, tx = 11 } },
-        tags = { skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
+        tags = { regions = { "tirannwn" }, skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
     },
     {
         id = "offhand_gorgonite_dagger", name = "Off-hand gorgonite dagger", kind = "item", rarity = "rare",
@@ -306,7 +306,7 @@ Set.cards = {
         id = "offhand_attuned_crystal_dagger", name = "Off-hand attuned crystal dagger", kind = "item", rarity = "epic",
         desc = "An off-hand dagger fashioned from crystal.",
         art = { item = "ELFCITY_CRYSTAL_DAGGER_ATTUNED_O_100", cam = { yaw = -6.06, pitch = 1.20, dist = 296, fov = 40, ty = -9, tx = -16 } },
-        tags = { skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
+        tags = { regions = { "tirannwn" }, skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
     },
     {
         id = "offhand_primal_dagger", name = "Off-hand primal dagger", kind = "item", rarity = "epic",

@@ -137,7 +137,7 @@ Set.cards = {
         id = "sacred_clay_scimitar", name = "Sacred clay scimitar", kind = "item", rarity = "uncommon",
         desc = "The sacred clay weapon has transformed into a sharp scimitar.",
         art = { item = "SC_REWARD_SWORD", cam = { yaw = -0.74, dist = 578, fov = 35, ty = -32, tx = -11 } },
-        tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar", "minigame" }, membership = { "p2p" } },
+        tags = { regions = { "asgarnia" }, skills = { "attack" }, category = { "weapon", "melee_gear", "scimitar", "minigame" }, membership = { "p2p" } },
     },
     {
         id = "superior_dragon_scimitar", name = "Superior dragon scimitar", kind = "item", rarity = "rare",

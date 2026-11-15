@@ -239,7 +239,7 @@ Set.cards = {
         id = "rockshell_helm", name = "Rock-shell helm", kind = "item", rarity = "uncommon",
         desc = "Protective headwear made from crabs. Better than that sounds.",
         art = { item = "DAGGANOTH_MELEE_HELM", cam = { yaw = -6.64, pitch = 0.72, dist = 225, ty = 34, tx = -3 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
+        tags = { regions = { "fremennik_province" }, skills = { "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
     },
     {
         id = "rune_full_helm", name = "Rune full helm", kind = "item", rarity = "uncommon",
@@ -446,7 +446,7 @@ Set.cards = {
         id = "superior_tetsu_helm", name = "Superior tetsu helm", kind = "item", rarity = "epic",
         desc = "Melee armour from the Eastern Lands.",
         art = { item = "POP_MELEE_HELM_UNTRADEABLE", cam = { yaw = -6.90, pitch = -0.05, dist = 248, ty = 80, tx = 9 } },
-        tags = { skills = { "smithing", "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
+        tags = { regions = { "asgarnia" }, skills = { "smithing", "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
     },
     {
         id = "teralith_helmet", name = "Teralith helmet", kind = "item", rarity = "epic",
@@ -458,7 +458,7 @@ Set.cards = {
         id = "torva_full_helm", name = "Torva full helm", kind = "item", rarity = "epic",
         desc = "An ancient warrior's full helm.",
         art = { item = "GODWARS2_HELM_MELEE_100", cam = { yaw = -6.71, pitch = 0.43, dist = 273, ty = 58, tx = 5 } },
-        tags = { skills = { "defence", "constitution" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
+        tags = { regions = { "asgarnia" }, skills = { "defence", "constitution" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
     },
     {
         id = "trimmed_masterwork_melee_helm", name = "Trimmed masterwork melee helm", kind = "item", rarity = "legendary",
@@ -609,7 +609,7 @@ Set.cards = {
         id = "morrigans_coif", name = "Morrigan's coif", kind = "item", rarity = "epic",
         desc = "This item degrades in combat, and will turn to dust.",
         art = { item = "PVPW_COIF", cam = { yaw = -6.25, dist = 273, ty = -10, tx = 6 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
+        tags = { regions = { "wilderness" }, skills = { "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
         id = "stegoleather_coif", name = "Stegoleather coif", kind = "item", rarity = "rare",
@@ -803,7 +803,7 @@ Set.cards = {
         id = "batwing_hood", name = "Batwing hood", kind = "item", rarity = "common",
         desc = "Echolocation not included.",
         art = { item = "BATWING_HOOD", cam = { yaw = -6.99, pitch = 0.56, dist = 248, ty = 49, tx = 11 } },
-        tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia", "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "bens_spare_hat", name = "Ben's spare hat", kind = "item", rarity = "common",
@@ -917,19 +917,19 @@ Set.cards = {
         id = "first_tower_hat_green", name = "First tower hat (green)", kind = "item", rarity = "common",
         desc = "A hat worn by the Green Wizards of the first tower.",
         art = { item = "ARIANE1_REWARD_HAT_GREEN", cam = { yaw = -7.70, pitch = 0.16, dist = 273, ty = 90, tx = 9 } },
-        tags = { category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin" }, category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "f2p" } },
     },
     {
         id = "first_tower_hat_grey", name = "First tower hat (grey)", kind = "item", rarity = "common",
         desc = "A hat worn by the Grey Wizards of the first tower.",
         art = { item = "ARIANE1_REWARD_HAT_GREY", cam = { yaw = -7.70, pitch = 0.16, dist = 273, ty = 90, tx = 9 } },
-        tags = { category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin" }, category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "f2p" } },
     },
     {
         id = "first_tower_hat_red", name = "First tower hat (red)", kind = "item", rarity = "common",
         desc = "A hat worn by the Red Wizards of the first tower.",
         art = { item = "ARIANE1_REWARD_HAT_RED", cam = { yaw = -7.70, pitch = 0.16, dist = 273, ty = 90, tx = 9 } },
-        tags = { category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin" }, category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "f2p" } },
     },
     {
         id = "fungal_visor", name = "Fungal visor", kind = "item", rarity = "common",
@@ -959,7 +959,7 @@ Set.cards = {
         id = "spider_silk_hood", name = "Spider silk hood", kind = "item", rarity = "common",
         desc = "Will set your senses tingling.",
         art = { item = "SPIDER_SILK_HOOD", cam = { yaw = -6.86, pitch = -0.11, dist = 225, ty = 68, tx = 2 } },
-        tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia", "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "wizard_hat", name = "Wizard hat", kind = "item", rarity = "common",
@@ -995,7 +995,7 @@ Set.cards = {
         id = "dagonhai_hat", name = "Dagon'hai hat", kind = "item", rarity = "uncommon",
         desc = "A hat worn by members of the Dagon'hai.",
         art = { item = "LUC2_DAGONHAI_HAT", cam = { yaw = -6.96, pitch = 0.30, dist = 399, ty = 77, tx = 11 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
+        tags = { regions = { "wilderness" }, skills = { "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
         id = "dark_mystic_hat", name = "Dark mystic hat", kind = "item", rarity = "uncommon",
@@ -1055,7 +1055,7 @@ Set.cards = {
         id = "lunar_helm", name = "Lunar helm", kind = "item", rarity = "uncommon",
         desc = "A mystical helmet.",
         art = { item = "LUNAR_HELMET", cam = { yaw = -6.72, pitch = 0.33, ty = 57, tx = 17 } },
-        tags = { skills = { "smithing", "defence", "magic" }, category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "p2p" } },
+        tags = { regions = { "fremennik_province" }, skills = { "smithing", "defence", "magic" }, category = { "armour", "helmet", "magic_gear", "quest_item" }, membership = { "p2p" } },
     },
     {
         id = "skeletal_helm", name = "Skeletal helm", kind = "item", rarity = "uncommon",
@@ -1189,7 +1189,7 @@ Set.cards = {
         id = "superior_seasingers_hood", name = "Superior seasinger's hood", kind = "item", rarity = "epic",
         desc = "A hood worn by the seasingers of the Eastern Lands.",
         art = { item = "POP_MAGIC_HELM_UNTRADEABLE", cam = { yaw = -6.60, pitch = 0.39, dist = 169, ty = 50, tx = -5 } },
-        tags = { skills = { "runecrafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
+        tags = { regions = { "asgarnia" }, skills = { "runecrafting", "defence" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
         id = "helm_of_trials", name = "Helm of Trials", kind = "item", rarity = "common",
@@ -1520,13 +1520,13 @@ Set.cards = {
         id = "attuned_crystal_helm", name = "Attuned crystal helm", kind = "item", rarity = "epic",
         desc = "A strange helm made from tarddian crystal.",
         art = { item = "SEREN_CRYSTAL_ARMOUR_HELM_NEW_ADVANCED", cam = { yaw = -6.56, pitch = 0.46, dist = 248, ty = 55, tx = -8 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "p2p" } },
+        tags = { regions = { "tirannwn" }, skills = { "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "p2p" } },
     },
     {
         id = "crystal_helm", name = "Crystal helm", kind = "item", rarity = "rare",
         desc = "A strange helm made from tarddian crystal.",
         art = { item = "SEREN_CRYSTAL_ARMOUR_HELM_NEW_BASIC", cam = { yaw = -6.56, pitch = 0.57, dist = 248, ty = 47, tx = -5 } },
-        tags = { skills = { "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "p2p" } },
+        tags = { regions = { "tirannwn" }, skills = { "defence" }, category = { "armour", "helmet", "hybrid_gear" }, membership = { "p2p" } },
     },
     {
         id = "dragon_rider_helm", name = "Dragon Rider helm", kind = "item", rarity = "epic",
