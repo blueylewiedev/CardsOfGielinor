@@ -14,6 +14,7 @@
 -- player may grant it later); the dev copy asks for it on every start, as core/identity.lua does for tracking.
 
 local Overlay = require("core/overlay")
+local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
 
 local Loader = {}
@@ -39,8 +40,14 @@ local function reset()
 end
 reset()
 
+-- A milestone, always written (once each start-up).
 local function say(...)
-    log("card updates:", ...)
+    Logger.note("card updates:", ...)
+end
+
+-- Detail: the pauses between tries and why it is not fetching.
+local function sayDetail(...)
+    Logger.debug("card updates:", ...)
 end
 
 local function settle(phase, message)
@@ -58,7 +65,7 @@ local function retryOrFail(reason)
     end
     state.retryAt = state.ticks + delay
     settle("retrying", reason)
-    say(reason .. "; trying again in " .. math.floor(delay / 50) .. " seconds")
+    sayDetail(reason .. "; trying again in " .. math.floor(delay / 50) .. " seconds")
 end
 
 -- Sends the request. Only called from a tick.
@@ -112,12 +119,12 @@ function Loader.tick()
         local plugin = Loader.plugin or Plugin
         if plugin.urls == nil or plugin.urls.cards == nil then
             settle("off", "no \"cards\" url in plugin.json")
-            say("off:", state.message)
+            sayDetail("off:", state.message)
         elseif not plugin.HasPermission(PluginPermissions.httpAccess) then
             if not state.warned and state.ticks > WARN_AFTER then
                 state.warned = true
                 state.message = "waiting for the httpAccess permission"
-                say("the httpAccess permission is not granted, so card updates are not fetched")
+                sayDetail("the httpAccess permission is not granted, so card updates are not fetched")
             end
         else
             beginFetch(plugin)
@@ -137,7 +144,7 @@ function Loader.tick()
             state.revision, state.changes, state.job = job.revision, job.added + job.replaced + job.retired, nil
             say(state.message)
             for _, problem in ipairs(job.problems) do
-                say("skipped", problem)
+                Logger.error("card updates: skipped", problem)
             end
         end
     elseif phase == "retrying" then
@@ -154,7 +161,7 @@ function Loader.safeTick()
     if not ok then
         settle("failed", "an error in the loader: " .. tostring(err))
         state.job = nil
-        log("card updates: stopped for this session:", state.message)
+        Logger.error("card updates: stopped for this session:", state.message)
     end
 end
 
@@ -175,7 +182,7 @@ function Loader.start(devCopy)
             PluginId.command("ppe", "httpAccess")
         end)
         if not ok then
-            log("could not ask for the httpAccess permission:", err)
+            Logger.error("could not ask for the httpAccess permission:", err)
         end
     end
     Loader.begin()

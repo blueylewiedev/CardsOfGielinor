@@ -9,6 +9,8 @@
 -- PrettyUI is declared as a required dependency in plugin.json, so it should always be there.
 -- The fallbacks keep the plugin usable if something goes wrong while it is being set up.
 
+local Logger = require("core/logger")
+
 local Kit = {}
 
 local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
@@ -78,7 +80,7 @@ function Kit.text(parent, x, y, w, h, content, colour, alignX)
             text.content = content
             return text
         end
-        log("Kit.text: PrettyUI text failed, using plain text:", tostring(text))
+        Logger.error("Kit.text: PrettyUI text failed, using plain text:", tostring(text))
     end
     return plainText(parent, x, y, w, h, content, colour, alignX)
 end
@@ -95,7 +97,7 @@ function Kit.button(parent, label, x, y, w, h, onPress, style, tooltip)
             prettyButtons[button] = true
             return button
         end
-        log("Kit.button: PrettyUI button failed, using plain button:", tostring(button))
+        Logger.error("Kit.button: PrettyUI button failed, using plain button:", tostring(button))
     end
     return plainButton(parent, label, x, y, w, h, onPress)
 end
@@ -125,7 +127,7 @@ function Kit.smallButton(parent, label, left, y, w, h, onPress, tooltip)
         if ok and button ~= nil then
             return button
         end
-        log("Kit.smallButton: PrettyUI simple button failed, using a normal button:", tostring(button))
+        Logger.error("Kit.smallButton: PrettyUI simple button failed, using a normal button:", tostring(button))
     end
     return Kit.buttonAt(parent, label, left, y, w, h, onPress)
 end
@@ -163,7 +165,7 @@ function Kit.toggleButton(parent, label, left, y, w, h, active, onToggle, toolti
             end
             return { part = button, setActive = setActive }
         end
-        log("Kit.toggleButton: PrettyUI simple button failed, using a normal button:", tostring(button))
+        Logger.error("Kit.toggleButton: PrettyUI simple button failed, using a normal button:", tostring(button))
     end
     -- Fallback: a normal button that turns green while it is on.
     local button = nil
@@ -276,7 +278,7 @@ function Kit.tabs(parent, x, y, w, h, names, build, pageHeight)
             end
             pcall(function() tabs:Destroy() end)
         end
-        log("Kit.tabs: PrettyUI tabs failed, using a row of buttons:", tostring(tabs))
+        Logger.error("Kit.tabs: PrettyUI tabs failed, using a row of buttons:", tostring(tabs))
     end
     -- Fallback: a row of buttons and one page that is rebuilt when the choice changes.
     local active = 1
@@ -326,7 +328,7 @@ function Kit.confirm(parent, title, body, confirmLabel, onConfirm)
         if ok then
             return
         end
-        log("Kit.confirm: PrettyUI confirm failed, going ahead without asking:", tostring(err))
+        Logger.error("Kit.confirm: PrettyUI confirm failed, going ahead without asking:", tostring(err))
     end
     onConfirm()
 end
@@ -342,7 +344,7 @@ function Kit.iconButton(parent, sprite, x, y, onPress, tooltip, fallbackLabel, f
         if ok and button ~= nil then
             return button
         end
-        log("Kit.iconButton: PrettyUI sprite button failed, using plain button:", tostring(button))
+        Logger.error("Kit.iconButton: PrettyUI sprite button failed, using plain button:", tostring(button))
     end
     local w = fallbackWidth or 80
     return plainButton(parent, fallbackLabel or sprite, x - (w - 24), y, w, 26, onPress)
@@ -382,7 +384,7 @@ local function prettyDropdown(parent, x, y, w, h, numbered, index, choose)
         onChange = function(_, entryId) choose(entryId) end,
     })
     if not ok or combo == nil then
-        log("Kit.dropdown: PrettyUI combo box failed, using the plain one:", tostring(combo))
+        Logger.error("Kit.dropdown: PrettyUI combo box failed, using the plain one:", tostring(combo))
         return nil
     end
     return {
@@ -490,7 +492,7 @@ function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
     function dropdown.set(list, value)
         local ok, err = pcall(backend.fill, number(list), indexOf(value))
         if not ok then
-            log("Kit.dropdown: could not fill the list:", tostring(err))
+            Logger.error("Kit.dropdown: could not fill the list:", tostring(err))
         end
     end
     function dropdown.select(value)
@@ -575,7 +577,7 @@ function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scr
         if ok and win ~= nil and win.content ~= nil then
             return win, win.content
         end
-        log("Kit.window: PrettyUI window failed, using plain window:", tostring(win))
+        Logger.error("Kit.window: PrettyUI window failed, using plain window:", tostring(win))
     end
     local box = ui.GroupBox.new(parent)
     box.stylesheetID = id.StyleSheet.DEFAULT

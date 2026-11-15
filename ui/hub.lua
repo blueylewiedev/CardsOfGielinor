@@ -4,6 +4,7 @@
 -- after closing it. It has buttons for the main window, the collection, the statistics and the credits overlay.
 
 local PluginId = require("core/pluginid")
+local Logger = require("core/logger")
 
 local Hub = {}
 
@@ -54,13 +55,13 @@ end
 function Hub.init(newApi)
     api = newApi
     if prettyui == nil or Event.ContentLayerReady == nil then
-        log("ribbon page: not available (needs PrettyUI and the content layer)")
+        Logger.error("ribbon page: not available (needs PrettyUI and the content layer)")
         return
     end
     Event.ContentLayerReady.Subscribe(SUBSCRIBER, function(event)
         local ok, err = pcall(build, event.component)
         if not ok then
-            log("ribbon page failed:", err)
+            Logger.error("ribbon page failed:", err)
         end
     end)
 end

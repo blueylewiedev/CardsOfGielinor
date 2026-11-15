@@ -7,6 +7,7 @@
 --   "window" : a window of its own, opened by the Settings button in the main window
 
 local Packs = require("core/packs")
+local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
 local Settings = require("core/settings")
 local Storage = require("core/storage")
@@ -22,7 +23,7 @@ local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
 -- Three dividers separate the page's four parts: difficulty, effects, card updates and (with the
 -- development tools) the developer options.
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 415 + DIVIDER_STEP
+local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 445 + DIVIDER_STEP
 local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
 
 -- api.getState() and api.saveNow(), as for the pack window; api.devTools (true when the
@@ -92,7 +93,7 @@ local function build(key, parent, width, height)
             end,
         })
     end
-    page.widgets.effects = checkboxes("Display", false)
+    page.widgets.effects = checkboxes("General", false)
     divider()
     view:AddText("Card updates")
     page.widgets.updates = view:AddText("")
@@ -163,7 +164,7 @@ function SettingsPage.openWindow()
         function() SettingsPage.closeWindow() end, 0.3, 0.2)
     local ok, err = pcall(build, "window", content, WINDOW_WIDTH, height)
     if not ok then
-        log("settings window failed:", err)
+        Logger.error("settings window failed:", err)
         SettingsPage.closeWindow()
         return
     end
@@ -185,14 +186,14 @@ end
 function SettingsPage.init(newApi)
     api = newApi
     if prettyui == nil or Event.SettingsLayerReady == nil then
-        log("settings page: not available (needs PrettyUI and the settings layer)")
+        Logger.error("settings page: not available (needs PrettyUI and the settings layer)")
         return
     end
     Event.SettingsLayerReady.Subscribe(SUBSCRIBER, function(event)
         local parent = event.component
         local ok, err = pcall(build, "client", parent, parent.width, parent.height)
         if not ok then
-            log("settings page failed:", err)
+            Logger.error("settings page failed:", err)
             return
         end
         SettingsPage.refresh()

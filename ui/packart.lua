@@ -31,6 +31,7 @@
 -- The mask, shading and titles are made by dev/make_pack_art.py.
 
 local Packs = require("core/packs")
+local Logger = require("core/logger")
 
 local PackArt = {}
 
@@ -93,7 +94,7 @@ local function spriteId(name)
     if spriteIds[name] == nil then
         spriteIds[name] = lookup(name) or false
         if not spriteIds[name] then
-            log("pack art: no sprite called", name)
+            Logger.error("pack art: no sprite called", name)
         end
     end
     return spriteIds[name] or nil
@@ -163,7 +164,7 @@ function PackArt.image(name)
             pcall(function() resource:Load() end)
             images[name] = resource
         else
-            log("no image resources/images/" .. name .. ".png")
+            Logger.error("no image resources/images/" .. name .. ".png")
             images[name] = false
         end
     end

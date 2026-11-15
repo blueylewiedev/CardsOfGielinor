@@ -6,6 +6,8 @@
 -- running one to its end first. A step that fails is logged once and the animation ended, rather
 -- than failing again every frame. Also a few easing curves, and the frame time from a Draw event.
 
+local Logger = require("core/logger")
+
 local Anim = {}
 
 local running = {}   -- owner -> { t, seconds, update, finish }
@@ -14,7 +16,7 @@ local running = {}   -- owner -> { t, seconds, update, finish }
 local function call(fn, ...)
     local ok, err = pcall(fn, ...)
     if not ok then
-        log("animation failed:", tostring(err))
+        Logger.error("animation failed:", tostring(err))
     end
     return ok
 end

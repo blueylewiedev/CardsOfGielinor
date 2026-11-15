@@ -7,6 +7,7 @@
 -- unloaded, shutdown() when the plugin stops.
 
 local Slayer = require("core/slayer")
+local Logger = require("core/logger")
 local Storage = require("core/storage")
 
 local SlayerEvents = {}
@@ -22,7 +23,6 @@ local MASTER_LIST_ENUM = 1553   -- SLAYER_MASTER_ENUM: each Slayer master's own 
 local STRUCTS_PER_TICK = 25     -- task entries looked at each server tick while the example monsters are read
 
 local api = nil                 -- api.getState() : the logged-in character's collection, or nil
-local verbose = false           -- log what the tracker sees (the development copy)
 local tracker = nil             -- set while a character is logged in
 local names = {}                -- number in the task list -> the task's name in lower case
 local namesLoaded = false       -- true once the list has been read (it is tried again until it has)
@@ -69,7 +69,7 @@ local function loadNames()
         names = found
         namesLoaded = true
     elseif not ok then
-        log("slayer credits: could not read the Slayer task list (will try again):", tostring(err))
+        Logger.error("slayer credits: could not read the Slayer task list (will try again):", tostring(err))
     end
     isMember = Slayer.membership(names)
     unitsOf = Slayer.unitsOf(names)
@@ -144,9 +144,9 @@ local function award(kind, credits, info)
         return
     end
     Storage.earnCredits(state, credits)
-    if verbose then
+    if Logger.debugOn() then
         local task = info.task ~= nil and names[info.task] or tostring(info.task)
-        log("slayer credits: +" .. credits, kind, "(level", info.level .. ", task", task .. (info.fallback and ", monster not seen" or "") .. ")")
+        Logger.debug("slayer credits: +" .. credits, kind, "(level", info.level .. ", task", task .. (info.fallback and ", monster not seen" or "") .. ")")
     end
 end
 
@@ -165,7 +165,7 @@ local function onVariable(e)
         end
     end)
     if not ok then
-        log("slayer credits: variable handler failed:", tostring(err))
+        Logger.error("slayer credits: variable handler failed:", tostring(err))
     end
 end
 
@@ -183,7 +183,7 @@ local function onSkill(e)
         end
     end)
     if not ok then
-        log("slayer credits: XP handler failed:", tostring(err))
+        Logger.error("slayer credits: XP handler failed:", tostring(err))
     end
 end
 
@@ -203,7 +203,7 @@ local function onRemoved(e)
         tracker:onRemoved({ category = categoryOf(cfg) or categoryOf(parent), level = level })
     end)
     if not ok then
-        log("slayer credits: NPC handler failed:", tostring(err))
+        Logger.error("slayer credits: NPC handler failed:", tostring(err))
     end
 end
 
@@ -211,16 +211,15 @@ local function onTick()
     if tracker ~= nil then
         local ok, err = pcall(function() tracker:advance() end)
         if not ok then
-            log("slayer credits: tick failed:", tostring(err))
+            Logger.error("slayer credits: tick failed:", tostring(err))
         end
     end
     exampleStep()
 end
 
--- Starts listening. `newApi` needs getState(). `loud` logs what the tracker sees (the development copy).
-function SlayerEvents.start(newApi, loud)
+-- Starts listening. `newApi` needs getState(). What the tracker sees is written with Logger.debug.
+function SlayerEvents.start(newApi)
     api = newApi
-    verbose = loud == true
     loadNames()
     startExamples()
     Event.VarTransmit.Subscribe(SUBSCRIBERS.var, onVariable)
@@ -240,7 +239,7 @@ function SlayerEvents.begin()
         unitsOf = unitsOf,
         fallbackLevel = function(task) return exampleLevel[task] end,
         award = award,
-        log = verbose and function(...) log("slayer:", ...) end or nil,
+        log = function(...) Logger.debug("slayer:", ...) end,
     })
 end
 
