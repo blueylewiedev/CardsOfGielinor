@@ -17,6 +17,7 @@
 
 local Cards = require("core/cards")
 local Storage = require("core/storage")
+local Logger = require("core/logger")
 local Browse = require("core/browse")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
@@ -88,6 +89,7 @@ local gridView = false
 local page = 1
 local selectedKey = nil                -- "<card id>|<finish>" of the card shown beside the list
 local entries = {}                     -- what the filter finds, worked out when the filter changes
+local watchedState, watchedStamp = nil, nil   -- the collection as the list was last worked out from it (see Viewer.refresh)
 
 -- Where the filter starts, and what Clear filters goes back to: the cards the player owns, or all of them while they
 -- own none (an empty list on a first visit would look broken).
@@ -95,6 +97,28 @@ local function defaultFilter()
     local state = api ~= nil and api.getState() or nil
     local owning = state ~= nil and Browse.counts(state, {}).owned > 0
     return { owned = owning and "owned" or "all", sort = "rarity" }
+end
+
+-- The collection as the viewer shows it: the cards of a pack that is being opened and have not been turned over yet are
+-- already in the collection, but are left out until they have been seen (api.hiddenCards, if the plugin has it, says
+-- which). Gives `state` itself when there are none.
+local function viewState(state)
+    local hidden = api ~= nil and api.hiddenCards ~= nil and api.hiddenCards() or nil
+    if hidden == nil or next(hidden) == nil then
+        return state
+    end
+    local view = {}
+    for field, value in pairs(state) do
+        view[field] = value
+    end
+    view.owned = {}
+    for key, count in pairs(state.owned) do
+        local left = count - (hidden[key] or 0)
+        if left > 0 then
+            view.owned[key] = left
+        end
+    end
+    return view
 end
 
 local function setHidden(component, hidden)
@@ -172,7 +196,7 @@ local ANY_CATEGORY = " Any category"
 -- one chosen now, whatever the other filters are, so the box never shows a choice that is not in its list.
 local function categoryEntries()
     local state = api ~= nil and api.getState() or nil
-    local present = state ~= nil and Browse.words(state, filter, "category") or nil
+    local present = state ~= nil and Browse.words(viewState(state), filter, "category") or nil
     local words = {}
     for _, word in ipairs(Cards.wordsFor(filter.kind, "category") or {}) do
         if present == nil or present[word] or word == filter.category then
@@ -281,6 +305,20 @@ local function pick(key)
     Viewer.refreshView()
 end
 
+-- The mouse wheel turns the pages: down for the next, up for the previous (and stops at the first and the last, where
+-- the Prev and Next buttons wrap round).
+local function wheelPage(delta)
+    Logger.debug("viewer: mouse wheel", tostring(delta))
+    if window == nil or type(delta) ~= "number" or delta == 0 then
+        return
+    end
+    local target = math.max(1, math.min(pageCount(), page + (delta > 0 and 1 or -1)))
+    if target ~= page then
+        page = target
+        Viewer.refreshView()
+    end
+end
+
 -- Makes the list's tiles once. A tile is a rarity-tinted box with its name (in capitals) and rarity, and the
 -- copies owned at the right, with an invisible layer on top that takes the click.
 local function buildRows()
@@ -295,6 +333,7 @@ local function buildRows()
         row.grip.clickthrough = false
         row.grip:SetPos(LEFT, y)
         row.grip:SetSize(LIST_W, ROW_H, 0, 0)
+        Kit.onWheel(row.grip, wheelPage)
         row.grip:Subscribe(ui.Hook.ONCLICK, function()
             local entry = row.entry
             if entry ~= nil then
@@ -349,9 +388,10 @@ local function showRows()
     end
 end
 
--- What the detail panel shows depends on the picked card and on the filters its chips set; this changes when either does.
-local function detailStamp()
-    return table.concat({ tostring(selectedKey), tostring(filter.kind),
+-- What the detail panel shows depends on the picked card, how many of it the player has and the filters its chips set;
+-- this changes when any of them does.
+local function detailStamp(picked)
+    return table.concat({ tostring(selectedKey), picked ~= nil and picked.count or "-", tostring(filter.kind),
         tostring(filter.membership), tostring(filter.region), tostring(filter.skill), tostring(filter.category) }, "|")
 end
 
@@ -369,11 +409,11 @@ local function showDetail()
             break
         end
     end
-    if picked ~= nil and detailKey == detailStamp() and #detailParts > 0 then
+    if picked ~= nil and detailKey == detailStamp(picked) and #detailParts > 0 then
         return
     end
     destroyAll(detailParts)
-    detailKey = picked ~= nil and detailStamp() or nil
+    detailKey = picked ~= nil and detailStamp(picked) or nil
     if picked == nil then
         detailParts[#detailParts + 1] = Kit.text(content, DETAIL_X, BODY_Y + 20, DETAIL_W, 24,
             #entries == 0 and "No card matches." or "Click a card to see it.", GREY)
@@ -476,6 +516,7 @@ local function showGrid()
         grip:SetPos(x, y)
         grip:SetSize(CardView.WIDTH, CardView.HEIGHT + 36, 0, 0)
         local key = entryKey(entry)
+        Kit.onWheel(grip, wheelPage)
         grip:Subscribe(ui.Hook.ONCLICK, function()
             Viewer.showInList(key)
         end)
@@ -541,8 +582,36 @@ function Viewer.refreshView()
     widgets.pageText.content = "Page " .. page .. " of " .. pageCount()
 end
 
--- Works out the cards the filter finds, and shows them from the first page (or, with `follow`, the page the picked card
--- is on, when it is still among them).
+-- A short fingerprint of what the player owns (and has seen): how many kinds of card and how many copies. It changes when
+-- a card is turned over in a pack or added; that is all Viewer.refresh needs to see.
+local function collectionStamp(state)
+    local kinds, copies = 0, 0
+    for _, count in pairs(state.owned) do
+        kinds = kinds + 1
+        copies = copies + (type(count) == "number" and count or 0)
+    end
+    return kinds .. ":" .. copies
+end
+
+-- Called about every 0.6 seconds (by the plugin's tick). When the collection has changed while the viewer is open (a pack
+-- was opened, or a card won) the list, counts and picked card are worked out again, on the page that was showing. Closes
+-- the viewer if there is no character any more.
+function Viewer.refresh()
+    if window == nil then
+        return
+    end
+    local state = api.getState()
+    if state == nil then
+        Viewer.close()
+        return
+    end
+    if state ~= watchedState or collectionStamp(viewState(state)) ~= watchedStamp then
+        Viewer.refilter("stay")
+    end
+end
+
+-- Works out the cards the filter finds, and shows them from the first page. With `follow` = true it shows the page the
+-- picked card is on instead (when it is still among them), and with "stay" the page that was showing.
 function Viewer.refilter(follow)
     if window == nil then
         return
@@ -553,11 +622,14 @@ function Viewer.refilter(follow)
         return
     end
     updateCategories()
-    entries = Browse.entries(state, filter)
-    local counts = Browse.counts(state, filter)
-    local progress = Storage.progress(state).normal
+    local view = viewState(state)
+    watchedState, watchedStamp = state, collectionStamp(view)
+    entries = Browse.entries(view, filter)
+    local counts = Browse.counts(view, filter)
+    local progress = Storage.progress(view).normal
     widgets.counts.content = counts.owned .. " of " .. counts.cards .. " cards owned"
         .. "   |   Whole collection: " .. progress.owned .. " / " .. progress.total
+    local pageBefore = page
     page = 1
     local keep, position = false, nil
     for index, entry in ipairs(entries) do
@@ -568,8 +640,11 @@ function Viewer.refilter(follow)
     end
     if not keep then
         selectedKey = entries[1] ~= nil and entryKey(entries[1]) or nil
-    elseif follow then
+    elseif follow == true then
         page = (position - 1) // perPage() + 1    -- the picked card stays in view
+    end
+    if follow == "stay" then
+        page = pageBefore
     end
     Viewer.refreshView()
 end
@@ -685,6 +760,7 @@ function Viewer.open(newApi)
     if not filterStarted then
         filter, filterStarted = defaultFilter(), true
     end
+    Kit.onWheel(content, wheelPage)
     buildRows()
     buildFilters()
     Viewer.refilter()
