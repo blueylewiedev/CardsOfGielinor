@@ -273,11 +273,93 @@ check(press("Prev") and Viewer.debugInfo().page == 1, "Prev goes back")
 check(press("Prev") and Viewer.debugInfo().page == Viewer.debugInfo().pages, "Prev from page 1 wraps to the last page")
 check(press("Next") and Viewer.debugInfo().page == 1, "Next from the last page wraps to page 1")
 
+-- the mouse wheel turns the pages; it stops at the ends
+local function wheel(target, delta)
+    target._handlers["ONSCROLLWHEEL"](target, delta)
+end
+local wheelGrips = {}
+for _, c in ipairs(live("Layer")) do if rawget(c, "clickthrough") == false and c._parent == contentLayer then wheelGrips[#wheelGrips + 1] = c end end
+check(wheelGrips[1] ~= nil and wheelGrips[1]._handlers["ONSCROLLWHEEL"] ~= nil, "a row listens for the wheel")
+check(contentLayer._handlers["ONSCROLLWHEEL"] ~= nil, "so does the window behind the rows")
+check(Viewer.debugInfo().page == 1, "(starting from page 1)")
+wheel(wheelGrips[1], 1)
+check(Viewer.debugInfo().page == 2, "wheel down on a row goes to the next page")
+wheel(contentLayer, 1)
+check(Viewer.debugInfo().page == 3, "wheel down on the window goes on")
+wheel(contentLayer, -1)
+wheel(contentLayer, -1)
+check(Viewer.debugInfo().page == 1, "wheel up goes back")
+wheel(contentLayer, -1)
+check(Viewer.debugInfo().page == 1, "and stops at the first page (does not wrap)")
+for _ = 1, Viewer.debugInfo().pages + 2 do wheel(contentLayer, 1) end
+check(Viewer.debugInfo().page == Viewer.debugInfo().pages, "wheel down stops at the last page")
+wheel(contentLayer, 0)
+check(Viewer.debugInfo().page == Viewer.debugInfo().pages, "a wheel with no movement does nothing")
+while Viewer.debugInfo().page > 1 do wheel(contentLayer, -1) end
+
+-- the viewer follows the collection while it is open
+choose(combos[OWNED], "Owned")
+local ownedBefore = Viewer.debugInfo().matches
+local made = #created
+Viewer.refresh()
+check(#created == made and Viewer.debugInfo().matches == ownedBefore, "nothing changed: refresh redraws nothing")
+local newCard = nil
+for _, card in ipairs(Cards.list) do
+    if state.owned[Cards.variantKey(card.id, "normal")] == nil then newCard = card break end
+end
+state.owned[Cards.variantKey(newCard.id, "normal")] = 1
+Viewer.refresh()
+check(Viewer.debugInfo().matches == ownedBefore + 1, "a card added while the viewer is open appears in the list (" .. ownedBefore .. " to " .. Viewer.debugInfo().matches .. ")")
+-- a copy more of the picked card: its detail shows the new count
+local selected = Viewer.debugInfo().selected
+local selectedId = string.match(selected, "^(.-)|")
+local key = Cards.variantKey(selectedId, "normal")
+local function showsCount(n)
+    for _, c in ipairs(live("Text")) do if rawget(c, "content") == "Owned: " .. n then return true end end
+    return false
+end
+local copies = state.owned[key]
+check(copies ~= nil and showsCount(copies), "the picked card shows how many copies the player has (" .. tostring(copies) .. ")")
+state.owned[key] = copies + 5
+Viewer.refresh()
+check(showsCount(copies + 5) and not showsCount(copies), "and the new count when a pack gives more")
+-- cards of a pack that have not been turned over yet are left out until they have
+local hiddenNow = {}
+api.hiddenCards = function() return hiddenNow end
+choose(combos[OWNED], "Owned")
+local beforePack = Viewer.debugInfo().matches
+local first, second = nil, nil
+for _, card in ipairs(Cards.list) do
+    local k = Cards.variantKey(card.id, "normal")
+    if state.owned[k] == nil then
+        if first == nil then first = k elseif second == nil then second = k break end
+    end
+end
+state.owned[first], state.owned[second] = 1, 1      -- a pack of two new cards is opened: both are in the collection at once
+hiddenNow = { [first] = 1, [second] = 1 }
+Viewer.refresh()
+check(Viewer.debugInfo().matches == beforePack, "cards not yet turned over do not appear")
+hiddenNow = { [second] = 1 }                          -- the first is turned over
+Viewer.refresh()
+check(Viewer.debugInfo().matches == beforePack + 1, "a card appears once it has been turned over")
+hiddenNow = {}                                        -- the pack is finished
+Viewer.refresh()
+check(Viewer.debugInfo().matches == beforePack + 2, "and the rest when the pack is done")
+-- it stays on the page that was showing
+choose(combos[OWNED], "All cards")
+press("Next")
+local pageNow = Viewer.debugInfo().page
+state.owned[Cards.variantKey(Cards.list[200].id, "normal")] = 1
+Viewer.refresh()
+check(Viewer.debugInfo().page == pageNow, "a refresh stays on the page that was showing")
+choose(combos[OWNED], "Owned")
+choose(combos[OWNED], "All cards")
+
 -- clear
 choose(combos[RARITY], "Epic"); inputs[1].content = "a"; inputs[1]._handlers["ONCONTENTCHANGED"](inputs[1])
 press("Clear filters")
 local after = Viewer.debugInfo()
-check(after.filter.rarity == nil and after.filter.search == nil and after.filter.owned == "owned" and after.matches == ownedNow, "Clear filters resets everything to the start")
+check(after.filter.rarity == nil and after.filter.search == nil and after.filter.owned == "owned" and after.matches == #Browse.entries(state, { owned = "owned" }), "Clear filters resets everything to the start")
 
 -- a search nothing matches
 inputs[1].content = "zzzzqqq"; inputs[1]._handlers["ONCONTENTCHANGED"](inputs[1])
@@ -302,6 +384,15 @@ do
     check(first.filter.owned == "all" and first.matches == #Cards.list, "with no cards the viewer starts from all of them")
     Fresh.close()
 end
+
+-- the character logs out while the viewer is open
+Viewer.open(api)
+check(Viewer.isOpen(), "opens again")
+local keepState = state
+state = nil
+Viewer.refresh()
+check(not Viewer.isOpen(), "closes by itself when there is no character any more")
+state = keepState
 
 -- logged out
 state = nil

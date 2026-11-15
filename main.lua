@@ -134,6 +134,7 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
     SettingsPage.refresh()
     Hub.refresh()
     CreditsWindow.refresh()
+    Viewer.refresh()
     if session == nil then
         local profile = Identity.profile(currentCharacterName())
         if profile ~= nil then
@@ -192,6 +193,8 @@ end
 local api = {
     getState = function() return session and session.state or nil end,
     saveNow = saveSession,
+    -- The cards of a pack being opened that have not been turned over yet (the collection viewer leaves them out).
+    hiddenCards = function() return PackWindow.hiddenCards() end,
     openSettings = function() SettingsPage.toggleWindow() end,
     devTools = Dev ~= nil,
 }

@@ -928,6 +928,25 @@ startTear = function()
     end)
 end
 
+-- The cards of the pack being opened that the player has not seen yet, as { [variant key] = copies }: they are already in
+-- the collection (Packs.open adds the whole pack at once), so the collection viewer leaves them out until they have been
+-- turned over. Empty when no pack is being opened.
+function PackWindow.hiddenCards()
+    local hidden = {}
+    if reveal.results == nil then
+        return hidden
+    end
+    local seen = reveal.index - 1
+    if reveal.stage == "faceup" or reveal.stage == "leaving" then
+        seen = reveal.index
+    end
+    for position = math.max(0, seen) + 1, #reveal.results do
+        local key = reveal.results[position].key
+        hidden[key] = (hidden[key] or 0) + 1
+    end
+    return hidden
+end
+
 -- Moves the reveal on one step. Called by the main button and by clicking the pack or card.
 function PackWindow.advance()
     if reveal.results == nil then
