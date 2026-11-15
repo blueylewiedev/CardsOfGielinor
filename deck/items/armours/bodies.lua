@@ -554,7 +554,7 @@ Set.cards = {
         id = "carapace_torso", name = "Carapace torso", kind = "item", rarity = "common",
         desc = "Nothing says 'comfort' like wearing the shell of a bug.",
         art = { item = "COCKROACH_TORSO", cam = { dist = 363, ty = -5, tx = 8 } },
-        tags = { regions = { "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin", "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "frogleather_body", name = "Frog-leather body", kind = "item", rarity = "common",
@@ -894,7 +894,7 @@ Set.cards = {
         id = "imphide_robe_top", name = "Imphide robe top", kind = "item", rarity = "common",
         desc = "How many imps did it take to make this?",
         art = { item = "IMPHIDE_ROBE_TOP", cam = { yaw = -0.01, dist = 363, ty = -37, tx = -2 } },
-        tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "defence" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
     },
     {
         id = "mycelium_poncho_web", name = "Mycelium poncho web", kind = "item", rarity = "common",

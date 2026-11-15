@@ -483,7 +483,7 @@ Set.cards = {
         id = "carapace_helm", name = "Carapace helm", kind = "item", rarity = "common",
         desc = "All you need are some feelers and you've got this look complete.",
         art = { item = "COCKROACH_HEAD", cam = { yaw = -6.92, pitch = 0.23, dist = 248, ty = 29, tx = 21 } },
-        tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
+        tags = { regions = { "misthalin", "kharidian_desert" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "guthix_halo", name = "Guthix halo", kind = "item", rarity = "common",

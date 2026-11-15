@@ -11,7 +11,7 @@ Set.cards = {
         id = "imphide_book", name = "Imphide book", kind = "item", rarity = "common",
         desc = "Contains the raw magical power of imps!",
         art = { item = "IMPHIDE_BOOK", cam = { yaw = 0.24, pitch = 0.93, ty = -2, tx = -17 } },
-        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "book" }, membership = { "f2p" } },
     },
     {
         id = "wizard_book", name = "Wizard book", kind = "item", rarity = "common",
