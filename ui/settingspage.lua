@@ -22,7 +22,7 @@ local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
 -- Three dividers separate the page's four parts: difficulty, effects, card updates and (with the
 -- development tools) the developer options.
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 385 + DIVIDER_STEP
+local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 415 + DIVIDER_STEP
 local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
 
 -- api.getState() and api.saveNow(), as for the pack window; api.devTools (true when the
@@ -78,7 +78,7 @@ local function build(key, parent, width, height)
     local function checkboxes(heading, dev)
         local list = {}
         for _, option in ipairs(Settings.options) do
-            if (option.dev == true) == dev then
+            if (option.dev == true) == dev and not option.hidden then
                 list[#list + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
             end
         end
@@ -92,7 +92,7 @@ local function build(key, parent, width, height)
             end,
         })
     end
-    page.widgets.effects = checkboxes("Effects", false)
+    page.widgets.effects = checkboxes("Display", false)
     divider()
     view:AddText("Card updates")
     page.widgets.updates = view:AddText("")

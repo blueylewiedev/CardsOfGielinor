@@ -5,7 +5,7 @@
 -- Folders:
 --   core/   the logic: cards (format, rarities, pack types), packs, storage, earning, settings
 --   ui/     everything that draws: kit (PrettyUI wrapper), cardview, the pack, collection,
---           statistics and settings windows, and the ribbon page
+--           statistics, credits and settings windows, and the ribbon page
 --   deck/   the cards themselves, by region (see deck/index.lua)
 --   dev/    developer tools, left out of the released plugin
 --
@@ -22,6 +22,7 @@ local Stats = require("ui/stats")
 local Settings = require("core/settings")
 local SettingsPage = require("ui/settingspage")
 local Hub = require("ui/hub")
+local CreditsWindow = require("ui/creditswindow")
 local OverlayLoader = require("core/overlayloader")
 
 -- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
@@ -123,6 +124,7 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
     PackWindow.refresh()
     SettingsPage.refresh()
     Hub.refresh()
+    CreditsWindow.refresh()
     if session == nil then
         local profile = Identity.profile(currentCharacterName())
         if profile ~= nil then
@@ -167,6 +169,7 @@ function PluginShutdown()
     OverlayLoader.shutdown()
     SettingsPage.shutdown()
     Hub.shutdown()
+    CreditsWindow.hide()
     PackWindow.hide()
     if Dev ~= nil then
         Dev.shutdown()
@@ -183,11 +186,42 @@ local api = {
     devTools = Dev ~= nil,
 }
 
+-- The main window remembers that the player closed it (the option is saved with the others), so it stays closed the
+-- next time the plugin starts.
+api.onMainClosed = function() Settings.set("mainOpen", false) end
+
 -- Opens the main window if it was closed. A failure is logged and does not stop the plugin.
 local function openMain()
     local ok, err = pcall(PackWindow.show, api)
     if not ok then
         log("pack window failed:", err)
+    end
+end
+
+-- Opens the main window (the ribbon page's Open button and a click on the credits overlay) and remembers that it is
+-- open, so it opens again the next time the plugin starts.
+api.openMain = function()
+    Settings.set("mainOpen", true)
+    openMain()
+end
+
+-- Puts the credits overlay on the screen. A failure is logged and does not stop the plugin.
+local function showCredits()
+    local ok, err = pcall(CreditsWindow.show, api)
+    if not ok then
+        log("credits overlay failed:", err)
+    end
+    return ok
+end
+
+-- Puts the credits overlay on the screen if it was off, and takes it off if it was on; remembers which (the
+-- "Show the credits overlay" switch on the settings page is the same option).
+local function toggleCredits()
+    if CreditsWindow.isOpen() then
+        CreditsWindow.hide()
+        Settings.set("creditsWindow", false)
+    elseif showCredits() then
+        Settings.set("creditsWindow", true)
     end
 end
 
@@ -203,6 +237,14 @@ end
 
 -- Turning "Preview as released" on or off swaps the main window's developer buttons in place.
 api.onSettingChanged = function(optionId)
+    if optionId == "creditsWindow" then
+        if Settings.get("creditsWindow") then
+            showCredits()
+        else
+            CreditsWindow.hide()
+        end
+        return
+    end
     if optionId ~= "releasePreview" then
         return
     end
@@ -215,14 +257,22 @@ Settings.load()
 SettingsPage.init(api)
 Hub.init({
     getState = api.getState,
-    openMain = openMain,
+    openMain = api.openMain,
+    toggleCredits = toggleCredits,
     openCollection = function() Viewer.open(api) end,
     toggleStats = function() Stats.toggle(api) end,
 })
 
 -- With the development tools in use, their buttons go on the Home window.
 applyDevTools()
-openMain()
+-- What the player left showing last time. (Closing the main window altogether is fine: the credits overlay
+-- and the saving carry on, and the ribbon page opens it again.)
+if Settings.get("mainOpen") then
+    openMain()
+end
+if Settings.get("creditsWindow") then
+    showCredits()
+end
 if Dev ~= nil then
     Dev.start()
 end

@@ -1122,6 +1122,10 @@ function PackWindow.show(newApi)
     -- `window` is the frame (resized per screen); `content` is what the screens go inside.
     window, content = Kit.window(gameWindow, PluginId.TITLE, WIDTH, HEIGHTS.nosession, function()
         PackWindow.hide()
+        -- (main.lua remembers it was closed, so it stays closed the next time the plugin starts)
+        if api ~= nil and api.onMainClosed ~= nil then
+            api.onMainClosed()
+        end
     end, 0, 0.2)
     buildScreens()
     PackWindow.refresh()
