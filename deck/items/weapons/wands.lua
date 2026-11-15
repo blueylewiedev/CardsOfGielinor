@@ -11,7 +11,7 @@ Set.cards = {
         id = "imp_horn_wand", name = "Imp horn wand", kind = "item", rarity = "common",
         desc = "Fashioned from imp horn.",
         art = { item = "IMPHIDE_WAND", cam = { yaw = 0.82, dist = 330, ty = 7, tx = -3 } },
-        tags = { regions = { "misthalin", "asgarnia" }, skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "wand" }, membership = { "f2p" } },
+        tags = { skills = { "crafting", "runecrafting", "magic" }, category = { "weapon", "magic_gear", "wand" }, membership = { "f2p" } },
     },
     {
         id = "sceptre_of_the_gods", name = "Sceptre of the gods", kind = "item", rarity = "epic",
