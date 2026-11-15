@@ -207,6 +207,7 @@ commands refresh the plugin list and reload it):
 | `lua dev/check_overlay.lua` | the whole deck survives being exported, decoded and registered, field for field |
 | `lua dev/check_loader.lua` | applying an overlay, and the loader against a pretend `HTTPRequest` (404s, timeouts, retries, wrong version) |
 | `lua dev/check_version.lua` | `core/version.lua` equals the version in `plugin.json` |
+| `lua dev/check_slayer.lua` | the Slayer credits against recorded game events (kills, AOE, completion, cancel, skip), and that combat XP earns nothing |
 | `python dev/test_build_overlay.py` | what goes in the overlay and when `revision` changes |
 | `lua dev/check_format.lua` | the credits text the overlay shows (`19 249`) |
 
