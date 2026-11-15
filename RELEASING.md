@@ -208,6 +208,7 @@ commands refresh the plugin list and reload it):
 | `lua dev/check_loader.lua` | applying an overlay, and the loader against a pretend `HTTPRequest` (404s, timeouts, retries, wrong version) |
 | `lua dev/check_version.lua` | `core/version.lua` equals the version in `plugin.json` |
 | `python dev/test_build_overlay.py` | what goes in the overlay and when `revision` changes |
+| `lua dev/check_format.lua` | the credits text the overlay shows (`19 249`) |
 
 **Common messages**
 
