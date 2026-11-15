@@ -109,9 +109,9 @@ Cards.packTypes = {
 }
 
 -- The words allowed for the tag kinds that come from a closed list. A card with any other word
--- under one of these kinds stops the plugin loading, with the card named in the error, so a typo
--- never silently drops a card out of a themed pack. Add a word here before using it. Tag kinds
--- that are not listed are not checked.
+-- under one of these kinds is left out of the game and named in Cards.loadProblems (and the pull request check
+-- fails), so a typo is found before it can drop a card out of a themed pack. Add a word here before using it. Tag
+-- kinds that are not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
                 "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe", "daemonheim",
@@ -427,7 +427,7 @@ end
 -- True if the card's art names nothing yet (an NPC card with `npc = ""` or an item card with
 -- `item = ""`), so it is still a draft.
 function Cards.isDraft(card)
-    if card.art == nil then
+    if type(card.art) ~= "table" then
         return false
     end
     if card.kind == "item" then
@@ -444,20 +444,55 @@ local function leaveOut(message)
     Cards.loadProblems[#Cards.loadProblems + 1] = message
 end
 
+-- Why a deck file's `defaults` (tags every card in the file gets) are not usable, or nil: a table of lists of words.
+local function defaultsProblem(defaults)
+    if type(defaults) ~= "table" then
+        return "defaults must be a table"
+    end
+    for tagKind, words in pairs(defaults) do
+        if type(tagKind) ~= "string" or type(words) ~= "table" then
+            return "defaults must be lists of words, e.g. regions = { \"asgarnia\" }"
+        end
+        for _, word in ipairs(words) do
+            if type(word) ~= "string" then
+                return "the words in defaults must be text"
+            end
+        end
+    end
+    return nil
+end
+
 for _, setName in ipairs(Cards.sets) do
     local loaded, set = pcall(require, setName)
     if not loaded or type(set) ~= "table" then
         leaveOut("The deck file " .. tostring(setName) .. " did not load: " .. tostring(set))
         set = {}
     end
+    -- A file whose cards or defaults are not the right shape is left out whole: its cards cannot be told apart from
+    -- ones that would be wrong in other ways, and half a file with the wrong tags is worse than none.
+    local shape = nil
+    if set.cards ~= nil and type(set.cards) ~= "table" then
+        shape = "cards must be a table (a list of cards)"
+    elseif set.defaults ~= nil then
+        shape = defaultsProblem(set.defaults)
+    end
+    if shape ~= nil then
+        leaveOut("The deck file " .. tostring(setName) .. " is left out: " .. shape)
+        set = {}
+    end
     for _, card in ipairs(set.cards or {}) do
         if type(card) ~= "table" then
             leaveOut("A card in " .. tostring(setName) .. " is not a table")
         else
-            if type(set.defaults) == "table" then
-                addTags(card, set.defaults)
+            -- (a card whose own tags are the wrong shape cannot be merged with the defaults; it is left out here
+            -- and Cards.problem says why when it is checked below)
+            local merged = true
+            if set.defaults ~= nil then
+                merged = pcall(addTags, card, set.defaults)
             end
-            if Cards.isDraft(card) then
+            if not merged then
+                leaveOut("Card " .. tostring(card.id) .. ": its tags must be lists of words, e.g. regions = { \"asgarnia\" }")
+            elseif Cards.isDraft(card) then
                 Cards.drafts[#Cards.drafts + 1] = card
             else
                 Cards.list[#Cards.list + 1] = card
@@ -655,8 +690,8 @@ local function tagsProblem(card)
 end
 
 -- Why a card is not sound, as a message that names it, or nil if it is: the checks every card must pass, whether
--- it is in the deck (where a problem stops the plugin loading) or comes from the overlay (where the card is
--- skipped). That its id is not used by another card is checked where cards are added.
+-- it is in the deck or comes from the overlay. Either way a card that fails is left out and the rest carry on. That
+-- its id is not used by another card is checked where cards are added.
 function Cards.problem(card)
     if type(card) ~= "table" then
         return "a card must be a table"
@@ -686,6 +721,18 @@ function Cards.problem(card)
     local tags = tagsProblem(card)
     if tags ~= nil then
         return tags
+    end
+    -- What the card draws must be the kind of value the card view expects, or it fails when the card is shown.
+    if card.desc ~= nil and type(card.desc) ~= "string" then
+        return "The description of card " .. card.id .. " must be text"
+    end
+    for _, field in ipairs({ "npc", "item" }) do
+        if card.art ~= nil and card.art[field] ~= nil and type(card.art[field]) ~= "string" then
+            return "art." .. field .. " of card " .. card.id .. " must be text (a config name)"
+        end
+    end
+    if card.art ~= nil and card.art.cam ~= nil and type(card.art.cam) ~= "table" then
+        return "art.cam of card " .. card.id .. " must be a table"
     end
     if card.variants ~= nil then
         if type(card.variants) ~= "table" or #card.variants == 0 then

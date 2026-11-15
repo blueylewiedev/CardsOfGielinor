@@ -286,9 +286,11 @@ the plugin cannot look inside folders. A file that is not listed is never loaded
 `python dev/check_deck_index.py` to check that the files and the list agree. It also runs on every
 pull request, and the pull request cannot be merged while it fails.
 
-**Every card has to load.** A tag word that is not in `core/cards.lua` (a new location, a typo)
-stops the whole plugin loading. Run `lua dev/check_cards.lua` (from the plugin's folder) to load
-every card the way the plugin does: it names the card that would stop it. It also runs on every
+**Every card has to load.** A tag word that is not in `core/cards.lua` (a new location, a typo), a
+duplicate id or a bad rarity gets the card left out of the game (the released plugin logs it and
+carries on without it; the development copy stops). Run `lua dev/check_cards.lua` (from the plugin's
+folder) to load every card the way the plugin does: it names each card that would be left out and
+fails. It also runs on every
 pull request. After adding cards with new locations or categories, `lua dev/add_tag_words.lua`
 adds the words your cards use to `core/cards.lua` for you (a new category goes in the "What it is"
 group: move it if another fits better), then runs the same check. Add `--dry-run` to only see what
