@@ -12,6 +12,13 @@
 -- Saves a collection per character, earns credits from XP and from Slayer tasks, and logs its progress to the
 -- Lua console through core/logger.lua (quiet unless something fails or detailed logging is on).
 
+-- The performance probe (dev/perfprobe.lua) has to load before anything else so it sees the deck load, which core/storage
+-- starts. The release has no dev folder, so there Probe is nil and every use of it below is skipped.
+local probeLoaded, Probe = pcall(require, "dev/perfprobe")
+if not probeLoaded then
+    Probe = nil
+end
+
 local Storage = require("core/storage")
 local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
@@ -183,6 +190,9 @@ end)
 
 -- Called by the client when the plugin is disabled or reloaded.
 function PluginShutdown()
+    if Probe ~= nil then
+        Probe.shutdown()
+    end
     OverlayLoader.shutdown()
     SlayerEvents.shutdown()
     SettingsPage.shutdown()
@@ -217,6 +227,9 @@ local function openMain()
     local ok, err = pcall(PackWindow.show, api)
     if not ok then
         Logger.error("pack window failed:", err)
+    end
+    if Probe ~= nil then
+        Probe.mark("main window shown")
     end
 end
 
@@ -302,6 +315,9 @@ if Dev ~= nil then
     Dev.start()
 end
 
+if Probe ~= nil then
+    Probe.mark("main.lua finished")
+end
 Logger.note(PluginId.TITLE .. " " .. Version.number .. " started: " .. #Cards.list .. " cards"
     .. (#Cards.loadProblems > 0 and (", " .. #Cards.loadProblems .. " left out (see above)") or "")
     .. (Dev ~= nil and " (development copy)" or ""))
