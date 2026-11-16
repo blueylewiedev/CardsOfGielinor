@@ -322,12 +322,6 @@ Set.cards = {
         tags = { location = { "artisans_workshop", "falador" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "swan", name = "Swan", rarity = "common",
-        desc = "A graceful bird.",
-        art = { npc = "SWAN", anim = 3242, cam = { yaw = 1.00, pitch = 0.30, dist = 1137, fov = 35, ty = 160 } },
-        tags = { location = { "falador" }, category = { "animal" }, membership = { "f2p" } },
-    },
-    {
         id = "tina", name = "Tina", rarity = "uncommon",
         desc = "Works in the Rising Sun.",
         art = { npc = "RISINGSUN_BARMAID3", anim = 808, cam = { yaw = -0.20, dist = 804, fov = 30, ty = 600, near = 0.25 } },
@@ -364,28 +358,10 @@ Set.cards = {
         tags = { location = { "lumbridge", "falador" }, category = { "humanoid", "knight" }, membership = { "f2p" } },
     },
     {
-        id = "abel", name = "Abel", rarity = "common",
-        desc = "A particularly neat dwarf.",
-        art = { npc = "ARTISAN_ABEL_SCORER", anim = 17844, cam = { yaw = 0.40, dist = 566, ty = 340 } },
-        tags = { location = { "thalmund_s_forge", "falador" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
         id = "blood_reaver", name = "Blood reaver", rarity = "rare",
         desc = "A strange and twisted creature.",
         art = { npc = "LORE_ANCIENT_BLOOD_REAVER", anim = 7008, cam = { yaw = 0.60, pitch = 0.30, dist = 1729, fov = 35, ty = 260 } },
         tags = { regions = { "kharidian_desert" }, skills = { "summoning" }, category = { "virius", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "crassian_scout", name = "Crassian scout", rarity = "uncommon",
-        desc = "A hideous crab-like creature.",
-        art = { npc = "QUEST_ELITEDUNGEONS_GOSHIMA_CRASSIAN_SCOUT", anim = 23340, cam = { yaw = -0.40, pitch = 0.30, dist = 1137, fov = 55, ty = 300 } },
-        tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "crassian_warrior", name = "Crassian warrior", rarity = "uncommon",
-        desc = "A powerful crab-like creature.",
-        art = { npc = "QUEST_ELITEDUNGEONS_GOSHIMA_CRASSIAN_WARRIOR", anim = 23327, cam = { pitch = 0.30, dist = 2226, fov = 30, ty = 380, near = 0.25 } },
-        tags = { regions = { "wilderness" }, category = { "monster" }, membership = { "p2p" } },
     },
     {
         id = "crawling_hand", name = "Crawling hand", rarity = "uncommon",
@@ -532,12 +508,6 @@ Set.cards = {
         tags = { regions = { "misthalin" }, category = { "humanoid", "monster" }, membership = { "p2p" } },
     },
     {
-        id = "verac_the_redefined", name = "Verac the Redefined", rarity = "rare",
-        desc = "Should two lots of corruption cancel out?",
-        art = { npc = "SWORLDS_VERAC", anim = 2061, cam = { yaw = -0.56, pitch = 0.30, dist = 1137, fov = 35, ty = 519, tx = 54 } },
-        tags = { location = { "shattered_worlds" }, category = { "undead", "monster" }, membership = { "f2p" } },
-    },
-    {
         id = "zarador", name = "Zarador", rarity = "uncommon",
         desc = "Weapon master and high shaman.",
         art = { npc = "EGWD_CITY_ZARADOR", anim = 22297, cam = { pitch = -0.45, dist = 1509, ty = 1540 } },
@@ -568,12 +538,6 @@ Set.cards = {
         tags = { location = { "white_wolf_mountain" }, category = { "animal", "monster" }, membership = { "f2p" } },
     },
     {
-        id = "adventurer", name = "Adventurer", rarity = "uncommon",
-        desc = "He's in a pretty nasty spot, in a pretty nasty pot.",
-        art = { npc = "MYARM_MAN_IN_POT", anim = 479, cam = { yaw = 0.42, pitch = 0.30, dist = 1504, fov = 35, ty = 400 } },
-        tags = { location = { "troll_kitchen" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
         id = "aga", name = "Aga", rarity = "uncommon",
         desc = "A beautiful troll.",
         art = { npc = "TROLLROMANCE_AGA", anim = 10814, cam = { pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
@@ -596,12 +560,6 @@ Set.cards = {
         desc = "I guess someone has to feed all these mouths.",
         art = { npc = "DUNGEON_AMINISHI_MINIBOSS4", anim = 18019, cam = { yaw = 0.39, pitch = 0.15, dist = 859, ty = 480 } },
         tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "ahrntim_the_blighted", name = "Ahrntim the Blighted", rarity = "rare",
-        desc = "Should two lots of corruption cancel out?",
-        art = { npc = "SWORLDS_AHRIM", anim = 813, cam = { yaw = 0.32, pitch = 0.30, dist = 1137, fov = 35, ty = 557, tx = -11, near = 0.25 } },
-        tags = { location = { "shattered_worlds" }, category = { "undead", "monster" }, membership = { "p2p" } },
     },
     {
         id = "air_wizard", name = "Air wizard", rarity = "common",
@@ -662,12 +620,6 @@ Set.cards = {
         desc = "She works in the Crafting Guild.",
         art = { npc = "MASTER_CRAFTER_2", anim = 808, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.50 } },
         tags = { location = { "crafting_guild" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
-    },
-    {
-        id = "alran", name = "Alran", rarity = "common",
-        desc = "A druid of Guthix.",
-        art = { npc = "HVH_DRUID3", anim = 16005, cam = { yaw = -0.39, dist = 860, fov = 30, ty = 661, tx = 12, near = 0.25 } },
-        tags = { location = { "fist_of_guthix" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
         id = "ambush_commander", name = "Ambush Commander", rarity = "uncommon",
@@ -796,22 +748,10 @@ Set.cards = {
         tags = { location = { "burthorpe" }, skills = { "farming" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } },
     },
     {
-        id = "apropos", name = "Apropos", rarity = "uncommon",
-        desc = "An ancient Dragon Rider.",
-        art = { npc = "GOWER_APROPOS", anim = 22802, cam = { yaw = 0.42, pitch = 0.30, dist = 1137, fov = 35, ty = 352, near = 0.25 } },
-        tags = { location = { "behind_the_scenes_location" }, category = { "ilujanka" }, membership = { "f2p" } },
-    },
-    {
         id = "archer_burthorpe", name = "Archer (Burthorpe)", rarity = "uncommon",
         desc = "A Burthorpe Castle Archer.",
         art = { npc = "DEATH_ARCHER2", anim = 15812, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.50 } },
         tags = { location = { "burthorpe", "death_plateau", "troll_invasion" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
-        id = "archer_conquest", name = "Archer (Conquest)", rarity = "common",
-        desc = "Deadly at long range.",
-        art = { npc = "CONQ_ARCHER_LIGHT_FRIENDLY", anim = 14604, cam = { yaw = -0.37, dist = 860, fov = 40, ty = 558, tx = 62, near = 0.25 } },
-        tags = { location = { "conquest" }, category = { "humanoid", "knight" }, membership = { "p2p" } },
     },
     {
         id = "arhat", name = "Arhat", rarity = "uncommon",
@@ -838,22 +778,10 @@ Set.cards = {
         tags = { location = { "white_knights_castle" }, category = { "humanoid" }, membership = { "p2p" } },
     },
     {
-        id = "ash", name = "Ash", rarity = "uncommon",
-        desc = "Human is his specialty.",
-        art = { npc = "DEATH_TROLL_COOK2", anim = 13794, cam = { pitch = 0.30, dist = 1504, fov = 35, ty = 465 } },
-        tags = { location = { "death_plateau_location" }, category = { "troll" }, membership = { "p2p" } },
-    },
-    {
         id = "ashuelot_reis", name = "Ashuelot Reis", rarity = "common",
         desc = "An ancient spirit of nature.",
         art = { npc = "GODWARS2_STORY_NPC", anim = 17455, cam = { yaw = 0.04, dist = 860, fov = 30, ty = 600, near = 0.50 } },
         tags = { location = { "ancient_prison" }, category = { "nature_spirit", "guard" }, membership = { "p2p" } },
-    },
-    {
-        id = "assistant_power_station", name = "Assistant (Power Station)", rarity = "common",
-        desc = "He works in the power station.",
-        art = { npc = "ICEMT_DWARF_WORKER", anim = 9138, cam = { yaw = 1.67, dist = 912, fov = 45, ty = 340, near = 0.25 } },
-        tags = { location = { "power_station", "ice_mountain" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
         id = "assistant_brad", name = "Assistant Brad", rarity = "uncommon",
@@ -946,28 +874,10 @@ Set.cards = {
         tags = { category = { "animal", "monster" }, membership = { "f2p" } },
     },
     {
-        id = "bacon_addict", name = "Bacon addict", rarity = "common",
-        desc = "Crazed by the smell of bacon!",
-        art = { npc = "QUEST_BACON_BACON_CULTIST_3_NOOP", anim = 20409, cam = { yaw = 0.12, pitch = 0.15, dist = 859, ty = 507, near = 0.25 } },
-        tags = { location = { "falador" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
         id = "balfrug_kreeyath", name = "Balfrug Kreeyath", rarity = "rare",
         desc = "Despoiler of Ullek.",
         art = { npc = "GODWARS_ANCIENT_BLACK_DEMON", anim = 17458, cam = { yaw = 0.31, pitch = 0.30, dist = 2971, fov = 30, ty = 568, tx = -35, near = 0.50 } },
         tags = { location = { "zamorak_s_fortress" }, category = { "demon", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "banker_fist_of_guthix", name = "Banker (Fist of Guthix)", rarity = "common",
-        desc = "He has unbelievable strength!",
-        art = { npc = "HVH_BANKER", anim = 5607, cam = { yaw = -0.55, pitch = 0.15, dist = 1674, fov = 28, ty = 373, tx = 62, near = 0.25 } },
-        tags = { location = { "fist_of_guthix" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
-        id = "banker_shattered_worlds", name = "Banker (Shattered Worlds)", rarity = "common",
-        desc = "Part time banker, part time knight.",
-        art = { npc = "SWORLDS_HUB_BANKER", anim = 23781, cam = { yaw = 0.36, pitch = 0.15, dist = 859, ty = 480, near = 0.25 } },
-        tags = { location = { "shattered_worlds" }, category = { "humanoid", "knight" }, membership = { "f2p" } },
     },
     {
         id = "banky_crablet", name = "Banky crablet", rarity = "common",
@@ -1036,34 +946,10 @@ Set.cards = {
         tags = { category = { "elemental", "monster" }, membership = { "p2p" } },
     },
     {
-        id = "billy", name = "Billy", rarity = "common",
-        desc = "Billy is a baa-a-a-d goat.",
-        art = { npc = "DEATH_MOUNTAIN_GOAT", anim = 5339, cam = { yaw = -0.62, pitch = 0.30, dist = 1137, fov = 35, ty = 222, tx = 48 } },
-        tags = { location = { "freda", "death_plateau_area" }, category = { "animal" }, membership = { "p2p" } },
-    },
-    {
         id = "black_guard_dwarven_mine", name = "Black Guard (Dwarven Mine)", rarity = "uncommon",
         desc = "A member of the Black Guard.",
         art = { npc = "FAI_BLACK_GUARD_01", anim = 17844, cam = { yaw = 0.44, dist = 859, fov = 40, ty = 359, tx = 18, near = 0.25 } },
         tags = { location = { "dwarven_mine" }, category = { "humanoid", "guard", "monster" }, membership = { "f2p" } },
-    },
-    {
-        id = "black_knight_death_of_chivalry", name = "Black Knight (Death of Chivalry)", rarity = "common",
-        desc = "A dark-hearted knight.",
-        art = { npc = "OWEN1_CAMPSITE_BLACK_KNIGHT_1A", anim = 37632, cam = { yaw = -0.29, pitch = 0.15, dist = 1136, ty = 420 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "f2p" } },
-    },
-    {
-        id = "black_knight_doorkeeper", name = "Black Knight doorkeeper", rarity = "common",
-        desc = "He didn't do his job well enough.",
-        art = { npc = "VKQ2_DOORKEEPER_NPC", anim = 813, cam = { yaw = 0.34, pitch = 0.15, dist = 1383, fov = 31, ty = 480, near = 0.25 } },
-        tags = { location = { "ice_mountain" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
-        id = "black_knight_guard", name = "Black Knight guard", rarity = "common",
-        desc = "An ever-vigilant Black Knight on watch for intruders.",
-        art = { npc = "VKQ2_GUARD", anim = 813, cam = { yaw = 0.40, pitch = 0.15, dist = 859, ty = 480 } },
-        tags = { location = { "black_knight_workshop" }, category = { "humanoid", "guard" }, membership = { "p2p" } },
     },
     {
         id = "black_knight_zombie", name = "Black Knight zombie", rarity = "common",
@@ -1300,18 +1186,6 @@ Set.cards = {
         tags = { location = { "burthorpe" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "champion", name = "Champion", rarity = "common",
-        desc = "The Void Knight elite; none can stand before them.",
-        art = { npc = "CONQ_CHAMPION_LIGHT_FRIENDLY", anim = 14574, cam = { yaw = -0.24, dist = 1145, fov = 33, ty = 600, near = 0.50 } },
-        tags = { location = { "conquest" }, category = { "humanoid", "knight" }, membership = { "p2p" } },
-    },
-    {
-        id = "chaos_experimental", name = "Chaos Experimental", rarity = "rare",
-        desc = "A mIrRoReD, cOnFuSeD sHoElAcE.",
-        art = { npc = "SWORLDS_CHAOSELEMENTAL", anim = 5248, cam = { pitch = 0.30, dist = 3268, fov = 23, ty = 638, tx = -12, near = 0.50 } },
-        tags = { location = { "shattered_worlds" }, category = { "monster" }, membership = { "f2p" } },
-    },
-    {
         id = "chaos_dwarf", name = "Chaos dwarf", rarity = "uncommon",
         desc = "A dwarf gone bad.",
         art = { npc = "DWARF_CHAOS", anim = 17844, cam = { yaw = 0.46, pitch = 0.30, dist = 1137, fov = 35, ty = 303, tx = 5, near = 0.25 } },
@@ -1324,12 +1198,6 @@ Set.cards = {
         tags = { location = { "burthorpe" }, skills = { "prayer" }, category = { "humanoid", "shopkeeper", "priest" }, membership = { "f2p" } },
     },
     {
-        id = "charlie", name = "Charlie", rarity = "uncommon",
-        desc = "He's ready to save the day!",
-        art = { npc = "XMAS18_QUEST_YETI_CHILD_1", anim = 32508, cam = { yaw = -0.26, pitch = 0.30, dist = 1513, fov = 26, ty = 327, tx = 5, near = 0.25 } },
-        tags = { location = { "land_of_snow" }, category = { "yeti" }, membership = { "f2p" } },
-    },
-    {
         id = "chemist", name = "Chemist", rarity = "uncommon",
         desc = "Smells very chemically...",
         art = { npc = "CHEMIST", anim = 808, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.50 } },
@@ -1340,48 +1208,6 @@ Set.cards = {
         desc = "A gnomish bartender.",
         art = { npc = "ELR2_TUAILEIT_BARTENDER", anim = 37961, cam = { yaw = 0.24, dist = 566, ty = 340, near = 0.25 } },
         tags = { location = { "tuai_leit" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
-        id = "clay_familiar_class_1", name = "Clay familiar (class 1)", rarity = "common",
-        desc = "A sacred familiar made of very low quality clay.",
-        art = { npc = "SC_LORE_BEAST", anim = 10594, cam = { yaw = -0.67, pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
-        tags = { skills = { "summoning" }, category = { "sacred_clay", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "clay_familiar_class_2", name = "Clay familiar (class 2)", rarity = "common",
-        desc = "A sacred familiar made of low quality clay.",
-        art = { npc = "SC_LORE_BEAST_2", anim = 10594, cam = { yaw = 0.81, pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
-        tags = { skills = { "summoning" }, category = { "sacred_clay", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "clay_familiar_class_3", name = "Clay familiar (class 3)", rarity = "uncommon",
-        desc = "A sacred familiar made of medium quality clay.",
-        art = { npc = "SC_LORE_BEAST_3", anim = 10594, cam = { yaw = -0.76, pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
-        tags = { skills = { "summoning" }, category = { "sacred_clay", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "clay_familiar_class_4", name = "Clay familiar (class 4)", rarity = "uncommon",
-        desc = "A sacred familiar made of high quality clay.",
-        art = { npc = "SC_LORE_BEAST_4", anim = 10594, cam = { yaw = 0.84, pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
-        tags = { skills = { "summoning" }, category = { "sacred_clay", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "clay_familiar_class_5", name = "Clay familiar (class 5)", rarity = "rare",
-        desc = "A sacred familiar made of very high quality clay.",
-        art = { npc = "SC_LORE_BEAST_5_COMBAT", anim = 10594, cam = { yaw = -0.62, pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
-        tags = { skills = { "summoning" }, category = { "sacred_clay", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "cleric_of_zamorak", name = "Cleric of Zamorak", rarity = "common",
-        desc = "An imposing cloaked figure flanks the altar.",
-        art = { npc = "OWEN1_BKF_ZAMORAK_CLERIC_SOUTH", anim = 808, cam = { yaw = -0.31, pitch = 0.15, dist = 859, ty = 485, tx = 43, near = 0.50 } },
-        tags = { location = { "black_knights_fortress" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
-        id = "cliff", name = "Cliff", rarity = "rare",
-        desc = "An unusually large troll.",
-        art = { npc = "LOY_TROLL_BOSS_1", anim = 1928, cam = { yaw = -0.20, pitch = 0.30, dist = 3478, fov = 35, ty = 750, tx = 49 } },
-        tags = { location = { "troll_invasion" }, category = { "troll", "boss", "monster" }, membership = { "p2p" } },
     },
     {
         id = "cloaked_zealot", name = "Cloaked zealot", rarity = "rare",
@@ -1400,12 +1226,6 @@ Set.cards = {
         desc = "A dark-hearted knight, with a heart as black as coal.",
         art = { npc = "QUEST_ELITEDUNGEONS_BOSUN_COMMANDANT", anim = 18019, cam = { yaw = 0.33, dist = 860, fov = 30, ty = 621, near = 0.25 } },
         tags = { location = { "black_knights_fortress" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
-        id = "commandeered_zilyana", name = "Commandeered Zilyana", rarity = "epic",
-        desc = "Director of the god of order's troops.",
-        art = { npc = "SWORLDS_ZILYANA", anim = 6963, cam = { yaw = -0.30, pitch = 0.30, dist = 1654, fov = 35, ty = 625, tx = 8, near = 0.25 } },
-        tags = { location = { "shattered_worlds" }, category = { "monster" }, membership = { "p2p" } },
     },
     {
         id = "commander_colby", name = "Commander Colby", rarity = "uncommon",
@@ -1438,12 +1258,6 @@ Set.cards = {
         tags = { location = { "void_knights_outpost" }, category = { "humanoid", "knight" }, membership = { "p2p" } },
     },
     {
-        id = "cook_troll", name = "Cook (troll)", rarity = "common",
-        desc = "Human is his speciality.",
-        art = { npc = "TROLL_COOK", anim = 13794, cam = { pitch = 0.30, dist = 1504, fov = 35, ty = 465 } },
-        tags = { location = { "troll_stronghold_area" }, category = { "troll" }, membership = { "p2p" } },
-    },
-    {
         id = "corporal_boothe", name = "Corporal Boothe", rarity = "common",
         desc = "Provides personal combat gear.",
         art = { npc = "OMGE_CAVE_SOLDIER_COMBAT_SHOP", anim = 23780, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.25 } },
@@ -1454,12 +1268,6 @@ Set.cards = {
         desc = "A Burthorpe soldier wielding claws.",
         art = { npc = "OMGE_HEROISM_RANGED_GUARD_CHAT", anim = 13818, cam = { yaw = -0.41, dist = 860, fov = 30, ty = 600, near = 0.25 } },
         tags = { location = { "burthorpe" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
-        id = "crablet", name = "Crablet", rarity = "common",
-        desc = "A crab, native to the Wushanko Isles.",
-        art = { npc = "ELR1_CRABLET_DEPLETED", anim = 29063, cam = { yaw = -0.26, pitch = 0.30, dist = 1137, fov = 51, ty = 256, tx = 20 } },
-        tags = { location = { "uncharted_isles" }, category = { "animal" }, membership = { "p2p" } },
     },
     {
         id = "crassian_scout_2", name = "Crassian Scout", rarity = "common",
@@ -1540,30 +1348,6 @@ Set.cards = {
         tags = { location = { "troll_arena", "yu_biusk" }, category = { "troll", "guard", "boss", "monster" }, membership = { "p2p" } },
     },
     {
-        id = "dagannot_prime", name = "Dagannot Prime", rarity = "rare",
-        desc = "Prime by name, derivative by nature.",
-        art = { npc = "SWORLDS_PRIME", anim = 29376, cam = { yaw = -0.60, pitch = 0.30, dist = 9255, fov = 12, ty = 1127, tx = 225, near = 0.25 } },
-        tags = { location = { "shattered_worlds" }, category = { "dagannoth", "monster" }, membership = { "f2p" } },
-    },
-    {
-        id = "dagannot_rex", name = "Dagannot Rex", rarity = "rare",
-        desc = "Definitely not short but can be quite pointy.",
-        art = { npc = "SWORLDS_REX", anim = 29364, cam = { yaw = -0.60, pitch = 0.30, dist = 6322, fov = 20, ty = 994, tx = 129 } },
-        tags = { location = { "shattered_worlds" }, category = { "dagannoth", "monster" }, membership = { "f2p" } },
-    },
-    {
-        id = "dagannot_supreme", name = "Dagannot Supreme", rarity = "rare",
-        desc = "a dagganoth.",
-        art = { npc = "SWORLDS_SUPREME", anim = 29369, cam = { yaw = 0.44, pitch = 0.30, dist = 4318, fov = 35, ty = 563, tx = 91, near = 0.25 } },
-        tags = { location = { "shattered_worlds" }, category = { "dagannoth", "monster" }, membership = { "f2p" } },
-    },
-    {
-        id = "dark_wizard_elijah", name = "Dark Wizard Elijah", rarity = "uncommon",
-        desc = "A suspicious-looking fellow.",
-        art = { npc = "PNR_WIZARD", anim = 808, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.50 } },
-        tags = { category = { "humanoid", "wizard" }, membership = { "f2p" } },
-    },
-    {
         id = "dawn", name = "Dawn", rarity = "epic",
         desc = "A malnourished woman in ragged Citharede robes.",
         art = { npc = "OWEN1_DAWN_NUN", anim = 15403, cam = { yaw = -0.17, dist = 3874, fov = 8, ty = 560, tx = 24, near = 0.50 } },
@@ -1606,12 +1390,6 @@ Set.cards = {
         tags = { location = { "falador" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "dharok_the_retconned", name = "Dharok the Retconned", rarity = "rare",
-        desc = "Should two lots of corruption cancel out?",
-        art = { npc = "SWORLDS_DHAROK", anim = 2065, cam = { yaw = 0.21, pitch = 0.30, dist = 1137, fov = 35, ty = 536, tx = 5, near = 0.25 } },
-        tags = { location = { "shattered_worlds" }, category = { "undead", "monster" }, membership = { "f2p" } },
-    },
-    {
         id = "digory", name = "Digory", rarity = "common",
         desc = "The happiest man in Ashdale.",
         art = { npc = "TUT5_DIGORY_STANDING", anim = 22050, cam = { yaw = -0.16, dist = 1385, fov = 23, ty = 376, tx = 15, near = 0.25 } },
@@ -1624,12 +1402,6 @@ Set.cards = {
         tags = { location = { "invention_guild" }, skills = { "invention" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } },
     },
     {
-        id = "dog", name = "Dog", rarity = "common",
-        desc = "Bow wow.",
-        art = { npc = "DOG", anim = 15240, cam = { yaw = 0.60, pitch = 0.18, dist = 1458, fov = 29, ty = 167, tx = 4 } },
-        tags = { location = { "falador" }, category = { "animal" }, membership = { "f2p" } },
-    },
-    {
         id = "doronbol", name = "Doronbol", rarity = "common",
         desc = "A dog-like cat with a wonky tail.",
         art = { npc = "FIREDUP_TENDER9_CHILD_PRE", anim = 10241, cam = { yaw = -0.63, pitch = 0.30, dist = 1137, fov = 26, ty = 107, tx = 62 } },
@@ -1640,12 +1412,6 @@ Set.cards = {
         desc = "Guardian of the dramen tree.",
         art = { npc = "TREE_SPIRIT", anim = 5530, cam = { yaw = -0.26, dist = 3874, fov = 12, ty = 492, tx = -3, near = 0.50 } },
         tags = { location = { "entrana" }, category = { "boss", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "dreaming_soul", name = "Dreaming soul", rarity = "common",
-        desc = "The soul of one of Rimmington's inhabitants.",
-        art = { npc = "QBD1_DREAMING_SOUL1", anim = 808, cam = { yaw = 0.48, pitch = 0.30, dist = 1513, fov = 35, ty = 481, tx = 20, near = 0.25 } },
-        tags = { location = { "song_from_the_depths" }, category = { "spirit" }, membership = { "f2p" } },
     },
     {
         id = "drill_sergeant_hartman", name = "Drill Sergeant Hartman", rarity = "uncommon",
@@ -1666,34 +1432,16 @@ Set.cards = {
         tags = { regions = { "fremennik_province" }, location = { "power_station", "keldagrim" }, skills = { "invention", "thieving" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "druid_while_guthix_sleeps", name = "Druid (While Guthix Sleeps)", rarity = "common",
-        desc = "A nature lover.",
-        art = { npc = "LUC2_OLD_DRUID_UPRIGHT", anim = 10870, cam = { yaw = -0.39, pitch = 0.15, dist = 859, ty = 560, tx = -5, near = 0.25 } },
-        tags = { location = { "white_knights_castle" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
         id = "druidess", name = "Druidess", rarity = "common",
         desc = "A female druid and resident of Taverley.",
         art = { npc = "OMGE_DRUID_FEMALE_V1", anim = 808, cam = { yaw = 0.35, pitch = 0.15, dist = 859, ty = 480 } },
         tags = { location = { "taverley", "guthixian_ruins", "burthorpe" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "drunken_dwarfs_leg", name = "Drunken dwarf's leg", rarity = "common",
-        desc = "Named after the first thing he tried to eat...",
-        art = { npc = "MYARM_TROLL_DEADDWARF", anim = 10814, cam = { yaw = -0.35, pitch = 0.30, dist = 1504, fov = 29, ty = 270, tx = 24 } },
-        tags = { location = { "troll_stronghold" }, category = { "troll" }, membership = { "p2p" } },
-    },
-    {
         id = "drunken_sailor", name = "Drunken sailor", rarity = "common",
         desc = "What shall we do with a drunken sailor?",
         art = { npc = "CATCON_STANDING_DRUNKEN_SAILOR", anim = 16451, cam = { yaw = 0.60, pitch = 0.15, dist = 859, fov = 41, ty = 230, tx = -245, near = 0.25 } },
         tags = { location = { "port_sarim" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
-        id = "dung", name = "Dung", rarity = "uncommon",
-        desc = "Human is his specialty.",
-        art = { npc = "DEATH_TROLL_COOK1", anim = 13794, cam = { pitch = 0.30, dist = 1504, fov = 42, ty = 465 } },
-        tags = { location = { "death_plateau_location" }, category = { "troll" }, membership = { "p2p" } },
     },
     {
         id = "dunstan", name = "Dunstan", rarity = "uncommon",
@@ -1724,18 +1472,6 @@ Set.cards = {
         desc = "He works for Doric & Son.",
         art = { npc = "PNR_DWARF_SMITH", anim = 17847, cam = { yaw = 0.50, dist = 1776, fov = 26, ty = 345, tx = 119, near = 0.25 } },
         tags = { location = { "doric_s_hut" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
-        id = "dwarven_ancestor", name = "Dwarven ancestor", rarity = "common",
-        desc = "An ancient dwarven spirit has risen to animate your burial.",
-        art = { npc = "ARTISAN_BURIAL_GHOST", anim = 51, cam = { yaw = -0.20, pitch = 0.19, dist = 1469, fov = 28, ty = 320, tx = 10, near = 0.25 } },
-        tags = { location = { "artisans_workshop" }, category = { "dwarf_spirit" }, membership = { "f2p" } },
-    },
-    {
-        id = "dynamite", name = "Dynamite", rarity = "common",
-        desc = "It looks like he's swallowed a fuse...",
-        art = { npc = "LOY_TROLL_DYNAMITE_1", anim = 2018, cam = { pitch = 0.30, dist = 1820, fov = 35, ty = 465, near = 0.25 } },
-        tags = { location = { "troll_invasion" }, category = { "troll", "monster" }, membership = { "p2p" } },
     },
     {
         id = "eadburg", name = "Eadburg", rarity = "common",
@@ -1810,18 +1546,6 @@ Set.cards = {
         tags = { category = { "void_pest", "monster" }, membership = { "p2p" } },
     },
     {
-        id = "eliza", name = "Eliza", rarity = "uncommon",
-        desc = "Her eyes are full of wonder.",
-        art = { npc = "XMAS18_QUEST_YETI_CHILD_3", anim = 32508, cam = { yaw = -0.26, pitch = 0.30, dist = 1513, fov = 26, ty = 327, tx = 5, near = 0.25 } },
-        tags = { location = { "land_of_snow" }, category = { "yeti" }, membership = { "f2p" } },
-    },
-    {
-        id = "elizabeth", name = "Elizabeth", rarity = "uncommon",
-        desc = "Small, blue and hairy.",
-        art = { npc = "VIB2_YETI_TOWN_LIST_NPC_1", anim = 32508, cam = { yaw = 0.19, pitch = 0.30, dist = 1513, fov = 26, ty = 327, tx = 5, near = 0.25 } },
-        tags = { location = { "yeti_town" }, category = { "yeti" }, membership = { "f2p" } },
-    },
-    {
         id = "elstan", name = "Elstan", rarity = "uncommon",
         desc = "Perhaps this gardener might look after your crops for you.",
         art = { npc = "ELSTAN", anim = 19978, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 572, tx = -21, near = 0.50 } },
@@ -1844,18 +1568,6 @@ Set.cards = {
         desc = "The emissary of Seren.",
         art = { npc = "GODEM_SEREN_EMISSARY", anim = 20214, cam = { yaw = 0.20, dist = 2969, fov = 12, ty = 600, near = 0.25 } },
         tags = { location = { "port_sarim", "burthorpe" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
-        id = "engineer", name = "Engineer", rarity = "common",
-        desc = "He's building a cannon.",
-        art = { npc = "FAI_DWARF_WORKER_HAMMER", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340, near = 0.25 } },
-        tags = { location = { "dwarven_mine" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
-    {
-        id = "engineering_assistant", name = "Engineering assistant", rarity = "common",
-        desc = "He's wandering around aimlessly with a box of spare parts.",
-        art = { npc = "FAI_DWARF_WORKER_PATROL_01", anim = 3207, cam = { yaw = -0.75, dist = 1469, fov = 28, ty = 325, tx = -18, near = 0.25 } },
-        tags = { location = { "dwarven_mine" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
         id = "enriched_flickering_wisp", name = "Enriched flickering wisp", rarity = "common",
@@ -1898,12 +1610,6 @@ Set.cards = {
         desc = "An intrepid explorer.",
         art = { npc = "LRC_DWARVEN_EXPLORER", model = 96427, anim = 12212, cam = { yaw = -2.24, dist = 1335, fov = 26, ty = 364, tx = 32, near = 0.25 } },
         tags = { location = { "living_rock_caverns" }, category = { "humanoid" }, membership = { "p2p" } },
-    },
-    {
-        id = "farmer_taverley", name = "Farmer (Taverley)", rarity = "common",
-        desc = "He's a cider drinker.",
-        art = { npc = "OMGE_FARMER01", anim = 15850, cam = { yaw = 0.05, pitch = 0.15, dist = 5254, fov = 10, ty = 480, near = 0.25 } },
-        tags = { location = { "taverley" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
         id = "father_frith", name = "Father Frith", rarity = "uncommon",
@@ -1984,12 +1690,6 @@ Set.cards = {
         tags = { location = { "the_arc", "uncharted_isles" }, category = { "beast", "monster" }, membership = { "p2p" } },
     },
     {
-        id = "foo_lion", name = "Foo lion", rarity = "common",
-        desc = "A guardian lion native to the Eastern Lands.",
-        art = { npc = "ELR1_INTERACT_SUMMONING", anim = 19297, cam = { yaw = -0.67, pitch = 0.17, dist = 1137, fov = 35, ty = 260, near = 0.25 } },
-        tags = { location = { "uncharted_isles", "the_arc" }, category = { "foo_lion" }, membership = { "p2p" } },
-    },
-    {
         id = "foppish_pierre", name = "Foppish Pierre", rarity = "uncommon",
         desc = "Worries about getting his boots dirty while stepping over orphans.",
         art = { npc = "LTEP_PIERRE", anim = 10020, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.50 } },
@@ -2056,12 +1756,6 @@ Set.cards = {
         tags = { location = { "port_sarim" }, skills = { "farming" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } },
     },
     {
-        id = "frog_makeover_mage", name = "Frog (Makeover Mage)", rarity = "common",
-        desc = "Didn't the mage say this procedure was totally safe?",
-        art = { npc = "MAKEOVER_MAGE_FROG", anim = 1796, cam = { yaw = -0.40, pitch = 0.30, dist = 988, fov = 20, ty = 40 } },
-        tags = { location = { "makeover_mage" }, category = { "animal" }, membership = { "f2p" } },
-    },
-    {
         id = "frost_dragon", name = "Frost dragon", rarity = "rare",
         desc = "A dragon covered in frost and ice.",
         art = { npc = "FDB_FROST_DRAGON_1", anim = 13156, cam = { yaw = -0.60, pitch = 0.30, dist = 1731, ty = 460, tx = 150 } },
@@ -2086,23 +1780,43 @@ Set.cards = {
         tags = { location = { "bandos_s_stronghold", "elder_god_wars_dungeon", "god_wars_dungeon", "tzekhaar_front" }, category = { "ourg", "boss", "monster" }, membership = { "p2p" } },
     },
     {
-        id = "generally_graardor", name = "Generally Graardor", rarity = "epic",
-        desc = "A large combat leader.",
-        art = { npc = "SWORLDS_GRAARDOR", anim = 17387, cam = { pitch = 0.30, dist = 2971, fov = 30, ty = 1087, tx = 24, near = 0.50 } },
-        tags = { location = { "shattered_worlds" }, category = { "monster" }, membership = { "f2p" } },
-    },
-    {
         id = "gerrant", name = "Gerrant", rarity = "uncommon",
         desc = "A Fishing expert.",
         art = { npc = "VKQ2_GERRANT_SICK", anim = 12921, cam = { yaw = -0.36, dist = 4782, fov = 8, ty = 600, near = 0.50 } },
         tags = { location = { "port_sarim" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
     },
-    {
-        id = "getorix", name = "Getorix", rarity = "common",
-        desc = "A druid of Guthix.",
-        art = { npc = "HVH_DRUID1", anim = 16005, cam = { yaw = 0.20, dist = 946, fov = 30, ty = 661, tx = 7, near = 0.50 } },
-        tags = { location = { "fist_of_guthix" }, category = { "humanoid" }, membership = { "f2p" } },
-    },
+    { id = "giant_roc", name = "Giant Roc", rarity = "rare", desc = "A very, very large mountain-dwelling bird.", art = { npc = "MYARM_GIANT_ROC", anim = 5021, cam = { yaw = -0.26, pitch = 0.30, dist = 7908, fov = 19, ty = 1352, tx = 10, near = 0.25 } }, tags = { category = { "animal", "boss", "monster" }, membership = { "p2p" } } },
+    { id = "glod", name = "Glod", rarity = "rare", desc = "A cloud giant.", art = { npc = "GRIM_GLOD", anim = 6504, cam = { yaw = -0.65, pitch = 0.18, dist = 3711, fov = 34, ty = 1694, tx = 15, near = 0.25 } }, tags = { category = { "giant", "boss", "monster" }, membership = { "p2p" } } },
+    { id = "gnome_banker", name = "Gnome Banker", rarity = "common", desc = "He can store items in your bank for you.", art = { npc = "OGE2014_CHALLENGE_BANKER", anim = 23471, cam = { yaw = -0.07, dist = 912, fov = 45, ty = 340, near = 0.25 } }, tags = { location = { "burthorpe" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "goblin_goblin_village", name = "Goblin (Goblin Village)", rarity = "common", desc = "An ugly goblin... bleurgh!", art = { npc = "GOBLIN_RED_SOLDIER_2", anim = 6181, cam = { yaw = 0.33, dist = 859, fov = 40, ty = 279, tx = 6, near = 0.50 } }, tags = { location = { "goblin_village" }, category = { "goblin", "monster" }, membership = { "f2p" } } },
+    { id = "goblin_god_wars_dungeon", name = "Goblin (God Wars Dungeon)", rarity = "uncommon", desc = "An ancient goblin.", art = { npc = "GODWARS_GOBLIN1", anim = 6181, cam = { yaw = -0.30, dist = 859, fov = 40, ty = 275, tx = 6, near = 0.25 } }, tags = { location = { "god_wars_dungeon" }, category = { "goblin", "monster" }, membership = { "p2p" } } },
+    { id = "goblin_cook", name = "Goblin Cook", rarity = "common", desc = "He may be a funky cook, but he's still an ugly green creature.", art = { npc = "GOBLIN_COOK", anim = 6181, cam = { yaw = 0.09, dist = 912, fov = 45, ty = 340 } }, tags = { location = { "mudknuckles_kitchen", "goblin_village" }, category = { "goblin" }, membership = { "p2p" } } },
+    { id = "goblin_maitre_d", name = "Goblin Maitre d'", rarity = "common", desc = "Your guide to Yu'biusk.", art = { npc = "TMF_GOBLIN_MAITRED", anim = 6181, cam = { yaw = 0.40, dist = 912, fov = 45, ty = 340 } }, tags = { location = { "yu_biusk" }, category = { "goblin" }, membership = { "p2p" } } },
+    { id = "goblin_cleaner", name = "Goblin cleaner", rarity = "common", desc = "An ugly, green cleaner.", art = { npc = "TMF_INFILTRATOR_GOBCAMP_CHAT", anim = 6181, cam = { yaw = 0.21, dist = 912, fov = 45, ty = 285, tx = 20, near = 0.25 } }, tags = { location = { "yu_biusk" }, category = { "human_disguised_as_goblin" }, membership = { "p2p" } } },
+    { id = "goblin_messenger", name = "Goblin messenger", rarity = "common", desc = "An ugly, green messenger.", art = { npc = "TMF_INFILTRATOR_START_CHAT", anim = 6181, cam = { yaw = -0.35, dist = 912, fov = 45, ty = 264, near = 0.25 } }, tags = { location = { "yu_biusk" }, category = { "goblin" }, membership = { "p2p" } } },
+    { id = "goku_the_unrelenting", name = "Goku the Unrelenting", rarity = "rare", desc = "He's just happy to be here.", art = { npc = "DUNGEON_AMINISHI_MINIBOSS2", anim = 18019, cam = { yaw = 0.29, pitch = 0.15, dist = 859, ty = 480, near = 0.25 } }, tags = { category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "gongdung_peligorn", name = "Gongdung Peligorn", rarity = "common", desc = "Found predominantly around the shorelines of Goshima.", art = { npc = "ELRC_BIRD14_OP", anim = 29472, cam = { yaw = -0.46, pitch = 0.30, dist = 4318, fov = 11, ty = 144, tx = 54, near = 0.25 } }, tags = { location = { "goshima", "the_arc" }, category = { "animal" }, membership = { "p2p" } } },
+    { id = "gorak_god_wars_dungeon", name = "Gorak (God Wars Dungeon)", rarity = "uncommon", desc = "Those horns look pretty sharp...", art = { npc = "GODWARS_GORAK", anim = 17479, cam = { yaw = 0.57, pitch = 0.30, dist = 2202, fov = 35, ty = 400, near = 0.25 } }, tags = { location = { "god_wars_dungeon" }, category = { "gorak", "monster" }, membership = { "p2p" } } },
+    { id = "goutbones", name = "Goutbones", rarity = "common", desc = "An ugly green creature.", art = { npc = "_6AWE2_CUTSCENE_REPLAYER", anim = 6181, cam = { yaw = -0.20, dist = 753, ty = 298, tx = 14 } }, tags = { location = { "bandos_tower" }, category = { "goblin" }, membership = { "f2p" } } },
+    { id = "great_pecker", name = "Great Pecker", rarity = "common", desc = "These birds will instantly become friendly when you offer them food.", art = { npc = "ELRC_BIRD9_OP", anim = 29464, cam = { yaw = 0.72, pitch = 0.30, dist = 1137, fov = 29, ty = 145, tx = -5, near = 0.25 } }, tags = { location = { "the_arc" }, category = { "animal" }, membership = { "p2p" } } },
+    { id = "greldo", name = "Greldo", rarity = "uncommon", desc = "A goblin with a lisp.", art = { npc = "GRELDO", anim = 6200, cam = { yaw = -0.15, dist = 753, fov = 34, ty = 331, tx = 30, near = 0.25 } }, tags = { location = { "goblin_village" }, category = { "goblin", "knight" }, membership = { "f2p" } } },
+    { id = "grimgnash", name = "Grimgnash", rarity = "uncommon", desc = "An evil looking griffin.", art = { npc = "GRIM_GRIMGNASH_AWAKE", anim = 6507, cam = { yaw = 0.47, pitch = 0.30, dist = 2971, fov = 25, ty = 334, tx = -84, near = 0.25 } }, tags = { location = { "white_wolf_mountain" }, category = { "griffin" }, membership = { "p2p" } } },
+    { id = "growler", name = "Growler", rarity = "rare", desc = "Defender of the faithful.", art = { npc = "GODWARS_SARADOMIN_LION", anim = 17416, cam = { yaw = -0.72, pitch = 0.30, dist = 2971, fov = 23, ty = 285, tx = 118, near = 0.50 } }, tags = { location = { "saradomin_s_encampment", "god_wars_dungeon" }, category = { "lion", "monster" }, membership = { "p2p" } } },
+    { id = "grubfoot", name = "Grubfoot", rarity = "rare", desc = "Smaller than the average goblin.", art = { npc = "CHOSEN_GRUBFOOT_DORGESH_CLOTHES", anim = 6181, cam = { yaw = 0.26, dist = 566, ty = 213, tx = 6 } }, tags = { location = { "dorgesh_kaan", "invention_guild" }, skills = { "invention" }, category = { "goblin" }, membership = { "p2p" } } },
+    { id = "grum", name = "Grum", rarity = "common", desc = "Loves his gold.", art = { npc = "GRUM", anim = 23781, cam = { yaw = -0.19, dist = 860, fov = 30, ty = 600, tx = 22 } }, tags = { location = { "port_sarim" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
+    { id = "gu_ronin", name = "Gu ronin", rarity = "rare", desc = "A Gu warrior without a master.", art = { npc = "ELR1_KILL_TETSU_MALE", anim = 18015, cam = { yaw = -0.11, pitch = 0.30, dist = 1137, fov = 38, ty = 505, tx = 32, near = 0.25 } }, tags = { location = { "the_arc", "uncharted_isles" }, category = { "monster" }, membership = { "p2p" } } },
+    { id = "guard_burthorpe", name = "Guard (Burthorpe)", rarity = "common", desc = "A Burthorpe Castle guard.", art = { npc = "DEATH_GUARD1", anim = 15812, cam = { yaw = 0.40, pitch = 0.15, dist = 859, ty = 480, tx = 21, near = 0.25 } }, tags = { location = { "burthorpe", "taverley" }, category = { "humanoid", "guard" }, membership = { "f2p" } } },
+    { id = "guard_dwarf", name = "Guard (dwarf)", rarity = "common", desc = "A dwarven guard.", art = { npc = "MCANNONGUARD", anim = 101, cam = { yaw = -0.27, dist = 859, fov = 40, ty = 286, tx = 25, near = 0.25 } }, tags = { regions = { "kandarin" }, location = { "coal_truck_mine", "dwarven_mines" }, category = { "humanoid", "guard", "monster" }, membership = { "f2p" } } },
+    { id = "guard_captain_roarkwin", name = "Guard Captain Roarkwin", rarity = "uncommon", desc = "Captain of the Port Sarim prison guard.", art = { npc = "ELR0_PRISON_GUARD_CAPTAIN", anim = 808, cam = { yaw = 0.20, dist = 1676, fov = 20, ty = 517, tx = 4, near = 0.25 } }, tags = { location = { "port_sarim", "the_arc" }, category = { "humanoid", "guard" }, membership = { "f2p" } } },
+    { id = "gudrik", name = "Gudrik", rarity = "uncommon", desc = "An old but sturdy dwarf.", art = { npc = "TUT5_GUDRIK", anim = 22025, cam = { yaw = -0.20, dist = 753, fov = 41, ty = 318, tx = -9, near = 0.25 } }, tags = { location = { "port_sarim" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "guthixian_druid", name = "Guthixian druid", rarity = "rare", desc = "A nature lover.", art = { npc = "GODSS_FOE_GUTHIX_4", anim = 808, cam = { yaw = 0.34, pitch = 0.15, dist = 859, ty = 516, tx = 6, near = 0.50 } }, tags = { category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "guthixian_moss_giant", name = "Guthixian moss giant", rarity = "rare", desc = "His beard seems to have a life of its own.", art = { npc = "GODSS_FOE_GUTHIX_3", anim = 4656, cam = { yaw = -0.36, pitch = 0.30, dist = 3382, fov = 30, ty = 760, near = 0.50 } }, tags = { category = { "giant", "monster" }, membership = { "p2p" } } },
+    { id = "ham_archer", name = "H.A.M. Archer", rarity = "common", desc = "He looks pretty skilled with that bow.", art = { npc = "SLICE_HAM_ARCHER", anim = 808, cam = { yaw = -0.33, pitch = 0.15, dist = 945, ty = 486, tx = 6 } }, tags = { location = { "h_a_m" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "ham_mage", name = "H.A.M. Mage", rarity = "common", desc = "He bristles with arcane power.", art = { npc = "SLICE_HAM_MAGE", anim = 813, cam = { yaw = 0.28, pitch = 0.15, dist = 2025, fov = 26, ty = 480, near = 0.25 } }, tags = { location = { "h_a_m" }, category = { "humanoid", "monster" }, membership = { "p2p" } } },
+    { id = "hal_the_snow_impling", name = "Hal the snow impling", rarity = "common", desc = "Smaller, blue and more mischievous. It's a snow impling!", art = { npc = "VIB2_YETI_TOWN_SNOW_IMPLING_TALKOP", anim = 6613, cam = { pitch = 0.30, dist = 493, fov = 35, ty = 840 } }, tags = { location = { "yeti_town" }, category = { "impling" }, membership = { "f2p" } } },
+    { id = "halia_divine_merchant", name = "Halia (divine merchant)", rarity = "common", desc = "A trader in lost power and ancestral memories.", art = { npc = "ELR1_EXTURTLES_MERCHANT_DIV", anim = 18019, cam = { yaw = 0.11, dist = 860, fov = 30, ty = 600, near = 0.50 } }, tags = { location = { "the_islands_that_once_were_turtles", "the_arc" }, skills = { "divination" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } } },
+    { id = "hammerspike_stoutbeard", name = "Hammerspike Stoutbeard", rarity = "uncommon", desc = "He looks quite independent in an aggressive  way.", art = { npc = "FAVOUR_HAMMERSPIKE_STOUTBEARD", anim = 17844, cam = { yaw = -0.11, dist = 1739, fov = 18, ty = 323, tx = 8, near = 0.50 } }, tags = { location = { "dwarven_mines" }, category = { "humanoid" }, membership = { "f2p" } } },
+    { id = "hanto_sellsword", name = "Hanto sellsword", rarity = "rare", desc = "A formidable warrior from the Skull region of the Wushanko Isles.", art = { npc = "DUNGEON_AMINISHI_HANTO_WARRIOR", anim = 18019, cam = { yaw = 0.29, pitch = 0.15, dist = 3262, fov = 16, ty = 527, tx = 7 } }, tags = { category = { "humanoid", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

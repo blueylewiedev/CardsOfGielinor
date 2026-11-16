@@ -1066,11 +1066,95 @@ SKIPPED_CATEGORIES = {"Removed content": "removed from the game", "Historical ar
 # Pages that never become cards, by title without its bracket, and why.
 SKIPPED_PAGES = {"Mystery figure": "the disguised champions: Leon d'Cour and Glophren have their own pages"}
 
-# Shattered Worlds' copies of other monsters ("Abnormal dagannoth", "False ork"): the prefix is how
-# deep in the worlds they are, their stats are placeholders (level 1, scaled to the world) and their
-# pages say nothing of their own. Its bosses, pets and hub NPCs are kept (see SHATTERED_WORLDS_RARITY).
-SHATTERED_WORLDS_COPY = re.compile(r"^(Abnormal|Fabricated|False|Imitation|Malignant|Unnatural) ")
-SKIPPED_SHATTERED_WORLDS = "a Shattered Worlds copy of another monster"
+# The minigames and Distractions and Diversions whose NPCs get no cards (November 2026): one filed
+# under one of them, or whose every location is one of them, is skipped (Shattered Worlds' bosses and
+# copies of other monsters, Soul Wars' avatars, Stealing Creation's clay familiars, Conquest's pieces;
+# God Statues' Guthixian spirit, Champion's Challenge's champions, Treasure Trails' clue fighters,
+# Guthixian Cache's automatons, Big Chinchompa's soporith moths). Not one that is also met elsewhere,
+# and not a pet bought there (Shattered Worlds' anima creatures: see ANIMA_PET_TIERS). The TzHaar
+# minigames (the Fight Cave, Fight Kiln and Fight Pit) and the Shooting Star's star sprite are kept.
+CUT_MINIGAMES = {"Shattered Worlds", "Stealing Creation", "Soul Wars", "Conquest", "Fist of Guthix",
+                 "God Statues", "Champion's Challenge", "Troll Invasion", "Goblin Raids", "Big Chinchompa",
+                 "Guthixian Cache", "Treasure Trails", "Court Cases", "Balthazar Beauregard's Big Top Bonanza"}
+SKIPPED_MINIGAME = "only in a minigame or Distraction and Diversion whose NPCs get no cards"
+# (a location only near a minigame, "East of the [[Mage Training Arena]]", is not in it)
+NEAR = re.compile(r"\b(north|south|east|west|near|outside|next to|beside)\b", re.I)
+
+
+def box_locations(boxes):
+    """Every location some NPC infoboxes give (all versions)."""
+    return [v.strip() for box in boxes for v in numbered_fields(box, "location") if v.strip()]
+
+
+def link_targets(text):
+    """The pages a field links, without a section ("Fist of Guthix#Lobby" is Fist of Guthix)."""
+    return [target.split("#")[0] for target in links(text)]
+
+
+def cut_minigame(page, fields):
+    """True for an NPC only in one of CUT_MINIGAMES."""
+    categories = set(page.get("categories", []))
+    if PET_CATEGORIES & categories:
+        return False
+    locations = box_locations([fields] + other_infoboxes(page, fields))
+    if not locations:
+        return bool(CUT_MINIGAMES & categories)
+
+    def in_one(location):
+        targets = link_targets(location)
+        return bool(targets) and all(t in CUT_MINIGAMES for t in targets) and not NEAR.search(plain(location))
+    return all(in_one(location) for location in locations)
+
+
+# NPCs that can only be examined (Ned's wife, a Black Knight guard): every option their infoboxes
+# give is Examine, or with none given, the wiki files them as non-interactive and not as
+# interactive. A monster with no options can be attacked; a Hunter creature, pet or familiar is
+# trapped, owned or summoned, though its infobox may only say Examine.
+SKIPPED_EXAMINE_ONLY = "can only be examined (no other interaction)"
+
+
+def examine_only(page, kind, fields):
+    """True for an NPC that can only be examined (see SKIPPED_EXAMINE_ONLY)."""
+    categories = page.get("categories", [])
+    if ({"Hunter creatures", "Hunter", "Familiars"} | PET_CATEGORIES) & set(categories) or "{{Hunter info" in page.get("text", ""):
+        return False
+    options = [value for box in [fields] + other_infoboxes(page, fields)
+               for value in numbered_fields(box, "options") + numbered_fields(box, "actions")]
+    if options:
+        words = {o.strip().lower() for value in options for o in re.split(r"[,/]|<br\s*/?>", plain(value))}
+        return not words - {"examine", "none", "no", "n/a", ""}
+    return (kind != "Infobox Monster" and "Non-interactive characters" in categories
+            and "Interactive characters" not in categories)
+
+
+# NPCs only met in a quest: a page named for its quest ("Wight (Missing, Presumed Death)", "Monk
+# (Lost City)"), a version made for it, or one in a quest whose every location is the quest's own
+# (a link to the quest, or "during the quest", an instance, a memory or a dream). The wiki's Quest
+# NPCs category is no help: it holds everyone a quest has a word with (Lumbridge's cook, Banker
+# (fairy)). A god is kept ("Azzanadra (Children of Mah)").
+SKIPPED_QUEST_ONLY = "only in a quest, or its own version for a quest"
+QUEST_PLACE = re.compile(r"\b(quest|instance|instanced|during|memory|memories|flashback|dream|cutscene|vision)\b", re.I)
+
+
+def quest_only(page, fields):
+    """True for an NPC only met in a quest (see SKIPPED_QUEST_ONLY)."""
+    if strip_bracket(page["title"]) in GODS or "Gods" in page.get("categories", []):
+        return False
+    quests = {q.lower() for q in QUEST_DIFFICULTY}
+    bracket = re.search(r"\(([^)]+)\)$", page["title"])
+    if bracket and bracket.group(1).lower() in quests:
+        return True
+    boxes = [fields] + other_infoboxes(page, fields)
+    in_quests = {q.lower() for q in link_targets(" ".join(v for box in boxes for v in numbered_fields(box, "quest")))}
+    in_quests |= {c[len("Characters in "):].lower() for c in page.get("categories", []) if c.startswith("Characters in ")}
+    locations = box_locations(boxes)
+    if not in_quests or not locations:
+        return False
+
+    def quests_own(location):
+        targets = [t.lower() for t in link_targets(location)]
+        return (bool(targets) and all(t in quests for t in targets)) or QUEST_PLACE.search(plain(location)) is not None
+    return all(quests_own(location) for location in locations)
 
 # The Uncharted Isles' copies of other monsters, the islands' slayer-style kill targets ("Zombie
 # (Uncharted Isles)", "Crassian scout (Uncharted Isles)"): the bracket names the isles. Their own
@@ -1334,8 +1418,6 @@ def candidate(page, names, words, price=None, drop=None):
     skipped = SKIPPED_PAGES.get(strip_bracket(page.get("title", "")))
     if skipped:
         return None, skipped
-    if "Shattered Worlds" in page.get("categories", []) and SHATTERED_WORLDS_COPY.match(page.get("title", "")):
-        return None, SKIPPED_SHATTERED_WORLDS
     if "Uncharted Isles" in page.get("categories", []) and page.get("title", "").endswith(" (Uncharted Isles)"):
         return None, SKIPPED_UNCHARTED_ISLES
     text = page.get("text", "")
@@ -1362,6 +1444,14 @@ def candidate(page, names, words, price=None, drop=None):
             return None, "only seen in cutscenes"
         if heist_disguise(page, fields):
             return None, SKIPPED_HEIST
+        if paid_pet(page):
+            return None, SKIPPED_PAID_PET
+        if cut_minigame(page, fields):
+            return None, SKIPPED_MINIGAME
+        if quest_only(page, fields):
+            return None, SKIPPED_QUEST_ONLY
+        if examine_only(page, kind, fields):
+            return None, SKIPPED_EXAMINE_ONLY
         fields = without_removed_places(fields)
         return npc_candidate(page, kind, fields, names, words)
     if inside is not None:
@@ -2643,17 +2733,6 @@ def familiar_rarity(page):
     return band(level + bonus, SKILL_BANDS), f"a familiar of level {level} with a {how} (+{bonus})"
 
 
-def automaton_rarity(page):
-    """A Guthixian Cache automaton's rarity and why, or None if the page is not one's: rated by the
-    Divination level needed to subdue it, on the familiars' bands (none needed is common)."""
-    if "Automaton" not in page.get("categories", []):
-        return None
-    found = re.search(r"\[\[Divination\]\] level of (\d+) to subdue", page.get("text", ""))
-    level = number(found and found.group(1))
-    return band(level, SKILL_BANDS), (f"an automaton subdued at Divination level {level}" if level
-                                         else "an automaton anyone can subdue")
-
-
 # NPCs gathered from with a skill, rated by the level their examine gives, on the familiars' bands:
 # (the wiki category, the examine's wording, what they are).
 GATHERED_FROM = [
@@ -2743,6 +2822,38 @@ def box_regions(fields, strict=False):
     return regions
 PET_CATEGORIES = {"Pets", "Boss pets", "Skilling pets", "Companion pets", "Follower pets", "Object pets",
                   "Legendary pets", "Discontinued pets"}
+
+
+# Pets bought with real money or given in a promotion get no cards (November 2026): one filed under
+# a paid store, or whose every source (its pet infobox's location, split at "or") is one (a store,
+# a paid pass or bundle, a Steam, mobile or Twitch promotion, a code, RuneFest), or whose
+# page says it comes from Premier membership's token store (the Cheeky monkey). Not one that also
+# has a way in the game: a shop (the Fishbowl: the Catherby fishing shop, or the Squeal of Fortune)
+# or a price in a currency earned in the game (the Pumpkincrow: 1,000 candy corn, or H'oddments).
+# Event pets and ones bought with currencies earned in the game (the Hero Store's) are kept.
+PAID_PET_CATEGORIES = {"Treasure Hunter", "Treasure Hunter rewards", "Solomon's General Store", "Marketplace",
+                       "Boneyard (Treasure Hunter promotion)"}
+PAID_PET_SOURCE = re.compile(r"solomon|marketplace|treasure hunter|squeal of fortune|oddments|rare (item )?tokens?|premier|"
+                             r"prime gaming|membership|runepass|hero pass|founder'?s? pack|bundle|pc gamer|steam|\bcode\b|"
+                             r"runescape mobile|runefest|golden gnome|gameblast|twitch|mental health awareness", re.I)
+IN_GAME_SOURCE = re.compile(r"\b(shop|store)\b|\d[\d,]*\s+[a-z]", re.I)    # a shop, or a price ("1,000 candy corn")
+SKIPPED_PAID_PET = "a pet bought with real money or given in a promotion"
+
+
+def paid_pet(page):
+    """True for a pet bought with real money or given in a promotion (see PAID_PET_SOURCE)."""
+    categories = page.get("categories", [])
+    text = page.get("text", "")
+    _, inside = find_template(text, ["Infobox Pet", "Infobox Pet details"])
+    if inside is None and not PET_CATEGORIES & set(categories):
+        return False
+    location = first_version(template_fields(inside or ""), "location")
+    sources = [s.strip() for s in re.split(r"\s+or\s+|\n|\*", plain(location)) if s.strip()]
+    if any(not PAID_PET_SOURCE.search(s) and IN_GAME_SOURCE.search(s) for s in sources):
+        return False
+    lead = text[text.find("'''"):][:500]
+    return (bool(PAID_PET_CATEGORIES & set(categories)) or (bool(sources) and all(PAID_PET_SOURCE.search(s) for s in sources))
+            or re.search(r"Premier (Token Store|Club)", lead) is not None)
 
 
 # Items a pet is unlocked with that are rare finds (its page names the item, not a drop).
@@ -2843,7 +2954,6 @@ NPC_RARITY = {
     "Elen Anterth": ("epic", "sells the max cape, in the Max Guild"),
     "Curator Haig Halen": ("epic", "sells the master quest cape"),
     "Minerva": ("epic", "sells the master max cape"),
-    "Golden Gnome": ("legendary", "the Golden Gnome, awarded at RuneFest"),
     # The Horsemen of the Apocalypse (Famine and Pestilence have no NPC yet, November 2026).
     "Death": ("epic", "a Horseman of the Apocalypse"),
     "War": ("epic", "a Horseman of the Apocalypse"),
@@ -2876,33 +2986,18 @@ def holiday_character(page, fields, character):
     events = [c for c in categories if HOLIDAY.search(c) and ("event" in c.lower() or re.search(r"\d{4}", c))]
     return (character and "Pets" not in categories and bool(events)
             and HOLIDAY.search(first_version(fields, "update") or "") is not None)
-# Shattered Worlds' own NPCs, by what they are: the wiki files them all under Shattered Worlds and
-# none as a boss, and their combat levels are scaled to the world (the generals' 580 to 650 are
-# their highest). The God Wars parodies are epic like the generals; its other bosses, the Barrows
-# and Dagannoth Kings parodies, are rare like other minigame bosses; the Abyssal hound, a very rare
-# reward, is legendary like the boss pets. Others (the hub's NPCs) go by the rules.
-SHATTERED_WORLDS_RARITY = [
-    ({"Generally Graardor", "Kree'arranged", "K'ril Too'tsaroth", "Commandeered Zilyana"},
-     "epic", "a Shattered Worlds God Wars boss"),
-    ({"Ahrntim the Blighted", "Dharok the Retconned", "Guthan the Inverted", "Karil the Twisted",
-      "Norag the Corrupted", "Verac the Redefined", "Dagannot Prime", "Dagannot Rex", "Dagannot Supreme",
-      "Chaos Experimental"},
-     "rare", "a Shattered Worlds boss"),
-    ({"Abyssal hound"}, "legendary", "the Abyssal hound, a very rare Shattered Worlds reward"),
-]
-# The anima creature pets, bought with shattered anima in tiers 1 to 9 (their pages say "the tier 7
-# pet"): (lowest tier, rarity), from the top.
+# Shattered Worlds' pets, the only cards it has (see CUT_MINIGAMES): the anima creatures, bought
+# with shattered anima in tiers 1 to 9 (their pages say "the tier 7 pet"): (lowest tier, rarity),
+# from the top. The Abyssal hound, a very rare reward, is legendary like the boss pets.
 ANIMA_PET_TIERS = [(7, "epic"), (4, "rare"), (1, "uncommon")]
 
 
 def shattered_worlds_rarity(page):
-    """A Shattered Worlds boss's or pet's rarity and why (see SHATTERED_WORLDS_RARITY), or None if
-    the page is not one's."""
+    """A Shattered Worlds pet's rarity and why (see ANIMA_PET_TIERS), or None if the page is not one's."""
     if "Shattered Worlds" not in page.get("categories", []):
         return None
-    for titles, rarity, what in SHATTERED_WORLDS_RARITY:
-        if page["title"] in titles:
-            return rarity, what
+    if page["title"] == "Abyssal hound":
+        return "legendary", "the Abyssal hound, a very rare Shattered Worlds reward"
     tier = re.search(r"tier ([1-9]) pet", page.get("text", ""))
     if tier and "Pets" in page.get("categories", []):
         rarity = next(r for lowest, r in ANIMA_PET_TIERS if int(tier.group(1)) >= lowest)
@@ -2995,7 +3090,7 @@ def rules_rarity(page, fields, character, named, words):
     pet = pet_rarity(page)
     if pet is not None:
         return pet
-    by_skill = familiar_rarity(page) or automaton_rarity(page) or gathered_rarity(page)
+    by_skill = familiar_rarity(page) or gathered_rarity(page)
     if by_skill is not None:
         return by_skill
     if boss:

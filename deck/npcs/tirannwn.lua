@@ -17,12 +17,6 @@ Set.cards = {
         art = { npc = "DIREWOLF", anim = 6580, cam = { yaw = -0.60, pitch = 0.30, dist = 1505, fov = 35, ty = 200, tx = 60 } },
         tags = { regions = { "wilderness" }, location = { "arandar", "chaos_tunnels" }, category = { "animal", "monster" }, membership = { "p2p" } },
     },
-    {
-        id = "firefly_the_lost_grove", name = "Firefly (The Lost Grove)", rarity = "common",
-        desc = "Mysterious lights.",
-        art = { npc = "NATURE_BEINGS_FIREFLY_BLUE", anim = 7068, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 800 } },
-        tags = { location = { "the_lost_grove", "piscatoris_hunter_area" }, category = { "insect" }, membership = { "f2p" } },
-    },
     
 
 
