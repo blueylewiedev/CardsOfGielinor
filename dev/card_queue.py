@@ -20,7 +20,8 @@ The database is only ever read, never written. What the script has done is kept 
 dev/.card_queue_state.json: each queued card is "done", or "failed" with the reason (a duplicate id,
 a missing deck file...). A failed card is tried again every time the script runs, and --list shows
 it with the wiki page it came from: type that page into the Wiki Review's "Reopen" box to put the
-candidate back in the Card Builder, then press Done again.
+candidate back in the Card Builder, then press Done again. A card in dev/cut_cards.lua (cut from
+the deck by the NPC rules) is never added, though it was queued before it was cut.
 
 A location or NPC category word that an added card uses and core/cards.lua does not list yet is
 added there too, as dev/add_tag_words.lua does, so a new word doesn't stop the plugin loading. Any
@@ -43,6 +44,7 @@ import wiki_pages
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "dev" / ".card_queue_state.json"
 CARDS = ROOT / "core" / "cards.lua"
+CUT = ROOT / "dev" / "cut_cards.lua"    # cards cut from the deck by the NPC rules: never added again
 PLUGIN = "Cards of Gielinor"        # the plugin's id in the client's data: the name in plugin.json (was CardCollector)
 # the client's plugin data (or the CARD_DB environment variable's)
 DEFAULT_DB = os.environ.get("CARD_DB") or r"C:/ProgramData/Jagex/RuneScape-BETA/plugins/PluginData.db"
@@ -116,6 +118,11 @@ def all_ids():
     for path in (ROOT / "deck").rglob("*.lua"):
         ids.update(re.findall(r'\bid = "([^"]+)"', path.read_text(encoding="utf-8")))
     return ids
+
+
+def cut_ids():
+    """The ids of the cards in dev/cut_cards.lua (a card queued before it was cut is not added)."""
+    return set(re.findall(r'\bid = "([^"]+)"', CUT.read_text(encoding="utf-8"))) if CUT.is_file() else set()
 
 
 def add_block(entry, dry_run):
@@ -230,14 +237,16 @@ def entries_with_state(db_path, state):
 
 def process(db_path, dry_run=False):
     state = load_state()
-    ids = all_ids()
+    ids, cut = all_ids(), cut_ids()
     added, to_tag, pages = 0, {}, {}
     for key, entry, record in entries_with_state(db_path, state):
         if record is not None and record.get("status") == "done":
             if record.get("words_pending"):
                 to_tag[key] = entry
             continue
-        if entry["id"] in ids:
+        if entry["id"] in cut:
+            status, reason = "failed", "cut from the deck (it is in dev/cut_cards.lua)"
+        elif entry["id"] in ids:
             status, reason = "failed", "a card with the id %s is already in the deck files" % entry["id"]
         else:
             message = add_block(entry, dry_run)

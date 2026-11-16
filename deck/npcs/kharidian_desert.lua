@@ -114,6 +114,7 @@ Set.cards = {
         art = { npc = "GWD2_ZAM_BOSS_RANGED", anim = 28237, cam = { yaw = 0.40, pitch = 0.30, dist = 1731, ty = 860, tx = -10 } },
         tags = { regions = { "misthalin" }, location = { "heart_of_gielinor" }, category = { "avernic", "boss", "monster" }, membership = { "p2p" } },
     },
+    { id = "slasher_demon", name = "Slasher Demon", rarity = "uncommon", desc = "Skilled demonic slasher.", art = { npc = "HLM_RIPPER_ELITE", anim = 27766, cam = { yaw = -0.47, pitch = 0.40, dist = 3568, fov = 20, ty = 310, tx = -15, near = 0.25 } }, tags = { regions = { "wilderness" }, skills = { "slayer" }, category = { "chthonian", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

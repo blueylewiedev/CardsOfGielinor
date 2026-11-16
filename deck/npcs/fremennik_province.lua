@@ -83,12 +83,6 @@ Set.cards = {
         art = { npc = "HUNTING_POLAR_KEBBIT", anim = 5272, cam = { yaw = 1.00, pitch = 0.30, dist = 989, fov = 35, ty = 180, tx = 40 } },
         tags = { regions = { "asgarnia" }, location = { "rellekka", "taverley" }, skills = { "hunter" }, category = { "kebbit" }, membership = { "f2p" } },
     },
-    {
-        id = "pyrefiend", name = "Pyrefiend", rarity = "uncommon",
-        desc = "A small fire demon.",
-        art = { npc = "SLAYER_PYREFIEND_1", anim = 34858, cam = { pitch = 0.30, dist = 1137, ty = 420 } },
-        tags = { regions = { "kharidian_desert" }, location = { "fremennik_slayer_dungeon", "smoke_dungeon" }, skills = { "slayer" }, category = { "elemental", "monster" }, membership = { "p2p" } },
-    },
     
     {
         id = "pauline_polaris", name = "Pauline Polaris", rarity = "uncommon",

@@ -301,6 +301,30 @@ lists those for you to fix.
 
 ## Card rules
 
+### Which NPCs get a card
+
+Not every NPC gets a card. Leave out one that:
+
+- was removed from the game (every version of it);
+- can only be examined, with no other option (a Black Knight guard, Ned's wife). Hunter creatures,
+  pets and familiars are kept, though you trap, own or summon them rather than click them;
+- is only met in a quest, or is a quest's own version of an NPC ("Wight (Missing, Presumed
+  Death)", "Monk (Lost City)"). Being in quests is not enough: the Lumbridge cook is kept;
+- is only met in Shattered Worlds, Stealing Creation, Soul Wars, Conquest or Fist of Guthix (their
+  pets are kept), or in one of these Distractions and Diversions: God Statues (the Guthixian
+  spirit), Champion's Challenge, Troll Invasion, Goblin Raids, Big Chinchompa (the soporith moths),
+  Guthixian Cache (the automatons), Treasure Trails (the clue fighters), Court Cases and Balthazar
+  Beauregard's Big Top Bonanza. The TzHaar minigames' NPCs and the Shooting Star's star sprite are
+  kept;
+- is only seen in cutscenes;
+- is a pet bought with real money (Solomon's General Store, Treasure Hunter, the Marketplace,
+  Premier Club, a paid bundle) or given in a promotion (RuneFest, Prime Gaming, Steam, RuneScape
+  Mobile, a code, the RunePass or Hero Pass). One with a way in
+  the game as well is kept (the Fishbowl, sold in Catherby), as are event pets.
+
+`dev/wiki_cards.py` skips these for the Wiki Review queue. The cards cut when these rules came in
+are kept in `dev/cut_cards.lua`, out of the deck.
+
 ### Ids
 
 An id is lower case, with spaces turned into underscores and anything that is not a letter or
@@ -337,7 +361,7 @@ them. Go down the list and stop at the first one that fits:
 | 1 | A god (filed under the wiki's Gods, such as Zamorak, Saradomin or Azzanadra) | **Legendary** | Zamorak, Saradomin |
 | 2 | A pet | **Common** to **legendary**, by how it is got (see below) | Rocky, Trevor, terrier |
 | 3 | A Summoning familiar | **Common** to **epic**, by level and charm (see below) | Spirit wolf, Steel titan |
-| 4 | A Guthixian Cache automaton, a Runespan creature (essling, esshound, esswraith) or a Divination wisp or spring | **Common** to **epic**, by the Divination level to subdue or harvest it or the Runecrafting level to siphon it, on the familiars' bands (see below) | Confused automaton, Soul esswraith, Brilliant wisp, Ancestral energy |
+| 4 | A Runespan creature (essling, esshound, esswraith) or a Divination wisp or spring | **Common** to **epic**, by the Divination level to harvest it or the Runecrafting level to siphon it, on the familiars' bands (see below) | Soul esswraith, Brilliant wisp, Ancestral energy |
 | 5 | A boss, or a quest boss (one fought in the Dominion Tower) | **Rare** below combat level 100 (most quest and minigame bosses), **epic** from 100, **legendary** from 1000 (the end-game bosses: Nex, Telos, the Rise of the Six). A Mahjarrat or dragonkin boss is never below epic | Delrith, Evil Chicken (rare); Giant mole, General Graardor (epic); Nex, Telos (legendary) |
 | 6 | A Mahjarrat, or a dragonkin with a name or fought as a boss (not their Nodon soldiers) | **Epic** | Lucien, Hazeel, Kerapac, Strisath |
 | 7 | A Slayer monster from Slayer level 10 that is scarce (fewer than 20 spawns) | **Rare** | Wall beast |
@@ -358,13 +382,9 @@ legendary as gods. A skill master, who sells a skillcape, is at least rare, so t
 capes above it are **epic**: Max and Elen Anterth (max cape), Curator Haig Halen (master quest
 cape) and Minerva (master max cape).
 
-Shattered Worlds is set by what each NPC is, because the wiki files none of its bosses as bosses
-and their combat levels scale with the world. Its copies of other monsters (Abnormal, Fabricated,
-False, Imitation, Malignant and Unnatural ones) get no cards. The God Wars parodies (Generally
-Graardor, Kree'arranged, K'ril Too'tsaroth, Commandeered Zilyana) are **epic**. Its other bosses,
-the Barrows and Dagannoth Kings parodies and Chaos Experimental, are **rare**. The anima creature
-pets go by their reward-shop tier: **uncommon** for tiers 1 to 3, **rare** for 4 to 6 and **epic**
-for 7 to 9. The Abyssal hound is **legendary**. The hub's NPCs follow the rules above.
+Shattered Worlds' pets are its only cards (see [Which NPCs get a card](#which-npcs-get-a-card)).
+The anima creatures go by their reward-shop tier: **uncommon** for tiers 1 to 3, **rare** for 4 to
+6 and **epic** for 7 to 9. The Abyssal hound is **legendary**.
 
 The gods' emissaries (the wiki's God Emissaries, such as Julienne, Emissary of Saradomin) are at
 least **uncommon**: one the rules rate common is raised to uncommon, and one rated higher keeps
@@ -402,8 +422,6 @@ Hunter creatures, NPCs to pickpocket and NPCs mined like rocks read it too, with
 need (no bonus): an impling caught at level 17 is **common**, at 91 **epic**; an alaea crablet,
 mined at 97, is **epic**.
 
-Automatons read the same table with the Divination level needed to subdue them (no bonus): the
-ancient automaton (none needed) is **common**, the confused (45) **uncommon**, the enraged (85) **rare**.
 Runespan creatures read it with the Runecrafting level to siphon them, from their examine: the
 esslings and the body and cosmic esshounds are **common**, the chaos (35) to law (54) esshounds
 **uncommon**, the death (65) and blood (77) esswraiths **rare** and the soul esswraith (90) **epic**.
@@ -414,15 +432,14 @@ Pets (the first that fits):
 
 | The pet is... | Rarity | For example |
 |---|---|---|
-| The Golden Gnome (awarded at RuneFest) | **Legendary** | |
 | A skilling or boss pet | **Legendary** | Rocky, Bubbles |
 | One of the wiki's "Legendary pets" | **Epic** | |
 | Got with a skill level or after a quest | The familiars' bands for the level (the highest it needs), or the quest's difficulty: Novice **common**, Intermediate **uncommon**, Experienced **rare**, Master or Grandmaster **epic** (the higher of the two) | Terrier (4 Summoning, common), Baby pavosaurus rex (Osseous Rex, rare) |
-| Unlocked with a token | **Rare** | Arthur, Boulder |
+| Unlocked with a token | **Rare** | Arthur |
 | Sold in a shop | **Uncommon** | Trevor |
-| A drop, or unlocked with a rare item | **Epic** | Mimic, Ishhara (corrupted egg) |
+| A drop, or unlocked with a rare item | **Epic** | Ishhara (corrupted egg) |
 | From a league | **Rare** | Bria, Hexi |
-| From an event or a promotion (or no longer available) | **Uncommon** | Marketplace and RuneFest pets |
+| From an event (or no longer available) | **Uncommon** | Snuffles (The Knight Before Christmas), Yak Track pets |
 | Given by an NPC | **Common** | Mune, Richie |
 | From another place or activity | **Rare** | Chomper (Oasis Restoration), Perdita (The Lost Grove) |
 | Anything else | **Common** | Cats |

@@ -143,12 +143,6 @@ Set.cards = {
         tags = { regions = { "karamja" }, category = { "animal", "monster" }, membership = { "f2p" } },
     },
     {
-        id = "barbarian", name = "Barbarian", rarity = "common",
-        desc = "Alberich, a fierce barbarian warrior.",
-        art = { npc = "FAI_BARBARIAN_1", anim = 2561, cam = { yaw = -0.20, pitch = 0.15, dist = 859, ty = 480 } },
-        tags = { regions = { "misthalin" }, category = { "humanoid", "monster" }, membership = { "f2p" } },
-    },
-    {
         id = "highwayman", name = "Highwayman", rarity = "common",
         desc = "They hold up passers by.",
         art = { npc = "HIGHWAYMAN", anim = 18015, cam = { yaw = 0.20, dist = 2082, fov = 20, ty = 480, near = 0.25 } },
@@ -293,6 +287,7 @@ Set.cards = {
         art = { npc = "ZOMBIE_ARMED", anim = 35252, cam = { pitch = 0.30, dist = 744, fov = 55, ty = 420 } },
         tags = { regions = { "misthalin" }, category = { "undead", "monster" }, membership = { "f2p" } },
     },
+    { id = "local_thug_2", name = "Local thug", rarity = "common", desc = "An axe-wielding thug who serves a dark lord.", art = { npc = "LUC2_LUCIEN_IKOV_THUG", anim = 7188, cam = { yaw = 0.16, pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "misthalin" }, location = { "east_ardougne", "edgeville", "ardougne" }, category = { "humanoid" }, membership = { "p2p" } } },
 }
 
 return Set
