@@ -41,5 +41,7 @@ jobs:
         run: lua5.4 dev/check_viewer_ui.lua
       - name: The credits text (core/format.lua)
         run: lua5.4 dev/check_format.lua
+      - name: The performance probe's frame numbers (dev/framestats.lua)
+        run: lua5.4 dev/check_framestats.lua
       - name: Release package is clean (dev/build_release.py)
         run: python3 dev/test_build_release.py

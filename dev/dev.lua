@@ -11,6 +11,8 @@
 -- (dev/devtools.lua: +20 credits, reset setup, the tool toggles, the save tools), and a few debug
 -- extras at login and when XP is gained.
 
+-- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
+local Probe = require("dev/perfprobe")
 local Cards = require("core/cards")
 local Storage = require("core/storage")
 local CardView = require("ui/cardview")
@@ -35,6 +37,7 @@ local Dev = {}
 -- Called when a character's collection has just loaded: adds a credit (so you can see saving
 -- work across restarts) and a Hans card, and checks the card art names.
 function Dev.onLogin(state)
+    Probe.sessionLoaded()
     Storage.addCredits(state, 1)
     local hans = Cards.variantKey("hans", "normal")
     if Storage.countOwned(state, hans) == 0 then
@@ -142,6 +145,8 @@ local function toolButtons(api, refresh)
         { label = "Uncarded", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
         { label = "Output", action = OutputWindow.toggle },
+        { label = "Perf probe", action = Probe.manual,
+            tooltip = "Logs the frame times over the next 10 seconds (PROBE line): scroll the collection or open a pack meanwhile" },
         { label = "Fetch updates", action = function()
             if OverlayLoader.refetch() then
                 log("DEV: fetching the card overlay again")
@@ -165,6 +170,7 @@ end
 
 -- Reports draft cards in the log, once, when the plugin starts.
 function Dev.start()
+    Probe.start()
     if #Cards.drafts > 0 then
         log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end

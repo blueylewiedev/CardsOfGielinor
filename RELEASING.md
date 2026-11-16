@@ -217,7 +217,8 @@ commands refresh the plugin list and reload it):
 | `lua dev/check_viewer_ui.lua` | the viewer's controls (search, drop-downs, rows, grid, paging) against a stand-in client; no looks |
 | `lua dev/check_slayer.lua` | the Slayer credits against recorded game events (kills, AOE, completion, cancel, skip), and that combat XP earns nothing |
 | `python dev/test_build_overlay.py` | what goes in the overlay and when `revision` changes |
-| `lua dev/check_format.lua` | the credits text the overlay shows (`19 249`) |
+| `lua dev/check_format.lua` | the credits text the overlay shows (`19 249`) and the settings page's collection line |
+| `lua dev/check_framestats.lua` | the numbers the performance probe (`dev/perfprobe.lua`, dev copy only) writes to the log |
 
 **Common messages**
 
