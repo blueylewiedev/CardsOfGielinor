@@ -218,28 +218,40 @@ function Loader.status()
         changes = state.changes, needsPermission = state.phase == "waiting" and state.warned }
 end
 
--- One line for the player (the settings page): are card updates on, and are they working.
-function Loader.playerText()
+-- True if the player has switched the httpAccess permission off (it can be turned off while the plugin runs).
+local function permissionOff()
+    local plugin = Loader.plugin or Plugin
+    local ok, granted = pcall(function() return plugin.HasPermission(PluginPermissions.httpAccess) end)
+    return ok and granted == false
+end
+
+-- What the settings page shows about card updates: a short line that fits beside an icon (28 letters at most), and
+-- a longer explanation for the icon's tooltip. It follows the permission as it is now, not only what the loader did
+-- earlier: an overlay already applied this session stays applied, but with the permission off nothing more is
+-- fetched. The permission is called HTTP Access, as the client's own permission window calls it.
+function Loader.playerLine()
     local status = Loader.status()
     local phase = status.phase
-    if status.needsPermission then
-        return "Off - allow the httpAccess permission to turn on"
+    if status.needsPermission or (phase ~= "off" and permissionOff()) then
+        return "Off", "Turn on HTTP Access in this plugin's permissions to get card updates."
     elseif phase == "done" then
         local changes = status.changes or 0
         if changes == 0 then
-            return "On - the cards are up to date"
+            return "On - up to date", "Card updates are fetched when the plugin starts. The cards are up to date."
         end
-        return "On - " .. changes .. (changes == 1 and " card" or " cards") .. " updated"
+        return "On - " .. changes .. (changes == 1 and " card" or " cards") .. " updated",
+            "An update fetched when the plugin started added, changed or removed " .. changes
+            .. (changes == 1 and " card." or " cards.")
     elseif phase == "ignored" then
-        return "On - no updates for this version"
+        return "On - no updates", "The update on the server is for a different version of the plugin, so nothing was applied."
     elseif phase == "failed" then
-        return "Could not reach the update server"
+        return "Update server unreachable", "The update server could not be reached. The plugin carries on with the cards it came with."
     elseif phase == "retrying" then
-        return "Could not reach the update server, trying again"
+        return "Unreachable, will retry", "The update server could not be reached. The plugin will try again shortly."
     elseif phase == "off" then
-        return "Off - not available"
+        return "Off - not available", "This version of the plugin has no update address."
     end
-    return "Checking for card updates..."
+    return "Checking...", "Looking for card updates."
 end
 
 return Loader

@@ -294,7 +294,13 @@ local good = overlayText(header({ revision = 4 }), { testCard("zz_loaded") })
 -- the whole happy path
 fresh()
 check(Loader.status().phase == "waiting", "the loader starts out waiting")
-check(Loader.playerText() == "Checking for card updates...", "and the player sees it checking")
+-- What the player sees: a short line that has to fit beside the settings page's icon, and a tooltip with the detail.
+local function line() return (Loader.playerLine()) end
+local function detail() local _, text = Loader.playerLine() return text end
+local LONGEST_LINE = 28
+local linesSeen = {}
+local function seen() local text = line() linesSeen[text] = true return text end
+check(seen() == "Checking...", "and the player sees it checking")
 tick(1)
 check(#requests == 1 and requests[1].base == "https://example.test" and requests[1].path == "/CardsOfGielinor/overlay.jsonl",
     "it asks for the overlay file on the cards url")
@@ -307,7 +313,12 @@ tick(1)
 check(Loader.status().phase == "applying" or Loader.status().phase == "done", "the next tick reads the answer")
 tick(2)
 check(Loader.status().phase == "done" and Cards.byId["zz_loaded"] ~= nil, "the overlay is applied")
-check(Loader.playerText() == "On - 1 card updated", "the player is told one card was updated (" .. Loader.playerText() .. ")")
+check(seen() == "On - 1 card updated", "the player is told one card was updated (" .. line() .. ")")
+granted = false
+check(seen() == "Off" and string.find(detail(), "HTTP Access", 1, true) ~= nil,
+    "switching the permission off changes the line at once (" .. line() .. ")")
+granted = true
+check(seen() == "On - 1 card updated", "and switching it on again brings the line back (" .. line() .. ")")
 check(Loader.status().revision == 4, "the revision is reported")
 Cards.deprecate("zz_loaded")
 
@@ -338,8 +349,8 @@ fresh()
 granted = false
 tick(1500)
 check(#requests == 0 and Loader.status().phase == "waiting", "without the permission it makes no request")
-check(string.find(Loader.playerText(), "Off", 1, true) ~= nil and string.find(Loader.playerText(), "httpAccess", 1, true) ~= nil,
-    "the player is told how to turn updates on (" .. Loader.playerText() .. ")")
+check(seen() == "Off" and string.find(detail(), "HTTP Access", 1, true) ~= nil,
+    "the player is told how to turn updates on (" .. line() .. ": " .. detail() .. ")")
 granted = true
 tick(100)
 check(#requests == 1, "it fetches once the permission is granted")
@@ -349,7 +360,7 @@ fresh()
 Plugin.urls = {}
 tick(1)
 check(Loader.status().phase == "off" and #requests == 0, "with no cards url it is off")
-check(string.find(Loader.playerText(), "Off", 1, true) == 1, "and the player is told it is off (" .. Loader.playerText() .. ")")
+check(string.find(seen(), "Off", 1, true) == 1, "and the player is told it is off (" .. line() .. ")")
 
 -- a 404 is not an overlay; it tries again, then works
 fresh()
@@ -357,7 +368,7 @@ tick(1)
 complete(requests[1], 404, "<html>Not found</html>", false)
 tick(1)
 check(Loader.status().phase == "retrying" and Cards.byId["zz_loaded"] == nil, "a 404 is a failure, not an overlay")
-check(string.find(Loader.playerText(), "trying again", 1, true) ~= nil, "the player is told it will try again (" .. Loader.playerText() .. ")")
+check(string.find(seen(), "retry", 1, true) ~= nil, "the player is told it will try again (" .. line() .. ")")
 tick(2900)
 check(#requests == 1, "it waits a minute before trying again")
 tick(150)
@@ -389,7 +400,7 @@ tick(15100)
 complete(requests[3], 500, "", false)
 tick(2)
 check(#requests == 3 and Loader.status().phase == "failed", "after three failures it gives up")
-check(Loader.playerText() == "Could not reach the update server", "and says so (" .. Loader.playerText() .. ")")
+check(seen() == "Update server unreachable", "and says so (" .. line() .. ")")
 tick(40000)
 check(#requests == 3, "and does not try a fourth time")
 
@@ -410,7 +421,7 @@ for _, other in ipairs({ header({ base = "9.9.9" }), header({ format = 2 }), "ga
     tick(3)
     check(Loader.status().phase == "ignored" and Cards.byId["zz_loaded"] == nil and #requests == 1,
         "an overlay that is not for this version is ignored (" .. Loader.status().message .. ")")
-    check(Loader.playerText() == "On - no updates for this version", "and the player is told (" .. Loader.playerText() .. ")")
+    check(seen() == "On - no updates", "and the player is told (" .. line() .. ")")
 end
 
 -- a request that cannot even be made
@@ -447,6 +458,14 @@ check(Loader.refetch() == false, "but not while one is under way")
 Cards.deprecate("zz_loaded")
 
 check(cardCount() == startCount, "the deck ends the test at its starting size (" .. cardCount() .. " and " .. startCount .. ")")
+
+-- Every line the player saw fits beside the icon.
+local seenCount = 0
+for text in pairs(linesSeen) do
+    seenCount = seenCount + 1
+    check(#text <= LONGEST_LINE, "the line '" .. text .. "' is no longer than " .. LONGEST_LINE .. " letters (" .. #text .. ")")
+end
+check(seenCount >= 6, "the check saw the different lines (" .. seenCount .. ")")
 
 if failures > 0 then
     io.stderr:write(failures .. " loader check(s) failed\n")
