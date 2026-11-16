@@ -2,7 +2,9 @@
 -- The window for choosing a difficulty, buying packs and revealing the cards.
 --
 -- It has four screens, and only one is shown at a time:
---   nosession : nobody is logged in yet
+--   nosession : the character's collection has not loaded yet: a spinner and "Loading your collection..." (the plugin
+--               only runs once a character is in the game, so this is the wait for the tracking id, or for the
+--               permission to show up, not a prompt to log in)
 --   setup     : first run, pick a difficulty tier
 --   home      : credits, the pack to buy (the standard pack and the themed packs in
 --               deck/packs.lua), its price and the Open pack button
@@ -61,6 +63,7 @@ local HOME_TOP = CAROUSEL_Y + CAROUSEL_H + 4
 local HOME_W = REVEAL_MID - 20                -- the width of the text and buttons
 local EXTRA_TOP = HOME_TOP + 182              -- where the extra buttons on the Home screen start
 -- Window height for each screen (Home's is set by buildExtras, as it depends on the extra buttons).
+local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
 local HEIGHTS = { nosession = 90, setup = 262, reveal = REVEAL_TOP + 124 }
 
 -- Set by PackWindow.show():
@@ -105,6 +108,16 @@ local function showScreen(name)
         layer.hidden = (screenName ~= name)
     end
     window:SetSize(({ reveal = REVEAL_WIDTH, home = REVEAL_WIDTH, setup = SETUP_WIDTH })[name] or WIDTH, HEIGHTS[name] + (Kit.available() and TITLE_BAR or 0))
+    -- The spinner only turns while its screen is showing.
+    if widgets.spinner ~= nil then
+        pcall(function()
+            if name == "nosession" then
+                widgets.spinner:Start()
+            else
+                widgets.spinner:Stop()
+            end
+        end)
+    end
 end
 
 -- ---------------------------------------------------------------------------------------
@@ -1064,8 +1077,10 @@ local function buildScreens()
         screens[name] = layer
     end
 
-    -- nosession
-    makeText(screens.nosession, 10, 20, 200, 50, "Log in to a character to open packs.", GREY)
+    -- nosession: a spinner over "Loading your collection...", centred in the content (which is Kit.contentWidth wide)
+    local contentWidth = Kit.contentWidth(WIDTH)
+    widgets.spinner = Kit.spinner(screens.nosession, (contentWidth - LOADING_SPINNER) // 2, 8, LOADING_SPINNER)
+    makeText(screens.nosession, 0, 8 + LOADING_SPINNER + 6, contentWidth, 24, "Loading your collection...", GREY)
 
     -- setup: one button per difficulty tier
     makeText(screens.setup, 10, 10, SETUP_BUTTON_W, 24, "Choose a difficulty", WHITE)
@@ -1213,6 +1228,9 @@ function PackWindow.hide()
     Viewer.close()
     Stats.hide()
     clearReveal()
+    if widgets.spinner ~= nil then
+        pcall(function() widgets.spinner:Stop() end)     -- it listens to the logic tick while it turns
+    end
     if widgets.carousel ~= nil then
         Carousel.destroy(widgets.carousel)
     end

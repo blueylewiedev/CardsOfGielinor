@@ -45,7 +45,7 @@ function Hub.refresh()
         return
     end
     local state = api.getState()
-    local text = state and ("Credits: " .. state.credits) or "Log in to a character to play."
+    local text = state and ("Credits: " .. state.credits) or "Loading your collection..."
     if widgets.credits.content ~= text then
         widgets.credits.content = text
     end

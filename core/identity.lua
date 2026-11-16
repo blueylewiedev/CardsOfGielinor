@@ -15,9 +15,13 @@ local Identity = {}
 local SUBSCRIBER = "cardcollector_identity"
 
 -- Ticks (about 0.6 seconds each) to wait for the permission to show up before settling for
--- the character name. The dev copy asks for the permission as it loads, and the client may
--- take a moment to apply it.
-local PERMISSION_GRACE_TICKS = 20
+-- the character name: 10, about 6 seconds (it was 20, about 12, which is a long wait for a player who has not granted
+-- the permission, with the main window showing its loading screen all that time). The dev copy asks for the
+-- permission as it loads, and the client may take a moment to apply it. If the permission is ever late for a player
+-- who has granted it, they start on the name collection for the session; the next login copies nothing back, as the
+-- tracking collection already exists and wins (core/storage.lua), so a late permission should be looked for in the
+-- client before this is made shorter.
+local PERMISSION_GRACE_TICKS = 10
 
 -- In the dev copy the plugin asks for the permission itself on every start, since the client
 -- forgets grants when it restarts: ppr requests the manifest's permissions, ppe turns one on.

@@ -85,6 +85,20 @@ function Kit.text(parent, x, y, w, h, content, colour, alignX)
     return plainText(parent, x, y, w, h, content, colour, alignX)
 end
 
+-- PrettyUI's spinning loading wheel, `size` across, at a fixed position. It is not turning until its Start() is
+-- called, and keeps a subscription to the logic tick while it turns, so call Stop() when it is hidden or the window
+-- goes. Returns nil without PrettyUI (or if it fails), so callers must cope with no spinner.
+function Kit.spinner(parent, x, y, size)
+    if Kit.available() and prettyui.Spinner ~= nil then
+        local ok, spinner = pcall(prettyui.Spinner.new, parent, { x = x, y = y, size = size, autoPlay = false })
+        if ok and spinner ~= nil then
+            return spinner
+        end
+        Logger.error("Kit.spinner: PrettyUI spinner failed, going without:", tostring(spinner))
+    end
+    return nil
+end
+
 -- A button at a fixed position. `style` is optional: "positive", "neutral" or "negative"
 -- (only PrettyUI buttons show it).
 function Kit.button(parent, label, x, y, w, h, onPress, style, tooltip)
