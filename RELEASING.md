@@ -165,18 +165,23 @@ Because `main` moves ahead of the approved version, remember this when a card de
 - The overlay needs the optional **`httpAccess`** permission, which the player grants in the client, as they do for
   `trackingAccess`. Without it nothing is fetched and the plugin runs on the cards it shipped with.
 - The **Settings** page (the cog on the main window, and the plugin's page in the client's settings) has a **Card
-  updates** line:
+  updates** line: a short text with an info icon beside it, and hovering the icon shows the explanation. The
+  permission is called **HTTP Access** there, as in the client's own permission window.
 
   | Shows | Means |
   |---|---|
-  | `Checking for card updates...` | Starting, fetching or applying. |
-  | `On - the cards are up to date` | The overlay was fetched and had no changes for them. |
+  | `Checking...` | Starting, fetching or applying. |
+  | `On - up to date` | The overlay was fetched and had no changes for them. |
   | `On - 12 cards updated` | The overlay was applied; this many cards were added, changed or retired. |
-  | `On - no updates for this version` | The overlay on the site is for a different version (for example this player is behind, or ahead of, the tag). |
-  | `Could not reach the update server, trying again` | A fetch failed; it tries again after 1 minute and again after 5. |
-  | `Could not reach the update server` | All three tries failed. Nothing more this session. |
-  | `Off - allow the httpAccess permission to turn on` | The permission is not granted. |
+  | `On - no updates` | The overlay on the site is for a different version (for example this player is behind, or ahead of, the tag). |
+  | `Unreachable, will retry` | A fetch failed; it tries again after 1 minute and again after 5. |
+  | `Update server unreachable` | All three tries failed. Nothing more this session. |
+  | `Off` | The permission is not granted (the tooltip says to turn on HTTP Access). It follows the permission live: switching it off after the overlay was applied shows `Off` too. |
   | `Off - not available` | The plugin has no `cards` url (a build without it). |
+
+  The line is `Loader.playerLine()` in `core/overlayloader.lua`; every short line is checked to fit beside the icon
+  (28 letters, `dev/check_loader.lua`). The page's "Your collection" line (how the collection is saved, and what the
+  Tracking permission does) is built the same way, from `Format.collectionLine` in `core/format.lua`.
 
 - The overlay is fetched once when the plugin starts. Jagex force a log-out after 6 hours, so a long session
   does not keep an old overlay indefinitely.

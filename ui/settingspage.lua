@@ -11,6 +11,7 @@ local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
 local Settings = require("core/settings")
 local Storage = require("core/storage")
+local Format = require("core/format")
 local OverlayLoader = require("core/overlayloader")
 local Kit = require("ui/kit")
 
@@ -23,8 +24,11 @@ local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
 -- Dividers separate the page's parts: difficulty, effects, how the collection is saved, card updates and (with
 -- the development tools) the developer options.
--- SAVED_HEIGHT is the room for the "Your collection" heading and its note (three lines); a guess, adjust it.
-local SAVED_HEIGHT = 100
+-- The "Your collection" part adds a heading, one line of text and a divider. Its text and the card updates text are
+-- short, with an info icon beside them that shows the explanation as a tooltip (the tooltip wraps itself, so the
+-- rows stay one line). The text is as wide as the page less the margins and the icon.
+local SAVED_HEIGHT = 56         -- the heading and the line, a guess like the other heights here
+local ICON_WIDTH, MARGINS = 24, 44
 local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 445 + 2 * DIVIDER_STEP + SAVED_HEIGHT
 local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
 
@@ -98,14 +102,38 @@ local function build(key, parent, width, height)
     end
     page.widgets.effects = checkboxes("General", false)
     divider()
+    -- A line of text with an info icon beside it; the icon's tooltip is set by refreshPage.
+    local textWidth = math.max(120, width - MARGINS - ICON_WIDTH - 6)
+    local function lineWithIcon()
+        local text = view:AddText({ text = "", width = textWidth })
+        local icon = view:AddSpriteButton("INFO", nil, { inline = true, tooltip = "..." })
+        return text, icon
+    end
     view:AddText("Your collection")
-    page.widgets.saved = view:AddText("")
+    page.widgets.saved, page.widgets.savedIcon = lineWithIcon()
     divider()
     view:AddText("Card updates")
-    page.widgets.updates = view:AddText("")
+    page.widgets.updates, page.widgets.updatesIcon = lineWithIcon()
     if api.devTools then
         divider()
         page.widgets.dev = checkboxes("Developer (hides the dev tools)", true)
+    end
+end
+
+-- Shows a line and the explanation for its icon's tooltip, changing each only when it is different.
+local function showLine(page, name, text, detail)
+    local widgets = page.widgets
+    if widgets[name].content ~= text then
+        widgets[name].content = text
+    end
+    local icon = widgets[name .. "Icon"]
+    if icon ~= nil and page[name .. "Detail"] ~= detail then
+        page[name .. "Detail"] = detail
+        -- Runs every tick, so a failure is logged once (Logger.error) and never stops the tick.
+        local ok, err = pcall(function() icon:SetTooltip(detail) end)
+        if not ok then
+            Logger.error("settings tooltip failed:", err)
+        end
     end
 end
 
@@ -128,23 +156,13 @@ local function refreshPage(page)
         widgets.note.content = note
     end
 
+    -- How this session's collection is saved is fixed at login; the permission can change after that, and takes
+    -- effect at the next login, so the line says so (Format.collectionLine).
+    local granted = false
+    pcall(function() granted = Plugin.HasPermission(PluginPermissions.trackingAccess) == true end)
     local kind = api.keyKind ~= nil and api.keyKind() or nil
-    local saved
-    if kind == "tracking" then
-        saved = "Saved under your character's tracking id, so it stays with you if you rename your character."
-    elseif kind == "name" then
-        saved = "Saved under your character name. Allow trackingAccess to keep it if you rename your character."
-    else
-        saved = "Log in to see how your collection is saved."
-    end
-    if widgets.saved.content ~= saved then
-        widgets.saved.content = saved
-    end
-
-    local updates = OverlayLoader.playerText()
-    if widgets.updates.content ~= updates then
-        widgets.updates.content = updates
-    end
+    showLine(page, "saved", Format.collectionLine(kind, granted))
+    showLine(page, "updates", OverlayLoader.playerLine())
 
     local shown = tier and tier.id or nil
     if widgets.difficulty:GetSelectedValue() ~= shown then
