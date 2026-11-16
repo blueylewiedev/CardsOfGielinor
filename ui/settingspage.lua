@@ -146,7 +146,7 @@ local function refreshPage(page)
 
     local note
     if state == nil then
-        note = "Log in to change difficulty."
+        note = "Loading your collection..."
     elseif tier == nil then
         note = "Choose one in the main window first."
     else

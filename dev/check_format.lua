@@ -39,7 +39,7 @@ do
     check(Format.collectionLine("name", true) == "Changes at next login"
         and Format.collectionLine("tracking", false) == "Changes at next login",
         "a permission changed since login says it takes effect at the next login")
-    check(Format.collectionLine(nil, false) == "Not logged in", "nobody logged in")
+    check(Format.collectionLine(nil, false) == "Loading...", "collection not loaded yet")
     for _, kind in ipairs({ "tracking", "name" }) do
         for _, granted in ipairs({ true, false }) do
             local _, text = Format.collectionLine(kind, granted)
