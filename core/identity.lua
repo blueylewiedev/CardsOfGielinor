@@ -75,16 +75,21 @@ function Identity.reset()
 end
 
 -- Returns { name, key, how } for the logged-in character, or nil if it is not known yet.
--- key is what the collection is stored under and how says why that key was chosen.
+-- key is what the collection is stored under and how says why that key was chosen. kind is "tracking" or "name";
+-- a "tracking" profile also has adoptFrom, the name key to copy a collection from if there is no tracking one yet.
 function Identity.profile(characterName)
     if characterName == nil then
         return nil
     end
     if trackingId ~= nil then
-        return { name = characterName, key = Storage.keyForTracking(trackingId), how = "tracking id" }
+        -- adoptFrom: the key of a collection kept under the name before the permission was granted, to be copied
+        -- here the first time (Storage.loadOrAdopt).
+        return { name = characterName, key = Storage.keyForTracking(trackingId), how = "tracking id", kind = "tracking",
+            adoptFrom = Storage.keyForName(characterName) }
     end
     if ticksWithoutPermission >= PERMISSION_GRACE_TICKS then
-        return { name = characterName, key = Storage.keyForName(characterName), how = "name, trackingAccess not granted" }
+        return { name = characterName, key = Storage.keyForName(characterName), how = "name, trackingAccess not granted",
+            kind = "name" }
     end
     return nil
 end

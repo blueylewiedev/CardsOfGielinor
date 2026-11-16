@@ -178,6 +178,26 @@ function Storage.load(key)
     return state
 end
 
+-- Loads the collection for `key`. If nothing has been saved under `key` yet but something has under `oldKey`
+-- (the collection kept under the character's name before trackingAccess was granted), the old one is copied:
+-- the returned collection holds everything in it and is marked as changed, so the next save writes it all
+-- under `key`. The old keys are left as they are, so nothing can be lost by the copy. Once `key` has a save it
+-- always wins; the two are never merged. Returns the collection and true if it was copied from `oldKey`.
+function Storage.loadOrAdopt(key, oldKey)
+    if oldKey == nil or oldKey == key
+        or PersistentDB:GetStructuredData(key) ~= nil
+        or PersistentDB:GetStructuredData(oldKey) == nil then
+        return Storage.load(key), false
+    end
+    local state = Storage.load(oldKey)
+    state.staleBuckets = nil     -- that is about the old keys, which this save never deletes
+    state.dirty = true
+    for bucket = 1, BUCKETS do
+        state.dirtyBuckets[bucket] = true
+    end
+    return state, true
+end
+
 -- Writes the collection under a key: the buckets that changed first, then the main key. Returns true if
 -- everything was saved; a write that the database refuses is logged and left dirty, so the next save
 -- tries it again.

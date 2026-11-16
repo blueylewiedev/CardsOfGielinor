@@ -103,9 +103,16 @@ end
 
 -- Loads the collection for a newly logged-in character. profile comes from Identity.profile.
 local function startSession(profile)
-    session = { name = profile.name, key = profile.key, state = Storage.load(profile.key) }
+    -- With a tracking key and nothing saved under it yet, a collection kept under the character's name is copied
+    -- (core/storage.lua), and saved at once so the copy exists before anything else changes.
+    local state, adopted = Storage.loadOrAdopt(profile.key, profile.adoptFrom)
+    session = { name = profile.name, key = profile.key, kind = profile.kind, state = state }
     ticksSinceSave = 0
     ticksSinceLoad = 0
+    if adopted then
+        saveSession()
+        Logger.note("trackingAccess is on: the collection saved under the character name was copied to the tracking id")
+    end
     Logger.debug("loaded collection for", profile.name, "(" .. profile.key .. ", " .. profile.how .. ") - credits:",
         session.state.credits,
         "unique cards:", Storage.countUniqueOwned(session.state),
@@ -195,6 +202,8 @@ local api = {
     saveNow = saveSession,
     -- The cards of a pack being opened that have not been turned over yet (the collection viewer leaves them out).
     hiddenCards = function() return PackWindow.hiddenCards() end,
+    -- How the logged-in character's collection is saved: "tracking" (the tracking id), "name" or nil (not loaded).
+    keyKind = function() return session and session.kind or nil end,
     openSettings = function() SettingsPage.toggleWindow() end,
     devTools = Dev ~= nil,
 }

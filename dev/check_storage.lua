@@ -287,6 +287,74 @@ do
     check(least > 0 and most < 2 * (#Cards.list / Storage.BUCKETS), "the cards are spread evenly (" .. least .. " to " .. most .. ")")
 end
 
+-- 11. A collection kept under the character's name is copied to the tracking key the first time that key is used
+reset()
+do
+    local nameKey, trackingKey = Storage.keyForName("Some Name"), Storage.keyForTracking("12345")
+    local original = fullState()
+    original.credits, original.xpPool, original.difficulty = 42, 7, "normal"
+    original.stats.packsOpened = 9
+    original.stats.rarities = { common = 5 }
+    Storage.save(nameKey, original)
+    local nameKeysBefore = {}
+    for key, value in pairs(db) do
+        nameKeysBefore[key] = value
+    end
+
+    local state, adopted = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(adopted, "the first time the tracking key is used, the name collection is copied")
+    check(sameOwned(state.owned, original.owned), "every owned card is in the copy")
+    check(state.credits == 42 and state.xpPool == 7 and state.difficulty == "normal" and state.stats.packsOpened == 9
+        and state.stats.rarities.common == 5, "credits, XP pool, difficulty and statistics are in the copy")
+    check(state.dirty and next(state.dirtyBuckets) ~= nil, "the copy is marked to be saved")
+    check(db[trackingKey] == nil, "nothing is written until the first save")
+    check(Storage.save(trackingKey, state), "the copy saves under the tracking key")
+    check(db[trackingKey].credits == 42, "the tracking key holds the copied credits")
+
+    -- The old keys are untouched.
+    local untouched = true
+    for key, value in pairs(nameKeysBefore) do
+        if db[key] ~= value then
+            untouched = false
+        end
+    end
+    check(untouched and db[nameKey] ~= nil, "the name collection is still there, unchanged")
+
+    -- Next time the tracking key wins, and nothing is copied or added again.
+    local again, adoptedAgain = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(not adoptedAgain, "once the tracking key has a save, nothing is copied again")
+    check(sameOwned(again.owned, original.owned) and again.credits == 42, "the tracking collection loads as saved")
+
+    -- Progress after the copy stays under the tracking key and the name collection does not take over.
+    Storage.addCard(again, Cards.variantKey(Cards.list[1].id, "normal"), 2)
+    again.credits = 50
+    Storage.save(trackingKey, again)
+    local third = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(third.credits == 50, "the newer tracking collection is not replaced by the older name one")
+    check(db[nameKey].credits == 42, "the name collection is still the old one")
+end
+
+-- 12. Cases where nothing is copied
+reset()
+do
+    local trackingKey, nameKey = Storage.keyForTracking("1"), Storage.keyForName("Nobody")
+    local state, adopted = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(not adopted and state.credits == 0 and count(state.owned) == 0, "no name collection: a fresh one, nothing copied")
+    state, adopted = Storage.loadOrAdopt(trackingKey, nil)
+    check(not adopted, "no old key: nothing copied")
+    Storage.save(nameKey, fullState())
+    state, adopted = Storage.loadOrAdopt(nameKey, nameKey)
+    check(not adopted and count(state.owned) > 0, "the same key twice just loads it")
+    -- A name collection saved with another bucket count is copied whole and its old keys are not touched.
+    reset()
+    db[nameKey] = { version = 1, buckets = 20, credits = 5 }
+    db[Storage.bucketKey(nameKey, 20)] = { [Cards.variantKey(Cards.list[1].id, "normal")] = 2 }
+    state, adopted = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(adopted and count(state.owned) == 1 and state.staleBuckets == nil, "an older bucket count is copied whole")
+    check(Storage.save(trackingKey, state), "it saves under the tracking key")
+    check(db[Storage.bucketKey(nameKey, 20)] ~= nil, "the name collection's own buckets are not deleted")
+end
+
 if failures > 0 then
     io.stderr:write(failures .. " storage check(s) failed\n")
     os.exit(1)

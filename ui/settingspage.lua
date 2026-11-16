@@ -21,12 +21,15 @@ local SUBSCRIBER = "cardcollector_settings"
 -- the space below keeps the next heading off it. Adjust these to move it.
 local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
--- Three dividers separate the page's four parts: difficulty, effects, card updates and (with the
--- development tools) the developer options.
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 445 + DIVIDER_STEP
+-- Dividers separate the page's parts: difficulty, effects, how the collection is saved, card updates and (with
+-- the development tools) the developer options.
+-- SAVED_HEIGHT is the room for the "Your collection" heading and its note (three lines); a guess, adjust it.
+local SAVED_HEIGHT = 100
+local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 445 + 2 * DIVIDER_STEP + SAVED_HEIGHT
 local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
 
--- api.getState() and api.saveNow(), as for the pack window; api.devTools (true when the
+-- api.getState() and api.saveNow(), as for the pack window; api.keyKind() (how the collection is saved: "tracking",
+-- "name" or nil); api.devTools (true when the
 -- development tools are there) and api.onSettingChanged(id, on), called after an option changes.
 local api = nil
 local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, widgets = {...} }
@@ -95,6 +98,9 @@ local function build(key, parent, width, height)
     end
     page.widgets.effects = checkboxes("General", false)
     divider()
+    view:AddText("Your collection")
+    page.widgets.saved = view:AddText("")
+    divider()
     view:AddText("Card updates")
     page.widgets.updates = view:AddText("")
     if api.devTools then
@@ -120,6 +126,19 @@ local function refreshPage(page)
     end
     if widgets.note.content ~= note then
         widgets.note.content = note
+    end
+
+    local kind = api.keyKind ~= nil and api.keyKind() or nil
+    local saved
+    if kind == "tracking" then
+        saved = "Saved under your character's tracking id, so it stays with you if you rename your character."
+    elseif kind == "name" then
+        saved = "Saved under your character name. Allow trackingAccess to keep it if you rename your character."
+    else
+        saved = "Log in to see how your collection is saved."
+    end
+    if widgets.saved.content ~= saved then
+        widgets.saved.content = saved
     end
 
     local updates = OverlayLoader.playerText()
