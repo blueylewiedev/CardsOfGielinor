@@ -71,7 +71,7 @@ local FLIP_ICON = 24                    -- the Flip pack button (PrettyUI's spri
 
 -- The shuffle and the spread.
 local SHUFFLE_SECONDS, SHUFFLE_ROUNDS = 1.4, 3
-local SHUFFLE_SWING = 0.2                     -- how far the cards swing out to a side, as a fraction of their width
+local SHUFFLE_SWING = 0.1                     -- how far the cards swing out to a side, as a fraction of their width
 local SPREAD_SECONDS, SPREAD_STAGGER = 0.6, 0.05
 local AUTO_STEP = 0.18                  -- seconds between cards when they are turned all at once
 
