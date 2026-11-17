@@ -47,7 +47,9 @@ local PACK_TOP = TOP + PANEL_PAD
 local NAME_Y = PACK_TOP + PACK_H + 10
 local PRICE_Y = NAME_Y + 24 + 3 * 20 + 8
 local PANEL_H = PRICE_Y + 148 + PANEL_PAD - TOP     -- the hint line is the last thing in it
-local WIDTH = PANEL_X + PANEL_W + 44                -- the frame and padding take 44 (Kit.contentWidth)
+-- The window's content is its width less the frame (8 at each side), and what is in it starts LEFT from the left, so the same
+-- is left at the right: the gaps at both sides are equal.
+local WIDTH = PANEL_X + PANEL_W + LEFT + 2 * 8
 
 local TILE_SHADOW = Vector4.new(0.0, 0.0, 0.0, 0.55)
 local TILE_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
