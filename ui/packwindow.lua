@@ -42,9 +42,10 @@ local HOME_MID = HOME_WIDTH + 2 * HOME_SHIFT   -- the width to centre things in
 -- The Home screen is three sections, each a dark panel with a gold heading: the
 -- credits, the collection (a progress bar, then the Collection and Stats buttons, one to a row: PrettyUI makes a
 -- button as wide as its label needs, so two side by side would overlap) and the packs (the Shop button).
-local PANEL_X, PANEL_W = 4, HOME_MID - 8
-local INNER_X, HOME_W = 14, HOME_MID - 28       -- where the text and buttons in a panel start, and their width
-local CREDITS_Y, CREDITS_H = 0, 80
+-- (the window's content is HOME_WIDTH less its 8 pixel frame at each side, and the panels are 6 in from both sides of it)
+local PANEL_X, PANEL_W = 6, HOME_MID - 8
+local INNER_X, HOME_W = 16, HOME_MID - 28       -- where the text and buttons in a panel start, and their width
+local CREDITS_Y, CREDITS_H = 10, 80      -- (10 down from the top, and HEIGHTS.home leaves 10 under the last thing, so the window is even above and below)
 local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 146
 local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
 local EXTRA_TOP = PACKS_Y + PACKS_H + 10          -- where the extra buttons on the Home screen start
@@ -143,10 +144,10 @@ local function buildExtras()
     end
     widgets.extras = {}
     for i, extra in ipairs(api.extraButtons or {}) do
-        widgets.extras[i] = makeButton(screens.home, extra.label, 10, EXTRA_TOP + (i - 1) * 34, HOME_MID - 20, 28, extra.action)
+        widgets.extras[i] = Kit.buttonAt(screens.home, extra.label, INNER_X, EXTRA_TOP + (i - 1) * 34, HOME_W, 28, extra.action)
     end
     local count = #widgets.extras
-    HEIGHTS.home = (count > 0) and (EXTRA_TOP + count * 34 + 12) or (PACKS_Y + PACKS_H + 14)
+    HEIGHTS.home = (count > 0) and (EXTRA_TOP + (count - 1) * 34 + 28 + 10) or (PACKS_Y + PACKS_H + 10)
 end
 
 -- Remakes the extra buttons from api.extraButtons (after the development tools are switched on
@@ -179,18 +180,7 @@ local function buildScreens()
 
     -- home: three sections. Each is a dark panel with a brown border, made before what goes on it.
     local function panel(y, h, heading)
-        local back = ui.Rectangle.new(screens.home)
-        back:SetPos(PANEL_X, y)
-        back:SetSize(PANEL_W, h)
-        back.fill = true
-        back.colour = PANEL_BACK
-        local border = ui.Rectangle.new(screens.home)
-        border:SetPos(PANEL_X, y)
-        border:SetSize(PANEL_W, h)
-        border.fill = false
-        border.outlineThickness = 1
-        border.colour = PANEL_BORDER
-        makeText(screens.home, INNER_X, y + 6, HOME_W, 20, heading, GOLD)
+        Kit.panel(screens.home, PANEL_X, y, PANEL_W, h, heading)
     end
     panel(CREDITS_Y, CREDITS_H, "CREDITS")
     panel(COLLECTION_Y, COLLECTION_H, "COLLECTION")

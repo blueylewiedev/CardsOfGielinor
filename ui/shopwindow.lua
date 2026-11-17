@@ -28,16 +28,17 @@ local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local COLUMNS = 4
 local TILE_H = 144                                  -- a tile is as wide as the pack's outline, TILE_W
 local TILE_W = math.floor(TILE_H * PackArt.OUTLINE.w / PackArt.OUTLINE.h)
-local LEFT = 12                                      -- room between the window's edge and the first tile
+local MARGIN = 10                                    -- what is in the window keeps this from all four edges of its content
+local LEFT = MARGIN                                  -- room between the window's edge and the first tile
 local GAP_X = 28
 local LABEL_H = 20                                  -- the pack's name under its tile
 local ROW_H = TILE_H + LABEL_H + 26
 local GRID_W = LEFT + COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X + 4     -- 4: a tile's shadow
-local TOP = 4
+local TOP = MARGIN
 local HEADING_H = 34                                 -- the "Packs" heading over the tiles
-local HEADING_NUDGE = 6                             -- moves it down so the gaps above and below it match
-local GRID_TOP = TOP + HEADING_H + 14
-local BOTTOM = 20                                   -- room under the panel, above the window's frame
+local HEADING_NUDGE = 0                             -- (the heading is level with the top of the panel)
+local GRID_TOP = TOP + HEADING_H + 8
+local BOTTOM = MARGIN                                -- room under the panel, above the window's frame
 -- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
 local PANEL_X, PANEL_PAD, DETAIL_W = GRID_W + 16, 16, 250
 local PANEL_W = DETAIL_W + 2 * PANEL_PAD
@@ -47,7 +48,9 @@ local PACK_TOP = TOP + PANEL_PAD
 local NAME_Y = PACK_TOP + PACK_H + 10
 local PRICE_Y = NAME_Y + 24 + 3 * 20 + 8
 local PANEL_H = PRICE_Y + 148 + PANEL_PAD - TOP     -- the hint line is the last thing in it
-local WIDTH = PANEL_X + PANEL_W + 44                -- the frame and padding take 44 (Kit.contentWidth)
+-- The window's content is its width less the frame (8 at each side), and what is in it starts LEFT from the left, so the same
+-- is left at the right: the gaps at both sides are equal.
+local WIDTH = PANEL_X + PANEL_W + LEFT + 2 * 8
 
 local TILE_SHADOW = Vector4.new(0.0, 0.0, 0.0, 0.55)
 local TILE_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
@@ -59,6 +62,7 @@ local window, content = nil, nil
 local widgets = {}
 local tiles = {}                  -- pack type id -> { draw, outline }
 local bigPack = nil               -- the large pack: { root, w, destroy() }
+local rowStep = ROW_H             -- the distance from one row of tiles to the next (worked out by build)
 local selected = "standard"       -- the pack type chosen (kept while the plugin runs)
 local quantity = 1                -- how many packs to buy (kept while the plugin runs)
 
@@ -132,7 +136,7 @@ end
 -- One pack's picture, name and click area, in grid cell `index` (counting from 0).
 local function addTile(packType, index)
     local x = LEFT + (index % COLUMNS) * (TILE_W + GAP_X)
-    local y = GRID_TOP + (index // COLUMNS) * ROW_H
+    local y = GRID_TOP + (index // COLUMNS) * rowStep
     local tile = {}
     -- A shadow, the picture, a thin brown border round it, and (when chosen) a gold outline outside that.
     tile.shadow = ui.Rectangle.new(content)
@@ -247,7 +251,13 @@ end
 local function build()
     local offered = Packs.offered()
     local rows = math.max(1, (#offered + COLUMNS - 1) // COLUMNS)
-    local gridBottom = GRID_TOP + (rows - 1) * ROW_H + TILE_H + LABEL_H + 6
+    -- The tiles' rows are spaced out so the last row's names end level with the bottom of the panel (never closer than ROW_H).
+    local lastRowH = TILE_H + LABEL_H + 6
+    rowStep = ROW_H
+    if rows > 1 then
+        rowStep = math.max(ROW_H, (TOP + PANEL_H - GRID_TOP - lastRowH) // (rows - 1))
+    end
+    local gridBottom = GRID_TOP + (rows - 1) * rowStep + lastRowH
     local height = math.max(TOP + PANEL_H, gridBottom) + BOTTOM
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,

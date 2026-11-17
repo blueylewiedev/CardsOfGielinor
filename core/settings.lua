@@ -15,8 +15,8 @@ local KEY = "card_settings"
 -- changed by the button it belongs to (the main window's close button). PrettyUI cuts a
 -- checkbox's label off at about 35 characters (it doesn't wrap), so keep labels shorter than that.
 Settings.options = {
-    { id = "glow", label = "Glow behind rare cards when flipped", default = true },
-    { id = "burst", label = "Colour burst as a card is revealed", default = true },
+    { id = "glow", label = "Glow behind rare cards", default = true },
+    { id = "burst", label = "Colour burst on card reveal", default = true },
     { id = "releasePreview", label = "Preview as released", default = false, dev = true },
     { id = "creditsWindow", label = "Show the credits overlay", default = true },
     { id = "debugLogging", label = "Detailed logging for bug reports", default = false },

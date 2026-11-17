@@ -40,11 +40,14 @@ local CHIP_ACTIVE_BACK = Vector4.new(0.40, 0.30, 0.10, 0.98)   -- a chip whose f
 -- Layout, in the window's content area. Filters across the top, then the cards, then the counts and page buttons.
 local COLUMNS, COLUMN_W, GAP = 4, 216, 12
 local CONTENT_W = COLUMNS * COLUMN_W + (COLUMNS - 1) * GAP
-local WINDOW_SLACK = 30                -- the window's frame takes this much of the width it is made with
-local LEFT = Kit.available() and 4 or 10
-local FILTER_Y = { 4, 40, 76 }         -- the three rows of filters
+-- The window's content is its width less the frame (8 at each side). What is in it keeps MARGIN from all four edges (the
+-- same at both sides and the same above as below), as in the settings window.
+local MARGIN = 10
+local FRAME = Kit.available() and 16 or 0
+local LEFT = MARGIN
+local FILTER_Y = { MARGIN, MARGIN + 36, MARGIN + 72 }   -- the three rows of filters
 local FILTER_H = 28
-local BODY_Y = 118                     -- where the list or grid starts
+local BODY_Y = MARGIN + 114             -- where the list or grid starts
 local DETAIL_SCALE = 2.0               -- the picked card is drawn this big (a card in the grid is CardView.SCALE)
 local DETAIL_W_CARD = math.floor(160 * DETAIL_SCALE)
 local DETAIL_H_CARD = math.floor(224 * DETAIL_SCALE)
@@ -730,7 +733,7 @@ function Viewer.open(newApi)
     end
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
-    local width = CONTENT_W + (Kit.available() and WINDOW_SLACK or 0)
+    local width = CONTENT_W + 2 * MARGIN + FRAME
     window, content = Kit.window(gameWindow, "Collection", width, HEIGHT + Kit.titleBarHeight(), function()
         Viewer.close()
     end, 0.3, 0.02)
