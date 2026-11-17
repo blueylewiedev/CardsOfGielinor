@@ -4,7 +4,7 @@
 -- Two views of the same cards, switched by the swap button in the title bar:
 --   list  a tile for each card (name, rarity, how many copies) tinted by its rarity, with the picked card shown large
 --         beside it, and what is known about it under that.
---   grid  the cards themselves, 8 a page, each with its count underneath. Clicking one opens it in the list.
+--   grid  the cards themselves, 8 a page (4 on a short screen), each with its count underneath. Clicking one opens it in the list.
 --
 -- Everything sits on four equal columns (COLUMN_W wide): the filters, the list (two columns), the picked card (two
 -- columns) and the grid (one card to a column), so the edges line up from the top to the bottom.
@@ -48,19 +48,27 @@ local LEFT = MARGIN
 local FILTER_Y = { MARGIN, MARGIN + 36, MARGIN + 72 }   -- the three rows of filters
 local FILTER_H = 28
 local BODY_Y = MARGIN + 114             -- where the list or grid starts
-local DETAIL_SCALE = 2.0               -- the picked card is drawn this big (a card in the grid is CardView.SCALE)
-local DETAIL_W_CARD = math.floor(160 * DETAIL_SCALE)
-local DETAIL_H_CARD = math.floor(224 * DETAIL_SCALE)
 local ROW_H, ROW_STEP = 46, 50         -- a tile in the list, and the distance from one to the next
-local LIST_ROWS = 13
 local LIST_W = 2 * COLUMN_W + GAP      -- the list takes the first two columns
-local GRID_COLS, GRID_ROWS = COLUMNS, 2
-local TILE_H = CardView.HEIGHT + 44    -- the card, then its caption
-local BODY_H = math.max(LIST_ROWS * ROW_STEP, GRID_ROWS * TILE_H)
-local FOOTER_Y = BODY_Y + BODY_H + 8
-local HEIGHT = FOOTER_Y + 42
+local GRID_COLS = COLUMNS
+local CAPTION_H = 44                   -- under a card in the grid: the gap and the bar with its count
+local FOOTER_GAP, FOOTER_H = 8, 42     -- under the body: the gap, then the counts and the page buttons
 local FOOTER_SHIFT = 22                -- Prev and Next sit this far left of their column, or Next is clipped by the frame
-local GRID_PER_PAGE = GRID_COLS * GRID_ROWS
+
+-- How tall the body (the list, the grid, the picked card) is depends on the screen: see layoutFor. The most that is shown
+-- is 13 list rows, or 2 rows of cards in the grid, and the picked card drawn at DETAIL_MAX; on a short screen there are fewer
+-- rows, smaller cards, and a smaller picked card, down to the limits below.
+local LIST_ROWS_MAX, LIST_ROWS_MIN = 13, 10
+local DETAIL_MAX, DETAIL_MIN = 2.0, 1.25     -- the picked card's size (a card in the grid is CardView.SCALE at most)
+local GRID_MIN_SCALE = 1.1                   -- the smallest a card in the grid is made to keep two rows of them
+local INFO_RESERVE = 190                     -- the room the picked card's info panel may need under the card
+local SCREEN_USED = 0.97                     -- the window may take this much of the screen's height
+
+-- The numbers that depend on the screen, set by applyLayout when the window opens (the full-size layout until then).
+local LIST_ROWS, GRID_ROWS, GRID_PER_PAGE
+local GRID_SCALE, GRID_CARD_W, GRID_CARD_H, TILE_H
+local DETAIL_SCALE, DETAIL_W_CARD, DETAIL_H_CARD
+local BODY_H, FOOTER_Y, HEIGHT
 local CHIP_H, CHIP_STEP = 22, 28       -- a chip, and the distance from one line of chips to the next
 local CHIP_GAP = 6                     -- between chips on a line
 local CHIP_CHAR_W, CHIP_PAD = 8.5, 9   -- a letter's width and the space either side of it: a chip is sized round its text
@@ -75,7 +83,57 @@ end
 local DETAIL_X = columnX(3)            -- the picked card is over the last two columns
 local DETAIL_W = 2 * COLUMN_W + GAP
 
-local api = nil                        -- api.getState() : the logged-in character's collection, or nil
+local function clamp(value, low, high)
+    return math.max(low, math.min(high, value))
+end
+
+-- The sizes that fit a screen `screenHeight` units tall (nil if unknown: then the full size). The window takes at most
+-- SCREEN_USED of the height, less its title bar and frame; what is left after the filters and the footer is the body's.
+--   * list rows: as many as fit, from LIST_ROWS_MAX down to LIST_ROWS_MIN;
+--   * grid: two rows of cards, shrunk down to GRID_MIN_SCALE if that is what it takes, else one row at full size;
+--   * the picked card: as big as the body leaves room for (with INFO_RESERVE under it), from DETAIL_MAX down to DETAIL_MIN.
+-- Below the minimum the window is taller than the screen (the smallest it goes is fixed by what must fit in it).
+-- Returns a table of the numbers; `budget` is the body's height the screen allows.
+function Viewer.layoutFor(screenHeight)
+    local fullTile = CardView.HEIGHT + CAPTION_H
+    local layout = { listRows = LIST_ROWS_MAX, gridRows = 2, gridScale = CardView.SCALE }
+    if screenHeight ~= nil then
+        local budget = math.floor(screenHeight * SCREEN_USED) - Kit.titleBarHeight() - FRAME // 2 - BODY_Y - FOOTER_GAP
+            - FOOTER_H
+        layout.budget = budget
+        if budget < math.max(LIST_ROWS_MAX * ROW_STEP, 2 * fullTile) then
+            layout.listRows = clamp(budget // ROW_STEP, LIST_ROWS_MIN, LIST_ROWS_MAX)
+            local fit = math.floor((budget // 2 - CAPTION_H) / 224 * 100) / 100     -- the card scale two rows allow
+            if fit >= GRID_MIN_SCALE then
+                layout.gridScale = math.min(CardView.SCALE, fit)
+            else
+                layout.gridRows = 1
+            end
+        end
+    end
+    layout.cardW, layout.cardH = math.floor(160 * layout.gridScale), math.floor(224 * layout.gridScale)
+    layout.tileH = layout.cardH + CAPTION_H
+    layout.bodyH = math.max(layout.listRows * ROW_STEP, layout.gridRows * layout.tileH,
+        math.floor(224 * DETAIL_MIN) + 10 + INFO_RESERVE)
+    layout.detailScale = clamp(math.floor((layout.bodyH - 10 - INFO_RESERVE) / 224 * 100) / 100, DETAIL_MIN, DETAIL_MAX)
+    layout.height = BODY_Y + layout.bodyH + FOOTER_GAP + FOOTER_H
+    return layout
+end
+
+-- Makes the numbers above the ones the window is built from.
+local function applyLayout(layout)
+    LIST_ROWS, GRID_ROWS = layout.listRows, layout.gridRows
+    GRID_PER_PAGE = GRID_COLS * GRID_ROWS
+    GRID_SCALE, GRID_CARD_W, GRID_CARD_H, TILE_H = layout.gridScale, layout.cardW, layout.cardH, layout.tileH
+    DETAIL_SCALE = layout.detailScale
+    DETAIL_W_CARD, DETAIL_H_CARD = math.floor(160 * DETAIL_SCALE), math.floor(224 * DETAIL_SCALE)
+    BODY_H = layout.bodyH
+    FOOTER_Y = BODY_Y + BODY_H + FOOTER_GAP
+    HEIGHT = layout.height
+end
+applyLayout(Viewer.layoutFor(nil))
+
+local api = nil                       -- api.getState() : the logged-in character's collection, or nil
 local window, content = nil, nil
 local widgets = {}                     -- text and buttons that stay while the window is open
 local dropdowns = {}
@@ -495,29 +553,29 @@ local function showGrid()
         if entry == nil then
             break
         end
-        local x = columnX((slot - 1) % GRID_COLS + 1) + (COLUMN_W - CardView.WIDTH) // 2
+        local x = columnX((slot - 1) % GRID_COLS + 1) + (COLUMN_W - GRID_CARD_W) // 2
         local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
-        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = entry.finish })
+        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = entry.finish, scale = GRID_SCALE })
         view.root:SetPos(x, y)
         gridParts[#gridParts + 1] = view.root
 
         -- the caption: a bar under the card in the rarity's own colour
         local rarity = Cards.rarities[entry.card.rarity]
-        local caption, back, border = panel(content, x, y + CardView.HEIGHT + 6, CardView.WIDTH, 30)
+        local caption, back, border = panel(content, x, y + GRID_CARD_H + 6, GRID_CARD_W, 30)
         back.colour = tint(rarity.colour, entry.locked and 0.08 or 0.22, 0.92)
         border.colour = toVec4(rarity.colour, entry.locked and 0.35 or 0.8)
         local text = entry.locked and "Not collected" or ("Owned: " .. entry.count)
         if entry.finish ~= "normal" then
             text = Cards.finishes[entry.finish].name .. "  |  " .. text
         end
-        Kit.text(caption, 0, 0, CardView.WIDTH, 30, text, entry.locked and DIM or GOLD)
+        Kit.text(caption, 0, 0, GRID_CARD_W, 30, text, entry.locked and DIM or GOLD)
         gridParts[#gridParts + 1] = caption
 
         -- a click anywhere on the card or its caption opens it in the list
         local grip = ui.Layer.new(content)
         grip.clickthrough = false
         grip:SetPos(x, y)
-        grip:SetSize(CardView.WIDTH, CardView.HEIGHT + 36, 0, 0)
+        grip:SetSize(GRID_CARD_W, GRID_CARD_H + 36, 0, 0)
         local key = entryKey(entry)
         Kit.onWheel(grip, wheelPage)
         grip:Subscribe(ui.Hook.ONCLICK, function()
@@ -722,6 +780,24 @@ end
 
 -- ----- open and close ---------------------------------------------------------------------------------------
 
+-- A number the client gives, or nil if the call fails or gives something else (or 0 or less).
+local function readNumber(read)
+    local ok, value = pcall(read)
+    return (ok and type(value) == "number" and value > 0) and value or nil
+end
+
+-- One line in the log when the viewer opens: the screen's size in units, the interface scale setting and what the viewer
+-- made of them. For a report that the window does not fit.
+local function logScreen(gameWindow, screenHeight)
+    local scale = readNumber(function() return game.options.InterfaceScale.setting end)
+    local label = nil
+    pcall(function() label = game.options.InterfaceScale:GetLabel(scale) end)
+    Logger.note("collection viewer: screen", tostring(readNumber(function() return gameWindow.width end)), "x",
+        tostring(screenHeight), "units | interface scale setting", tostring(scale), "(" .. tostring(label) .. ")",
+        "| list rows", LIST_ROWS, "| grid rows", GRID_ROWS, "at scale", GRID_SCALE, "| picked card at", DETAIL_SCALE,
+        "| window", HEIGHT + Kit.titleBarHeight(), "units tall")
+end
+
 -- Opens the viewer. `newApi` needs getState().
 function Viewer.open(newApi)
     if window ~= nil then
@@ -733,6 +809,9 @@ function Viewer.open(newApi)
     end
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
+    local screenHeight = readNumber(function() return gameWindow.height end)
+    applyLayout(Viewer.layoutFor(screenHeight))
+    logScreen(gameWindow, screenHeight)
     local width = CONTENT_W + 2 * MARGIN + FRAME
     window, content = Kit.window(gameWindow, "Collection", width, HEIGHT + Kit.titleBarHeight(), function()
         Viewer.close()
