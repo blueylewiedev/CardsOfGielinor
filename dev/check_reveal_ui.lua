@@ -238,6 +238,63 @@ for _, mode in ipairs({ { false, "no images" }, { true, "images" } }) do
     for _, n in pairs(Reveal.hiddenCards()) do hidden = hidden + n end
     check(hidden == 0, tag .. ": nothing is hidden after closing")
     Reveal.close()                       -- harmless when nothing is open
+
+    -- The Skip button: from any stage it ends on the cards, face up, and the screen stays until Done
+    for _, when in ipairs({ "sealed", "tearing", "dealing", "cards", "a card turning", "reveal all" }) do
+        local label = tag .. " skip from " .. when
+        local closed = 0
+        local results = makeResults(25)
+        Reveal.start(results, "standard", { onClose = function() closed = closed + 1 end })
+        frames(20)
+        local R = Reveal.state()
+        check(R.skip ~= nil, label .. ": there is a Skip button")
+        if when ~= "sealed" then
+            Reveal.pressMain()
+        end
+        if when == "tearing" then
+            frames(5)
+        elseif when == "dealing" then
+            until_(function() return R.stage == "dealing" end)
+        elseif when == "cards" or when == "a card turning" or when == "reveal all" then
+            until_(function() return R.stage == "cards" end)
+            if when == "a card turning" then
+                R.cards[1].back._handlers.ONCLICK()
+                frames(3)
+            elseif when == "reveal all" then
+                Reveal.pressMain()
+                frames(3)
+            end
+        end
+        Reveal.skip()
+        check(Reveal.active() and R.stage == "cards", label .. ": the cards are down and the screen is still there (" .. tostring(R.stage) .. ")")
+        check(R.skip == nil, label .. ": the Skip button is gone")
+        local function allTurned()
+            for _, c in ipairs(R.cards) do
+                if not c.flipped then return false end
+            end
+            return #R.cards > 0
+        end
+        check(until_(allTurned, 80), label .. ": every card of the page is turned over")
+        check(R.mainLabel == "Next page", label .. ": the main button says Next page, was " .. tostring(R.mainLabel))
+        local shown = 0
+        for _, result in ipairs(results) do
+            if result.seen then shown = shown + 1 end
+        end
+        check(shown == #R.cards, label .. ": the page's cards count as seen (" .. shown .. ")")
+        for page = 2, 3 do
+            Reveal.pressMain()
+            check(until_(function() return R.page == page and R.stage == "cards" and allTurned() end, 120),
+                label .. ": page " .. page .. " is dealt and turned over by itself")
+        end
+        check(R.mainLabel == "Done", label .. ": the last page ends with Done, was " .. tostring(R.mainLabel))
+        Reveal.pressMain()
+        local all = 0
+        for _, result in ipairs(results) do
+            if result.seen then all = all + 1 end
+        end
+        check(not Reveal.active() and closed == 1 and all == 25, label .. ": Done closes it with all 25 cards seen (" .. all .. ")")
+        Reveal.skip()                    -- harmless when nothing is open
+    end
 end
 
 -- A small screen: the cards shrink and the pages are smaller
