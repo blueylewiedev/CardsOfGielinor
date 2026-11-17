@@ -26,6 +26,7 @@ local Version = require("core/version")
 local Identity = require("core/identity")
 local Earning = require("core/earning")
 local SlayerEvents = require("core/slayerevents")
+local BossEvents = require("core/bossevents")
 local PackWindow = require("ui/packwindow")
 local Viewer = require("ui/viewer")
 local Stats = require("ui/stats")
@@ -134,11 +135,14 @@ local function startSession(profile)
 
     -- Slayer credits follow this character's task from where it stands now.
     SlayerEvents.begin()
+    -- and so do their boss kills.
+    BossEvents.begin()
 end
 
 -- Saves and forgets the current character, e.g. on logout.
 local function endSession()
     SlayerEvents.finish()
+    BossEvents.finish()
     if session ~= nil then
         Storage.addPlayTicks(session.state, ticksSinceLoad % Rate.TICKS_PER_MINUTE)   -- the part of a minute since the last count
     end
@@ -205,6 +209,7 @@ function PluginShutdown()
     end
     OverlayLoader.shutdown()
     SlayerEvents.shutdown()
+    BossEvents.shutdown()
     SettingsPage.shutdown()
     Hub.shutdown()
     CreditsWindow.hide()
@@ -310,6 +315,9 @@ Hub.init({
 
 -- Listens for Slayer kills and completions (core/slayerevents.lua); it pays credits once a character is loaded.
 SlayerEvents.start(api)
+
+-- Listens for boss kills (core/bossevents.lua); it pays credits once a character is loaded.
+BossEvents.start(api)
 
 -- With the development tools in use, their buttons go on the Home window.
 applyDevTools()
