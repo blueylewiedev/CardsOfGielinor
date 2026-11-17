@@ -13,6 +13,10 @@
 --     count rose in all four tests and left view in the same tick or one after, so the boss that was last in view at
 --     the moment of the rise is the one killed. (NPCEntityRemoved is no use here: the entities cannot be read when it fires.)
 --
+-- Activities. Some counts are not rises while a boss is in view: the Barrows count rises when the chest is looted, about
+-- 90 seconds after the last brother died, and only Verac of the brothers carries a BSLAY_ID. Those are listed in
+-- Bosses.ACTIVITIES by variable and rise, and pay a fixed amount whatever is in view.
+--
 -- Safeguards. A rise with no boss seen within SEEN_WINDOW ticks pays nothing (the game sends many variables when a character
 -- logs in, and a count can rise for other reasons); everything in the first QUIET_TICKS after the collection loaded is
 -- ignored for the same reason; and a boss that has been paid is not paid again until it has been seen again.
@@ -30,6 +34,14 @@ Bosses.TIERS = {
     { 1000, 1800 },     -- Telos, Araxxi, Kalphite King, Nex, Kezalam, Nakatra, and most others of the last years
     { 500, 800 },       -- the God Wars bosses, Corporeal Beast, Har-Aken, Queen Black Dragon, TzTok-Jad, Zemouregal
     { 0, 400 },         -- King Black Dragon, Giant Mole, Kalphite Queen, Chaos Elemental, the Dagannoth Kings
+}
+
+-- Counts that rise for something other than a boss dying in view: { [variable name] = { [rise] = { name, credits } } }. Found
+-- with the Boss probe; add one only after seeing the count rise in the game.
+Bosses.ACTIVITIES = {
+    BSLAY_BOSS_KILLS2 = {
+        [65536] = { name = "Barrows chest", credits = 1800 },     -- the chest looted (high half of the count)
+    },
 }
 Bosses.DEFAULT_LEVEL = 1        -- the level of a kill when the boss's level is not known
 
@@ -116,6 +128,12 @@ function Tracker:onKillVar(name, old, new)
     if self.now < Bosses.QUIET_TICKS then
         self:say("boss kill count", name, old, "->", new, "ignored: the collection has only just loaded")
         return false
+    end
+    local activity = Bosses.ACTIVITIES[name]
+    activity = activity ~= nil and activity[math.tointeger(new) - math.tointeger(old)] or nil
+    if activity ~= nil then
+        self.env.award("activity", activity.credits, { name = activity.name })
+        return true
     end
     local best, bestId = nil, nil
     for id, boss in pairs(self.bosses) do

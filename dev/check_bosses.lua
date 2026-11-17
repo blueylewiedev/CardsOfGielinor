@@ -160,6 +160,37 @@ do
     check(#paid == 2 and paid[2].credits == 400, "the next sighting is paid at its own level (" .. tostring(paid[2] and paid[2].credits) .. ")")
 end
 
+do
+    -- Barrows: the chest looted, 157 ticks after Verac was last seen (recorded 2026-11-17): paid a fixed 1,800, and once
+    local t, paid = tracker()
+    play(t, 1460)
+    t:seen(2, 150, "Verac the Defiled")
+    play(t, 1472)
+    play(t, 1627)
+    check(t:onKillVar("BSLAY_BOSS_KILLS2", 6226343, 6291879) == true and #paid == 1 and paid[1].credits == 1800
+        and paid[1].info.name == "Barrows chest", "the Barrows chest pays 1,800 with no boss in view")
+    -- and with Verac in view (the chest in the same moments as a brother) it is still the one payment
+    local t2, paid2 = tracker()
+    play(t2, 100)
+    t2:seen(2, 150, "Verac the Defiled")
+    check(t2:onKillVar("BSLAY_BOSS_KILLS2", 6226343, 6291879) == true and #paid2 == 1 and paid2[1].credits == 1800,
+        "with Verac in view the chest still pays once, at the fixed amount")
+    -- the same variable's other half (+1) is not Barrows: it needs a boss in view, as any other count
+    local t3, paid3 = tracker()
+    play(t3, 200)
+    check(t3:onKillVar("BSLAY_BOSS_KILLS2", 423, 424) == false and #paid3 == 0, "the low half of the same count pays nothing with no boss in view")
+    t3:seen(2, 150, "Verac the Defiled")
+    check(t3:onKillVar("BSLAY_BOSS_KILLS2", 423, 424) == true and paid3[1].credits == 400, "and pays the boss's tier with one in view")
+    -- not during the first moments after login
+    local t4, paid4 = tracker()
+    play(t4, 10)
+    check(t4:onKillVar("BSLAY_BOSS_KILLS2", 6226343, 6291879) == false and #paid4 == 0, "the chest count rising just after login pays nothing")
+    -- another variable rising by the same amount is not Barrows
+    local t5, paid5 = tracker()
+    play(t5, 200)
+    check(t5:onKillVar("BSLAY_BOSS_KILLS4", 41222184, 41287720) == false and #paid5 == 0, "another count rising by 65,536 is not Barrows")
+end
+
 if failures > 0 then
     os.exit(1)
 end
