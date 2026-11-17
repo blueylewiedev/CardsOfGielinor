@@ -1,6 +1,7 @@
 -- ui/creditswindow.lua
--- A small overlay that shows only the credits the logged-in character holds: a coin icon, the word "Credits" and the
--- number, on a dark see-through bar with a thin border. It is not a window (no title bar, no buttons): it just sits on
+-- A small overlay that shows the credits the logged-in character holds, and how many an hour they are earning (core/rate.lua):
+-- a coin icon, the word "Credits" and the number, with "Per hour" and its number under them, on a dark see-through bar with
+-- a thin border. It is not a window (no title bar, no buttons): it just sits on
 -- the screen, independent of the main window, which can be closed altogether. Drag it with the mouse to move it; where
 -- it was left is remembered. Clicking it (a press and release without moving) opens the main window. It is switched on
 -- and off from the settings page and the ribbon page (ui/hub.lua), and main.lua remembers
@@ -11,10 +12,12 @@
 local Kit = require("ui/kit")
 local Logger = require("core/logger")
 local Format = require("core/format")
+local Rate = require("core/rate")
 
 local CreditsWindow = {}
 
-local WIDTH, HEIGHT = 170, 30
+local WIDTH, HEIGHT = 170, 52
+local ROW_H = 30                    -- the credits row; the per hour row is under it
 local ICON_SIZE = 24
 local CLICK_SLOP = 4                -- the mouse may move this far between press and release and still be a click
 local PADDING = 6                       -- from the bar's edges to the icon and to the number
@@ -26,6 +29,7 @@ local POSITION_KEY = "credits_window_position"
 local COINS_OBJ = 995                   -- the id of Coins, if the game's list of items does not say
 
 local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
+local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local BACKGROUND = Vector4.new(0.08, 0.07, 0.06, 0.75)
 local BORDER = Vector4.new(0.45, 0.36, 0.22, 0.9)
 
@@ -33,10 +37,10 @@ local api = nil              -- api.getState() : the logged-in character's colle
                              -- api.openMain() : opens the main window (when the bar is clicked)
 local parent = nil           -- the screen layer it is drawn on
 local root, grip = nil, nil     -- root is a layer that holds the bar's parts; grip catches the mouse
-local numberText = nil
+local numberText, rateText = nil, nil
 local posX, posY = 0, 0      -- where the bar is, from the top left of the screen
 local drag = nil             -- while it is being moved: { mouse x and y, bar x and y when the press began }
-local shown = nil            -- the text the number shows now
+local shown, shownRate = nil, nil   -- the text the numbers show now
 
 -- The mouse's position on the screen, or nil if the client cannot say.
 local function mousePosition()
@@ -96,7 +100,7 @@ local function addIcon(bar)
     local ok, sprite = pcall(function()
         local icon = ui.Sprite.new(bar)
         icon:SetSize(ICON_SIZE, ICON_SIZE)
-        icon:SetPos(PADDING, (HEIGHT - ICON_SIZE) // 2)
+        icon:SetPos(PADDING, (ROW_H - ICON_SIZE) // 2)
         icon.associatedObjectID = (id.Obj ~= nil and id.Obj.COINS) or COINS_OBJ
         icon.associatedObjectQuantity = 10000      -- a big pile
         local modes = ui.ObjectQuantityDisplayMode
@@ -184,6 +188,11 @@ function CreditsWindow.refresh()
         numberText.content = text
         shown = text
     end
+    local rate = (api ~= nil and api.getState() ~= nil) and Rate.text() or "-"
+    if rateText ~= nil and rate ~= shownRate then
+        rateText.content = rate
+        shownRate = rate
+    end
 end
 
 -- Puts the overlay on the screen. `newApi` is described at the top.
@@ -215,10 +224,13 @@ function CreditsWindow.show(newApi)
     border.colour = BORDER
 
     addIcon(root)
-    Kit.text(root, LABEL_X, 0, LABEL_W, HEIGHT, "Credits", WHITE, ui.AlignMode.TOPLEFT)
-    numberText = Kit.text(root, NUMBER_X, 0, NUMBER_W, HEIGHT, "", WHITE, ui.AlignMode.BOTTOMRIGHT)
+    Kit.text(root, LABEL_X, 0, LABEL_W, ROW_H, "Credits", WHITE, ui.AlignMode.TOPLEFT)
+    numberText = Kit.text(root, NUMBER_X, 0, NUMBER_W, ROW_H, "", WHITE, ui.AlignMode.BOTTOMRIGHT)
+    -- (a box as tall as the text, so the label at its top and the number at its bottom are level)
+    Kit.text(root, LABEL_X, ROW_H - 2, 70, 18, "Per hour", GREY, ui.AlignMode.TOPLEFT)
+    rateText = Kit.text(root, NUMBER_X, ROW_H - 2, NUMBER_W, 18, "", GREY, ui.AlignMode.BOTTOMRIGHT)
     grip = addGrip()
-    shown = nil
+    shown, shownRate = nil, nil
     CreditsWindow.refresh()
 end
 
@@ -231,7 +243,7 @@ function CreditsWindow.hide()
     if root ~= nil then
         pcall(function() root:Destroy() end)
     end
-    root, grip, numberText, shown = nil, nil, nil, nil
+    root, grip, numberText, rateText, shown, shownRate = nil, nil, nil, nil, nil, nil
 end
 
 -- True while the overlay is on the screen.

@@ -12,6 +12,7 @@
 -- chosen by a hash of the card's id. A pack only rewrites the buckets it changed.
 
 local Cards = require("core/cards")
+local Rate = require("core/rate")
 
 local Storage = {}
 
@@ -308,6 +309,7 @@ end
 function Storage.earnCredits(state, amount)
     state.stats.creditsEarned = state.stats.creditsEarned + amount
     Storage.addCredits(state, amount)
+    Rate.add(amount)
 end
 
 -- Counts one opened pack in the stats. `results` is the list Packs.open builds, each with a

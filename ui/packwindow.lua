@@ -24,6 +24,7 @@ local PluginId = require("core/pluginid")
 local Stats = require("ui/stats")
 local Shop = require("ui/shopwindow")
 local Reveal = require("ui/revealscreen")
+local Rate = require("core/rate")
 
 local PackWindow = {}
 
@@ -43,7 +44,7 @@ local HOME_MID = HOME_WIDTH + 2 * HOME_SHIFT   -- the width to centre things in
 -- button as wide as its label needs, so two side by side would overlap) and the packs (the Shop button).
 local PANEL_X, PANEL_W = 4, HOME_MID - 8
 local INNER_X, HOME_W = 14, HOME_MID - 28       -- where the text and buttons in a panel start, and their width
-local CREDITS_Y, CREDITS_H = 0, 58
+local CREDITS_Y, CREDITS_H = 0, 80
 local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 146
 local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
 local EXTRA_TOP = PACKS_Y + PACKS_H + 10          -- where the extra buttons on the Home screen start
@@ -196,6 +197,7 @@ local function buildScreens()
     panel(PACKS_Y, PACKS_H, "PACKS")
 
     widgets.creditsText = makeText(screens.home, INNER_X, CREDITS_Y + 28, HOME_W, 22, "", WHITE)
+    widgets.rateText = makeText(screens.home, INNER_X, CREDITS_Y + 52, HOME_W, 20, "", GREY)
 
     -- The collection: a bar that fills as the deck is collected, and what it says in words.
     local barY = COLLECTION_Y + 30
@@ -288,6 +290,7 @@ function PackWindow.refresh()
     end
 
     setText(widgets.creditsText, Format.credits(state.credits))
+    setText(widgets.rateText, "Per hour: " .. Rate.text())
     -- The collection bar and the words under it.
     local owned, total = Storage.countUniqueOwned(state), #Cards.list
     local fraction = total > 0 and owned / total or 0

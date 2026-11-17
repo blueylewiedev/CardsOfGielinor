@@ -33,6 +33,7 @@ local Settings = require("core/settings")
 local SettingsPage = require("ui/settingspage")
 local Hub = require("ui/hub")
 local CreditsWindow = require("ui/creditswindow")
+local Rate = require("core/rate")
 local OverlayLoader = require("core/overlayloader")
 
 -- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
@@ -116,6 +117,7 @@ local function startSession(profile)
     session = { name = profile.name, key = profile.key, kind = profile.kind, state = state }
     ticksSinceSave = 0
     ticksSinceLoad = 0
+    Rate.reset()                -- credits per hour start afresh for each character
     if adopted then
         saveSession()
         Logger.note("trackingAccess is on: the collection saved under the character name was copied to the tracking id")
@@ -139,6 +141,7 @@ local function endSession()
     SlayerEvents.finish()
     saveSession()
     session = nil
+    Rate.reset()
 end
 
 -- Runs about every 0.6 seconds. Waits for the character to be available, then loads
@@ -157,6 +160,7 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
         return
     end
 
+    Rate.tick()                 -- the clock of the credits per hour: only runs while a collection is loaded
     ticksSinceSave = ticksSinceSave + 1
     ticksSinceLoad = ticksSinceLoad + 1
     if ticksSinceSave >= SAVE_INTERVAL_TICKS then
