@@ -94,10 +94,12 @@ end
 --   packsOpened, cardsPulled : how many packs were opened and cards pulled from them
 --   creditsEarned            : credits earned from XP (not credits added by the dev tools)
 --   creditsSpent             : credits spent on packs
+--   playTicks                : ticks of play (about 0.6 seconds each, counted while a character's collection is loaded),
+--                              for the average credits per hour over all sessions (core/rate.lua)
 --   finishes                 : { [finish] = cards pulled with that finish }
 --   rarities                 : { [rarity] = cards pulled of that rarity }
 function Storage.newStats()
-    return { packsOpened = 0, cardsPulled = 0, creditsEarned = 0, creditsSpent = 0,
+    return { packsOpened = 0, cardsPulled = 0, creditsEarned = 0, creditsSpent = 0, playTicks = 0,
         finishes = {}, rarities = {} }
 end
 
@@ -171,7 +173,7 @@ function Storage.load(key)
 
     if type(saved.stats) == "table" then
         local stats = state.stats
-        for _, field in ipairs({ "packsOpened", "cardsPulled", "creditsEarned", "creditsSpent" }) do
+        for _, field in ipairs({ "packsOpened", "cardsPulled", "creditsEarned", "creditsSpent", "playTicks" }) do
             local value = saved.stats[field]
             if type(value) == "number" and value > 0 then
                 stats[field] = math.floor(value)
@@ -310,6 +312,15 @@ function Storage.earnCredits(state, amount)
     state.stats.creditsEarned = state.stats.creditsEarned + amount
     Storage.addCredits(state, amount)
     Rate.add(amount)
+end
+
+-- Adds ticks of play to the stats and marks the collection as needing a save (main.lua calls it once a minute of play,
+-- and with what is left over at logout).
+function Storage.addPlayTicks(state, ticks)
+    if ticks > 0 then
+        state.stats.playTicks = state.stats.playTicks + ticks
+        state.dirty = true
+    end
 end
 
 -- Counts one opened pack in the stats. `results` is the list Packs.open builds, each with a

@@ -96,6 +96,13 @@ else
     print("(skipped the Storage check: no way to make a state here)")
 end
 
+-- the average over all sessions
+check(Rate.averagePerHour({ playTicks = 0, creditsEarned = 500 }) == nil, "no average with no play")
+check(Rate.averagePerHour({ playTicks = 100 * 9, creditsEarned = 500 }) == nil, "no average under 10 minutes of play")
+check(near(Rate.averagePerHour({ playTicks = 100 * 30, creditsEarned = 5000 }), 10000), "5000 credits in half an hour is 10000 an hour")
+check(near(Rate.averagePerHour({ playTicks = 100 * 600, creditsEarned = 100000 }), 10000), "100000 in ten hours is 10000 an hour")
+check(Rate.averagePerHour({}) == nil, "an empty stats table has no average")
+
 if failures == 0 then
     print("OK: credits per hour follow the last hour of play")
 else

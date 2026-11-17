@@ -1,12 +1,14 @@
 -- ui/stats.lua
 -- The Stats window: one size whatever is shown, with three tabs across its top:
 --   Collection        : progress bars for all the cards, the NPC cards and the item cards, then one for each rarity
---   Regions           : a progress bar for each region, in two columns
---   Packs and credits : packs opened, cards pulled, credits earned, spent and per hour, and the pull rates by rarity
+--   Regions           : a progress bar for each region, in two columns, and one for the cards that have no region (the
+--                       regions' counts alone would not add up to the deck)
+--   Packs and credits : an overview (packs opened, cards pulled, credits earned and spent, time played and the average
+--                       credits per hour over all sessions) beside the pull rates by rarity, in the rarities' colours
 -- The bars come from Browse.progress (core/browse.lua), counted in one pass over the deck and kept for a few seconds
 -- (the window refreshes every tick, and nothing in a collection changes that fast); cards from a pack that is still being
 -- opened do not count until they have been turned over. The text of the last tab comes from state.stats (see
--- core/storage.lua) through Stats.lines, which has no UI, so it can be tested on its own.
+-- core/storage.lua) through Stats.overview and Stats.pullRates, which have no UI, so they can be tested on their own.
 
 local Cards = require("core/cards")
 local Browse = require("core/browse")
@@ -24,7 +26,8 @@ local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 
 local WIDTH = 560                       -- wide enough for two columns of bars with a label and numbers each
 local LEFT = 10
-local PAGE_H = 290                      -- what a tab's page has room for: the Regions tab, the tallest, is 7 rows of bars
+local TOP_PAD = 14                      -- between the tab strip and what a tab starts with
+local PAGE_H = TOP_PAD + 280            -- what a tab's page has room for: the Regions tab, the tallest, is 7 rows of bars
 local HEIGHT = Kit.TABS_HEIGHT + PAGE_H + 10
 local LINE_H = 22
 local BAR_STEP = Bars.HEIGHT + 4
@@ -42,21 +45,28 @@ local function rate(count, total)
     return string.format("%d (%.1f%%, 1 in %.1f)", count, count * 100 / total, total / count)
 end
 
--- The lines of the "Packs and credits" tab, top to bottom, as { text, colour }. A blank line is { "" }.
-function Stats.lines(state)
+-- The overview, the left half of the "Packs and credits" tab, as { text, colour } lines.
+function Stats.overview(state)
     local s = state.stats
-    local lines = {
+    local average = Rate.averagePerHour(s)
+    return {
         { "Packs opened: " .. Format.credits(s.packsOpened), WHITE },
         { "Cards pulled: " .. Format.credits(s.cardsPulled), WHITE },
         { "Credits earned: " .. Format.credits(s.creditsEarned), WHITE },
         { "Credits spent: " .. Format.credits(s.creditsSpent), WHITE },
-        { "Credits per hour: " .. Rate.text(), WHITE },
+        { "Time played: " .. Format.duration((s.playTicks or 0) * Rate.SECONDS_PER_TICK), WHITE },
+        { "Average credits per hour: " .. (average ~= nil and Format.credits(math.floor(average + 0.5)) or "-"), WHITE },
     }
-    lines[#lines + 1] = { "" }
-    lines[#lines + 1] = { "Pull rates by rarity", GOLD }
+end
+
+-- The pull rates, the right half of the tab, as { text, colour } lines: each in its rarity's colour.
+function Stats.pullRates(state)
+    local s = state.stats
+    local lines = {}
     for _, rarity in ipairs(RARITY_ORDER) do
-        if Cards.rarities[rarity] ~= nil then
-            lines[#lines + 1] = { Cards.rarities[rarity].name .. ": " .. rate(s.rarities[rarity] or 0, s.cardsPulled), GREY }
+        local info = Cards.rarities[rarity]
+        if info ~= nil then
+            lines[#lines + 1] = { info.name .. ": " .. rate(s.rarities[rarity] or 0, s.cardsPulled), Bars.colour(info.colour) }
         end
     end
     return lines
@@ -74,12 +84,14 @@ local cache, cacheAge = nil, 0
 -- The tabs' contents ---------------------------------------------------------------------------------------------------
 
 local EMPTY = { owned = 0, cards = 0 }
+local NO_REGION = "(no region)"           -- the key of the bar for the cards that have none
+local GOLD_BAR = Vector4.new(0.85, 0.68, 0.16, 1.0)
 
 local function viewProgress(page)
     local full = Kit.contentWidth(WIDTH) - 2 * LEFT
     local column = (full - COLUMN_GAP) // 2
     local second = LEFT + column + COLUMN_GAP
-    local bars, y = {}, 0
+    local bars, y = {}, TOP_PAD
     bars.all = Bars.new(page, LEFT, y, full, "All cards", nil, GOLD)
     y = y + BAR_STEP
     bars.npc = Bars.new(page, LEFT, y, column, "NPC cards")
@@ -123,14 +135,18 @@ local function viewRegions(page)
     local bars = {}
     for i, word in ipairs(Cards.tagWords.regions or {}) do
         local x = LEFT + ((i - 1) % 2) * (column + COLUMN_GAP)
-        local y = ((i - 1) // 2) * BAR_STEP
+        local y = TOP_PAD + ((i - 1) // 2) * BAR_STEP
         -- (the numbers only: a region's name and its numbers and a percentage would not fit a column)
         bars[word] = Bars.new(page, x, y, column, Browse.label(word), nil, nil, { percent = false })
     end
+    -- The cards with no region at all: the last bar, after the regions.
+    local last = #(Cards.tagWords.regions or {})
+    bars[NO_REGION] = Bars.new(page, LEFT + (last % 2) * (column + COLUMN_GAP), TOP_PAD + (last // 2) * BAR_STEP, column,
+        "Global (no region)", GOLD_BAR, GOLD, { percent = false })
     return {
         refresh = function(p)
             for word, bar in pairs(bars) do
-                local count = p.regions[word] or EMPTY
+                local count = (word == NO_REGION) and p.noRegion or p.regions[word] or EMPTY
                 bar.set(count.owned, count.cards)
             end
         end,
@@ -141,38 +157,43 @@ local function viewRegions(page)
 end
 
 local function viewPacks(page)
-    local texts = {}
-    local function build(n)
-        for _, text in ipairs(texts) do
-            pcall(function() text:Destroy() end)
+    local full = Kit.contentWidth(WIDTH) - 2 * LEFT
+    local column = (full - COLUMN_GAP) // 2
+    local second = LEFT + column + COLUMN_GAP
+    -- Two columns, each a heading over lines of text: `count` lines, made once and rewritten by refresh.
+    local function makeColumn(x, heading, count)
+        local parts = { Kit.text(page, x, TOP_PAD, column, 20, heading, GOLD, ui.AlignMode.TOPLEFT) }
+        local texts = {}
+        for i = 1, count do
+            texts[i] = Kit.text(page, x, TOP_PAD + 26 + (i - 1) * LINE_H, column, LINE_H, "", WHITE, ui.AlignMode.TOPLEFT)
         end
-        texts = {}
-        for i = 1, n do
-            texts[i] = Kit.text(page, LEFT, (i - 1) * LINE_H, Kit.contentWidth(WIDTH) - 2 * LEFT, LINE_H, "", WHITE,
-                ui.AlignMode.TOPLEFT)
+        return { heading = parts[1], texts = texts }
+    end
+    local function fill(col, lines)
+        for i, text in ipairs(col.texts) do
+            local line = lines[i] or { "" }
+            if text.content ~= line[1] then
+                text.content = line[1]
+            end
+            local colour = line[2] or WHITE
+            if text.colour ~= colour then
+                pcall(function() text.colour = colour end)
+            end
         end
     end
-    build(12)                           -- enough lines for Stats.lines (more are made if it grows)
+    local left = makeColumn(LEFT, "OVERVIEW", 6)
+    local right = makeColumn(second, "PULL RATES", #RARITY_ORDER)
     return {
         refresh = function(_, state)
-            local lines = Stats.lines(state)
-            if #lines > #texts then
-                build(#lines)
-            end
-            for i, text in ipairs(texts) do
-                local line = lines[i] or { "" }
-                if text.content ~= line[1] then
-                    text.content = line[1]
-                end
-                local colour = line[2] or WHITE
-                if text.colour ~= colour then
-                    pcall(function() text.colour = colour end)
-                end
-            end
+            fill(left, Stats.overview(state))
+            fill(right, Stats.pullRates(state))
         end,
         destroy = function()
-            for _, text in ipairs(texts) do
-                pcall(function() text:Destroy() end)
+            for _, col in ipairs({ left, right }) do
+                pcall(function() col.heading:Destroy() end)
+                for _, text in ipairs(col.texts) do
+                    pcall(function() text:Destroy() end)
+                end
             end
         end,
     }

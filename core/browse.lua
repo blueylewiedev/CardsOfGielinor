@@ -237,6 +237,7 @@ end
 --   kinds    : { npc = { cards, owned }, item = { cards, owned } }
 --   rarities : { [rarity id] = { cards, owned } }
 --   regions  : { [region word] = { cards, owned } }   (a card with several regions counts in each)
+--   noRegion : { cards, owned } for the cards that have no region at all (the ones every region's count leaves out)
 -- A card counts as owned when the player has at least one variant of it. `hidden` (optional, { [variant key] = copies }, as
 -- the pack opening gives it) are copies the player has not seen yet: they do not count, so the numbers do not give away
 -- what is in a pack that is still being opened.
@@ -248,7 +249,8 @@ function Browse.progress(state, hidden)
             have[cardId] = true
         end
     end
-    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {} }
+    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
+        noRegion = { cards = 0, owned = 0 } }
     local function count(group, name, owned)
         local bucket = group[name]
         if bucket == nil then
@@ -268,8 +270,15 @@ function Browse.progress(state, hidden)
         end
         count(result.kinds, Cards.kindOf(card), owned)
         count(result.rarities, card.rarity, owned)
-        for _, word in ipairs(card.tags and card.tags.regions or {}) do
+        local regions = card.tags and card.tags.regions or {}
+        for _, word in ipairs(regions) do
             count(result.regions, word, owned)
+        end
+        if #regions == 0 then
+            result.noRegion.cards = result.noRegion.cards + 1
+            if owned then
+                result.noRegion.owned = result.noRegion.owned + 1
+            end
         end
     end
     return result

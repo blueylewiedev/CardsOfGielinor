@@ -131,6 +131,7 @@ do
     local state = fullState()
     state.credits, state.xpPool = 42, 7
     state.stats.packsOpened = 9
+    Storage.addPlayTicks(state, 250)
     check(count(state.owned) > maxEntries, "the test collection is bigger than one value may be (" .. count(state.owned) .. ")")
     check(Storage.save("collection_a", state), "a full collection saves in buckets")
     check(db["collection_a"].owned == nil, "the main key holds no owned cards")
@@ -146,6 +147,7 @@ do
     check(sameOwned(back.owned, state.owned), "every owned card comes back with its count")
     check(back.credits == 42 and back.xpPool == 7 and back.stats.packsOpened == 9,
         "credits, xp pool and stats come back")
+    check(back.stats.playTicks == 250, "the play time comes back, got " .. tostring(back.stats.playTicks))
     check(back.dirty == false and next(back.dirtyBuckets) == nil, "a loaded collection is clean")
 end
 

@@ -131,9 +131,11 @@ hiddenNow = {}
 -- the other views
 Stats.setTab(2)
 check(has("Misthalin") and has("Kharidian desert"), "the Regions tab has a bar for each region")
+check(has("Global %(no region%)"), "the Regions tab has the bar for cards with no region")
 Stats.setTab(3)
 check(has("Packs opened: 12") and has("Credits earned: 123 456"), "the Packs tab has the numbers")
-check(has("Pull rates by rarity"), "the Packs tab has the pull rates")
+check(has("PULL RATES") and has("OVERVIEW"), "the Packs tab has its two headings")
+check(has("Common: "), "the Packs tab has the pull rates")
 Stats.setTab(1)
 check(has("All cards"), "back to the Collection tab")
 
@@ -146,15 +148,26 @@ state = nil
 Stats.refresh()
 check(not Stats.isOpen(), "it closes itself when the character goes")
 
--- the lines of the last view are text only and can be checked alone
+-- the lines of the last tab are text only and can be checked alone
 state = Storage.newState()
 state.stats.packsOpened = 3
-local lines = Stats.lines(state)
-local joined = {}
-for _, line in ipairs(lines) do joined[#joined + 1] = line[1] end
-local text = table.concat(joined, "\n")
-check(string.find(text, "Packs opened: 3", 1, true), "Stats.lines has the packs opened")
-check(string.find(text, "Credits per hour: Calculating", 1, true), "Stats.lines has the credits per hour, Calculating at first")
+local function joined(lines)
+    local out = {}
+    for _, line in ipairs(lines) do out[#out + 1] = line[1] end
+    return table.concat(out, " | ")
+end
+local overview = joined(Stats.overview(state))
+check(string.find(overview, "Packs opened: 3", 1, true), "the overview has the packs opened")
+check(string.find(overview, "Time played: 0m", 1, true), "the overview has the time played")
+check(string.find(overview, "Average credits per hour: -", 1, true), "the average is a dash until there is enough play")
+state.stats.playTicks = 100 * 120          -- two hours
+state.stats.creditsEarned = 24000
+overview = joined(Stats.overview(state))
+check(string.find(overview, "Time played: 2h 00m", 1, true), "two hours played, got " .. overview)
+check(string.find(overview, "Average credits per hour: 12 000", 1, true), "24000 credits in 2 hours is 12 000 an hour, got " .. overview)
+local rates = Stats.pullRates(state)
+check(#rates == 5, "a pull rate line per rarity")
+check(rates[1][2] ~= rates[5][2], "the lines are in the rarities' colours")
 
 if failures == 0 then
     print("OK: the Stats window opens, shows its bars and lines, recounts, and closes on a stand-in client")

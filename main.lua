@@ -139,6 +139,9 @@ end
 -- Saves and forgets the current character, e.g. on logout.
 local function endSession()
     SlayerEvents.finish()
+    if session ~= nil then
+        Storage.addPlayTicks(session.state, ticksSinceLoad % Rate.TICKS_PER_MINUTE)   -- the part of a minute since the last count
+    end
     saveSession()
     session = nil
     Rate.reset()
@@ -163,6 +166,9 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
     Rate.tick()                 -- the clock of the credits per hour: only runs while a collection is loaded
     ticksSinceSave = ticksSinceSave + 1
     ticksSinceLoad = ticksSinceLoad + 1
+    if ticksSinceLoad % Rate.TICKS_PER_MINUTE == 0 then
+        Storage.addPlayTicks(session.state, Rate.TICKS_PER_MINUTE)    -- the play time for the Stats window, a minute at a time
+    end
     if ticksSinceSave >= SAVE_INTERVAL_TICKS then
         ticksSinceSave = 0
         saveSession()

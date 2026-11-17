@@ -89,6 +89,17 @@ function Rate.waitingText()
     return "Calculating" .. string.rep(".", dots) .. string.rep(" ", 3 - dots)
 end
 
+-- The average credits per hour over every session: the credits earned (stats.creditsEarned) over the play time kept in the
+-- stats (stats.playTicks), or nil until AVERAGE_MIN_MINUTES minutes of play have been recorded.
+Rate.AVERAGE_MIN_MINUTES = 10
+function Rate.averagePerHour(stats)
+    local minutes = (stats.playTicks or 0) / Rate.TICKS_PER_MINUTE
+    if minutes < Rate.AVERAGE_MIN_MINUTES then
+        return nil
+    end
+    return (stats.creditsEarned or 0) * 60 / minutes
+end
+
 -- The rate as text for the screen: "12 345", or the waiting text while there is not enough play to say.
 function Rate.text()
     local rate = Rate.perHour()

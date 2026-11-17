@@ -52,6 +52,29 @@ for _, word in ipairs(Cards.tagWords.regions) do
     check(got.cards == want.cards and got.owned == want.owned, "region " .. word .. " matches Browse.counts")
 end
 
+-- the cards without a region, and the regions together, account for the whole deck
+do
+    local none = { cards = 0, owned = 0 }
+    local haveCard = {}
+    for key in pairs(state.owned) do
+        local cardId = Cards.parseKey(key)
+        if cardId ~= nil then haveCard[cardId] = true end
+    end
+    local withRegion = 0
+    for _, card in ipairs(Cards.list) do
+        local regions = card.tags and card.tags.regions or {}
+        if #regions == 0 then
+            none.cards = none.cards + 1
+            if haveCard[card.id] then none.owned = none.owned + 1 end
+        else
+            withRegion = withRegion + 1
+        end
+    end
+    check(progress.noRegion.cards == none.cards and progress.noRegion.owned == none.owned,
+        "noRegion counts the cards with no region: " .. progress.noRegion.cards .. " vs " .. none.cards)
+    check(progress.noRegion.cards + withRegion == #Cards.list, "cards with and without a region make the deck")
+end
+
 -- nothing owned, and everything owned
 local empty = Browse.progress({ owned = {} })
 check(empty.all.owned == 0 and empty.all.cards == #Cards.list, "an empty collection owns nothing")
