@@ -28,15 +28,27 @@ local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local COLUMNS = 4
 local TILE_H = 120                                  -- a tile is as wide as the pack's outline, TILE_W
 local TILE_W = math.floor(TILE_H * PackArt.OUTLINE.w / PackArt.OUTLINE.h)
-local GAP_X = 14
+local LEFT = 12                                      -- room between the window's edge and the first tile
+local GAP_X = 28
 local LABEL_H = 20                                  -- the pack's name under its tile
-local ROW_H = TILE_H + LABEL_H + 10
-local GRID_W = COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X
+local ROW_H = TILE_H + LABEL_H + 26
+local GRID_W = LEFT + COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X + 4     -- 4: a tile's shadow
 local TOP = 28                                      -- the credits line is above this
-local DETAIL_X, DETAIL_W = GRID_W + 24, 250
-local PACK_H = 190                                  -- the large pack
-local DETAIL_H = 440
-local WIDTH = DETAIL_X + DETAIL_W + 44              -- the frame and padding take 44 (Kit.contentWidth)
+-- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
+local PANEL_X, PANEL_PAD, DETAIL_W = GRID_W + 16, 16, 250
+local PANEL_W = DETAIL_W + 2 * PANEL_PAD
+local DETAIL_X = PANEL_X + PANEL_PAD
+local PACK_H = 340                                  -- the large pack (the tiles are 120)
+local PACK_TOP = TOP + PANEL_PAD
+local NAME_Y = PACK_TOP + PACK_H + 10
+local PRICE_Y = NAME_Y + 24 + 3 * 20 + 8
+local PANEL_H = PRICE_Y + 148 + PANEL_PAD - TOP     -- the hint line is the last thing in it
+local WIDTH = PANEL_X + PANEL_W + 44                -- the frame and padding take 44 (Kit.contentWidth)
+
+local TILE_SHADOW = Vector4.new(0.0, 0.0, 0.0, 0.55)
+local TILE_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
+local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)  -- the same dark panel and brown border as the credits overlay
+local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
 
 local api = nil
 local window, content = nil, nil
@@ -89,7 +101,7 @@ local function showSelected()
     local ok, pack = pcall(PackArt.drawFront, content, selected, PACK_H)
     if ok and pack ~= nil then
         bigPack = pack
-        pack.root:SetPos(DETAIL_X + (DETAIL_W - pack.w) // 2, TOP)
+        pack.root:SetPos(DETAIL_X + (DETAIL_W - pack.w) // 2, PACK_TOP)
     else
         Logger.error("shop: the pack could not be drawn:", tostring(pack))
     end
@@ -115,15 +127,27 @@ end
 
 -- One pack's picture, name and click area, in grid cell `index` (counting from 0).
 local function addTile(packType, index)
-    local x = (index % COLUMNS) * (TILE_W + GAP_X)
-    local y = TOP + (index // COLUMNS) * ROW_H
+    local x = LEFT + (index % COLUMNS) * (TILE_W + GAP_X)
+    local y = TOP + 6 + (index // COLUMNS) * ROW_H
     local tile = {}
+    -- A shadow, the picture, a thin brown border round it, and (when chosen) a gold outline outside that.
+    tile.shadow = ui.Rectangle.new(content)
+    tile.shadow:SetPos(x + 4, y + 4)
+    tile.shadow:SetSize(TILE_W, TILE_H)
+    tile.shadow.fill = true
+    tile.shadow.colour = TILE_SHADOW
     tile.draw = PackArt.drawTile(content, packType.id, TILE_H)
     tile.draw.root:SetPos(x, y)
-    tile.label = Kit.text(content, x - GAP_X // 2, y + TILE_H + 2, TILE_W + GAP_X, LABEL_H, shortName(packType), GREY)
+    tile.border = ui.Rectangle.new(content)
+    tile.border:SetPos(x - 1, y - 1)
+    tile.border:SetSize(TILE_W + 2, TILE_H + 2)
+    tile.border.fill = false
+    tile.border.outlineThickness = 1
+    tile.border.colour = TILE_BORDER
+    tile.label = Kit.text(content, x - GAP_X // 2, y + TILE_H + 6, TILE_W + GAP_X, LABEL_H, shortName(packType), GREY)
     tile.outline = ui.Rectangle.new(content)
-    tile.outline:SetPos(x - 2, y - 2)
-    tile.outline:SetSize(TILE_W + 4, TILE_H + 4)
+    tile.outline:SetPos(x - 4, y - 4)
+    tile.outline:SetSize(TILE_W + 8, TILE_H + 8)
     tile.outline.fill = false
     tile.outline.outlineThickness = 2
     tile.outline.colour = GOLD
@@ -199,7 +223,7 @@ function Shop.hide()
     end
     for _, tile in pairs(tiles) do
         tile.draw.destroy()
-        for _, part in ipairs({ tile.label, tile.outline, tile.grip }) do
+        for _, part in ipairs({ tile.shadow, tile.border, tile.label, tile.outline, tile.grip }) do
             pcall(function() part:Destroy() end)
         end
     end
@@ -217,12 +241,12 @@ end
 local function build()
     local offered = Packs.offered()
     local rows = math.max(1, (#offered + COLUMNS - 1) // COLUMNS)
-    local height = TOP + math.max(DETAIL_H, rows * ROW_H)
+    local height = TOP + math.max(PANEL_H, 6 + rows * ROW_H)
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,
         0.3, 0.12)
 
-    widgets.credits = Kit.text(content, 0, 0, 260, 22, "", WHITE, ui.AlignMode.TOPLEFT)
+    widgets.credits = Kit.text(content, LEFT, 0, 260, 22, "", WHITE, ui.AlignMode.TOPLEFT)
     if Packs.typeById(selected) == nil then
         selected = "standard"
     end
@@ -233,13 +257,25 @@ local function build()
         Logger.error("shop: " .. #offered .. " packs, but the grid shows " .. COLUMNS * 4)
     end
 
-    local y = TOP + PACK_H + 6
-    widgets.name = Kit.text(content, DETAIL_X, y, DETAIL_W, 22, "", GOLD)
+    -- The panel behind the chosen pack and the buying controls: made after the tiles and before what goes on it.
+    local back = ui.Rectangle.new(content)
+    back:SetPos(PANEL_X, TOP)
+    back:SetSize(PANEL_W, PANEL_H)
+    back.fill = true
+    back.colour = PANEL_BACK
+    local border = ui.Rectangle.new(content)
+    border:SetPos(PANEL_X, TOP)
+    border:SetSize(PANEL_W, PANEL_H)
+    border.fill = false
+    border.outlineThickness = 1
+    border.colour = PANEL_BORDER
+
+    widgets.name = Kit.text(content, DETAIL_X, NAME_Y, DETAIL_W, 22, "", GOLD)
     widgets.info = {}
     for i = 1, 3 do
-        widgets.info[i] = Kit.text(content, DETAIL_X, y + 24 + (i - 1) * 20, DETAIL_W, 20, "", GREY)
+        widgets.info[i] = Kit.text(content, DETAIL_X, NAME_Y + 24 + (i - 1) * 20, DETAIL_W, 20, "", GREY)
     end
-    y = y + 24 + 3 * 20 + 8
+    local y = PRICE_Y
     widgets.price = Kit.text(content, DETAIL_X, y, DETAIL_W, 22, "", WHITE)
     Kit.text(content, DETAIL_X, y + 28, 80, 26, "Quantity", GREY, ui.AlignMode.TOPLEFT)
     widgets.total = Kit.text(content, DETAIL_X, y + 62, DETAIL_W, 22, "", WHITE)
