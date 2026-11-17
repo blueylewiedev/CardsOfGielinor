@@ -5,8 +5,9 @@
 --   nosession : the character's collection has not loaded yet: a spinner and "Loading your collection..." (the plugin
 --               only runs once a character is in the game, so this is the wait for the tracking id, or for the
 --               permission to show up, not a prompt to log in)
---   home      : credits, the pack to buy (the standard pack and the themed packs in
---               deck/packs.lua), its price and the Open pack button
+--   home      : the dashboard, in three sections (panels): CREDITS, COLLECTION (how much of the deck is owned, and the
+--               Collection and Stats buttons) and PACKS (how many packs the credits buy, and the button that opens the
+--               Shop, ui/shopwindow.lua, where packs are bought)
 --   reveal    : the pulled cards, shown one at a time with a Next button
 --
 -- The reveal (see "The pack opening" below) is animated: a sealed pack, then each card face
@@ -25,7 +26,6 @@ local Stats = require("ui/stats")
 local Shop = require("ui/shopwindow")
 local Settings = require("core/settings")
 local PackArt = require("ui/packart")
-local Carousel = require("ui/carousel")
 local Anim = require("ui/anim")
 
 local PackWindow = {}
@@ -50,16 +50,20 @@ local REVEAL_TOP = CARD_Y + CardView.HEIGHT + GLOW_PAD + 4   -- where the text u
 local STAGE_H = REVEAL_TOP - 4               -- the card area: what moves in it is cropped at its edges
 -- The bottom of the sealed pack's outline (the pack is drawn as tall as a card).
 local PACK_BOTTOM = CARD_Y + math.floor((PackArt.OUTLINE.y + PackArt.OUTLINE.h) * CardView.HEIGHT / PackArt.H)
--- The Home screen is as wide as the reveal screen, for the pack chooser at its top: a drop-down
--- of the packs over a carousel of them (ui/carousel.lua), kept in step. Under it, from HOME_TOP:
--- the price and collection count, the Open pack button, a hint, then the Collection and Stats
--- buttons. The buttons each have a row of their own: PrettyUI makes a button as wide as its label
--- needs, so two side by side would overlap.
-local DROPDOWN_Y = 32
-local CAROUSEL_Y, CAROUSEL_H = 64, 200
-local HOME_TOP = CAROUSEL_Y + CAROUSEL_H + 4
-local HOME_W = REVEAL_MID - 20                -- the width of the text and buttons
-local EXTRA_TOP = HOME_TOP + 218              -- where the extra buttons on the Home screen start
+-- The Home screen is as wide as the reveal screen. It is three sections, each a dark panel with a gold heading: the
+-- credits, the collection (a progress bar, then the Collection and Stats buttons, one to a row: PrettyUI makes a
+-- button as wide as its label needs, so two side by side would overlap) and the packs (the Shop button).
+local PANEL_X, PANEL_W = 4, REVEAL_MID - 8
+local INNER_X, HOME_W = 14, REVEAL_MID - 28       -- where the text and buttons in a panel start, and their width
+local CREDITS_Y, CREDITS_H = 0, 58
+local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 146
+local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
+local EXTRA_TOP = PACKS_Y + PACKS_H + 10          -- where the extra buttons on the Home screen start
+local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)    -- the same dark panel and brown border as the credits overlay
+local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
+local BAR_TRACK = Vector4.new(0.16, 0.14, 0.12, 1.0)
+local BAR_FILL = Vector4.new(0.85, 0.68, 0.16, 1.0)
+local BAR_H = 14
 -- Window height for each screen (Home's is set by buildExtras, as it depends on the extra buttons).
 local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
 local HEIGHTS = { nosession = 90, reveal = REVEAL_TOP + 124 }
@@ -77,16 +81,6 @@ local widgets = {}   -- named pieces that need updating later
 local current = nil  -- name of the screen being shown
 -- The pack being opened. Also the owner of its animations (ui/anim.lua).
 local reveal = { results = nil, index = 0, parts = {}, pips = {}, stage = nil, clock = 0 }
-local chosenPack = "standard"   -- the pack type the Open pack button buys (kept while the plugin runs)
-
--- The pack type to buy: the one chosen, or the standard pack if that one has gone.
-local function currentPack()
-    if Packs.typeById(chosenPack) == nil then
-        chosenPack = "standard"
-    end
-    return chosenPack
-end
-
 -- Text and buttons come from ui/kit.lua, which uses PrettyUI when it is available.
 local makeText = Kit.text
 local makeButton = Kit.button
@@ -1036,24 +1030,7 @@ function PackWindow.startReveal(results, packTypeId)
     end
 end
 
--- The Open pack button: buys and rolls a pack, saves it, then starts the reveal.
-local function onOpenPack()
-    local state = api.getState()
-    if state == nil then
-        return
-    end
-    local packTypeId = currentPack()
-    local results, reason = Packs.open(state, packTypeId)
-    if results == nil then
-        Logger.debug("pack not opened:", reason)
-        PackWindow.refresh()
-        return
-    end
-    api.saveNow()
-    PackWindow.startReveal(results, packTypeId)
-end
-
--- Extra buttons under the main ones on Home, one per row, and the Home screen's height to fit
+-- Extra buttons under the sections on Home, one per row, and the Home screen's height to fit
 -- them. The released plugin has none; the development tools (dev/dev.lua) supply some, while
 -- they are in use. Any made before are removed first.
 local function buildExtras()
@@ -1063,10 +1040,10 @@ local function buildExtras()
     end
     widgets.extras = {}
     for i, extra in ipairs(api.extraButtons or {}) do
-        widgets.extras[i] = makeButton(screens.home, extra.label, 10, EXTRA_TOP + (i - 1) * 34, HOME_W, 28, extra.action)
+        widgets.extras[i] = makeButton(screens.home, extra.label, 10, EXTRA_TOP + (i - 1) * 34, REVEAL_MID - 20, 28, extra.action)
     end
     local count = #widgets.extras
-    HEIGHTS.home = (count > 0) and (EXTRA_TOP + count * 34 + 12) or (EXTRA_TOP + 40)
+    HEIGHTS.home = (count > 0) and (EXTRA_TOP + count * 34 + 12) or (PACKS_Y + PACKS_H + 14)
 end
 
 -- Remakes the extra buttons from api.extraButtons (after the development tools are switched on
@@ -1097,53 +1074,71 @@ local function buildScreens()
     widgets.spinner = Kit.spinner(screens.nosession, (contentWidth - LOADING_SPINNER) // 2, 8, LOADING_SPINNER)
     makeText(screens.nosession, 0, 8 + LOADING_SPINNER + 6, contentWidth, 24, "Loading your collection...", GREY)
 
-    -- home
-    widgets.creditsText = makeText(screens.home, 10, 8, 200, 20, "", WHITE, ui.AlignMode.TOPLEFT)
-    -- The pack to buy, chosen by sliding round the carousel (or from the drop-down, made below).
-    local packIds, entries = {}, {}
-    for _, packType in ipairs(Packs.offered()) do
-        packIds[#packIds + 1] = packType.id
-        entries[#entries + 1] = { label = packType.name, value = packType.id }
+    -- home: three sections. Each is a dark panel with a brown border, made before what goes on it.
+    local function panel(y, h, heading)
+        local back = ui.Rectangle.new(screens.home)
+        back:SetPos(PANEL_X, y)
+        back:SetSize(PANEL_W, h)
+        back.fill = true
+        back.colour = PANEL_BACK
+        local border = ui.Rectangle.new(screens.home)
+        border:SetPos(PANEL_X, y)
+        border:SetSize(PANEL_W, h)
+        border.fill = false
+        border.outlineThickness = 1
+        border.colour = PANEL_BORDER
+        makeText(screens.home, INNER_X, y + 6, HOME_W, 20, heading, GOLD, ui.AlignMode.TOPLEFT)
     end
-    widgets.carousel = Carousel.new(screens.home, 6, CAROUSEL_Y, REVEAL_MID - 12, CAROUSEL_H, packIds, currentPack(),
-        function(packTypeId)
-            chosenPack = packTypeId
-            if widgets.packDropdown ~= nil then
-                widgets.packDropdown.select(packTypeId)
-            end
-            PackWindow.refresh()
-        end)
-    widgets.priceText = makeText(screens.home, 10, HOME_TOP, HOME_W, 20, "", GREY)
-    widgets.collectionText = makeText(screens.home, 10, HOME_TOP + 20, HOME_W, 20, "", GREY)
-    widgets.openButton = makeButton(screens.home, "Open pack", 10, HOME_TOP + 46, HOME_W, 34, onOpenPack, "positive")
-    widgets.hintText = makeText(screens.home, 10, HOME_TOP + 84, HOME_W, 20, "", GOLD)
-    makeButton(screens.home, "Shop", 10, HOME_TOP + 108, HOME_W, 30, function()
-        Shop.toggle({
-            getState = function() return api.getState() end,
-            saveNow = function() api.saveNow() end,
-            busy = PackWindow.busy,
-            startReveal = PackWindow.startReveal,
-        })
-    end)
-    makeButton(screens.home, "Collection", 10, HOME_TOP + 144, HOME_W, 30, function()
+    panel(CREDITS_Y, CREDITS_H, "CREDITS")
+    panel(COLLECTION_Y, COLLECTION_H, "COLLECTION")
+    panel(PACKS_Y, PACKS_H, "PACKS")
+
+    widgets.creditsText = makeText(screens.home, INNER_X, CREDITS_Y + 28, HOME_W, 22, "", WHITE)
+
+    -- The collection: a bar that fills as the deck is collected, and what it says in words.
+    local barY = COLLECTION_Y + 30
+    local track = ui.Rectangle.new(screens.home)
+    track:SetPos(INNER_X, barY)
+    track:SetSize(HOME_W, BAR_H)
+    track.fill = true
+    track.colour = BAR_TRACK
+    widgets.barFill = ui.Rectangle.new(screens.home)
+    widgets.barFill:SetPos(INNER_X + 1, barY + 1)
+    widgets.barFill:SetSize(1, BAR_H - 2)
+    widgets.barFill.fill = true
+    widgets.barFill.colour = BAR_FILL
+    widgets.barFill.hidden = true
+    local trackBorder = ui.Rectangle.new(screens.home)
+    trackBorder:SetPos(INNER_X, barY)
+    trackBorder:SetSize(HOME_W, BAR_H)
+    trackBorder.fill = false
+    trackBorder.outlineThickness = 1
+    trackBorder.colour = PANEL_BORDER
+    widgets.collectionText = makeText(screens.home, INNER_X, COLLECTION_Y + 50, HOME_W, 20, "", GREY)
+    Kit.buttonAt(screens.home, "Collection", INNER_X, COLLECTION_Y + 78, HOME_W, 30, function()
         if Viewer.isOpen() then
             Viewer.close()
         else
             Viewer.open(api)
         end
     end)
-    makeButton(screens.home, "Stats", 10, HOME_TOP + 180, HOME_W, 30, function()
+    Kit.buttonAt(screens.home, "Stats", INNER_X, COLLECTION_Y + 112, HOME_W, 30, function()
         Stats.toggle(api)
     end)
+
+    widgets.affordText = makeText(screens.home, INNER_X, PACKS_Y + 28, HOME_W, 20, "", WHITE)
+    Kit.buttonAt(screens.home, "Open the Shop", INNER_X, PACKS_Y + 54, HOME_W, 34, function()
+        Shop.toggle({
+            getState = function() return api.getState() end,
+            saveNow = function() api.saveNow() end,
+            busy = PackWindow.busy,
+            startReveal = PackWindow.startReveal,
+        })
+    end, "positive")
+
     -- A cog in the top right corner opens the settings window.
     Kit.iconButton(screens.home, "SETTINGS", REVEAL_MID - 50, 4, function() api.openSettings() end, "Settings", "Settings", 80)
     buildExtras()
-    -- The drop-down of packs, made after the rest so its list opens on top of them. Choosing one
-    -- slides the carousel to it (which then makes it the pack to buy).
-    widgets.packDropdown = Kit.dropdown(screens.home, 10, DROPDOWN_Y, HOME_W, 26, entries, currentPack(),
-        function(packTypeId)
-            Carousel.slideTo(widgets.carousel, packTypeId)
-        end)
 
     -- reveal: under the pack or card, the main button (Tear open, Flip card, Next, Done), then
     -- what the card is, then the counter ("5 cards inside", "Card 1 of 5") over the pips.
@@ -1199,21 +1194,29 @@ function PackWindow.refresh()
         return
     end
 
-    local price = Packs.priceFor(currentPack())
-    local poolSize = Packs.poolSize(currentPack())
-    setText(widgets.creditsText, "Credits: " .. Format.credits(state.credits))
-    setText(widgets.priceText, "Price: " .. Format.credits(price) .. " credits")
-    setText(widgets.collectionText, "Collection: " .. Storage.countUniqueOwned(state) .. " of " .. #Cards.list
-        .. " cards")
-    local affordable = state.credits >= price
-    Kit.setEnabled(widgets.openButton, affordable and poolSize > 0)
-    local hint = ""
-    if poolSize == 0 then
-        hint = "No cards in this pack yet"
-    elseif not affordable then
-        hint = "Need " .. Format.credits(price - state.credits) .. " more credits"
+    setText(widgets.creditsText, Format.credits(state.credits))
+    -- The collection bar and the words under it.
+    local owned, total = Storage.countUniqueOwned(state), #Cards.list
+    local fraction = total > 0 and owned / total or 0
+    local barWidth = math.floor((HOME_W - 2) * fraction)
+    if owned > 0 and barWidth < 2 then
+        barWidth = 2                      -- a sliver shows at once
     end
-    setText(widgets.hintText, hint)
+    if widgets.barWidth ~= barWidth then
+        widgets.barWidth = barWidth
+        widgets.barFill.hidden = (barWidth == 0)
+        widgets.barFill:SetSize(math.max(barWidth, 1), BAR_H - 2)
+    end
+    setText(widgets.collectionText, Format.credits(owned) .. " of " .. Format.credits(total) .. " cards ("
+        .. string.format("%.1f", 100 * fraction) .. "%)")
+    -- How many packs the credits buy, at the standard pack's price (the themed packs cost more).
+    local price = Packs.priceFor("standard")
+    local affordable = price > 0 and state.credits // price or 0
+    if affordable >= 1 then
+        setText(widgets.affordText, "You can afford " .. affordable .. (affordable == 1 and " pack" or " packs"))
+    else
+        setText(widgets.affordText, "Next pack in " .. Format.credits(price - state.credits) .. " credits")
+    end
     if current ~= "home" then
         showScreen("home")
     end
@@ -1232,12 +1235,6 @@ function PackWindow.hide()
     clearReveal()
     if widgets.spinner ~= nil then
         pcall(function() widgets.spinner:Stop() end)     -- it listens to the logic tick while it turns
-    end
-    if widgets.carousel ~= nil then
-        Carousel.destroy(widgets.carousel)
-    end
-    if widgets.packDropdown ~= nil then
-        widgets.packDropdown.destroy()
     end
     if window ~= nil then
         pcall(function() window:Destroy() end)
