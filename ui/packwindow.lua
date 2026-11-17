@@ -22,6 +22,7 @@ local Viewer = require("ui/viewer")
 local Kit = require("ui/kit")
 local PluginId = require("core/pluginid")
 local Stats = require("ui/stats")
+local Shop = require("ui/shopwindow")
 local Settings = require("core/settings")
 local PackArt = require("ui/packart")
 local Carousel = require("ui/carousel")
@@ -58,7 +59,7 @@ local DROPDOWN_Y = 32
 local CAROUSEL_Y, CAROUSEL_H = 64, 200
 local HOME_TOP = CAROUSEL_Y + CAROUSEL_H + 4
 local HOME_W = REVEAL_MID - 20                -- the width of the text and buttons
-local EXTRA_TOP = HOME_TOP + 182              -- where the extra buttons on the Home screen start
+local EXTRA_TOP = HOME_TOP + 218              -- where the extra buttons on the Home screen start
 -- Window height for each screen (Home's is set by buildExtras, as it depends on the extra buttons).
 local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
 local HEIGHTS = { nosession = 90, reveal = REVEAL_TOP + 124 }
@@ -189,6 +190,7 @@ local SPARKLE_SPIN = 200               -- degrees each sparkle turns as it flies
 
 -- Pips under the card, one per card in the pack.
 local PIP_W, PIP_H, PIP_GAP = 26, 8, 6
+local MAX_PIPS = 12                  -- more cards than this and there are no pips (they would not fit)
 
 local PIP_UNSEEN = Vector4.new(0.35, 0.35, 0.38, 1.0)
 local CARD_BACK_COLOUR = Vector4.new(0.10, 0.10, 0.14, 1.0)   -- if the card back image is missing
@@ -270,6 +272,9 @@ end
 local function drawPips(flipped)
     clearPips()
     local total = #reveal.results
+    if total > MAX_PIPS then
+        return          -- (several packs at once: the card counter says where you are)
+    end
     local startX = (REVEAL_MID - (total * PIP_W + (total - 1) * PIP_GAP)) // 2
     for i = 1, total do
         local pip = ui.Rectangle.new(content)
@@ -1006,6 +1011,31 @@ end
 
 Event.Draw.Subscribe("cardcollector_reveal", onDraw)
 
+-- True while cards that were bought are still being revealed (a new purchase has to wait).
+function PackWindow.busy()
+    return reveal.results ~= nil
+end
+
+-- Starts the reveal of cards that were just bought (and saved): `results` from Packs.open, `packTypeId` the pack bought.
+function PackWindow.startReveal(results, packTypeId)
+    if window == nil then
+        return
+    end
+    clearReveal()
+    reveal.results = results
+    reveal.packTypeId = packTypeId
+    reveal.clock = 0
+    -- The pack starts front side up; flipped over before it is torn, its cards are dealt face up.
+    reveal.side = "front"
+    reveal.faceUp = false
+    if PackArt.designFor(packTypeId) ~= nil or image("pack") ~= nil then
+        showSealed()
+    else
+        reveal.index = 1
+        dealCard()
+    end
+end
+
 -- The Open pack button: buys and rolls a pack, saves it, then starts the reveal.
 local function onOpenPack()
     local state = api.getState()
@@ -1020,19 +1050,7 @@ local function onOpenPack()
         return
     end
     api.saveNow()
-    clearReveal()
-    reveal.results = results
-    reveal.packTypeId = packTypeId
-    reveal.clock = 0
-    -- The pack starts front side up; flipped over before it is torn, its cards are dealt face up.
-    reveal.side = "front"
-    reveal.faceUp = false
-    if PackArt.designFor(packTypeId) ~= nil or image("pack") ~= nil then
-        showSealed()
-    else
-        reveal.index = 1
-        dealCard()
-    end
+    PackWindow.startReveal(results, packTypeId)
 end
 
 -- Extra buttons under the main ones on Home, one per row, and the Home screen's height to fit
@@ -1099,14 +1117,22 @@ local function buildScreens()
     widgets.collectionText = makeText(screens.home, 10, HOME_TOP + 20, HOME_W, 20, "", GREY)
     widgets.openButton = makeButton(screens.home, "Open pack", 10, HOME_TOP + 46, HOME_W, 34, onOpenPack, "positive")
     widgets.hintText = makeText(screens.home, 10, HOME_TOP + 84, HOME_W, 20, "", GOLD)
-    makeButton(screens.home, "Collection", 10, HOME_TOP + 108, HOME_W, 30, function()
+    makeButton(screens.home, "Shop", 10, HOME_TOP + 108, HOME_W, 30, function()
+        Shop.toggle({
+            getState = function() return api.getState() end,
+            saveNow = function() api.saveNow() end,
+            busy = PackWindow.busy,
+            startReveal = PackWindow.startReveal,
+        })
+    end)
+    makeButton(screens.home, "Collection", 10, HOME_TOP + 144, HOME_W, 30, function()
         if Viewer.isOpen() then
             Viewer.close()
         else
             Viewer.open(api)
         end
     end)
-    makeButton(screens.home, "Stats", 10, HOME_TOP + 144, HOME_W, 30, function()
+    makeButton(screens.home, "Stats", 10, HOME_TOP + 180, HOME_W, 30, function()
         Stats.toggle(api)
     end)
     -- A cog in the top right corner opens the settings window.
@@ -1154,10 +1180,12 @@ function PackWindow.refresh()
         return
     end
     Stats.refresh()
+    Shop.refresh()
     local state = api.getState()
 
     if state == nil then
         Viewer.close()
+        Shop.hide()
         clearReveal()
         if current ~= "nosession" then
             showScreen("nosession")
@@ -1200,6 +1228,7 @@ end
 function PackWindow.hide()
     Viewer.close()
     Stats.hide()
+    Shop.hide()
     clearReveal()
     if widgets.spinner ~= nil then
         pcall(function() widgets.spinner:Stop() end)     -- it listens to the logic tick while it turns

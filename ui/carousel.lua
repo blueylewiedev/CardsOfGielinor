@@ -17,26 +17,7 @@ local SLIDE_SECONDS = 0.3
 local ARROW_W = 24                     -- PrettyUI's sprite buttons are 24 x 24
 local ARROW_GAP = 4                    -- between an arrow and the area the packs slide in
 
--- The front of a pack, `height` tall, in `parent`: { root, w, destroy() }.
-local function drawPack(parent, packTypeId, height)
-    local art = PackArt.designFor(packTypeId)
-    if art ~= nil then
-        local pack = PackArt.new(parent, "front", height)
-        PackArt.draw(pack, art)
-        return { root = pack.root, w = pack.w, destroy = function() PackArt.destroy(pack) end }
-    end
-    -- No design: the pack image.
-    local w = math.floor(height * PackArt.PACK_IMAGE_ASPECT)
-    local root = ui.Layer.new(parent)
-    root:SetSize(w, height)
-    local sprite = ui.Sprite.new(root)
-    sprite:SetSize(w, height)
-    local picture = PackArt.image("pack")
-    if picture ~= nil then
-        sprite.sprite = picture
-    end
-    return { root = root, w = w, destroy = function() pcall(function() root:Destroy() end) end }
-end
+local drawPack = PackArt.drawFront
 
 -- Puts a drawn pack `offset` from the middle of the stage.
 local function place(c, pack, offset)

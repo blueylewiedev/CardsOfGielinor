@@ -493,4 +493,50 @@ function PackArt.destroy(pack)
     pcall(function() pack.root:Destroy() end)
 end
 
+-- The front of a pack type's pack, `height` tall, in `parent`: { root, w, destroy() }. A pack type with a design is drawn
+-- from it (hundreds of parts, so draw it once and keep it); any other shows the plain pack image.
+function PackArt.drawFront(parent, packTypeId, height)
+    local art = PackArt.designFor(packTypeId)
+    if art ~= nil then
+        local pack = PackArt.new(parent, "front", height)
+        PackArt.draw(pack, art)
+        return { root = pack.root, w = pack.w, destroy = function() PackArt.destroy(pack) end }
+    end
+    local w = math.floor(height * PackArt.PACK_IMAGE_ASPECT)
+    local root = ui.Layer.new(parent)
+    root:SetSize(w, height)
+    local sprite = ui.Sprite.new(root)
+    sprite:SetSize(w, height)
+    local picture = PackArt.image("pack")
+    if picture ~= nil then
+        sprite.sprite = picture
+    end
+    return { root = root, w = w, destroy = function() pcall(function() root:Destroy() end) end }
+end
+
+-- A small flat picture of a pack type's pack for a list of packs: the part of the login screen its front shows, in a
+-- layer `height` tall and as wide as the pack's outline (the layer crops the picture). One sprite per picture tile, not
+-- the hundreds of parts of the full pack. A pack type with no design gets the plain pack image. Returns
+-- { root, w, destroy() }.
+function PackArt.drawTile(parent, packTypeId, height)
+    local art = PackArt.designFor(packTypeId)
+    local w = math.floor(height * PackArt.OUTLINE.w / PackArt.OUTLINE.h)
+    local root = ui.Layer.new(parent)
+    root:SetSize(w, height)
+    local parts = {}
+    if art ~= nil then
+        local pictureW = height * PackArt.PICTURE_ASPECT
+        PackArt.drawPicture(root, parts, PackArt.tiles(art.screen), -math.floor(art.front * pictureW), 0, pictureW,
+            height, w, height)
+    else
+        local sprite = ui.Sprite.new(root)
+        sprite:SetSize(w, height)
+        local picture = PackArt.image("pack")
+        if picture ~= nil then
+            sprite.sprite = picture
+        end
+    end
+    return { root = root, w = w, destroy = function() destroyAll(parts); pcall(function() root:Destroy() end) end }
+end
+
 return PackArt
