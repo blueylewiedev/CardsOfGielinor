@@ -35,6 +35,7 @@ local ROW_H = TILE_H + LABEL_H + 26
 local GRID_W = LEFT + COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X + 4     -- 4: a tile's shadow
 local TOP = 4
 local HEADING_H = 34                                 -- the "Packs" heading over the tiles
+local HEADING_NUDGE = 6                             -- moves it down so the gaps above and below it match
 local GRID_TOP = TOP + HEADING_H + 14
 local BOTTOM = 20                                   -- room under the panel, above the window's frame
 -- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
@@ -264,10 +265,10 @@ local function build()
         local w = math.floor(title.w * HEADING_H / title.h + 0.5)
         widgets.heading = ui.Sprite.new(content)
         widgets.heading.sprite = titleImage
-        widgets.heading:SetPos(gridMiddle - w // 2, TOP)
+        widgets.heading:SetPos(gridMiddle - w // 2, TOP + HEADING_NUDGE)
         widgets.heading:SetSize(w, HEADING_H)
     else
-        widgets.heading = Kit.text(content, gridMiddle - 100, TOP, 200, HEADING_H, "Packs", GOLD)
+        widgets.heading = Kit.text(content, gridMiddle - 100, TOP + HEADING_NUDGE, 200, HEADING_H, "Packs", GOLD)
     end
     for index, packType in ipairs(offered) do
         addTile(packType, index - 1)
