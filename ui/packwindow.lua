@@ -179,18 +179,7 @@ local function buildScreens()
 
     -- home: three sections. Each is a dark panel with a brown border, made before what goes on it.
     local function panel(y, h, heading)
-        local back = ui.Rectangle.new(screens.home)
-        back:SetPos(PANEL_X, y)
-        back:SetSize(PANEL_W, h)
-        back.fill = true
-        back.colour = PANEL_BACK
-        local border = ui.Rectangle.new(screens.home)
-        border:SetPos(PANEL_X, y)
-        border:SetSize(PANEL_W, h)
-        border.fill = false
-        border.outlineThickness = 1
-        border.colour = PANEL_BORDER
-        makeText(screens.home, INNER_X, y + 6, HOME_W, 20, heading, GOLD)
+        Kit.panel(screens.home, PANEL_X, y, PANEL_W, h, heading)
     end
     panel(CREDITS_Y, CREDITS_H, "CREDITS")
     panel(COLLECTION_Y, COLLECTION_H, "COLLECTION")

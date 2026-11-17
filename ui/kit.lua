@@ -404,6 +404,55 @@ function Kit.titleButton(window, spriteName, onPress, tooltip)
     return nil
 end
 
+-- A dark panel with a brown border (the same as the credits overlay's) at (x, y), `w` x `h`, in `parent`, with `heading` in
+-- gold across its top if there is one. Made before whatever goes on it. The panel is drawn with rectangles (nothing can be put
+-- inside a rectangle), so the heading and the rest are made in `parent` after it. Returns the heading text, or nil.
+local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)
+local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
+local PANEL_GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
+Kit.PANEL_HEADING_H = 26
+function Kit.panel(parent, x, y, w, h, heading)
+    local back = ui.Rectangle.new(parent)
+    back:SetPos(x, y)
+    back:SetSize(w, h)
+    back.fill = true
+    back.colour = PANEL_BACK
+    local border = ui.Rectangle.new(parent)
+    border:SetPos(x, y)
+    border:SetSize(w, h)
+    border.fill = false
+    border.outlineThickness = 1
+    border.colour = PANEL_BORDER
+    if heading ~= nil then
+        return Kit.text(parent, x, y + 6, w, 20, heading, PANEL_GOLD)
+    end
+    return nil
+end
+
+-- A block of checkboxes, one to a row (Kit.CHECKBOX_ROW_H tall), at (x, y) and `w` wide. `choices` is a list of
+-- { text, value, selected }; onChange(value, selected) is called when one is ticked or cleared. PrettyUI cuts a label off at
+-- about 35 characters at this width. Without PrettyUI each is a toggle button.
+Kit.CHECKBOX_ROW_H = 22
+function Kit.checkboxes(parent, x, y, w, choices, onChange)
+    if Kit.available() and prettyui.CheckboxButton ~= nil then
+        local ok, boxes = pcall(prettyui.CheckboxButton.new, parent, choices, {
+            x = x, y = y, width = w,
+            onChange = function(_, _, value, selected) onChange(value, selected) end,
+        })
+        if ok and boxes ~= nil then
+            return boxes
+        end
+        Logger.error("Kit.checkboxes: PrettyUI checkboxes failed, using buttons:", tostring(boxes))
+    end
+    local handle = { buttons = {} }
+    for i, choice in ipairs(choices) do
+        handle.buttons[i] = Kit.toggleButton(parent, choice.text, x, y + (i - 1) * 26, w, 24, choice.selected == true,
+            function(active) onChange(choice.value, active) end)
+    end
+    handle.Destroy = function() end
+    return handle
+end
+
 -- PrettyUI's tab strip height: the pages start this far under the top of the tabs.
 Kit.TABS_HEIGHT = 42
 
