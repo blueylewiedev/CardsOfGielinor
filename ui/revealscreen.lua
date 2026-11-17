@@ -49,7 +49,7 @@ local GLOW_PAD = 14
 -- The pack.
 local PACK_H_MIN, PACK_H_MAX = 240, 480
 local HOVER_LIFT, HOVER_SECONDS = 10, 0.15
-local HOVER_GLOW_PAD, HOVER_GLOW_ALPHA = 26, 0.4   -- the hover glow: how far it reaches past the pack, and how bright
+local HOVER_GLOW_PAD, HOVER_GLOW_ALPHA = 8, 0.4   -- the hover glow: how far it reaches past the pack, and how bright
 local SWELL_SECONDS = 0.45              -- a pack without a design: it swells and fades
 local RIP_SECONDS = 0.45                -- the tear running across, when it isn't dragged
 local CAP_SECONDS = 0.35
@@ -71,7 +71,7 @@ local FLIP_ICON = 24                    -- the Flip pack button (PrettyUI's spri
 
 -- The shuffle and the spread.
 local SHUFFLE_SECONDS, SHUFFLE_ROUNDS = 1.4, 3
-local SHUFFLE_SWING = 0.4                     -- how far the cards swing out to a side, as a fraction of their width
+local SHUFFLE_SWING = 0.2                     -- how far the cards swing out to a side, as a fraction of their width
 local SPREAD_SECONDS, SPREAD_STAGGER = 0.6, 0.05
 local AUTO_STEP = 0.18                  -- seconds between cards when they are turned all at once
 
@@ -634,7 +634,7 @@ local function setLift(lift)
         tear.cap.root:SetPos(tear.x, tear.y)
     end
     if tear.glow ~= nil then
-        tear.glow:SetPos(tear.x - HOVER_GLOW_PAD, tear.y0 - HOVER_GLOW_PAD)
+        tear.glow:SetPos(tear.x - HOVER_GLOW_PAD, tear.y - HOVER_GLOW_PAD)   -- (it lifts with the pack, so it stays even round it)
     end
 end
 
