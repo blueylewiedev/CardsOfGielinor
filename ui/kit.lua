@@ -407,31 +407,51 @@ end
 -- PrettyUI's tab strip height: the pages start this far under the top of the tabs.
 Kit.TABS_HEIGHT = 42
 
--- Tabs across the top of a box `w` x `h` at (x, y) in `parent`, with a page under each: { pages = { layer, ... }, select(i),
--- destroy() }. A page is a layer the size of the box under the tab strip (Kit.TABS_HEIGHT tall); build what the tab shows
--- in it with positions from its top left. `onChange(i)` is called when the player picks a tab; `selected` is the first one
--- shown. Without PrettyUI the tabs are a row of plain buttons.
-function Kit.tabs(parent, labels, x, y, w, h, onChange, selected)
+-- Tabs across the top of a box in `parent`, with a page under each. Returns a handle:
+--   pages[i]        : the layer to build tab i's contents in, from its top left (it scrolls when the contents are taller
+--                     than the room: see contentHeights)
+--   pageWidth(i)    : how wide that layer is now (less when a scroll bar is showing), or nil if it can't say
+--   setContentHeight(i, h) : how tall tab i's contents are (so it scrolls when the window is shorter)
+--   refresh()       : lays the pages out again, after the box changed size
+--   select(i), destroy()
+-- The box is `w` x `h` at (x, y); with opts.fill it is the whole of `parent` instead (and follows it as it changes size,
+-- x and y being the margins). `onChange(i)` is called when the player picks a tab; `selected` is the first one shown.
+-- opts.contentHeights = { [i] = h } are the tabs' contents' heights to start with. Without PrettyUI the tabs are a row of
+-- plain buttons over plain layers (which do not scroll).
+function Kit.tabs(parent, labels, x, y, w, h, onChange, selected, opts)
     selected = selected or 1
+    opts = opts or {}
     if Kit.available() and prettyui.Tabs ~= nil then
         local ok, result = pcall(function()
             local list = {}
             for i, label in ipairs(labels) do
-                list[i] = { text = label, value = i }
+                list[i] = { text = label, value = i, contentHeight = opts.contentHeights and opts.contentHeights[i] or nil }
             end
-            local tabs = prettyui.Tabs.new(parent, list, {
-                x = x, y = y, width = w, height = h, scrollable = false, activeIndex = selected,
+            local options = {
+                x = x, y = y, width = w, height = h, scrollable = true, activeIndex = selected,
                 onChange = function(_, index) onChange(index) end,
-            })
-            local pages = {}
-            for i = 1, #labels do
-                pages[i] = tabs.pages[i].root
-            end
-            return {
-                pages = pages,
-                select = function(i) tabs:SetActive(i, false) end,
-                destroy = function() tabs:Destroy() end,
             }
+            if opts.fill then
+                options.width, options.height, options.widthAnchor, options.heightAnchor = 0, 0, 1.0, 1.0
+            end
+            local tabs = prettyui.Tabs.new(parent, list, options)
+            local handle = { pages = {} }
+            for i = 1, #labels do
+                handle.pages[i] = tabs.pages[i].content
+            end
+            function handle.pageWidth(i)
+                local ok2, width = pcall(function() return tabs.pages[i].content.width end)
+                return ok2 and type(width) == "number" and width or nil
+            end
+            function handle.setContentHeight(i, height)
+                pcall(function() tabs.pages[i]:SetContentHeight(height) end)
+            end
+            function handle.refresh()
+                pcall(function() tabs:SetActive(tabs:GetActiveIndex(), false) end)
+            end
+            function handle.select(i) tabs:SetActive(i, false) end
+            function handle.destroy() tabs:Destroy() end
+            return handle
         end)
         if ok then
             return result
@@ -457,6 +477,9 @@ function Kit.tabs(parent, labels, x, y, w, h, onChange, selected)
     end
     show(selected)
     handle.select = show
+    handle.pageWidth = function() return w end
+    handle.setContentHeight = function() end
+    handle.refresh = function() end
     handle.destroy = function()
         for _, button in ipairs(handle.buttons) do
             pcall(function() button:Destroy() end)
@@ -683,14 +706,16 @@ end
 -- `scrollable` (PrettyUI only) lets the content be longer than the window and scroll.
 -- `resizable` (PrettyUI only) lets the player drag the window's edge to change its size. The
 -- contents keep their positions, so it only gives more or less room.
+-- `limits` (optional, { minWidth, minHeight }) is how small a resizable window can be made.
 -- PrettyUI windows can be dragged by their title bar.
-function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable)
+function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits)
     xAnchor, yAnchor = xAnchor or 0.2, yAnchor or 0.15
     if Kit.available() and prettyui.Window ~= nil then
         local ok, win = pcall(prettyui.Window.new, parent, {
             title = title, width = width, height = height,
             x = 0, y = 0, xAnchor = xAnchor, yAnchor = yAnchor,
             scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
+            minWidth = limits and limits.minWidth or nil, minHeight = limits and limits.minHeight or nil,
         })
         if ok and win ~= nil and win.content ~= nil then
             return win, win.content

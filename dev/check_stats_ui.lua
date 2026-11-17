@@ -49,6 +49,7 @@ ui = setmetatable({
     AlignMode = setmetatable({}, { __index = function(_, k) return k end }),
     Interfaces = { GetComponent = function() return component("parent") end },
 }, { __index = function() return anything end })
+Event = setmetatable({}, { __index = function() return { Subscribe = function() end } end })
 id = anything
 prettyui = nil
 Vector4 = { new = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end }
