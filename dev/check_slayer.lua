@@ -318,15 +318,32 @@ end
 
 -- XP credits: combat skills earn nothing (fighting pays through the Slayer credits), every other skill does.
 do
+    -- The game's SkillType, every member in its order (developer.runescape.com/rs/game/player.html: 0 ATTACK ... 3 HITPOINTS ...
+    -- 28 NECROMANCY). A wrong name in Earning.COMBAT_SKILLS (Constitution is HITPOINTS) let that skill's XP earn credits.
+    local members = { "ATTACK", "DEFENCE", "STRENGTH", "HITPOINTS", "RANGED", "PRAYER", "MAGIC", "COOKING", "WOODCUTTING",
+        "FLETCHING", "FISHING", "FIREMAKING", "CRAFTING", "SMITHING", "MINING", "HERBLORE", "AGILITY", "THIEVING", "SLAYER",
+        "FARMING", "RUNECRAFTING", "HUNTER", "CONSTRUCTION", "SUMMONING", "DUNGEONEERING", "DIVINATION", "INVENTION",
+        "ARCHAEOLOGY", "NECROMANCY" }
     SkillType = {}
-    for number, name in ipairs({ "ATTACK", "DEFENCE", "STRENGTH", "CONSTITUTION", "RANGED", "PRAYER", "MAGIC", "COOKING",
-        "MINING", "SLAYER", "SUMMONING", "DUNGEONEERING", "NECROMANCY", "DIVINATION" }) do
-        SkillType[name] = { name = name, number = number }   -- the game's members are not plain numbers; compare as given
+    for number, name in ipairs(members) do
+        SkillType[name] = { name = name, number = number - 1 }   -- the game's members are not plain numbers; compare as given
     end
+    check(#members == 29, "the stand-in has the game's 29 skills")
     local Earning = require("core/earning")
     local function gain(skill, from, to) return Earning.xpGainFromEvent({ skill = skill, oldXP = from, newXP = to }) end
+    local combat = {}
     for _, name in ipairs(Earning.COMBAT_SKILLS) do
+        check(SkillType[name] ~= nil, name .. " is a skill the game has (Earning.COMBAT_SKILLS lists real SkillType names)")
         check(gain(SkillType[name], 0, 5000) == 0, name .. " XP earns nothing")
+        combat[name] = true
+    end
+    for _, name in ipairs({ "ATTACK", "DEFENCE", "STRENGTH", "HITPOINTS", "RANGED", "PRAYER", "MAGIC", "SUMMONING", "NECROMANCY", "SLAYER" }) do
+        check(combat[name], name .. " is one of the skills that earn nothing")
+    end
+    for _, name in ipairs(members) do
+        if not combat[name] then
+            check(gain(SkillType[name], 0, 5000) == 5000, name .. " XP still counts")
+        end
     end
     check(gain(SkillType.COOKING, 100, 600) == 500 and gain(SkillType.MINING, 0, 40) == 40, "non-combat XP still counts")
     check(gain(SkillType.SLAYER, 0, 300) == 0, "Slayer XP earns nothing too (the kills pay)")

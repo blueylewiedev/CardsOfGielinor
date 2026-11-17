@@ -10,8 +10,9 @@ Earning.XP_PER_CREDIT = 10
 
 -- The skills whose XP earns nothing: the combat skills (the game's own "combat" group) and Slayer. Fighting pays
 -- through the Slayer credits (core/slayer.lua: a kill and a finished task) and, later, boss kills; Slayer's own XP
--- would pay for the same kills twice. Names are SkillType members.
-Earning.COMBAT_SKILLS = { "ATTACK", "STRENGTH", "DEFENCE", "CONSTITUTION", "RANGED", "PRAYER", "MAGIC",
+-- would pay for the same kills twice. Names are SkillType members (Constitution is HITPOINTS, skill 3: it was listed as
+-- CONSTITUTION, which is not a member, so its XP earned credits until 2026-11-17).
+Earning.COMBAT_SKILLS = { "ATTACK", "STRENGTH", "DEFENCE", "HITPOINTS", "RANGED", "PRAYER", "MAGIC",
     "SUMMONING", "NECROMANCY", "SLAYER" }
 
 -- True if `skill` (the skill of a SkillTransmit event) earns nothing: one of the combat skills, or Slayer.
