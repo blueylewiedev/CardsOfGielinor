@@ -13,7 +13,9 @@
 --               so nothing gives its rarity away early. Each card's 3D model is made when the page is dealt, one card a
 --               frame, so turning one is instant.
 --   When every card of a page is turned the button says Next page, or Done after the last page. "Skip" at the top right
---   closes it at any time (the cards are already in the collection).
+--   jumps to the cards: the rest of the animations are finished at once and every card is turned over (a card a frame, as
+--   its model is made), so the player sees what they got; later pages are dealt and turned the same way. The button goes
+--   once it is used. Next page and Done work as usual; the cards were already in the collection when the pack was bought.
 --
 -- The cards were rolled and saved by core/packs.lua before this starts; this only shows them. A card of results that has
 -- not been turned over has results[i].seen == nil (Reveal.hiddenCards lists them for the collection viewer).
@@ -105,7 +107,7 @@ local image = PackArt.image
 
 -- The reveal under way, or nil. Fields: results, packTypeId, hooks, root, dim, SW, SH, cx (screen middle), scale, cw, ch
 -- (card size), cols, pageSize, page, pages, cards (this page's), slots, stackX, stackY, stage, side, faceUp, clock,
--- tear, status, main, skip, newCards, auto.
+-- tear, status, main, skip, newCards, auto, instant (Skip was used: no more animations).
 local R = nil
 
 local startTear, flipSealed, updateControls, startDealing, onMain, closeReveal, flipCard
@@ -1020,6 +1022,9 @@ local function nextPage()
         R.auto = nil
         makePage(R.page + 1)
         startDealing(true)
+        if R.instant then
+            Anim.skip(R)                         -- (after Skip the cards are just put in their places)
+        end
     else
         closeReveal()
     end
@@ -1045,6 +1050,41 @@ onMain = function()
         end
     end
 end
+
+-- Skip: finishes what is playing (the flipping of the sealed pack, the tear, the shuffle and the dealing, each starting the
+-- next as it ends) until the cards are down, and turns them all over without their animation (see onFrame). Pages after
+-- this one are the same. Does nothing when it has been used already.
+local function skipToCards()
+    if R == nil or R.instant then
+        return
+    end
+    R.instant = true
+    R.auto = nil
+    for _ = 1, 8 do
+        if R == nil or R.stage == "cards" then
+            break
+        end
+        if Anim.running(R) then
+            Anim.skip(R)
+        elseif R.stage == "sealed" then
+            onMain()                             -- tears it open, or swells the pack image away
+        else
+            break
+        end
+    end
+    if R == nil then
+        return
+    end
+    for _, c in ipairs(R.cards) do
+        if c.flipping then
+            Anim.skip(c)
+        end
+    end
+    destroy(R.skip)                              -- nothing left to skip
+    R.skip = nil
+    updateControls()
+end
+Reveal.skip = skipToCards
 
 -- ---------------------------------------------------------------------------------------
 -- Running it.
@@ -1079,6 +1119,18 @@ local function onFrame(dt)
             if c.view == nil and not c.failed then
                 prepare(c)
                 break
+            end
+        end
+        -- After Skip: every card whose face is made is turned over at once (the others as they are made).
+        if R.instant then
+            for _, c in ipairs(R.cards) do
+                if not c.flipped and (c.view ~= nil or c.failed) then
+                    if c.flipping then
+                        Anim.skip(c)
+                    else
+                        showFaceUp(c)
+                    end
+                end
             end
         end
         -- "Reveal all": a card every AUTO_STEP seconds.
@@ -1220,7 +1272,13 @@ local function begin(results, packTypeId, hooks)
         end
     end, "positive")
     R.mainLabel = "Tear open"
-    R.skip = Kit.buttonAt(R.root, "Skip", SW - 150, 24, 110, 30, function() closeReveal() end)
+    R.skip = Kit.buttonAt(R.root, "Skip", SW - 150, 24, 110, 30, function()
+        local ok, err = pcall(skipToCards)
+        if not ok then
+            Logger.error("reveal: Skip failed:", tostring(err))
+            closeReveal()
+        end
+    end, nil, "Show the cards now")
 
     R.results = results
     showSealed()
