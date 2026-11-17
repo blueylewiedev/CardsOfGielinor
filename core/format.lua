@@ -16,6 +16,15 @@ function Format.credits(amount)
     return sign .. grouped
 end
 
+-- A length of time as the Stats window shows it: 7500 seconds -> "2h 05m", 2700 -> "45m", 0 -> "0m".
+function Format.duration(seconds)
+    local minutes = math.floor((tonumber(seconds) or 0) / 60)
+    if minutes < 60 then
+        return minutes .. "m"
+    end
+    return string.format("%dh %02dm", minutes // 60, minutes % 60)
+end
+
 -- What the settings page says about how the collection is saved, as a short line that fits beside an icon (28 letters
 -- at most) and the longer explanation for the icon's tooltip. `kind` is how this session's collection is saved
 -- ("tracking", "name" or nil while the collection is still loading) and `granted` is whether the Tracking permission is on now.

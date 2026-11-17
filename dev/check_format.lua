@@ -48,6 +48,13 @@ do
     end
 end
 
+-- Format.duration
+check(Format.duration(0) == "0m" and Format.duration(59) == "0m" and Format.duration(60) == "1m", "under an hour is minutes")
+check(Format.duration(2700) == "45m", "45 minutes")
+check(Format.duration(3600) == "1h 00m" and Format.duration(7500) == "2h 05m", "an hour or more is hours and minutes")
+check(Format.duration(36000 + 59 * 60) == "10h 59m", "ten hours")
+check(Format.duration(nil) == "0m", "nothing is 0m")
+
 if failures > 0 then
     io.stderr:write(failures .. " check(s) failed\n")
     os.exit(1)
