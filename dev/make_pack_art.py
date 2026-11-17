@@ -53,7 +53,7 @@ GOLD_TOP, GOLD_BOTTOM = (255, 240, 180), (196, 140, 52)
 OUTLINE_COLOUR = (36, 22, 8)
 # Titles for packs that aren't one region's, made after the regions' (gielinor: the standard
 # pack, which has every card).
-EXTRA_TITLES = ["gielinor", "available_packs"]
+EXTRA_TITLES = ["gielinor", "packs"]
 
 
 def lum(p):

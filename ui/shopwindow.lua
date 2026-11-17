@@ -34,9 +34,8 @@ local LABEL_H = 20                                  -- the pack's name under its
 local ROW_H = TILE_H + LABEL_H + 26
 local GRID_W = LEFT + COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X + 4     -- 4: a tile's shadow
 local TOP = 4
-local BANNER_W = 240                                -- the "Available packs" banner over the tiles (4 : 1)
-local BANNER_H = BANNER_W // 4
-local GRID_TOP = TOP + BANNER_H + 8
+local HEADING_H = 34                                 -- the "Packs" heading over the tiles
+local GRID_TOP = TOP + HEADING_H + 14
 local BOTTOM = 20                                   -- room under the panel, above the window's frame
 -- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
 local PANEL_X, PANEL_PAD, DETAIL_W = GRID_W + 16, 16, 250
@@ -224,8 +223,8 @@ function Shop.hide()
         bigPack.destroy()
         bigPack = nil
     end
-    if widgets.banner ~= nil then
-        widgets.banner.destroy()
+    if widgets.heading ~= nil then
+        pcall(function() widgets.heading:Destroy() end)
     end
     for _, tile in pairs(tiles) do
         tile.draw.destroy()
@@ -256,9 +255,19 @@ local function build()
     if Packs.typeById(selected) == nil then
         selected = "standard"
     end
-    local banner = PackArt.drawBanner(content, "available_packs", (LEFT + GRID_W - 4 - BANNER_W) // 2, TOP, BANNER_W)
-    if banner ~= nil then
-        widgets.banner = banner
+    -- The heading is the pack titles' gold lettering (an image, as text can't be scaled), centred over the tiles; plain
+    -- gold text if the image is missing.
+    local gridMiddle = (LEFT + GRID_W - 4) // 2
+    local title = PackArt.titleById("packs")
+    local titleImage = title ~= nil and PackArt.image("title_packs") or nil
+    if titleImage ~= nil then
+        local w = math.floor(title.w * HEADING_H / title.h + 0.5)
+        widgets.heading = ui.Sprite.new(content)
+        widgets.heading.sprite = titleImage
+        widgets.heading:SetPos(gridMiddle - w // 2, TOP)
+        widgets.heading:SetSize(w, HEADING_H)
+    else
+        widgets.heading = Kit.text(content, gridMiddle - 100, TOP, 200, HEADING_H, "Packs", GOLD)
     end
     for index, packType in ipairs(offered) do
         addTile(packType, index - 1)

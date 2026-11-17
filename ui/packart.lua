@@ -514,36 +514,6 @@ function PackArt.drawFront(parent, packTypeId, height)
     return { root = root, w = w, destroy = function() pcall(function() root:Destroy() end) end }
 end
 
--- The pack name's banner with a title on it, `w` wide, at x, y in `parent`: { w, h, destroy() }. `titleId` is one of the
--- images made by dev/make_pack_art.py (ui/packtitles.lua), such as "available_packs". Nil if the banner sprite is unknown.
-function PackArt.drawBanner(parent, titleId, x, y, w)
-    local banner = PackArt.BANNER
-    local sprite = spriteId(banner.sprite)
-    if sprite == nil then
-        return nil
-    end
-    local h = math.floor(w / banner.shape + 0.5)
-    local parts = {}
-    local back = ui.Sprite.new(parent)
-    parts[#parts + 1] = back
-    back.spriteID = sprite
-    back:SetPos(x, y)
-    back:SetSize(w, h)
-    local title = PackArt.titleById(titleId)
-    local titleImage = title and image("title_" .. title.id)
-    if titleImage ~= nil then
-        -- Fitted inside the banner's inner panel, keeping its shape (as on a pack).
-        local scale = math.min(w * banner.innerW / title.w, h * banner.innerH / title.h)
-        local tw, th = math.floor(title.w * scale + 0.5), math.floor(title.h * scale + 0.5)
-        local text = ui.Sprite.new(parent)
-        parts[#parts + 1] = text
-        text.sprite = titleImage
-        text:SetPos(x + (w - tw) // 2, y + (h - th) // 2)
-        text:SetSize(tw, th)
-    end
-    return { w = w, h = h, destroy = function() destroyAll(parts) end }
-end
-
 -- A small flat picture of a pack type's pack for a list of packs: the part of the login screen its front shows, in a
 -- layer `height` tall and as wide as the pack's outline (the layer crops the picture). One sprite per picture tile, not
 -- the hundreds of parts of the full pack. A pack type with no design gets the plain pack image. Returns
