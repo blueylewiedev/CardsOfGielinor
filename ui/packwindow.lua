@@ -44,7 +44,7 @@ local HOME_MID = HOME_WIDTH + 2 * HOME_SHIFT   -- the width to centre things in
 -- button as wide as its label needs, so two side by side would overlap) and the packs (the Shop button).
 local PANEL_X, PANEL_W = 4, HOME_MID - 8
 local INNER_X, HOME_W = 14, HOME_MID - 28       -- where the text and buttons in a panel start, and their width
-local CREDITS_Y, CREDITS_H = 0, 80
+local CREDITS_Y, CREDITS_H = 10, 80      -- (10 down from the top, and HEIGHTS.home leaves 10 under the last thing, so the window is even above and below)
 local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 146
 local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
 local EXTRA_TOP = PACKS_Y + PACKS_H + 10          -- where the extra buttons on the Home screen start
@@ -146,7 +146,7 @@ local function buildExtras()
         widgets.extras[i] = makeButton(screens.home, extra.label, 10, EXTRA_TOP + (i - 1) * 34, HOME_MID - 20, 28, extra.action)
     end
     local count = #widgets.extras
-    HEIGHTS.home = (count > 0) and (EXTRA_TOP + count * 34 + 12) or (PACKS_Y + PACKS_H + 14)
+    HEIGHTS.home = (count > 0) and (EXTRA_TOP + (count - 1) * 34 + 28 + 10) or (PACKS_Y + PACKS_H + 10)
 end
 
 -- Remakes the extra buttons from api.extraButtons (after the development tools are switched on
