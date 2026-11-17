@@ -34,6 +34,9 @@ local LABEL_H = 20                                  -- the pack's name under its
 local ROW_H = TILE_H + LABEL_H + 26
 local GRID_W = LEFT + COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X + 4     -- 4: a tile's shadow
 local TOP = 4
+local BANNER_W = 240                                -- the "Available packs" banner over the tiles (4 : 1)
+local BANNER_H = BANNER_W // 4
+local GRID_TOP = TOP + BANNER_H + 8
 local BOTTOM = 20                                   -- room under the panel, above the window's frame
 -- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
 local PANEL_X, PANEL_PAD, DETAIL_W = GRID_W + 16, 16, 250
@@ -129,7 +132,7 @@ end
 -- One pack's picture, name and click area, in grid cell `index` (counting from 0).
 local function addTile(packType, index)
     local x = LEFT + (index % COLUMNS) * (TILE_W + GAP_X)
-    local y = TOP + 6 + (index // COLUMNS) * ROW_H
+    local y = GRID_TOP + (index // COLUMNS) * ROW_H
     local tile = {}
     -- A shadow, the picture, a thin brown border round it, and (when chosen) a gold outline outside that.
     tile.shadow = ui.Rectangle.new(content)
@@ -221,6 +224,9 @@ function Shop.hide()
         bigPack.destroy()
         bigPack = nil
     end
+    if widgets.banner ~= nil then
+        widgets.banner.destroy()
+    end
     for _, tile in pairs(tiles) do
         tile.draw.destroy()
         for _, part in ipairs({ tile.shadow, tile.border, tile.label, tile.outline, tile.grip }) do
@@ -241,13 +247,18 @@ end
 local function build()
     local offered = Packs.offered()
     local rows = math.max(1, (#offered + COLUMNS - 1) // COLUMNS)
-    local height = TOP + math.max(PANEL_H, 6 + rows * ROW_H) + BOTTOM
+    local gridBottom = GRID_TOP + (rows - 1) * ROW_H + TILE_H + LABEL_H + 6
+    local height = math.max(TOP + PANEL_H, gridBottom) + BOTTOM
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,
         0.3, 0.12)
 
     if Packs.typeById(selected) == nil then
         selected = "standard"
+    end
+    local banner = PackArt.drawBanner(content, "available_packs", (LEFT + GRID_W - 4 - BANNER_W) // 2, TOP, BANNER_W)
+    if banner ~= nil then
+        widgets.banner = banner
     end
     for index, packType in ipairs(offered) do
         addTile(packType, index - 1)
