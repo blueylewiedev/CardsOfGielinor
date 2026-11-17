@@ -79,6 +79,7 @@ local content = nil  -- the component inside the window frame that the screens a
 local screens = {}   -- screen name -> Layer
 local widgets = {}   -- named pieces that need updating later
 local current = nil  -- name of the screen being shown
+local settingsButton = nil   -- the cog in the title bar, while Home is showing (see showScreen)
 -- The pack being opened. Also the owner of its animations (ui/anim.lua).
 local reveal = { results = nil, index = 0, parts = {}, pips = {}, stage = nil, clock = 0 }
 -- Text and buttons come from ui/kit.lua, which uses PrettyUI when it is available.
@@ -100,6 +101,20 @@ local function showScreen(name)
         layer.hidden = (screenName ~= name)
     end
     window:SetSize(({ reveal = REVEAL_WIDTH, home = REVEAL_WIDTH })[name] or WIDTH, HEIGHTS[name] + (Kit.available() and TITLE_BAR or 0))
+    -- The settings cog sits in the title bar, which is where the window's width puts it, so it is made once the window
+    -- has this screen's size and taken away when another screen shows. Without PrettyUI there is no title bar, so the
+    -- cog is a button on the Home screen instead.
+    if settingsButton ~= nil then
+        pcall(function() settingsButton:Destroy() end)
+        settingsButton = nil
+    end
+    if name == "home" then
+        settingsButton = Kit.titleButton(window, "SETTINGS", function() api.openSettings() end, "Settings")
+        if settingsButton == nil and widgets.settingsFallback == nil then
+            widgets.settingsFallback = Kit.iconButton(screens.home, "SETTINGS", REVEAL_MID - 50, 4,
+                function() api.openSettings() end, "Settings", "Settings", 80)
+        end
+    end
     -- The spinner only turns while its screen is showing.
     if widgets.spinner ~= nil then
         pcall(function()
@@ -1087,7 +1102,7 @@ local function buildScreens()
         border.fill = false
         border.outlineThickness = 1
         border.colour = PANEL_BORDER
-        makeText(screens.home, INNER_X, y + 6, HOME_W, 20, heading, GOLD, ui.AlignMode.TOPLEFT)
+        makeText(screens.home, INNER_X, y + 6, HOME_W, 20, heading, GOLD)
     end
     panel(CREDITS_Y, CREDITS_H, "CREDITS")
     panel(COLLECTION_Y, COLLECTION_H, "COLLECTION")
@@ -1136,8 +1151,6 @@ local function buildScreens()
         })
     end, "positive")
 
-    -- A cog in the top right corner opens the settings window.
-    Kit.iconButton(screens.home, "SETTINGS", REVEAL_MID - 50, 4, function() api.openSettings() end, "Settings", "Settings", 80)
     buildExtras()
 
     -- reveal: under the pack or card, the main button (Tear open, Flip card, Next, Done), then
@@ -1229,6 +1242,10 @@ end
 
 -- Closes the window and everything that belongs to it (collection, statistics, any reveal).
 function PackWindow.hide()
+    if settingsButton ~= nil then
+        pcall(function() settingsButton:Destroy() end)
+        settingsButton = nil
+    end
     Viewer.close()
     Stats.hide()
     Shop.hide()
