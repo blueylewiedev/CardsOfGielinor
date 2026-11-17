@@ -121,14 +121,15 @@ end
 reset()
 do
     local state = Storage.load("collection_nobody")
-    check(state.credits == 0 and count(state.owned) == 0 and state.dirty == false, "a fresh collection is empty and clean")
+    check(state.credits == Storage.STARTER_CREDITS and count(state.owned) == 0 and state.dirty == true,
+        "a fresh collection has only the starter credits, and is marked for saving")
 end
 
 -- 2. A full collection saves under a limit one value could not meet, and loads back whole
 reset()
 do
     local state = fullState()
-    state.credits, state.xpPool, state.difficulty = 42, 7, "normal"
+    state.credits, state.xpPool = 42, 7
     state.stats.packsOpened = 9
     check(count(state.owned) > maxEntries, "the test collection is bigger than one value may be (" .. count(state.owned) .. ")")
     check(Storage.save("collection_a", state), "a full collection saves in buckets")
@@ -143,8 +144,8 @@ do
     check(biggest <= maxEntries / 2, "every bucket has room to double (biggest " .. biggest .. " of " .. maxEntries .. "): time for more buckets")
     local back = Storage.load("collection_a")
     check(sameOwned(back.owned, state.owned), "every owned card comes back with its count")
-    check(back.credits == 42 and back.xpPool == 7 and back.difficulty == "normal" and back.stats.packsOpened == 9,
-        "credits, xp pool, difficulty and stats come back")
+    check(back.credits == 42 and back.xpPool == 7 and back.stats.packsOpened == 9,
+        "credits, xp pool and stats come back")
     check(back.dirty == false and next(back.dirtyBuckets) == nil, "a loaded collection is clean")
 end
 
@@ -292,7 +293,7 @@ reset()
 do
     local nameKey, trackingKey = Storage.keyForName("Some Name"), Storage.keyForTracking("12345")
     local original = fullState()
-    original.credits, original.xpPool, original.difficulty = 42, 7, "normal"
+    original.credits, original.xpPool = 42, 7
     original.stats.packsOpened = 9
     original.stats.rarities = { common = 5 }
     Storage.save(nameKey, original)
@@ -304,8 +305,8 @@ do
     local state, adopted = Storage.loadOrAdopt(trackingKey, nameKey)
     check(adopted, "the first time the tracking key is used, the name collection is copied")
     check(sameOwned(state.owned, original.owned), "every owned card is in the copy")
-    check(state.credits == 42 and state.xpPool == 7 and state.difficulty == "normal" and state.stats.packsOpened == 9
-        and state.stats.rarities.common == 5, "credits, XP pool, difficulty and statistics are in the copy")
+    check(state.credits == 42 and state.xpPool == 7 and state.stats.packsOpened == 9
+        and state.stats.rarities.common == 5, "credits, XP pool and statistics are in the copy")
     check(state.dirty and next(state.dirtyBuckets) ~= nil, "the copy is marked to be saved")
     check(db[trackingKey] == nil, "nothing is written until the first save")
     check(Storage.save(trackingKey, state), "the copy saves under the tracking key")
@@ -339,7 +340,8 @@ reset()
 do
     local trackingKey, nameKey = Storage.keyForTracking("1"), Storage.keyForName("Nobody")
     local state, adopted = Storage.loadOrAdopt(trackingKey, nameKey)
-    check(not adopted and state.credits == 0 and count(state.owned) == 0, "no name collection: a fresh one, nothing copied")
+    check(not adopted and state.credits == Storage.STARTER_CREDITS and count(state.owned) == 0,
+        "no name collection: a fresh one, nothing copied")
     state, adopted = Storage.loadOrAdopt(trackingKey, nil)
     check(not adopted, "no old key: nothing copied")
     Storage.save(nameKey, fullState())

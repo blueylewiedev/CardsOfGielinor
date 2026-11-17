@@ -100,7 +100,7 @@ Cards.MAX_WEIGHT = 1000
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
---   priceFactor   : multiplies the price of the player's difficulty tier (default 1)
+--   priceFactor   : multiplies the price of a pack, Packs.PRICE (default 1)
 --   size          : cards in the pack (default Packs.PACK_SIZE)
 --   filter        : optional. Only cards matching it can be pulled. Each key is a tag kind
 --                   (or "kind"), each value a word or a list of words (any one matches). All

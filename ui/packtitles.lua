@@ -14,4 +14,5 @@ return {
     { id = "anachronia", text = "Anachronia", w = 285, h = 42 },
     { id = "havenhythe", text = "Havenhythe", w = 281, h = 42 },
     { id = "gielinor", text = "Gielinor", w = 207, h = 42 },
+    { id = "packs", text = "Packs", w = 136, h = 43 },
 }

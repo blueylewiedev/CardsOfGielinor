@@ -1,16 +1,14 @@
 -- ui/settingspage.lua
--- The plugin's settings, built with PrettyUI. They let the player change the pack difficulty
--- of the logged-in character and switch the card effects on and off.
+-- The plugin's settings, built with PrettyUI. They let the player switch the card effects on and off and show how
+-- the collection is saved and whether card updates are on.
 --
 -- The same page is shown in two places, each kept up to date:
 --   "client" : the plugin's page in the client's settings (needs "hasSettingsIcon" in plugin.json)
 --   "window" : a window of its own, opened by the Settings button in the main window
 
-local Packs = require("core/packs")
 local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
 local Settings = require("core/settings")
-local Storage = require("core/storage")
 local Format = require("core/format")
 local OverlayLoader = require("core/overlayloader")
 local Kit = require("ui/kit")
@@ -22,14 +20,14 @@ local SUBSCRIBER = "cardcollector_settings"
 -- the space below keeps the next heading off it. Adjust these to move it.
 local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
--- Dividers separate the page's parts: difficulty, effects, how the collection is saved, card updates and (with
--- the development tools) the developer options.
+-- Dividers separate the page's parts: the options, how the collection is saved, card updates and (with the
+-- development tools) the developer options.
 -- The "Your collection" part adds a heading, one line of text and a divider. Its text and the card updates text are
 -- short, with an info icon beside them that shows the explanation as a tooltip (the tooltip wraps itself, so the
 -- rows stay one line). The text is as wide as the page less the margins and the icon.
 local SAVED_HEIGHT = 56         -- the heading and the line, a guess like the other heights here
 local ICON_WIDTH, MARGINS = 24, 44
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 445 + 2 * DIVIDER_STEP + SAVED_HEIGHT
+local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 259 + 2 * DIVIDER_STEP + SAVED_HEIGHT
 local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
 
 -- api.getState() and api.saveNow(), as for the pack window; api.keyKind() (how the collection is saved: "tracking",
@@ -38,7 +36,6 @@ local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer option
 local api = nil
 local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, widgets = {...} }
 local window = nil       -- the settings window's frame, while it is open
-local updating = false   -- true while the page itself changes a control, so that is not mistaken for the player
 
 -- Removes one of the two copies of the page ("client" or "window") from the screen.
 local function destroyPage(key)
@@ -57,30 +54,10 @@ local function build(key, parent, width, height)
     pages[key] = page
     view:AddTitle(PluginId.TITLE)
 
-    view:AddText("Pack difficulty")
-    local choices = {}
-    for _, tier in ipairs(Packs.tiers) do
-        choices[#choices + 1] = { text = tier.name .. " - " .. tier.price .. " credits per pack", value = tier.id }
-    end
-    page.widgets.difficulty = view:AddRadioButton(choices, {
-        onChange = function(_, value)
-            if updating then
-                return
-            end
-            local state = api.getState()
-            if state ~= nil then
-                Storage.setDifficulty(state, value)
-                api.saveNow()
-            end
-        end,
-    })
-    page.widgets.note = view:AddText("")
-
     -- PrettyUI's divider is 60 units tall by default; `height` shrinks it if it is supported.
     local function divider()
         view:AddDivider({ height = DIVIDER_HEIGHT, marginTop = DIVIDER_ABOVE, marginBottom = DIVIDER_BELOW })
     end
-    divider()
 
     -- The options, as checkboxes: the effects, then (only with the development tools) theirs.
     local function checkboxes(heading, dev)
@@ -140,22 +117,6 @@ end
 -- Brings one page in step with the logged-in character.
 local function refreshPage(page)
     local widgets = page.widgets
-    local state = api.getState()
-    local tier = state and Packs.tierFor(state) or nil
-    widgets.difficulty:SetDisabled(state == nil or tier == nil)
-
-    local note
-    if state == nil then
-        note = "Loading your collection..."
-    elseif tier == nil then
-        note = "Choose one in the main window first."
-    else
-        note = "Applies to this character."
-    end
-    if widgets.note.content ~= note then
-        widgets.note.content = note
-    end
-
     -- How this session's collection is saved is fixed at login; the permission can change after that, and takes
     -- effect at the next login, so the line says so (Format.collectionLine).
     local granted = false
@@ -163,13 +124,6 @@ local function refreshPage(page)
     local kind = api.keyKind ~= nil and api.keyKind() or nil
     showLine(page, "saved", Format.collectionLine(kind, granted))
     showLine(page, "updates", OverlayLoader.playerLine())
-
-    local shown = tier and tier.id or nil
-    if widgets.difficulty:GetSelectedValue() ~= shown then
-        updating = true
-        widgets.difficulty:SetSelectedValue(shown)
-        updating = false
-    end
 end
 
 -- Keeps every open page in step. Called every tick.

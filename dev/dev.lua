@@ -8,7 +8,7 @@
 -- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
 -- dev/wikifetch.lua), the saved camera
 -- tuning for card art, a "Dev tools" button on the Home window that opens the Dev tools window
--- (dev/devtools.lua: +20 credits, reset setup, the tool toggles, the save tools), and a few debug
+-- (dev/devtools.lua: +10k credits, the tool toggles, the save tools), and a few debug
 -- extras at login and when XP is gained.
 
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
@@ -117,19 +117,10 @@ end
 -- main.lua) and `refresh` redraws the Home window.
 local function toolButtons(api, refresh)
     return {
-        { label = "+20 Credits", action = function()
+        { label = "+10k Credits", action = function()
             local state = api.getState()
             if state ~= nil then
-                Storage.addCredits(state, 20)
-                refresh()
-            end
-        end },
-        -- Takes the character back to the first-run difficulty choice, to try that screen.
-        { label = "Reset setup", action = function()
-            local state = api.getState()
-            if state ~= nil then
-                Storage.setDifficulty(state, nil)
-                api.saveNow()
+                Storage.addCredits(state, 10000)
                 refresh()
             end
         end },

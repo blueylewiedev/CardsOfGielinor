@@ -3,8 +3,8 @@
 -- (an Imp, an AOE on Lesser demons, a Black demon, Bronze dragons, finishing a task, cancelling and skipping one) and
 -- the cases around them: a monster that left before the count fell, a count drop with no Slayer XP, a drop too big
 -- to be kills, an abyssal lord counting as five, a task cancelled and a new one taken. The tick numbers are the
--- server ticks the probe logged (shifted to start near 0). It also checks that XP in the combat skills earns no
--- credits (core/earning.lua).
+-- server ticks the probe logged (shifted to start near 0). It also checks that XP in the combat skills and Slayer
+-- earns no credits (core/earning.lua).
 --
 -- Run from the plugin's folder:  lua dev/check_slayer.lua
 
@@ -329,7 +329,7 @@ do
         check(gain(SkillType[name], 0, 5000) == 0, name .. " XP earns nothing")
     end
     check(gain(SkillType.COOKING, 100, 600) == 500 and gain(SkillType.MINING, 0, 40) == 40, "non-combat XP still counts")
-    check(gain(SkillType.SLAYER, 0, 300) == 300, "Slayer XP is not a combat skill, it still counts")
+    check(gain(SkillType.SLAYER, 0, 300) == 0, "Slayer XP earns nothing too (the kills pay)")
     check(gain(SkillType.COOKING, 600, 600) == 0 and gain(SkillType.COOKING, nil, 5) == 0, "no gain and missing values still earn nothing")
     check(gain(nil, 0, 50) == 50, "an event with no skill is not mistaken for a combat skill")
     local seen = SkillType.ATTACK
