@@ -19,7 +19,7 @@
 --
 -- Safeguards. A rise with no boss seen within SEEN_WINDOW ticks pays nothing (the game sends many variables when a character
 -- logs in, and a count can rise for other reasons); everything in the first QUIET_TICKS after the collection loaded is
--- ignored for the same reason; and a boss that has been paid is not paid again until it has been seen again.
+-- ignored for the same reason; and a boss that has been paid is not paid again until PAID_BLOCK ticks have passed and it has been seen again.
 --
 -- Time here is the server tick (about 0.6 seconds): `now` counts them, and advance() is called once for each.
 
@@ -46,6 +46,8 @@ Bosses.ACTIVITIES = {
 Bosses.DEFAULT_LEVEL = 1        -- the level of a kill when the boss's level is not known
 
 -- How the game's behaviour is read.
+Bosses.PAID_BLOCK = 12          -- a boss that has been paid is not paid again for this many server ticks (Vindicta stayed in view
+                                -- 10 ticks after her count rose)
 Bosses.SEEN_WINDOW = 6          -- the boss must have been in view this many server ticks before the count rose, at most
 Bosses.QUIET_TICKS = 50         -- nothing is paid for this many server ticks after the collection loads
 Bosses.POLL_EVERY = 2           -- (used by core/bossevents.lua) how often, in server ticks, the NPCs in view are checked
@@ -137,7 +139,7 @@ function Tracker:onKillVar(name, old, new)
     end
     local best, bestId = nil, nil
     for id, boss in pairs(self.bosses) do
-        if self.now - boss.tick <= Bosses.SEEN_WINDOW and boss.paidAt < boss.tick then
+        if self.now - boss.tick <= Bosses.SEEN_WINDOW and boss.paidAt < boss.tick and self.now - boss.paidAt >= Bosses.PAID_BLOCK then
             if best == nil or boss.tick > best.tick or (boss.tick == best.tick and (boss.level or 0) > (best.level or 0)) then
                 best, bestId = boss, id
             end

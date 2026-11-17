@@ -97,7 +97,11 @@ do
     play(t, t.now + 2)
     check(t:onKillVar("BSLAY_BOSS_KILLS9", 5, 6) == true and #paid == 1, "a boss seen 2 ticks ago is paid")
     check(t:onKillVar("BSLAY_BOSS_KILLS9", 6, 7) == false and #paid == 1, "the same sighting is not paid twice")
-    play(t, t.now + 10)
+    t:seen(15, 650, "K'ril Tsutsaroth")
+    play(t, t.now + Bosses.PAID_BLOCK - 3)
+    t:seen(15, 650, "K'ril Tsutsaroth")
+    check(t:onKillVar("BSLAY_BOSS_KILLS9", 6, 7) == false and #paid == 1, "still in view shortly after the payment, it is not paid again")
+    play(t, t.now + Bosses.PAID_BLOCK)
     t:seen(15, 650, "K'ril Tsutsaroth")
     play(t, t.now + 1)
     check(t:onKillVar("BSLAY_BOSS_KILLS9", 6, 7) == true and #paid == 2, "seen again, the next kill is paid")
@@ -153,7 +157,7 @@ do
     play(t, 100)
     t:seen(24, 1000, "Vindicta")
     t:onKillVar("BSLAY_BOSS_KILLS7", 5, 6)
-    play(t, t.now + 10)
+    play(t, t.now + Bosses.PAID_BLOCK)
     t:seen(24, 0, "Gorvek")
     play(t, t.now + 1)
     t:onKillVar("BSLAY_BOSS_KILLS7", 6, 7)
@@ -189,6 +193,24 @@ do
     local t5, paid5 = tracker()
     play(t5, 200)
     check(t5:onKillVar("BSLAY_BOSS_KILLS4", 41222184, 41287720) == false and #paid5 == 0, "another count rising by 65,536 is not Barrows")
+end
+
+do
+    -- Gorvek and Vindicta (recorded 2026-11-17): first seen at tick 2104 with no name and level 0, then as the 1,000 level boss
+    -- (the polls in between are every second tick); the count (BSLAY_BOSS_KILLS15, low half) rose at 2118 while the boss was
+    -- still in view (it left at 2128). Paid once, at the level 1,000 tier.
+    local t, paid = tracker()
+    play(t, 2104)
+    t:seen(24, 0, "")
+    for tick = 2106, 2118, 2 do
+        play(t, tick)
+        t:seen(24, 1000, "Gorvek and Vindicta")
+    end
+    check(t:onKillVar("BSLAY_BOSS_KILLS15", 24773090, 24773091) == true and #paid == 1 and paid[1].credits == 1800,
+        "Gorvek and Vindicta are paid at their 1,000 level, not the 0 first reported (" .. tostring(paid[1] and paid[1].credits) .. ")")
+    play(t, 2128)
+    t:seen(24, 1000, "Gorvek and Vindicta")
+    check(t:onKillVar("BSLAY_BOSS_KILLS15", 24773091, 24773092) == false and #paid == 1, "the boss still in view after the payment is not paid again")
 end
 
 if failures > 0 then
