@@ -1,11 +1,10 @@
 -- ui/packwindow.lua
--- The window for choosing a difficulty, buying packs and revealing the cards.
+-- The window for buying packs and revealing the cards.
 --
--- It has four screens, and only one is shown at a time:
+-- It has three screens, and only one is shown at a time:
 --   nosession : the character's collection has not loaded yet: a spinner and "Loading your collection..." (the plugin
 --               only runs once a character is in the game, so this is the wait for the tracking id, or for the
 --               permission to show up, not a prompt to log in)
---   setup     : first run, pick a difficulty tier
 --   home      : credits, the pack to buy (the standard pack and the themed packs in
 --               deck/packs.lua), its price and the Open pack button
 --   reveal    : the pulled cards, shown one at a time with a Next button
@@ -17,6 +16,7 @@ local Cards = require("core/cards")
 local Logger = require("core/logger")
 local Storage = require("core/storage")
 local Packs = require("core/packs")
+local Format = require("core/format")
 local CardView = require("ui/cardview")
 local Viewer = require("ui/viewer")
 local Kit = require("ui/kit")
@@ -34,9 +34,6 @@ local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 local WIDTH = 236
--- The setup screen is wider: its longest button label ("Master - 20 credits") needs about 250.
-local SETUP_WIDTH = 296
-local SETUP_BUTTON_W = 260
 local TITLE_BAR = 40   -- extra window height taken by PrettyUI's title bar
 -- The reveal screen is wider and taller, to fit a whole card (cards can be resized with
 -- CardView.SCALE). The card sits at the top, with the text and Next button under it.
@@ -64,7 +61,7 @@ local HOME_W = REVEAL_MID - 20                -- the width of the text and butto
 local EXTRA_TOP = HOME_TOP + 182              -- where the extra buttons on the Home screen start
 -- Window height for each screen (Home's is set by buildExtras, as it depends on the extra buttons).
 local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
-local HEIGHTS = { nosession = 90, setup = 262, reveal = REVEAL_TOP + 124 }
+local HEIGHTS = { nosession = 90, reveal = REVEAL_TOP + 124 }
 
 -- Set by PackWindow.show():
 --   api.getState() : the logged-in character's collection, or nil
@@ -100,14 +97,14 @@ local function setText(widget, content)
     end
 end
 
--- Shows one screen (nosession, setup, home or reveal), hides the others and resizes the window
+-- Shows one screen (nosession, home or reveal), hides the others and resizes the window
 -- to fit it.
 local function showScreen(name)
     current = name
     for screenName, layer in pairs(screens) do
         layer.hidden = (screenName ~= name)
     end
-    window:SetSize(({ reveal = REVEAL_WIDTH, home = REVEAL_WIDTH, setup = SETUP_WIDTH })[name] or WIDTH, HEIGHTS[name] + (Kit.available() and TITLE_BAR or 0))
+    window:SetSize(({ reveal = REVEAL_WIDTH, home = REVEAL_WIDTH })[name] or WIDTH, HEIGHTS[name] + (Kit.available() and TITLE_BAR or 0))
     -- The spinner only turns while its screen is showing.
     if widgets.spinner ~= nil then
         pcall(function()
@@ -1066,10 +1063,10 @@ function PackWindow.rebuildExtras()
     end
 end
 
--- Builds all four screens once, when the window is created. Only one is visible at a time.
+-- Builds all three screens once, when the window is created. Only one is visible at a time.
 local function buildScreens()
     -- Each screen is a Layer that fills the window.
-    for _, name in ipairs({ "nosession", "setup", "home", "reveal" }) do
+    for _, name in ipairs({ "nosession", "home", "reveal" }) do
         local layer = ui.Layer.new(content)
         layer:SetPos(name == "reveal" and REVEAL_SHIFT or 0, 0)
         layer:SetSize(0, 0, 1.0, 1.0)
@@ -1081,22 +1078,6 @@ local function buildScreens()
     local contentWidth = Kit.contentWidth(WIDTH)
     widgets.spinner = Kit.spinner(screens.nosession, (contentWidth - LOADING_SPINNER) // 2, 8, LOADING_SPINNER)
     makeText(screens.nosession, 0, 8 + LOADING_SPINNER + 6, contentWidth, 24, "Loading your collection...", GREY)
-
-    -- setup: one button per difficulty tier
-    makeText(screens.setup, 10, 10, SETUP_BUTTON_W, 24, "Choose a difficulty", WHITE)
-    for i, tier in ipairs(Packs.tiers) do
-        makeButton(screens.setup, tier.name .. " - " .. tier.price .. " credits", 10, 40 + (i - 1) * 42, SETUP_BUTTON_W, 34,
-            function()
-                local state = api.getState()
-                if state ~= nil then
-                    Storage.setDifficulty(state, tier.id)
-                    api.saveNow()
-                    PackWindow.refresh()
-                end
-            end)
-    end
-    makeText(screens.setup, 10, 40 + #Packs.tiers * 42, SETUP_BUTTON_W, 20, "Price is per pack of " .. Packs.PACK_SIZE, GREY)
-    makeText(screens.setup, 10, 40 + #Packs.tiers * 42 + 22, SETUP_BUTTON_W, 20, "Change it later in Settings", GREY)
 
     -- home
     widgets.creditsText = makeText(screens.home, 10, 8, 200, 20, "", WHITE, ui.AlignMode.TOPLEFT)
@@ -1190,18 +1171,10 @@ function PackWindow.refresh()
         return
     end
 
-    local tier = Packs.tierFor(state)
-    if tier == nil then
-        if current ~= "setup" then
-            showScreen("setup")
-        end
-        return
-    end
-
-    local price = Packs.priceFor(state, currentPack())
+    local price = Packs.priceFor(currentPack())
     local poolSize = Packs.poolSize(currentPack())
-    setText(widgets.creditsText, "Credits: " .. state.credits)
-    setText(widgets.priceText, "Price: " .. price .. " credits (" .. tier.name .. ")")
+    setText(widgets.creditsText, "Credits: " .. Format.credits(state.credits))
+    setText(widgets.priceText, "Price: " .. Format.credits(price) .. " credits")
     setText(widgets.collectionText, "Collection: " .. Storage.countUniqueOwned(state) .. " of " .. #Cards.list
         .. " cards")
     local affordable = state.credits >= price
@@ -1210,7 +1183,7 @@ function PackWindow.refresh()
     if poolSize == 0 then
         hint = "No cards in this pack yet"
     elseif not affordable then
-        hint = "Need " .. (price - state.credits) .. " more credits"
+        hint = "Need " .. Format.credits(price - state.credits) .. " more credits"
     end
     setText(widgets.hintText, hint)
     if current ~= "home" then

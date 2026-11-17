@@ -132,6 +132,50 @@ do
     Cards.deprecate("zz_test_card")
 end
 
+-- The price, the starter credits and buying several packs at once ----------------------------------------------
+do
+    local Storage = require("core/storage")
+    check(Storage.STARTER_CREDITS == 2 * Packs.PRICE, "the starter credits are two standard packs")
+    check(Packs.priceFor("standard") == Packs.PRICE, "the standard pack costs the price")
+    check(Packs.priceFor("no_such_pack") == nil, "an unknown pack has no price")
+    for id, packType in pairs(Cards.packTypes) do
+        check(Packs.priceFor(id) == math.ceil(Packs.PRICE * (packType.priceFactor or 1)), "pack " .. id .. " costs the price times its factor")
+    end
+
+    local state = Storage.newState()
+    state.credits = Packs.PRICE * 3 + 10
+    local results, why = Packs.open(state, "standard", 0)
+    check(results == nil and why == "bad count", "0 packs is refused")
+    results, why = Packs.open(state, "standard", 1.5)
+    check(results == nil and why == "bad count", "half a pack is refused")
+    results, why = Packs.open(state, "no_such_pack", 1)
+    check(results == nil and why == "unknown pack", "an unknown pack is refused")
+    results, why = Packs.open(state, "standard", 4)
+    check(results == nil and why == "not enough credits" and state.credits == Packs.PRICE * 3 + 10
+        and state.stats.packsOpened == 0, "four packs for the price of three and a bit: refused, nothing taken")
+
+    results = Packs.open(state, "standard", 3)
+    check(results ~= nil and #results == 3 * Packs.PACK_SIZE, "three packs give three packs of cards")
+    check(state.credits == 10 and state.stats.creditsSpent == Packs.PRICE * 3, "and cost three times the price")
+    check(state.stats.packsOpened == 3 and state.stats.cardsPulled == 3 * Packs.PACK_SIZE, "and are counted as three packs")
+    for position, result in ipairs(results) do
+        check(result.pack == (position - 1) // Packs.PACK_SIZE + 1, "card " .. position .. " says which pack it came from")
+    end
+    local total = 0
+    for _, copies in pairs(state.owned) do
+        total = total + copies
+    end
+    check(total == 3 * Packs.PACK_SIZE, "every card pulled is in the collection")
+    -- A card pulled twice in the one purchase is new the first time only.
+    local seen = {}
+    for _, result in ipairs(results) do
+        check(result.isNewCard == (not seen[result.card.id]), "isNewCard counts the cards pulled before it (" .. result.card.id .. ")")
+        seen[result.card.id] = true
+    end
+    results = Packs.open(state, "standard")
+    check(results == nil, "with 10 credits left a pack is refused")
+end
+
 if failures > 0 then
     io.stderr:write(failures .. " check(s) failed\n")
     os.exit(1)

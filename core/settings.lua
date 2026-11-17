@@ -2,8 +2,8 @@
 -- Plugin-wide options the player can switch on and off (the settings page is in
 -- ui/settingspage.lua). They are saved once for the whole plugin, not per character.
 --
--- Other files ask with Settings.get("glow"). The difficulty is not here: it is chosen per
--- character and lives in that character's collection (see core/storage.lua).
+-- Other files ask with Settings.get("glow"). Per-character things (credits, cards) are not here: they live in that
+-- character's collection (see core/storage.lua).
 
 local Settings = {}
 
