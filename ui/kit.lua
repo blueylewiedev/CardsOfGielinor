@@ -430,10 +430,26 @@ function Kit.panel(parent, x, y, w, h, heading)
 end
 
 -- A block of checkboxes, one to a row (Kit.CHECKBOX_ROW_H tall), at (x, y) and `w` wide. `choices` is a list of
--- { text, value, selected }; onChange(value, selected) is called when one is ticked or cleared. PrettyUI cuts a label off at
--- about 35 characters at this width. Without PrettyUI each is a toggle button.
+-- { text, value, selected }; onChange(value, selected) is called when one is ticked or cleared. PrettyUI cuts a label off
+-- where it runs out of width (about 28 letters in 280 pixels). `step` (optional, more than Kit.CHECKBOX_ROW_H) spaces the
+-- rows further apart: each is then a checkbox of its own. Without PrettyUI each is a toggle button.
 Kit.CHECKBOX_ROW_H = 22
-function Kit.checkboxes(parent, x, y, w, choices, onChange)
+function Kit.checkboxes(parent, x, y, w, choices, onChange, step)
+    if step ~= nil and step > Kit.CHECKBOX_ROW_H and Kit.available() and prettyui.CheckboxButton ~= nil then
+        local made = {}
+        for i, choice in ipairs(choices) do
+            local ok, box = pcall(prettyui.CheckboxButton.new, parent, { choice }, {
+                x = x, y = y + (i - 1) * step, width = w,
+                onChange = function(_, _, value, selected) onChange(value, selected) end,
+            })
+            if ok and box ~= nil then
+                made[#made + 1] = box
+            else
+                Logger.error("Kit.checkboxes: PrettyUI checkbox failed:", tostring(box))
+            end
+        end
+        return { Destroy = function() for _, box in ipairs(made) do pcall(function() box:Destroy() end) end end }
+    end
     if Kit.available() and prettyui.CheckboxButton ~= nil then
         local ok, boxes = pcall(prettyui.CheckboxButton.new, parent, choices, {
             x = x, y = y, width = w,
@@ -446,7 +462,7 @@ function Kit.checkboxes(parent, x, y, w, choices, onChange)
     end
     local handle = { buttons = {} }
     for i, choice in ipairs(choices) do
-        handle.buttons[i] = Kit.toggleButton(parent, choice.text, x, y + (i - 1) * 26, w, 24, choice.selected == true,
+        handle.buttons[i] = Kit.toggleButton(parent, choice.text, x, y + (i - 1) * (step or 26), w, 24, choice.selected == true,
             function(active) onChange(choice.value, active) end)
     end
     handle.Destroy = function() end

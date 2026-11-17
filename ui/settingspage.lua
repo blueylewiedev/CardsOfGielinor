@@ -171,15 +171,17 @@ local function checkboxPanelHeight(rows, extra)
     return HEADING_H + rows * Kit.CHECKBOX_ROW_H + (extra or 0) + PAD
 end
 local LINE_PANEL_H = HEADING_H + LINE_ROW_H + PAD
+-- General is as tall as Your collection and Card updates together, so the two columns end level (with the development tools
+-- off); its rows are spaced out to fill it.
+local GENERAL_H = 2 * LINE_PANEL_H + MARGIN
 
 -- How tall the window's content is: the taller of the two columns, with the margin round it.
 local function windowHeight(dev)
-    local left = checkboxPanelHeight(#choicesFor(false))
+    local height = GENERAL_H
     if dev then
-        left = left + MARGIN + checkboxPanelHeight(#choicesFor(true), 20)
+        height = height + MARGIN + checkboxPanelHeight(#choicesFor(true), 20)
     end
-    local right = 2 * LINE_PANEL_H + MARGIN
-    return math.max(left, right) + 2 * MARGIN
+    return height + 2 * MARGIN
 end
 
 -- A line of text with an info icon at its right, inside a panel at (x, y): returns the text and the icon.
@@ -196,20 +198,26 @@ local function buildWindow(content)
     local x1, x2 = MARGIN, MARGIN + COLUMN_W + MARGIN
     local inner = COLUMN_W - 2 * PAD
 
-    local function checkboxPanel(x, y, heading, dev, extra)
+    -- A panel of checkboxes. With `height` it is that tall and the rows are spaced evenly down it.
+    local function checkboxPanel(x, y, heading, dev, extra, height)
         local choices = choicesFor(dev)
-        Kit.panel(content, x, y, COLUMN_W, checkboxPanelHeight(#choices, extra), heading)
+        height = height or checkboxPanelHeight(#choices, extra)
+        local step = nil
+        if #choices > 1 then
+            step = (height - HEADING_H - PAD - Kit.CHECKBOX_ROW_H) // (#choices - 1)
+        end
+        Kit.panel(content, x, y, COLUMN_W, height, heading)
         return Kit.checkboxes(content, x + PAD, y + HEADING_H, inner, choices, function(value, selected)
             Settings.set(value, selected)
             if api.onSettingChanged ~= nil then
                 api.onSettingChanged(value, selected)
             end
-        end), y + checkboxPanelHeight(#choices, extra)
+        end, height ~= checkboxPanelHeight(#choices, extra) and step or nil), y + height
     end
 
     -- Left: the effects, then (only with the development tools) the developer options.
     local nextY
-    page.widgets.effects, nextY = checkboxPanel(x1, MARGIN, "GENERAL", false)
+    page.widgets.effects, nextY = checkboxPanel(x1, MARGIN, "GENERAL", false, nil, GENERAL_H)
     if api.devTools then
         page.widgets.dev, nextY = checkboxPanel(x1, nextY + MARGIN, "DEVELOPER", true, 20)
         Kit.text(content, x1 + PAD, nextY - PAD - 20, inner, 18, "Hides the development tools", GREY, ui.AlignMode.TOPLEFT)
