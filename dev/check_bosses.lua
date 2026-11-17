@@ -136,6 +136,30 @@ do
     check(t3:onKillVar("BSLAY_BOSS_KILLS2", 1, 2) == true and paid3[1].credits == 400, "a boss with no level is paid the lowest tier")
 end
 
+do
+    -- a boss that shows NPCs of different levels is paid at the highest of the sighting (Gorvek and Vindicta: 0 and 1,000)
+    for _, order in ipairs({ { 1000, 0 }, { 0, 1000 }, { 0, 1000, 0 } }) do
+        local t, paid = tracker()
+        play(t, 100)
+        for _, level in ipairs(order) do
+            t:seen(24, level, "Vindicta")
+            play(t, t.now + 2)
+        end
+        t:onKillVar("BSLAY_BOSS_KILLS7", 5, 6)
+        check(#paid == 1 and paid[1].credits == 1800, "levels " .. table.concat(order, ", ") .. " in one sighting pay the highest (" .. tostring(paid[1] and paid[1].credits) .. ")")
+    end
+    -- and the next sighting starts again: a low level after a payment is not lifted by the old one
+    local t, paid = tracker()
+    play(t, 100)
+    t:seen(24, 1000, "Vindicta")
+    t:onKillVar("BSLAY_BOSS_KILLS7", 5, 6)
+    play(t, t.now + 10)
+    t:seen(24, 0, "Gorvek")
+    play(t, t.now + 1)
+    t:onKillVar("BSLAY_BOSS_KILLS7", 6, 7)
+    check(#paid == 2 and paid[2].credits == 400, "the next sighting is paid at its own level (" .. tostring(paid[2] and paid[2].credits) .. ")")
+end
+
 if failures > 0 then
     os.exit(1)
 end

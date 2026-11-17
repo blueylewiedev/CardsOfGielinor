@@ -99,6 +99,11 @@ function Tracker:seen(id, level, name)
         boss = { paidAt = -1 }
         self.bosses[id] = boss
     end
+    -- One sighting is every poll since the last payment. Some bosses show several NPCs with different levels (Gorvek and
+    -- Vindicta report 0 and 1,000, Har-Aken 800 and 1,600), so the highest level of the sighting is the boss's.
+    if boss.tick ~= nil and boss.paidAt < boss.tick and type(boss.level) == "number" and boss.level > (type(level) == "number" and level or 0) then
+        level = boss.level
+    end
     boss.tick, boss.level, boss.name = self.now, level, name
 end
 
