@@ -198,8 +198,8 @@ local function buildScreens()
 
     widgets.creditsText = makeText(screens.home, INNER_X, CREDITS_Y + 28, HOME_W, 22, "", WHITE)
     widgets.rateText = makeText(screens.home, INNER_X, CREDITS_Y + 52, HOME_W, 20, "", GREY)
-    -- A small refresh button at the end of that line starts the credits per hour again (it says Calculating... for a minute).
-    Kit.iconButton(screens.home, "REFRESH", INNER_X + HOME_W - 24, CREDITS_Y + 50, function()
+    -- A small reset button (PrettyUI's UNDO sprite, the stopwatch reset icon) at the end of that line starts the credits per hour again (it says Calculating... for a minute).
+    Kit.iconButton(screens.home, "UNDO", INNER_X + HOME_W - 24, CREDITS_Y + 50, function()
         Rate.reset()
         PackWindow.refresh()
     end, "Start the credits per hour again", "Reset", 60)
