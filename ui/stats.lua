@@ -84,7 +84,7 @@ local api = nil          -- api.getState() : the logged-in character's collectio
                          -- api.hiddenCards() : the cards of a pack being opened that have not been turned over
 local window = nil
 local content = nil
-local tabs = nil         -- the tab strip: see Kit.tabs
+local tabs = nil         -- the tab strip: see Kit.tabStrip
 local views = {}         -- tab index -> { refresh(progress, state), destroy(), width, height }
 local current = 1        -- the tab shown (kept while the plugin runs)
 local cache, cacheAge = nil, 0
@@ -364,7 +364,7 @@ function Stats.show(newApi)
         if TABS[current] == nil then
             current = 1
         end
-        tabs = Kit.tabs(content, labels, 0, 0, WIDTH - 2 * WINDOW_BORDER, HEIGHT, function(index)
+        tabs = Kit.tabStrip(content, labels, 0, 0, WIDTH - 2 * WINDOW_BORDER, HEIGHT, function(index)
             local now = api.getState()
             if now ~= nil then
                 showTab(index, now)

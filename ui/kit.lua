@@ -407,7 +407,8 @@ end
 -- PrettyUI's tab strip height: the pages start this far under the top of the tabs.
 Kit.TABS_HEIGHT = 42
 
--- Tabs across the top of a box in `parent`, with a page under each. Returns a handle:
+-- Tab strip: tabs across the top of a box in `parent`, with a page under each (not Kit.tabs above, which builds every page
+-- at once for the tag picker; this one gives each page a layer to build in, and can fill its parent and be resized). Returns a handle:
 --   pages[i]        : the layer to build tab i's contents in, from its top left (it scrolls when the contents are taller
 --                     than the room: see contentHeights)
 --   pageWidth(i)    : how wide that layer is now (less when a scroll bar is showing), or nil if it can't say
@@ -418,7 +419,7 @@ Kit.TABS_HEIGHT = 42
 -- x and y being the margins). `onChange(i)` is called when the player picks a tab; `selected` is the first one shown.
 -- opts.contentHeights = { [i] = h } are the tabs' contents' heights to start with. Without PrettyUI the tabs are a row of
 -- plain buttons over plain layers (which do not scroll).
-function Kit.tabs(parent, labels, x, y, w, h, onChange, selected, opts)
+function Kit.tabStrip(parent, labels, x, y, w, h, onChange, selected, opts)
     selected = selected or 1
     opts = opts or {}
     if Kit.available() and prettyui.Tabs ~= nil then
@@ -456,7 +457,7 @@ function Kit.tabs(parent, labels, x, y, w, h, onChange, selected, opts)
         if ok then
             return result
         end
-        Logger.error("Kit.tabs: PrettyUI tabs failed, using buttons:", tostring(result))
+        Logger.error("Kit.tabStrip: PrettyUI tabs failed, using buttons:", tostring(result))
     end
     local handle = { pages = {}, buttons = {} }
     local each = math.floor(w / math.max(1, #labels))
