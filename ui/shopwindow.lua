@@ -26,19 +26,20 @@ local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 local COLUMNS = 4
-local TILE_H = 120                                  -- a tile is as wide as the pack's outline, TILE_W
+local TILE_H = 144                                  -- a tile is as wide as the pack's outline, TILE_W
 local TILE_W = math.floor(TILE_H * PackArt.OUTLINE.w / PackArt.OUTLINE.h)
 local LEFT = 12                                      -- room between the window's edge and the first tile
 local GAP_X = 28
 local LABEL_H = 20                                  -- the pack's name under its tile
 local ROW_H = TILE_H + LABEL_H + 26
 local GRID_W = LEFT + COLUMNS * TILE_W + (COLUMNS - 1) * GAP_X + 4     -- 4: a tile's shadow
-local TOP = 28                                      -- the credits line is above this
+local TOP = 4
+local BOTTOM = 20                                   -- room under the panel, above the window's frame
 -- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
 local PANEL_X, PANEL_PAD, DETAIL_W = GRID_W + 16, 16, 250
 local PANEL_W = DETAIL_W + 2 * PANEL_PAD
 local DETAIL_X = PANEL_X + PANEL_PAD
-local PACK_H = 340                                  -- the large pack (the tiles are 120)
+local PACK_H = 340                                  -- the large pack (the tiles are 144)
 local PACK_TOP = TOP + PANEL_PAD
 local NAME_Y = PACK_TOP + PACK_H + 10
 local PRICE_Y = NAME_Y + 24 + 3 * 20 + 8
@@ -180,13 +181,12 @@ end
 -- Brings the window up to date with the character's credits and the choices. Called every tick; only changes what
 -- is different.
 function Shop.refresh()
-    if window == nil or widgets.credits == nil then
+    if window == nil or widgets.buy == nil then
         return
     end
     local state = api ~= nil and api.getState() or nil
     local price = Packs.priceFor(selected) or 0
     local total = price * quantity
-    setText(widgets.credits, state ~= nil and ("Credits: " .. Format.credits(state.credits)) or "Loading your collection...")
     setText(widgets.price, "Price: " .. Format.credits(price) .. " credits each")
     setText(widgets.total, "Total: " .. Format.credits(total) .. " credits")
     local label = "Buy " .. quantity .. (quantity == 1 and " pack" or " packs")
@@ -241,12 +241,11 @@ end
 local function build()
     local offered = Packs.offered()
     local rows = math.max(1, (#offered + COLUMNS - 1) // COLUMNS)
-    local height = TOP + math.max(PANEL_H, 6 + rows * ROW_H)
+    local height = TOP + math.max(PANEL_H, 6 + rows * ROW_H) + BOTTOM
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,
         0.3, 0.12)
 
-    widgets.credits = Kit.text(content, LEFT, 0, 260, 22, "", WHITE, ui.AlignMode.TOPLEFT)
     if Packs.typeById(selected) == nil then
         selected = "standard"
     end

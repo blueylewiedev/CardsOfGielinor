@@ -33,7 +33,6 @@ local Settings = require("core/settings")
 local SettingsPage = require("ui/settingspage")
 local Hub = require("ui/hub")
 local CreditsWindow = require("ui/creditswindow")
-local Warmup = require("ui/warmup")
 local OverlayLoader = require("core/overlayloader")
 
 -- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
@@ -158,7 +157,6 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
         return
     end
 
-    Warmup.step()               -- loads the pack pictures a pack type per tick, ready for the Shop (ui/warmup.lua)
     ticksSinceSave = ticksSinceSave + 1
     ticksSinceLoad = ticksSinceLoad + 1
     if ticksSinceSave >= SAVE_INTERVAL_TICKS then
@@ -200,7 +198,6 @@ function PluginShutdown()
     SettingsPage.shutdown()
     Hub.shutdown()
     CreditsWindow.hide()
-    Warmup.shutdown()
     PackWindow.hide()
     if Dev ~= nil then
         Dev.shutdown()
