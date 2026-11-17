@@ -49,6 +49,7 @@ local GLOW_PAD = 14
 -- The pack.
 local PACK_H_MIN, PACK_H_MAX = 240, 480
 local HOVER_LIFT, HOVER_SECONDS = 10, 0.15
+local HOVER_GLOW_PAD, HOVER_GLOW_ALPHA = 26, 0.4   -- the hover glow: how far it reaches past the pack, and how bright
 local SWELL_SECONDS = 0.45              -- a pack without a design: it swells and fades
 local RIP_SECONDS = 0.45                -- the tear running across, when it isn't dragged
 local CAP_SECONDS = 0.35
@@ -70,6 +71,7 @@ local FLIP_ICON = 24                    -- the Flip pack button (PrettyUI's spri
 
 -- The shuffle and the spread.
 local SHUFFLE_SECONDS, SHUFFLE_ROUNDS = 1.4, 3
+local SHUFFLE_SWING = 0.4                     -- how far the cards swing out to a side, as a fraction of their width
 local SPREAD_SECONDS, SPREAD_STAGGER = 0.6, 0.05
 local AUTO_STEP = 0.18                  -- seconds between cards when they are turned all at once
 
@@ -522,7 +524,7 @@ updateControls = function()
             setEnabled(true)
         end
     elseif stage == "dealing" then
-        setText(R.status, "Shuffling...")
+        setText(R.status, R.dealingText or "Shuffling...")
         setEnabled(false)
     else
         setEnabled(false)
@@ -561,26 +563,28 @@ end
 
 -- Shuffles the stack (the cards swing out to either side and back, a few times), then deals them out into their places,
 -- one after the other.
-startDealing = function()
+startDealing = function(noShuffle)
     R.stage = "dealing"
+    R.dealingText = noShuffle and "Dealing..." or "Shuffling..."
     updateControls()
     local cards = R.cards
     local n = #cards
-    local total = SHUFFLE_SECONDS + SPREAD_SECONDS + SPREAD_STAGGER * (n - 1)
+    local shuffle = noShuffle and 0 or SHUFFLE_SECONDS       -- (the later pages are only dealt out)
+    local total = shuffle + SPREAD_SECONDS + SPREAD_STAGGER * (n - 1)
     Anim.start(R, total, function(p)
         local t = p * total
-        local u = math.min(1, t / SHUFFLE_SECONDS)
+        local u = shuffle > 0 and math.min(1, t / shuffle) or 1
         local env = math.sin(u * math.pi)
         for i, c in ipairs(cards) do
             local bx, by = R.stackX, R.stackY - (i - 1) * STACK_STEP
-            if t < SHUFFLE_SECONDS then
+            if t < shuffle then
                 local dir = (i % 2 == 0) and 1 or -1
                 local swing = math.sin(u * SHUFFLE_ROUNDS * 2 * math.pi + (i % 3) * 0.4)
-                c.back:SetPos(math.floor(bx + dir * swing * R.cw * 0.6 * env), math.floor(by + ((i % 3) - 1) * 8 * env))
+                c.back:SetPos(math.floor(bx + dir * swing * R.cw * SHUFFLE_SWING * env), math.floor(by + ((i % 3) - 1) * 8 * env))
                 pcall(function() c.back.rotationDegrees = dir * swing * 8 * env end)
                 c.rotated = true
             else
-                local q = clamp01((t - SHUFFLE_SECONDS - (i - 1) * SPREAD_STAGGER) / SPREAD_SECONDS)
+                local q = clamp01((t - shuffle - (i - 1) * SPREAD_STAGGER) / SPREAD_SECONDS)
                 local e = Anim.smooth(q)
                 if c.rotated then
                     c.rotated = false
@@ -630,7 +634,7 @@ local function setLift(lift)
         tear.cap.root:SetPos(tear.x, tear.y)
     end
     if tear.glow ~= nil then
-        tear.glow:SetPos(tear.x - 40, tear.y0 - 40)
+        tear.glow:SetPos(tear.x - HOVER_GLOW_PAD, tear.y0 - HOVER_GLOW_PAD)
     end
 end
 
@@ -826,7 +830,7 @@ local function showSealed()
         if glowImage ~= nil then
             tear.glow = ui.Sprite.new(R.root)
             tear.glow.sprite = glowImage
-            tear.glow:SetSize(w + 80, packH + 80)
+            tear.glow:SetSize(w + 2 * HOVER_GLOW_PAD, packH + 2 * HOVER_GLOW_PAD)
             tear.glow.alpha = 0
         end
         -- (the cards of the first page were made first, so they are behind the pack)
@@ -906,6 +910,9 @@ flipSealed = function()
         setHidden(tear.guide.clip, true)
     end
     R.stage = "flipping"
+    if tear.glow ~= nil then
+        tear.glow.alpha = 0
+    end
     setFlipButton(false)
     updateControls()
     local turned = false
@@ -952,6 +959,9 @@ startTear = function()
     end
     R.stage = "tearing"
     tear.torn = true
+    if tear.glow ~= nil then
+        setHidden(tear.glow, true)
+    end
     setFlipButton(false)
     updateControls()
     local from = tear.rip
@@ -1009,7 +1019,7 @@ local function nextPage()
     if R.page < R.pages then
         R.auto = nil
         makePage(R.page + 1)
-        startDealing()
+        startDealing(true)
     else
         closeReveal()
     end
@@ -1059,7 +1069,7 @@ local function onFrame(dt)
             placeStack(0)
         end
         if tear.glow ~= nil then
-            tear.glow.alpha = 0.9 * Anim.smooth(R.hoverT)
+            tear.glow.alpha = HOVER_GLOW_ALPHA * Anim.smooth(R.hoverT)
         end
     end
 
