@@ -5,8 +5,8 @@
 -- is loaded, so time spent logged out does not count against the rate. Credits are added to a bucket for the minute they
 -- were earned in, and the rate is the credits in the last WINDOW_MINUTES minutes over the time that has really passed (up
 -- to the whole window), so it follows how the player is doing now and not over their whole session. It starts afresh at
--- each login. For the first MIN_MINUTES minutes there is nothing to show (nil): a rate from a few minutes of play swings
--- too wildly to mean anything.
+-- each login. For the first MIN_MINUTES minute there is nothing to show (nil): the screens say "Calculating..." with a
+-- dot more each tick instead (Rate.text), so they do not look as if they were not working.
 --
 -- No UI and no client calls, so dev/check_rate.lua tests it on its own.
 
@@ -17,7 +17,7 @@ local Rate = {}
 Rate.SECONDS_PER_TICK = 0.6
 Rate.TICKS_PER_MINUTE = 100          -- 60 / 0.6
 Rate.WINDOW_MINUTES = 60
-Rate.MIN_MINUTES = 3
+Rate.MIN_MINUTES = 1
 
 local ticks = 0                      -- ticks of play since the last reset
 local buckets = {}                   -- minute number (ticks // TICKS_PER_MINUTE) -> credits earned in it
@@ -77,11 +77,23 @@ function Rate.perHour()
     return total * 60 / minutes
 end
 
--- The rate as text for the screen: "12 345", or "-" while there is not enough play to say.
+-- True while there is not enough play to say a rate (the first MIN_MINUTES minute after a login).
+function Rate.calculating()
+    return Rate.perHour() == nil
+end
+
+-- What the screens show while calculating: "Calculating.", "Calculating..", "Calculating..." going round, a dot more each tick.
+-- The text is always as long as the longest (spaces after the dots), so centred text does not jump about.
+function Rate.waitingText()
+    local dots = ticks % 3 + 1
+    return "Calculating" .. string.rep(".", dots) .. string.rep(" ", 3 - dots)
+end
+
+-- The rate as text for the screen: "12 345", or the waiting text while there is not enough play to say.
 function Rate.text()
     local rate = Rate.perHour()
     if rate == nil then
-        return "-"
+        return Rate.waitingText()
     end
     return Format.credits(math.floor(rate + 0.5))
 end

@@ -404,6 +404,70 @@ function Kit.titleButton(window, spriteName, onPress, tooltip)
     return nil
 end
 
+-- PrettyUI's tab strip height: the pages start this far under the top of the tabs.
+Kit.TABS_HEIGHT = 42
+
+-- Tabs across the top of a box `w` x `h` at (x, y) in `parent`, with a page under each: { pages = { layer, ... }, select(i),
+-- destroy() }. A page is a layer the size of the box under the tab strip (Kit.TABS_HEIGHT tall); build what the tab shows
+-- in it with positions from its top left. `onChange(i)` is called when the player picks a tab; `selected` is the first one
+-- shown. Without PrettyUI the tabs are a row of plain buttons.
+function Kit.tabs(parent, labels, x, y, w, h, onChange, selected)
+    selected = selected or 1
+    if Kit.available() and prettyui.Tabs ~= nil then
+        local ok, result = pcall(function()
+            local list = {}
+            for i, label in ipairs(labels) do
+                list[i] = { text = label, value = i }
+            end
+            local tabs = prettyui.Tabs.new(parent, list, {
+                x = x, y = y, width = w, height = h, scrollable = false, activeIndex = selected,
+                onChange = function(_, index) onChange(index) end,
+            })
+            local pages = {}
+            for i = 1, #labels do
+                pages[i] = tabs.pages[i].root
+            end
+            return {
+                pages = pages,
+                select = function(i) tabs:SetActive(i, false) end,
+                destroy = function() tabs:Destroy() end,
+            }
+        end)
+        if ok then
+            return result
+        end
+        Logger.error("Kit.tabs: PrettyUI tabs failed, using buttons:", tostring(result))
+    end
+    local handle = { pages = {}, buttons = {} }
+    local each = math.floor(w / math.max(1, #labels))
+    local function show(i)
+        for n, page in ipairs(handle.pages) do
+            page.hidden = (n ~= i)
+        end
+    end
+    for i, label in ipairs(labels) do
+        local page = ui.Layer.new(parent)
+        page:SetPos(x, y + Kit.TABS_HEIGHT)
+        page:SetSize(w, h - Kit.TABS_HEIGHT)
+        handle.pages[i] = page
+        handle.buttons[i] = Kit.buttonAt(parent, label, x + (i - 1) * each, y, each - 4, 30, function()
+            show(i)
+            onChange(i)
+        end)
+    end
+    show(selected)
+    handle.select = show
+    handle.destroy = function()
+        for _, button in ipairs(handle.buttons) do
+            pcall(function() button:Destroy() end)
+        end
+        for _, page in ipairs(handle.pages) do
+            pcall(function() page:Destroy() end)
+        end
+    end
+    return handle
+end
+
 -- A box to type in, at a fixed position. This is the client's own input box (PrettyUI also has
 -- a text field, but the plugin relies on the client's box: it can be selected and copied).
 -- `numeric` allows only digits. `maxLength` is the most characters it takes.

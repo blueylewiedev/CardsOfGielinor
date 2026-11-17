@@ -2,7 +2,8 @@
 -- A progress bar with a label and "owned / total (percent)" over it, for the Stats window: the label at the left and the
 -- numbers at the right of one line, a thin bar under them that fills as the share grows.
 --
---   local bar = Bars.new(parent, x, y, w, "Rare", colour, labelColour)   -- `colour` fills the bar
+--   local bar = Bars.new(parent, x, y, w, "Rare", colour, labelColour, opts)   -- `colour` fills the bar
+--   opts.percent = false leaves the percentage out of the numbers (for a bar too narrow to hold it)
 --   bar.set(owned, total)
 --   bar.destroy()
 -- A bar is Bars.HEIGHT tall.
@@ -30,8 +31,9 @@ function Bars.colour(hex)
     return Vector4.new(((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255, 1.0)
 end
 
-function Bars.new(parent, x, y, w, label, colour, labelColour)
+function Bars.new(parent, x, y, w, label, colour, labelColour, opts)
     local bar = { parts = {} }
+    local showPercent = not (opts ~= nil and opts.percent == false)
     local function rectangle(px, py, pw, ph, fill, rgba, thickness)
         local rect = ui.Rectangle.new(parent)
         rect:SetPos(px, py)
@@ -58,7 +60,10 @@ function Bars.new(parent, x, y, w, label, colour, labelColour)
     -- Shows `owned` of `total`: the numbers, and the bar filled to that share.
     function bar.set(owned, total)
         local percent = (total > 0) and (100 * owned / total) or 0
-        local text = Format.credits(owned) .. " / " .. Format.credits(total) .. "   " .. string.format("%.1f", percent) .. "%"
+        local text = Format.credits(owned) .. " / " .. Format.credits(total)
+        if showPercent then
+            text = text .. "   " .. string.format("%.1f", percent) .. "%"
+        end
         if text ~= shownText then
             shownText = text
             bar.value.content = text

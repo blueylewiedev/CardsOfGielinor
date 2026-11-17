@@ -37,7 +37,7 @@ local api = nil              -- api.getState() : the logged-in character's colle
                              -- api.openMain() : opens the main window (when the bar is clicked)
 local parent = nil           -- the screen layer it is drawn on
 local root, grip = nil, nil     -- root is a layer that holds the bar's parts; grip catches the mouse
-local numberText, rateText = nil, nil
+local numberText, rateText, rateLabel = nil, nil, nil
 local posX, posY = 0, 0      -- where the bar is, from the top left of the screen
 local drag = nil             -- while it is being moved: { mouse x and y, bar x and y when the press began }
 local shown, shownRate = nil, nil   -- the text the numbers show now
@@ -188,10 +188,22 @@ function CreditsWindow.refresh()
         numberText.content = text
         shown = text
     end
-    local rate = (api ~= nil and api.getState() ~= nil) and Rate.text() or "-"
-    if rateText ~= nil and rate ~= shownRate then
+    -- While the rate is being worked out the bar says so in the whole of the row (Calculating... going round), then it is
+    -- the label "Per hour" and the number.
+    local loaded = api ~= nil and api.getState() ~= nil
+    local label, rate
+    if not loaded then
+        label, rate = "Per hour", "-"
+    elseif Rate.calculating() then
+        label, rate = Rate.waitingText(), ""
+    else
+        label, rate = "Per hour", Rate.text()
+    end
+    local both = label .. "|" .. rate
+    if rateText ~= nil and both ~= shownRate then
+        rateLabel.content = label
         rateText.content = rate
-        shownRate = rate
+        shownRate = both
     end
 end
 
@@ -227,7 +239,7 @@ function CreditsWindow.show(newApi)
     Kit.text(root, LABEL_X, 0, LABEL_W, ROW_H, "Credits", WHITE, ui.AlignMode.TOPLEFT)
     numberText = Kit.text(root, NUMBER_X, 0, NUMBER_W, ROW_H, "", WHITE, ui.AlignMode.BOTTOMRIGHT)
     -- (a box as tall as the text, so the label at its top and the number at its bottom are level)
-    Kit.text(root, LABEL_X, ROW_H - 2, 70, 18, "Per hour", GREY, ui.AlignMode.TOPLEFT)
+    rateLabel = Kit.text(root, LABEL_X, ROW_H - 2, WIDTH - LABEL_X - PADDING, 18, "Per hour", GREY, ui.AlignMode.TOPLEFT)
     rateText = Kit.text(root, NUMBER_X, ROW_H - 2, NUMBER_W, 18, "", GREY, ui.AlignMode.BOTTOMRIGHT)
     grip = addGrip()
     shown, shownRate = nil, nil
@@ -243,7 +255,7 @@ function CreditsWindow.hide()
     if root ~= nil then
         pcall(function() root:Destroy() end)
     end
-    root, grip, numberText, rateText, shown, shownRate = nil, nil, nil, nil, nil, nil
+    root, grip, numberText, rateText, rateLabel, shown, shownRate = nil, nil, nil, nil, nil, nil, nil
 end
 
 -- True while the overlay is on the screen.

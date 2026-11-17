@@ -101,7 +101,7 @@ local api = { getState = function() return state end, hiddenCards = function() r
 Stats.toggle(api)
 check(Stats.isOpen(), "the window opens")
 Stats.refresh()
-check(has("All cards"), "the Collection view has its bars")
+check(has("All cards"), "the Collection tab has its bars")
 check(has("%d+ / %d+"), "a bar shows owned / total")
 check(has("25%.%d%%") or has("24%.%d%%") or has("26%.%d%%"), "the all-cards bar shows about a quarter")
 
@@ -129,13 +129,13 @@ Stats.refresh()
 hiddenNow = {}
 
 -- the other views
-Stats.setView("regions")
-check(has("Misthalin") and has("Kharidian desert"), "the Regions view has a bar for each region")
-Stats.setView("packs")
-check(has("Packs opened: 12") and has("Credits earned: 123 456"), "the Packs view has the numbers")
-check(has("Pull rates by rarity"), "the Packs view has the pull rates")
-Stats.setView("progress")
-check(has("All cards"), "back to the Collection view")
+Stats.setTab(2)
+check(has("Misthalin") and has("Kharidian desert"), "the Regions tab has a bar for each region")
+Stats.setTab(3)
+check(has("Packs opened: 12") and has("Credits earned: 123 456"), "the Packs tab has the numbers")
+check(has("Pull rates by rarity"), "the Packs tab has the pull rates")
+Stats.setTab(1)
+check(has("All cards"), "back to the Collection tab")
 
 Rate.reset()
 Stats.hide()
@@ -154,7 +154,7 @@ local joined = {}
 for _, line in ipairs(lines) do joined[#joined + 1] = line[1] end
 local text = table.concat(joined, "\n")
 check(string.find(text, "Packs opened: 3", 1, true), "Stats.lines has the packs opened")
-check(string.find(text, "Credits per hour: -", 1, true), "Stats.lines has the credits per hour, a dash at first")
+check(string.find(text, "Credits per hour: Calculating", 1, true), "Stats.lines has the credits per hour, Calculating at first")
 
 if failures == 0 then
     print("OK: the Stats window opens, shows its bars and lines, recounts, and closes on a stand-in client")

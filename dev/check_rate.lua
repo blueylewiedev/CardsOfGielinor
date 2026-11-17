@@ -28,14 +28,24 @@ local function minutes(n, creditsEachMinute)
     end
 end
 
--- nothing to say before MIN_MINUTES
+-- nothing to say before MIN_MINUTES (one minute): "Calculating..." with the dots going round
 Rate.reset()
-check(Rate.perHour() == nil and Rate.text() == "-", "no rate at the start")
-minutes(2, 100)
-check(Rate.perHour() == nil, "still nothing after 2 minutes")
-minutes(1, 100)
-check(near(Rate.perHour(), 6000), "300 credits in 3 minutes is 6000 an hour, got " .. tostring(Rate.perHour()))
-check(Rate.text() == "6 000", "the text groups the digits, got " .. Rate.text())
+check(Rate.perHour() == nil and Rate.calculating(), "no rate at the start")
+local seen = {}
+for _ = 1, 30 do
+    Rate.tick()
+    seen[Rate.text()] = true
+    check(Rate.text():sub(1, 11) == "Calculating", "the waiting text starts with Calculating")
+    check(#Rate.text() == #"Calculating...", "the waiting text is always the same length, got '" .. Rate.text() .. "'")
+end
+check(seen["Calculating.  "] and seen["Calculating.. "] and seen["Calculating..."], "the dots go . .. ...")
+check(Rate.perHour() == nil, "still nothing after 30 ticks")
+for _ = 1, 69 do Rate.tick() end
+check(Rate.perHour() == nil, "still nothing at 99 ticks, just under a minute")
+Rate.add(100)
+Rate.tick()
+check(near(Rate.perHour(), 6000), "100 credits in the first minute is 6000 an hour, got " .. tostring(Rate.perHour()))
+check(not Rate.calculating() and Rate.text() == "6 000", "the text groups the digits, got " .. Rate.text())
 
 -- a steady rate
 Rate.reset()
@@ -80,8 +90,8 @@ local state = Storage.newState()
 if state ~= nil then
     Storage.earnCredits(state, 300)
     Storage.addCredits(state, 99999)
-    minutes(3)
-    check(near(Rate.perHour(), 6000), "earnCredits feeds the rate and addCredits does not, got " .. tostring(Rate.perHour()))
+    minutes(1)
+    check(near(Rate.perHour(), 18000), "earnCredits feeds the rate and addCredits does not, got " .. tostring(Rate.perHour()))
 else
     print("(skipped the Storage check: no way to make a state here)")
 end
