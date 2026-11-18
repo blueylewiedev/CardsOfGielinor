@@ -290,18 +290,6 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "cooking", "dungeoneering" }, category = { "food", "fish" }, membership = { "f2p" } },
     },
     {
-        id = "raw_heim_crab", name = "Raw heim crab", kind = "item", rarity = "common",
-        desc = "I should try cooking this.",
-        art = { item = "RAND_RAW_FISH_1", cam = { pitch = 1.55, dist = 397, fov = 60, ty = 11, tx = 25 } },
-        tags = { regions = { "daemonheim" }, skills = { "fishing", "dungeoneering" }, category = { "fish", "raw_material" }, membership = { "f2p" } },
-    },
-    {
-        id = "raw_redeye", name = "Raw red-eye", kind = "item", rarity = "common",
-        desc = "I should try cooking this.",
-        art = { item = "RAND_RAW_FISH_2", cam = { yaw = 0.12, pitch = 1.55, dist = 361, fov = 60, ty = -14, tx = 16 } },
-        tags = { regions = { "daemonheim" }, skills = { "fishing", "dungeoneering" }, category = { "raw_material", "fish" }, membership = { "f2p" } },
-    },
-    {
         id = "redeye", name = "Red-eye", kind = "item", rarity = "common",
         desc = "I wonder why they call it a Red-eye. Its eyes don't look very red!",
         art = { item = "RAND_FISH_2", cam = { pitch = 1.55, dist = 361, fov = 60, ty = -20, tx = 10 } },

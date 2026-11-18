@@ -2,52 +2,10 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "bathus_lantern", name = "Bathus lantern", kind = "item", rarity = "common",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_2", cam = { yaw = -0.02, dist = 330, ty = -16, tx = -14 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "f2p" } },
-    },
-    {
-        id = "kratonite_lantern", name = "Kratonite lantern", kind = "item", rarity = "common",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_4", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
-        id = "marmaros_lantern", name = "Marmaros lantern", kind = "item", rarity = "common",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_3", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
-        id = "novite_lantern", name = "Novite lantern", kind = "item", rarity = "common",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_1", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "f2p" } },
-    },
-    {
-        id = "argonite_lantern", name = "Argonite lantern", kind = "item", rarity = "uncommon",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_7", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
-        id = "fractite_lantern", name = "Fractite lantern", kind = "item", rarity = "uncommon",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_5", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
         id = "gravite_lantern", name = "Gravite lantern", kind = "item", rarity = "uncommon",
         desc = "A stone-cold conduit to the undead.",
         art = { item = "RAND_LANTERN_45_REWARD", cam = { yaw = -0.03, dist = 330, ty = -21 } },
         tags = { regions = { "daemonheim" }, skills = { "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
-        id = "zephyrium_lantern", name = "Zephyrium lantern", kind = "item", rarity = "uncommon",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_6", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
     },
     {
         id = "chaotic_lantern", name = "Chaotic lantern", kind = "item", rarity = "rare",
@@ -56,28 +14,10 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "necromancy" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
     },
     {
-        id = "gorgonite_lantern", name = "Gorgonite lantern", kind = "item", rarity = "rare",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_9", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
-        id = "katagon_lantern", name = "Katagon lantern", kind = "item", rarity = "rare",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_8", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
         id = "entropic_lantern", name = "Entropic lantern", kind = "item", rarity = "epic",
         desc = "A conduit to the Underworld.",
         art = { item = "RAND_NECRO_LANTERN_11", cam = { yaw = -0.03, dist = 330, ty = -21 } },
         tags = { regions = { "daemonheim" }, skills = { "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
-    },
-    {
-        id = "promethium_lantern", name = "Promethium lantern", kind = "item", rarity = "epic",
-        desc = "A conduit to the Underworld.",
-        art = { item = "RAND_NECRO_LANTERN_10", cam = { yaw = -0.03, dist = 330, ty = -21 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "necromancy", "dungeoneering" }, category = { "weapon", "necromancy_gear", "lantern" }, membership = { "p2p" } },
     },
     {
         id = "ruinous_lantern", name = "Ruinous lantern", kind = "item", rarity = "epic",

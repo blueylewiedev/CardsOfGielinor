@@ -2,12 +2,6 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "bathus_chainbody", name = "Bathus chainbody", kind = "item", rarity = "common",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_2", cam = { dist = 330, ty = -21, tx = -2 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "bathus_platebody", name = "Bathus platebody", kind = "item", rarity = "common",
         desc = "Provides excellent protection.",
         art = { item = "RAND_PLATEBODY_2", cam = { dist = 330, ty = -12 } },
@@ -62,28 +56,10 @@ Set.cards = {
         tags = { regions = { "kandarin" }, category = { "armour", "body", "melee_gear", "quest_item" }, membership = { "p2p" } },
     },
     {
-        id = "kratonite_chainbody", name = "Kratonite chainbody", kind = "item", rarity = "common",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_4", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "marmaros_chainbody", name = "Marmaros chainbody", kind = "item", rarity = "common",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_3", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "mithril_chainbody", name = "Mithril chainbody", kind = "item", rarity = "common",
         desc = "A mithril chainbody.",
         art = { item = "MITHRIL_CHAINBODY", cam = { dist = 363, ty = -27 } },
         tags = { skills = { "smithing", "defence" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "novite_chainbody", name = "Novite chainbody", kind = "item", rarity = "common",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_1", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
     },
     {
         id = "raider_chainbody", name = "Raider chainbody", kind = "item", rarity = "common",
@@ -110,34 +86,16 @@ Set.cards = {
         tags = { skills = { "smithing", "defence" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
     },
     {
-        id = "argonite_chainbody", name = "Argonite chainbody", kind = "item", rarity = "uncommon",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_7", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "fighter_torso", name = "Fighter torso", kind = "item", rarity = "uncommon",
         desc = "Penance fighter torso armour.",
         art = { item = "BARBASSAULT_PENANCE_FIGHTER_TORSO", cam = { dist = 363, ty = -7 } },
         tags = { regions = { "kandarin" }, skills = { "defence", "strength" }, category = { "armour", "body", "melee_gear", "minigame" }, membership = { "p2p" } },
     },
     {
-        id = "fractite_chainbody", name = "Fractite chainbody", kind = "item", rarity = "uncommon",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_5", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "rune_chainbody", name = "Rune chainbody", kind = "item", rarity = "uncommon",
         desc = "A rune chainbody.",
         art = { item = "RUNE_CHAINBODY", cam = { dist = 363, ty = -7 } },
         tags = { skills = { "smithing", "defence" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "zephyrium_chainbody", name = "Zephyrium chainbody", kind = "item", rarity = "uncommon",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_6", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "f2p" } },
     },
     {
         id = "corrupt_dragon_chainbody", name = "Corrupt dragon chainbody", kind = "item", rarity = "rare",
@@ -164,18 +122,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert", "wilderness" }, skills = { "defence" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
     },
     {
-        id = "gorgonite_chainbody", name = "Gorgonite chainbody", kind = "item", rarity = "rare",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_9", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "katagon_chainbody", name = "Katagon chainbody", kind = "item", rarity = "rare",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_8", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "superior_vestas_chainbody", name = "Superior Vesta's Chainbody", kind = "item", rarity = "legendary",
         desc = "Improved Ancient Warrior equipment from the Forinthry Dungeon Revenants.",
         art = { item = "DMBH_ANCIENT_MELEE_BODY2", cam = { dist = 363, ty = -27 } },
@@ -192,12 +138,6 @@ Set.cards = {
         desc = "A series of connected metal rings.",
         art = { item = "RAND_CHAINBODY_11", cam = { dist = 363, ty = -7 } },
         tags = { regions = { "daemonheim" }, skills = { "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "promethium_chainbody", name = "Promethium chainbody", kind = "item", rarity = "epic",
-        desc = "A series of connected metal rings.",
-        art = { item = "RAND_CHAINBODY_10", cam = { dist = 363, ty = -27 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
     },
     {
         id = "gud_raider_chainbody", name = "Gud raider chainbody", kind = "item", rarity = "legendary",
@@ -252,13 +192,6 @@ Set.cards = {
         desc = "Provides excellent protection.",
         art = { item = "RAND_PLATEBODY_8", cam = { dist = 363, ty = -5, tx = 2 } },
         tags = { regions = { "daemonheim" }, skills = { "smithing", "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "primal_platebody_dungeoneering", name = "Primal platebody (Dungeoneering)", kind = "item", rarity = "epic",
-        title = "Primal platebody (Dg)",
-        desc = "Provides excellent protection.",
-        art = { item = "RAND_PLATEBODY_11", cam = { dist = 363, ty = 8, tx = 2 } },
-        tags = { regions = { "daemonheim" }, skills = { "defence", "dungeoneering" }, category = { "armour", "body", "melee_gear" }, membership = { "p2p" } },
     },
     {
         id = "promethium_platebody", name = "Promethium platebody", kind = "item", rarity = "epic",
@@ -491,21 +424,9 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
     },
     {
-        id = "paraleather_body", name = "Paraleather body", kind = "item", rarity = "common",
-        desc = "Made from scaly hides.",
-        art = { item = "RAND_LEATHER_BODY_3", cam = { dist = 399, ty = -40, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "protoleather_body", name = "Protoleather body", kind = "item", rarity = "common",
         desc = "Made from scaly hides.",
         art = { item = "RAND_LEATHER_BODY_1", cam = { dist = 399, ty = -40, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "subleather_body", name = "Subleather body", kind = "item", rarity = "common",
-        desc = "Made from scaly hides.",
-        art = { item = "RAND_LEATHER_BODY_2", cam = { dist = 399, ty = -40, tx = 8 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
     },
     {
@@ -515,34 +436,16 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
     },
     {
-        id = "gallileather_body", name = "Gallileather body", kind = "item", rarity = "uncommon",
-        desc = "Made from scaly hides.",
-        art = { item = "RAND_LEATHER_BODY_7", cam = { dist = 399, ty = -40, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "spinoleather_body", name = "Spinoleather body", kind = "item", rarity = "uncommon",
         desc = "Made from scaly hides.",
         art = { item = "RAND_LEATHER_BODY_6", cam = { dist = 399, ty = -40, tx = 8 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "f2p" } },
     },
     {
-        id = "megaleather_body", name = "Megaleather body", kind = "item", rarity = "rare",
-        desc = "Made from scaly hides.",
-        art = { item = "RAND_LEATHER_BODY_9", cam = { dist = 399, ty = -40, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "stegoleather_body", name = "Stegoleather body", kind = "item", rarity = "rare",
         desc = "Made from scaly hides.",
         art = { item = "RAND_LEATHER_BODY_8", cam = { dist = 399, ty = -40, tx = 8 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "sagittarian_body", name = "Sagittarian body", kind = "item", rarity = "epic",
-        desc = "Made from scaly hides.",
-        art = { item = "RAND_LEATHER_BODY_11", cam = { dist = 399, ty = -40, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "ranged", "defence", "dungeoneering" }, category = { "armour", "body", "ranged_gear" }, membership = { "p2p" } },
     },
     {
         id = "tyrannoleather_body", name = "Tyrannoleather body", kind = "item", rarity = "epic",
@@ -759,33 +662,15 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
     },
     {
-        id = "roseblood_robe_top", name = "Roseblood robe top", kind = "item", rarity = "common",
-        desc = "The upper half of a magical robe.",
-        art = { item = "RAND_ROBE_TOP_4", cam = { dist = 363, ty = -28, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "salve_robe_top", name = "Salve robe top", kind = "item", rarity = "common",
         desc = "The upper half of a magical robe.",
         art = { item = "RAND_ROBE_TOP_1", cam = { dist = 363, ty = -28, tx = 10 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
     },
     {
-        id = "wildercress_robe_top", name = "Wildercress robe top", kind = "item", rarity = "common",
-        desc = "The upper half of a magical robe.",
-        art = { item = "RAND_ROBE_TOP_2", cam = { dist = 363, ty = -28, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "bryll_robe_top", name = "Bryll robe top", kind = "item", rarity = "uncommon",
         desc = "The upper half of a magical robe.",
         art = { item = "RAND_ROBE_TOP_5", cam = { dist = 363, ty = -28, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "duskweed_robe_top", name = "Duskweed robe top", kind = "item", rarity = "uncommon",
-        desc = "The upper half of a magical robe.",
-        art = { item = "RAND_ROBE_TOP_6", cam = { dist = 363, ty = -28, tx = 10 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "f2p" } },
     },
     {
@@ -798,12 +683,6 @@ Set.cards = {
         id = "ectorobe_top", name = "Ectorobe top", kind = "item", rarity = "rare",
         desc = "The upper half of a magical robe.",
         art = { item = "RAND_ROBE_TOP_8", cam = { dist = 363, ty = -28, tx = 10 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "runic_robe_top", name = "Runic robe top", kind = "item", rarity = "rare",
-        desc = "The upper half of a magical robe.",
-        art = { item = "RAND_ROBE_TOP_9", cam = { dist = 363, ty = -28, tx = 10 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "body", "magic_gear" }, membership = { "p2p" } },
     },
     {
@@ -1103,33 +982,15 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "f2p" } },
     },
     {
-        id = "deathleaf_robe_top", name = "Deathleaf robe top", kind = "item", rarity = "common",
-        desc = "The upper half of a magical robe, infused with the power of death.",
-        art = { item = "RAND_NECRO_ROBE_TOP_3", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "deathsalve_robe_top", name = "Deathsalve robe top", kind = "item", rarity = "common",
         desc = "The upper half of a magical robe, infused with the power of death.",
         art = { item = "RAND_NECRO_ROBE_TOP_1", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "f2p" } },
     },
     {
-        id = "shadowblood_robe_top", name = "Shadowblood robe top", kind = "item", rarity = "common",
-        desc = "The upper half of a magical robe, infused with the power of death.",
-        art = { item = "RAND_NECRO_ROBE_TOP_4", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "deathbell_robe_top", name = "Deathbell robe top", kind = "item", rarity = "uncommon",
         desc = "The upper half of a magical robe, infused with the power of death.",
         art = { item = "RAND_NECRO_ROBE_TOP_7", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "deathweed_robe_top", name = "Deathweed robe top", kind = "item", rarity = "uncommon",
-        desc = "The upper half of a magical robe, infused with the power of death.",
-        art = { item = "RAND_NECRO_ROBE_TOP_6", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
@@ -1142,12 +1003,6 @@ Set.cards = {
         id = "nectrorobe_top", name = "Nectrorobe top", kind = "item", rarity = "rare",
         desc = "The upper half of a magical robe, infused with the power of death.",
         art = { item = "RAND_NECRO_ROBE_TOP_8", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "soulrune_robe_top", name = "Soulrune robe top", kind = "item", rarity = "rare",
-        desc = "The upper half of a magical robe, infused with the power of death.",
-        art = { item = "RAND_NECRO_ROBE_TOP_9", cam = { yaw = -0.01, dist = 399, ty = 11, tx = -2 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "body", "necromancy_gear" }, membership = { "p2p" } },
     },
     {

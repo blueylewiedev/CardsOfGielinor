@@ -309,12 +309,6 @@ Set.cards = {
         tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
     },
     {
-        id = "offhand_chaotic_crossbow", name = "Off-hand chaotic crossbow", kind = "item", rarity = "rare",
-        desc = "A small crossbow, only effective at short distance.",
-        art = { item = "RAND_XBOW_80_REWARD_O", cam = { yaw = -0.42, pitch = -0.96, dist = 87, ty = 219, tx = -91 } },
-        tags = { regions = { "daemonheim" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
-    },
-    {
         id = "offhand_necronium_crossbow", name = "Off-hand necronium crossbow", kind = "item", rarity = "rare",
         desc = "An off-hand necronium crossbow.",
         art = { item = "XBOWS_CROSSBOW_NECRONIUM_O", cam = { yaw = 0.28, pitch = 0.21, dist = 205, ty = 9, tx = -10 } },
@@ -397,12 +391,6 @@ Set.cards = {
         desc = "An off-hand primal crossbow.",
         art = { item = "XBOWS_CROSSBOW_PRIMAL_O", cam = { yaw = 0.28, pitch = 0.21, dist = 205, ty = 9, tx = -10 } },
         tags = { skills = { "fletching", "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_ruinous_crossbow", name = "Off-hand ruinous crossbow", kind = "item", rarity = "epic",
-        desc = "A small crossbow, only effective at short distance.",
-        art = { item = "RAND_XBOW_90_REWARD_O", cam = { yaw = -2.56, pitch = 0.64, dist = 300, ty = 28, tx = 4 } },
-        tags = { regions = { "daemonheim" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "crossbow" }, membership = { "p2p" } },
     },
     {
         id = "primal_2h_crossbow", name = "Primal 2h crossbow", kind = "item", rarity = "epic",

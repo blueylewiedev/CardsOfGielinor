@@ -122,33 +122,15 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "p2p" } },
     },
     {
-        id = "roseblood_shoes", name = "Roseblood shoes", kind = "item", rarity = "common",
-        desc = "Magically charged shoes.",
-        art = { item = "RAND_CLOTH_BOOTS_4", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "salve_shoes", name = "Salve shoes", kind = "item", rarity = "common",
         desc = "Magically charged shoes.",
         art = { item = "RAND_CLOTH_BOOTS_1", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
     },
     {
-        id = "wildercress_shoes", name = "Wildercress shoes", kind = "item", rarity = "common",
-        desc = "Magically charged shoes.",
-        art = { item = "RAND_CLOTH_BOOTS_2", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "bryll_shoes", name = "Bryll shoes", kind = "item", rarity = "uncommon",
         desc = "Magically charged shoes.",
         art = { item = "RAND_CLOTH_BOOTS_5", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "duskweed_shoes", name = "Duskweed shoes", kind = "item", rarity = "uncommon",
-        desc = "Magically charged shoes.",
-        art = { item = "RAND_CLOTH_BOOTS_6", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "f2p" } },
     },
     {
@@ -167,12 +149,6 @@ Set.cards = {
         id = "ectoshoes", name = "Ectoshoes", kind = "item", rarity = "rare",
         desc = "Magically charged shoes.",
         art = { item = "RAND_CLOTH_BOOTS_8", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "runic_shoes", name = "Runic shoes", kind = "item", rarity = "rare",
-        desc = "Magically charged shoes.",
-        art = { item = "RAND_CLOTH_BOOTS_9", cam = { yaw = -0.82, pitch = 0.45, dist = 225, ty = 10, tx = 8 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "boots", "magic_gear" }, membership = { "p2p" } },
     },
     {
@@ -369,33 +345,15 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "f2p" } },
     },
     {
-        id = "deathleaf_shoes", name = "Deathleaf shoes", kind = "item", rarity = "common",
-        desc = "Shoes infused with the power of death.",
-        art = { item = "RAND_NECRO_BOOTS_3", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "deathsalve_shoes", name = "Deathsalve shoes", kind = "item", rarity = "common",
         desc = "Shoes infused with the power of death.",
         art = { item = "RAND_NECRO_BOOTS_1", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "f2p" } },
     },
     {
-        id = "shadowblood_shoes", name = "Shadowblood shoes", kind = "item", rarity = "common",
-        desc = "Shoes infused with the power of death.",
-        art = { item = "RAND_NECRO_BOOTS_4", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "deathbell_shoes", name = "Deathbell shoes", kind = "item", rarity = "uncommon",
         desc = "Shoes infused with the power of death.",
         art = { item = "RAND_NECRO_BOOTS_7", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "deathweed_shoes", name = "Deathweed shoes", kind = "item", rarity = "uncommon",
-        desc = "Shoes infused with the power of death.",
-        art = { item = "RAND_NECRO_BOOTS_6", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
@@ -408,12 +366,6 @@ Set.cards = {
         id = "nectroshoes", name = "Nectroshoes", kind = "item", rarity = "rare",
         desc = "Shoes infused with the power of death.",
         art = { item = "RAND_NECRO_BOOTS_8", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "soulrune_shoes", name = "Soulrune shoes", kind = "item", rarity = "rare",
-        desc = "Shoes infused with the power of death.",
-        art = { item = "RAND_NECRO_BOOTS_9", cam = { yaw = -0.35, pitch = 0.50, dist = 186, ty = 9, tx = 12 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "boots", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
@@ -779,21 +731,9 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
     },
     {
-        id = "paraleather_boots", name = "Paraleather boots", kind = "item", rarity = "common",
-        desc = "Boots crafted out of thick lizard hides.",
-        art = { item = "RAND_LEATHER_BOOTS_3", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "protoleather_boots", name = "Protoleather boots", kind = "item", rarity = "common",
         desc = "Boots crafted out of thick lizard hides.",
         art = { item = "RAND_LEATHER_BOOTS_1", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "subleather_boots", name = "Subleather boots", kind = "item", rarity = "common",
-        desc = "Boots crafted out of thick lizard hides.",
-        art = { item = "RAND_LEATHER_BOOTS_2", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
     },
     {
@@ -815,12 +755,6 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
     },
     {
-        id = "gallileather_boots", name = "Gallileather boots", kind = "item", rarity = "uncommon",
-        desc = "Boots crafted out of thick lizard hides.",
-        art = { item = "RAND_LEATHER_BOOTS_7", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "marksman_boots", name = "Marksman boots", kind = "item", rarity = "uncommon",
         desc = "Boots that greatly boost combat performance.",
         art = { item = "RAND_MARKSMAN_BOOTS", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = -1, tx = 20 } },
@@ -839,22 +773,10 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "p2p" } },
     },
     {
-        id = "megaleather_boots", name = "Megaleather boots", kind = "item", rarity = "rare",
-        desc = "Boots crafted out of thick lizard hides.",
-        art = { item = "RAND_LEATHER_BOOTS_9", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "stegoleather_boots", name = "Stegoleather boots", kind = "item", rarity = "rare",
         desc = "Boots crafted out of thick lizard hides.",
         art = { item = "RAND_LEATHER_BOOTS_8", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "sagittarian_boots", name = "Sagittarian boots", kind = "item", rarity = "epic",
-        desc = "Boots crafted out of thick lizard hides.",
-        art = { item = "RAND_LEATHER_BOOTS_11", cam = { yaw = -0.63, pitch = 0.50, dist = 248, ty = 8, tx = 11 } },
-        tags = { regions = { "daemonheim" }, skills = { "ranged", "defence", "dungeoneering" }, category = { "armour", "boots", "ranged_gear" }, membership = { "p2p" } },
     },
     {
         id = "tyrannoleather_boots", name = "Tyrannoleather boots", kind = "item", rarity = "epic",

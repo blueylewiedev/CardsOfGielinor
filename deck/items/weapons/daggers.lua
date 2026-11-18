@@ -140,24 +140,6 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
     },
     {
-        id = "offhand_bathus_dagger", name = "Off-hand bathus dagger", kind = "item", rarity = "common",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_2", cam = { yaw = 0.86, dist = 394, fov = 30, ty = -11, tx = -26 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
-    },
-    {
-        id = "offhand_marmaros_dagger", name = "Off-hand marmaros dagger", kind = "item", rarity = "common",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_3", cam = { yaw = -5.43, pitch = 1.20, dist = 326, fov = 40, ty = -10, tx = -31 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
-    },
-    {
-        id = "offhand_novite_dagger", name = "Off-hand novite dagger", kind = "item", rarity = "common",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_1", cam = { yaw = -5.36, dist = 394, fov = 30, ty = -4, tx = -14 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
-    },
-    {
         id = "steel_dagger", name = "Steel dagger", kind = "item", rarity = "common",
         desc = "A steel dagger.",
         art = { item = "STEEL_DAGGER", cam = { yaw = -4.15, dist = 525, fov = 25, ty = 5, tx = -8 } },
@@ -194,18 +176,6 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
     },
     {
-        id = "offhand_fractite_dagger", name = "Off-hand fractite dagger", kind = "item", rarity = "uncommon",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_5", cam = { yaw = -5.32, dist = 394, fov = 30, ty = -19, tx = -24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
-    },
-    {
-        id = "offhand_kratonite_dagger", name = "Off-hand kratonite dagger", kind = "item", rarity = "common",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_4", cam = { yaw = -5.40, dist = 359, fov = 30, ty = -12, tx = -23 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
-    },
-    {
         id = "white_dagger", name = "White dagger", kind = "item", rarity = "common",
         desc = "A vicious white dagger.",
         art = { item = "WHITE_DAGGER", cam = { yaw = -7.99, dist = 525, fov = 25, ty = 6, tx = -8 } },
@@ -218,22 +188,10 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "dagger", "quest_item" }, membership = { "p2p" } },
     },
     {
-        id = "offhand_argonite_dagger", name = "Off-hand argonite dagger", kind = "item", rarity = "uncommon",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_7", cam = { yaw = -5.40, dist = 359, fov = 30, ty = -12, tx = -23 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
-    },
-    {
         id = "offhand_dragon_dagger", name = "Off-hand dragon dagger", kind = "item", rarity = "uncommon",
         desc = "A powerful off-hand dagger.",
         art = { item = "DRAGON_DAGGER_O", cam = { yaw = -2.17, dist = 434, fov = 30, ty = -4, tx = -2 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_zephyrium_dagger", name = "Off-hand zephyrium dagger", kind = "item", rarity = "uncommon",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_6", cam = { yaw = -5.40, dist = 359, fov = 30, ty = -12, tx = -23 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "f2p" } },
     },
     {
         id = "rune_dagger", name = "Rune dagger", kind = "item", rarity = "uncommon",
@@ -272,18 +230,6 @@ Set.cards = {
         tags = { regions = { "tirannwn" }, skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
     },
     {
-        id = "offhand_gorgonite_dagger", name = "Off-hand gorgonite dagger", kind = "item", rarity = "rare",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_9", cam = { yaw = -5.29, dist = 359, fov = 30, ty = -10, tx = -34 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_katagon_dagger", name = "Off-hand katagon dagger", kind = "item", rarity = "rare",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_8", cam = { yaw = -5.40, dist = 359, fov = 30, ty = -12, tx = -23 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
-    },
-    {
         id = "primed_keris", name = "Primed keris", kind = "item", rarity = "rare",
         desc = "A mystical dagger gifted by Scabaras. Effective against scarab creatures.",
         art = { item = "MELEE_KERIS_PRIMED_T70", cam = { yaw = -4.93, dist = 394, fov = 25, ty = -14, tx = 23 } },
@@ -307,18 +253,6 @@ Set.cards = {
         desc = "An off-hand dagger fashioned from crystal.",
         art = { item = "ELFCITY_CRYSTAL_DAGGER_ATTUNED_O_100", cam = { yaw = -6.06, pitch = 1.20, dist = 296, fov = 40, ty = -9, tx = -16 } },
         tags = { regions = { "tirannwn" }, skills = { "smithing", "attack", "agility" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_primal_dagger", name = "Off-hand primal dagger", kind = "item", rarity = "epic",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_11", cam = { yaw = -5.40, dist = 434, fov = 30, ty = -17, tx = -46 } },
-        tags = { regions = { "daemonheim" }, skills = { "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_promethium_dagger", name = "Off-hand promethium dagger", kind = "item", rarity = "epic",
-        desc = "Short but pointy.",
-        art = { item = "RAND_DAGGER_O_10", cam = { yaw = -5.40, dist = 394, fov = 30, ty = -12, tx = -24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "dagger" }, membership = { "p2p" } },
     },
     {
         id = "primal_dagger", name = "Primal dagger", kind = "item", rarity = "epic",
