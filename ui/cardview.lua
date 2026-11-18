@@ -247,9 +247,23 @@ local function applyCamera(cam)
         targetY = cam.ty
         targetZ = cam.tx * sinYaw
     end
-    local x = targetX + cam.dist * sinYaw * math.cos(cam.pitch)
-    local y = targetY + cam.dist * math.sin(cam.pitch)
-    local z = targetZ - cam.dist * cosYaw * math.cos(cam.pitch)
+    -- From the look-at point to the camera (d), and the card's left-to-right (r) and bottom-to-top (u) directions.
+    local sinPitch, cosPitch = math.sin(cam.pitch), math.cos(cam.pitch)
+    local dx, dy, dz = sinYaw * cosPitch, sinPitch, -cosYaw * cosPitch
+    -- cam.lean and cam.tip (radians, CardView.tilt) swing the camera round the look-at point, across the card and up or
+    -- down it: about the card's own upright and level lines, whichever way the camera looks. (A yaw would do that for
+    -- an NPC seen from the side, but spins an item seen from above.)
+    local lean, tip = cam.lean or 0, cam.tip or 0
+    if lean ~= 0 or tip ~= 0 then
+        local rx, rz = cosYaw, sinYaw
+        local ux, uy, uz = -sinYaw * sinPitch, cosPitch, cosYaw * sinPitch
+        local cl, sl, ct, st = math.cos(lean), math.sin(lean), math.cos(tip), math.sin(tip)
+        dx, dy, dz = dx * cl + rx * sl, dy * cl, dz * cl + rz * sl
+        dx, dy, dz = dx * ct + ux * st, dy * ct + uy * st, dz * ct + uz * st
+    end
+    local x = targetX + cam.dist * dx
+    local y = targetY + cam.dist * dy
+    local z = targetZ + cam.dist * dz
     camera:SetPosition(Vector3.new(x, y, z), 0)
     camera:SetLookAt(Vector3.new(targetX, targetY, targetZ), 0)
     camera:SetClipPlanes(math.max(1, cam.dist * (cam.near or 0)), cam.dist * 20)
@@ -625,7 +639,8 @@ local function makeCells(p)
     p.cellLayer = ui.Layer.new(p.root)
     p.cellLayer:SetSize(p.W, p.H)
     p.cellLayer.hidden = not p.tilted
-    local nx, ny = math.max(1, math.floor(CardView.TILT.gridX)), math.max(1, math.floor(CardView.TILT.gridY))
+    local grid = p.grid or { CardView.TILT.gridX, CardView.TILT.gridY }
+    local nx, ny = math.max(1, math.floor(grid[1])), math.max(1, math.floor(grid[2]))
     p.gridX, p.gridY = nx, ny
     for n = 0, nx * ny - 1 do
         local clip = ui.Layer.new(p.cellLayer)
@@ -640,28 +655,25 @@ local function makeCells(p)
 end
 
 -- Makes a card's tilt parts now (CardView.tilt makes them the first time it is needed), for a card that will
--- certainly turn, so the first frames of its turn are not held up making them: the pack window's flip.
+-- certainly turn, so the first frames of its turn are not held up making them: the reveal screen's flip.
 function CardView.prepareTilt(view)
     if view.tiltParts ~= nil then
         makeCells(view.tiltParts)
     end
 end
 
--- Draws the backdrop canvas: the art window flat, or the four-cornered shape `project` makes of it.
-local function drawBackdrop(p, project)
+-- Draws the backdrop canvas: the art window flat, or (with `corners`, its four corners where they show, clockwise from
+-- the top left, as whole numbers) the four-cornered shape the window becomes.
+local function drawBackdrop(p, corners)
     local win = p.win
     p.back:Clear()
-    if project == nil then
+    if corners == nil then
         p.back:AddRectangle(round(win.x), round(win.y), round(win.w), round(win.h), p.backColour)
         return
     end
-    local x1, y1 = project(win.x, win.y)
-    local x2, y2 = project(win.x + win.w, win.y)
-    local x3, y3 = project(win.x + win.w, win.y + win.h)
-    local x4, y4 = project(win.x, win.y + win.h)
-    x1, y1, x2, y2, x3, y3, x4, y4 = round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), round(x4), round(y4)
-    p.back:AddTriangle(x1, y1, x2, y2, x3, y3, p.backColour)
-    p.back:AddTriangle(x1, y1, x3, y3, x4, y4, p.backColour)
+    local c = corners
+    p.back:AddTriangle(c[1], c[2], c[3], c[4], c[5], c[6], p.backColour)
+    p.back:AddTriangle(c[1], c[2], c[5], c[6], c[7], c[8], p.backColour)
 end
 
 -- Places the picture's ModelGroup (its model, and a silhouette's screens) over x, y, w, h on the card.
@@ -734,12 +746,12 @@ local function tiltPerspective(view, ax, ay)
             cell.sprite:SetPos(-round(i * cellW * kx), -round(j * cellH * ky))
             cell.sprite:SetSize(math.max(1, round(W * kx)), math.max(1, round(H * ky)))
         end
-        drawBackdrop(p, project)
-        -- the picture, round the art window's four corners
+        -- the art window's four corners: the backdrop drawn between them, and the picture fitted round them
         local x1, y1 = project(win.x, win.y)
         local x2, y2 = project(win.x + win.w, win.y)
         local x3, y3 = project(win.x + win.w, win.y + win.h)
         local x4, y4 = project(win.x, win.y + win.h)
+        drawBackdrop(p, { round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), round(x4), round(y4) })
         local left, top = math.min(x1, x4), math.min(y1, y2)
         fitArt(view, round(left), round(top), math.max(1, round(math.max(x2, x3) - left)),
             math.max(1, round(math.max(y3, y4) - top)))
@@ -753,8 +765,8 @@ local function tiltPerspective(view, ax, ay)
 end
 
 -- An image that turns about its upright middle line in perspective, as a tilted card does (CardView.tilt): cut into
--- `strips` upright strips, each a layer showing its slice of the image (a layer crops what is inside it). The pack
--- window turns its card backs over with it. Returns { root, place(x, y, w, h, angle), hide(hidden) }: place draws the
+-- `strips` upright strips, each a layer showing its slice of the image (a layer crops what is inside it). The reveal
+-- screen turns its card backs over with it. Returns { root, place(x, y, w, h, angle), hide(hidden) }: place draws the
 -- image w x h at (x, y) in `parent`, turned by `angle` radians (+ takes its right edge away; pi / 2 is edge-on).
 function CardView.turnSprite(parent, image, strips)
     local root = ui.Layer.new(parent)
@@ -808,22 +820,45 @@ function CardView.tilt(view, ax, ay)
         return
     end
     tiltPerspective(view, ax, ay)
-    -- The figure's camera turns with the card (turnModel), when the turn has changed enough to see, and once more
-    -- when it is flat again. (Not while CardView.uncover hides the picture: the pack window's flip.)
-    local cam = view.cam
+    -- The figure turns with the card (turnModel). Not a silhouette's (its camera is the sun), and not while
+    -- CardView.uncover hides the picture (the reveal screen's flip).
+    local cam, turn = view.cam, CardView.WIGGLE.turnModel
+    if turn == 0 or cam == nil or cam.group == nil or view.silhouette
+        or (view.uncover ~= nil and view.uncover.shown == false) then
+        return
+    end
     local last = view.camTilt or { 0, 0 }
-    local step = CardView.TILT.cameraStep
-    if CardView.WIGGLE.turnModel ~= 0 and cam ~= nil and cam.group ~= nil and not view.silhouette
-        and (view.uncover == nil or view.uncover.shown ~= false)
-        and (math.abs(ax - last[1]) > step or math.abs(ay - last[2]) > step
-            or (ax == 0 and ay == 0 and (last[1] ~= 0 or last[2] ~= 0))) then
+    if cam.kind == "item" then
+        -- An item's camera looks down on it from nearly straight above, where swinging the camera sideways also swings
+        -- which way is up on the card, and the item spins. So the item itself is turned instead, the camera left alone:
+        -- about the card's upright line as the card turns, and about its level line as it tips (both against the drag,
+        -- as seen in the client). That rotation is split onto SetTransform's yaw (about the world's upright), pitch
+        -- (about x) and roll (about z): exact for small turns, near enough for the wiggle's. It is one call, so it
+        -- follows every change.
+        if ax == last[1] and ay == last[2] then
+            return
+        end
         view.camTilt = { ax, ay }
-        local yaw, pitch = cam.yaw, cam.pitch
-        -- (turning the card one way is the camera going round it the other way; tipping it, the same way)
-        cam.yaw = yaw - ax * CardView.WIGGLE.turnModel
-        cam.pitch = pitch + ay * CardView.WIGGLE.turnModel
+        local sinY, cosY, sinP, cosP = math.sin(cam.yaw), math.cos(cam.yaw), math.sin(cam.pitch), math.cos(cam.pitch)
+        local a, b = -ax * turn, -ay * turn          -- about the card's upright line, and its level line
+        local yaw = cosP * a
+        local pitch = -sinY * sinP * a + cosY * b
+        local roll = cosY * sinP * a + sinY * b
+        pcall(function()
+            view.model:SetTransform(Vector3.new(0.0, 0.0, 0.0), Vector3.new(yaw, pitch, roll), Vector3.new(1.0, 1.0, 1.0), 0)
+        end)
+        return
+    end
+    -- An NPC's camera swings round it the other way to the card's turn, and the same way as its tip: a lean and a tip,
+    -- not a yaw and pitch (see applyCamera). Building a camera costs more, so only when the turn has changed enough to
+    -- see, and once more when the card is flat again.
+    local step = CardView.TILT.cameraStep
+    if math.abs(ax - last[1]) > step or math.abs(ay - last[2]) > step
+        or (ax == 0 and ay == 0 and (last[1] ~= 0 or last[2] ~= 0)) then
+        view.camTilt = { ax, ay }
+        cam.lean, cam.tip = -ax * turn, ay * turn
         pcall(applyCamera, cam)
-        cam.yaw, cam.pitch = yaw, pitch
+        cam.lean, cam.tip = nil, nil
     end
 end
 
@@ -831,8 +866,9 @@ end
 --   w:press(x, y)        the mouse went down at screen position (x, y)
 --   w:release()          the mouse came up
 --   w:step(dt, x, y)     every frame, with where the mouse is now (nil if unknown)
-function CardView.newWiggle(view)
-    local w = { view = view, x = 0, y = 0, vx = 0, vy = 0, held = nil }     -- x, y: the tilt in degrees
+-- `turnOnly` true: it only turns left and right (dragging up or down does not tip it).
+function CardView.newWiggle(view, turnOnly)
+    local w = { view = view, x = 0, y = 0, vx = 0, vy = 0, held = nil, turnOnly = turnOnly }   -- x, y: tilt in degrees
     function w:press(x, y)
         self.held = { x = x, y = y, fromX = self.x, fromY = self.y }
     end
@@ -848,7 +884,7 @@ function CardView.newWiggle(view)
         local oldX, oldY = self.x, self.y
         if self.held ~= nil and mouseX ~= nil then
             local x = self.held.fromX + (mouseX - self.held.x) * t.follow
-            local y = self.held.fromY + (mouseY - self.held.y) * t.follow
+            local y = self.turnOnly and 0 or self.held.fromY + (mouseY - self.held.y) * t.follow
             self.x = math.max(-t.maxAngle, math.min(t.maxAngle, x))
             self.y = math.max(-t.maxAngle, math.min(t.maxAngle, y))
             self.vx, self.vy = (self.x - oldX) / dt, (self.y - oldY) / dt     -- so letting go flings it on from there
@@ -911,7 +947,7 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
     local tiltParts = nil
     if opts ~= nil and opts.tilt then
         tiltParts = { W = W, H = H, win = win, backColour = backColour, flat = {}, cells = {}, tilted = false,
-            root = root, frameImage = frameImage, locked = locked }
+            root = root, frameImage = frameImage, locked = locked, grid = opts.tiltGrid }
         tiltParts.back = ui.Canvas.new(root)
         tiltParts.back:SetSize(W, H)
         drawBackdrop(tiltParts, nil)
@@ -1034,8 +1070,9 @@ end
 -- with a "?" instead of the art and no description.
 -- opts.silhouette = true (with locked) shows the locked card's picture as a shadow silhouette instead of the "?"
 -- (the Sets window), still with no description.
--- opts.tilt = true lets CardView.tilt draw the card in perspective (the pack window's flip, and picking a card up,
--- ui/wiggle.lua).
+-- opts.tilt = true lets CardView.tilt draw the card in perspective (the reveal screen's flip, and picking a card up,
+-- ui/wiggle.lua). opts.tiltGrid = { across, down } cuts its frame into that many squares instead of CardView.TILT's (a
+-- card that mostly turns left and right, as the reveal screen's do, needs only one row).
 -- opts.finish = the card's finish (Cards.finishes): "holo" draws the foil behind the picture (CardView.FOIL;
 -- framed cards only, not locked ones). opts.foil = true draws it whatever the finish (the preview).
 -- opts.lockedText = what a locked card says in place of its description (default "Not collected yet").

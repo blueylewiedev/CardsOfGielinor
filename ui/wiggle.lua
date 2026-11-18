@@ -1,7 +1,7 @@
 -- ui/wiggle.lua
 -- Picking a card up: pressing on a card and dragging tilts it towards the mouse in perspective, and letting go springs
 -- it back flat with a wobble (CardView.newWiggle and CardView.tilt; the card must be made with opts.tilt). A press
--- without a drag is still a click. The collection, the Sets window, the pack window's revealed card and the preview
+-- without a drag is still a click. The collection, the Sets window, the reveal screen's face-up cards and the preview
 -- use it.
 --
 -- Wiggle.attach lays a see-through grip over the card that takes the mouse. While the mouse is held the grip stretches
@@ -17,7 +17,7 @@ local Logger = require("core/logger")
 
 local Wiggle = {}
 
--- (the pack window's drag of the sealed pack uses the same two)
+-- (the reveal screen's drag of the sealed pack uses the same two)
 Wiggle.DRAG_PX = 3          -- how far the mouse moves before a press is a drag, not a click
 Wiggle.IDLE_SECONDS = 1.5   -- no hold for this long: the release was missed
 local DRAG_PX, IDLE_SECONDS = Wiggle.DRAG_PX, Wiggle.IDLE_SECONDS
@@ -41,12 +41,13 @@ local function letGo(entry, missed)
 end
 
 -- Lays a grip in `parent` over `rect` = { x, y, w, h } (the card, or the card and its caption) that picks up `view`.
--- `onClick` (optional) runs for a press without a drag, on letting go. Returns the grip (for a mouse wheel, and for
--- whoever destroys the card to destroy it too).
-function Wiggle.attach(parent, view, rect, onClick)
+-- `onClick` (optional) runs for a press without a drag, on letting go. `turnOnly` true lets the card only turn left and
+-- right (one made with a single row of squares, opts.tiltGrid, which cannot tip well). Returns the grip (for a mouse
+-- wheel, and for whoever destroys the card to destroy it too).
+function Wiggle.attach(parent, view, rect, onClick, turnOnly)
     local grip = ui.Layer.new(parent)
     grip.clickthrough = false
-    local entry = { grip = grip, wig = CardView.newWiggle(view), onClick = onClick, idle = 0 }
+    local entry = { grip = grip, wig = CardView.newWiggle(view, turnOnly), onClick = onClick, idle = 0 }
     function entry.place()
         grip:SetPos(rect.x, rect.y)
         grip:SetSize(rect.w, rect.h)

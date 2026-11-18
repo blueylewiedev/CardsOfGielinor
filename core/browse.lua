@@ -12,7 +12,8 @@
 --   skill      a word of the skills tag, such as "thieving"
 --   category   a word of the category tag, such as "food"
 --   membership "f2p" or "p2p"
---   finish     a finish, such as "holo": only the cards the player has in that finish, shown in it
+--   finish     a finish, such as "holo": only the cards the player has in that finish, shown in it; with owned =
+--              "unowned", the cards they do not have in it
 --   sort       "rarity" (lowest first, the default), "rarity_desc", "name" or "owned" (most copies first)
 --
 -- An entry is { card, finishes, count, locked, finish }: finishes is { finish = copies } of what the player has of the
@@ -89,12 +90,13 @@ local function hasEntry(have, mode)
     return true
 end
 
--- What the player owns, by card: { card id = { finish = count } }. Cards the deck no longer has are left out.
-local function ownedByCard(state)
+-- What the player owns, by card: { card id = { finish = count } }. Cards the deck no longer has, and counts that are
+-- not more than 0, are left out. (The Sets window reads it too.)
+function Browse.ownedByCard(state)
     local owned = {}
     for key, count in pairs(state.owned) do
         local cardId, finish = Cards.parseKey(key)
-        if cardId ~= nil and Cards.byId[cardId] ~= nil then
+        if cardId ~= nil and Cards.byId[cardId] ~= nil and type(count) == "number" and count > 0 then
             local list = owned[cardId]
             if list == nil then
                 list = {}
@@ -119,23 +121,36 @@ function Browse.preferredFinish(have)
     return "normal"
 end
 
+-- What the player has of a card as far as the filter's finish goes: all of `have` with no finish chosen; with one,
+-- only that finish (nil if they have none of it). The list and its counts both go by it.
+local function haveInFinish(have, finish)
+    if finish == nil or have == nil then
+        return have
+    end
+    return have[finish] ~= nil and { [finish] = have[finish] } or nil
+end
+
 -- The entries that match `filter` (see the top), for the collection in `state`: one a card.
 function Browse.entries(state, filter)
     filter = filter or {}
     local terms, tagFilter = searchTerms(filter.search), tagFilterOf(filter)
+    -- (with a finish chosen, "all" lists only the cards the player has in it: a finish is about copies they have)
     local mode = filter.owned or "all"
-    local owned = ownedByCard(state)
+    if filter.finish ~= nil and mode == "all" then
+        mode = "owned"
+    end
+    local owned = Browse.ownedByCard(state)
     local entries, position = {}, {}
     for _, card in ipairs(Cards.list) do
         local have = owned[card.id]
-        if cardMatches(card, filter, terms, tagFilter) and hasEntry(have, mode)
-            and (filter.finish == nil or (have ~= nil and have[filter.finish] ~= nil)) then
+        local mine = haveInFinish(have, filter.finish)
+        if cardMatches(card, filter, terms, tagFilter) and hasEntry(mine, mode) then
             local count = 0
             for _, n in pairs(have or {}) do
                 count = count + n
             end
             local entry = { card = card, finishes = have or {}, count = count, locked = have == nil,
-                finish = filter.finish or Browse.preferredFinish(have) }
+                finish = (filter.finish ~= nil and mine ~= nil) and filter.finish or Browse.preferredFinish(have) }
             entries[#entries + 1] = entry
             position[entry] = #entries
         end
@@ -173,7 +188,6 @@ function Browse.entries(state, filter)
     return entries
 end
 
-
 -- The words of one tag kind ("category", "region"...) that the cards matching `filter` have, as { word = true }: what a
 -- drop-down for that tag can offer so that every word in it finds something. The filter's own choice for that tag is
 -- left out of it (or the list would offer nothing but the word already chosen).
@@ -189,7 +203,7 @@ function Browse.words(state, filter, tagKind)
     end
     local terms, tagFilter = searchTerms(rest.search), tagFilterOf(rest)
     local mode = rest.owned or "all"
-    local owned = ownedByCard(state)
+    local owned = Browse.ownedByCard(state)
     local present = {}
     for _, card in ipairs(Cards.list) do
         if cardMatches(card, rest, terms, tagFilter) and hasEntry(owned[card.id], mode) then
@@ -206,14 +220,12 @@ end
 function Browse.counts(state, filter)
     filter = filter or {}
     local terms, tagFilter = searchTerms(filter.search), tagFilterOf(filter)
-    local owned = ownedByCard(state)
+    local owned = Browse.ownedByCard(state)
     local counts = { cards = 0, owned = 0 }
     for _, card in ipairs(Cards.list) do
         if cardMatches(card, filter, terms, tagFilter) then
             counts.cards = counts.cards + 1
-            -- (with a finish chosen, a card counts as owned when the player has it in that finish)
-            local have = owned[card.id]
-            if have ~= nil and (filter.finish == nil or have[filter.finish] ~= nil) then
+            if haveInFinish(owned[card.id], filter.finish) ~= nil then
                 counts.owned = counts.owned + 1
             end
         end
@@ -227,19 +239,23 @@ end
 --   rarities : { [rarity id] = { cards, owned } }
 --   regions  : { [region word] = { cards, owned } }   (a card with several regions counts in each)
 --   noRegion : { cards, owned } for the cards that have no region at all (the ones every region's count leaves out)
+--   holo     : { cards, owned } for every card, owned when the player has it as a holo
 -- A card counts as owned when the player has at least one variant of it. `hidden` (optional, { [variant key] = copies }, as
 -- the pack opening gives it) are copies the player has not seen yet: they do not count, so the numbers do not give away
 -- what is in a pack that is still being opened.
 function Browse.progress(state, hidden)
-    local have = {}
+    local have, holo = {}, {}
     for key, count in pairs(state.owned) do
-        local cardId = Cards.parseKey(key)
+        local cardId, finish = Cards.parseKey(key)
         if cardId ~= nil and Cards.byId[cardId] ~= nil and count > ((hidden and hidden[key]) or 0) then
             have[cardId] = true
+            if finish == "holo" then
+                holo[cardId] = true
+            end
         end
     end
     local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
-        noRegion = { cards = 0, owned = 0 } }
+        noRegion = { cards = 0, owned = 0 }, holo = { cards = 0, owned = 0 } }
     local function count(group, name, owned)
         local bucket = group[name]
         if bucket == nil then
@@ -254,6 +270,10 @@ function Browse.progress(state, hidden)
     for _, card in ipairs(Cards.list) do
         local owned = have[card.id] == true
         result.all.cards = result.all.cards + 1
+        result.holo.cards = result.holo.cards + 1
+        if holo[card.id] then
+            result.holo.owned = result.holo.owned + 1
+        end
         if owned then
             result.all.owned = result.all.owned + 1
         end

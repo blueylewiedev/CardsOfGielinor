@@ -16,7 +16,6 @@
 -- mouse and keyboard. The filters are kept while the plugin runs, so closing and opening the viewer does not lose them.
 
 local Cards = require("core/cards")
-local Storage = require("core/storage")
 local Logger = require("core/logger")
 local Browse = require("core/browse")
 local CardView = require("ui/cardview")
@@ -150,7 +149,7 @@ local filterStarted = false               -- the filter starts from the default 
 local gridView = false
 local page = 1
 local selectedKey = nil                -- the id of the card shown beside the list
-local chosenFinish = {}                -- { card id = finish } picked with a card's finish toggles (kept while open)
+local chosenFinish = {}                -- { card id = finish } picked with a card's finish toggles (kept while the plugin runs)
 local entries = {}                     -- what the filter finds, worked out when the filter changes
 local watchedState, watchedStamp = nil, nil   -- the collection as the list was last worked out from it (see Viewer.refresh)
 
@@ -519,7 +518,9 @@ local function showDetail()
     view.root:SetPos(x, BODY_Y)
     detailParts[#detailParts + 1] = view.root
     -- pressing on the card and dragging tilts it (ui/wiggle.lua)
-    detailParts[#detailParts + 1] = Wiggle.attach(content, view, { x = x, y = BODY_Y, w = DETAIL_W_CARD, h = DETAIL_H_CARD })
+    local cardGrip = Wiggle.attach(content, view, { x = x, y = BODY_Y, w = DETAIL_W_CARD, h = DETAIL_H_CARD })
+    Kit.onWheel(cardGrip, wheelPage)
+    detailParts[#detailParts + 1] = cardGrip
 
     -- What is known about the card, as chips: how many the player has (all finishes together), the type and whether
     -- it is members only on the first line; then the finishes they have it in, each a toggle that shows the card in
@@ -542,19 +543,13 @@ local function showDetail()
             { text = kindWord == "item" and "Item" or "NPC", field = "kind", value = kindWord },
             tagItems(card, "membership", "membership")[1],
         } },
-        #finishItems > 0 and { label = "Finish", items = finishItems } or nil,
-        { label = "Region", items = tagItems(card, "regions", "region") },
-        { label = "Skill", items = tagItems(card, "skills", "skill") },
-        { label = "Category", items = tagItems(card, "category", "category") },
     }
-    -- (a card not owned has no finish row)
-    local compact = {}
-    for index = 1, 5 do
-        if rowsToShow[index] ~= nil then
-            compact[#compact + 1] = rowsToShow[index]
-        end
+    if #finishItems > 0 then            -- (a card not owned has no finish row)
+        rowsToShow[#rowsToShow + 1] = { label = "Finish", items = finishItems }
     end
-    rowsToShow = compact
+    rowsToShow[#rowsToShow + 1] = { label = "Region", items = tagItems(card, "regions", "region") }
+    rowsToShow[#rowsToShow + 1] = { label = "Skill", items = tagItems(card, "skills", "skill") }
+    rowsToShow[#rowsToShow + 1] = { label = "Category", items = tagItems(card, "category", "category") }
     local y = 8
     for _, row in ipairs(rowsToShow) do
         local texts = {}
@@ -768,9 +763,10 @@ function Viewer.refilter(follow)
     watchedState, watchedStamp = state, collectionStamp(view)
     entries = Browse.entries(view, filter)
     local counts = Browse.counts(view, filter)
-    local progress = Storage.progress(view).normal
+    -- (the whole deck, a card counted when the player has it in any finish)
+    local whole = Browse.counts(view, {})
     widgets.counts.content = counts.owned .. " of " .. counts.cards .. " cards owned"
-        .. "   |   Whole collection: " .. progress.owned .. " / " .. progress.total
+        .. "   |   Whole collection: " .. whole.owned .. " / " .. whole.cards
     local pageBefore = page
     page = 1
     local keep, position = false, nil

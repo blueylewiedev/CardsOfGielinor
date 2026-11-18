@@ -43,19 +43,7 @@ local drag = nil             -- while it is being moved: { mouse x and y, bar x 
 local shown, shownRate = nil, nil   -- the text the numbers show now
 
 -- The mouse's position on the screen, or nil if the client cannot say.
-local function mousePosition()
-    local ok, x, y = pcall(function()
-        if not Mouse.IsAvailable() then
-            return nil
-        end
-        local position = Mouse.GetPosition()
-        return position.x, position.y
-    end)
-    if ok then
-        return x, y
-    end
-    return nil
-end
+local mousePosition = Kit.mousePosition
 
 -- Keeps the bar fully on the screen.
 local function clamp(x, y)

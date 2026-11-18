@@ -280,13 +280,14 @@ end
 
 -- A pack, `height` pixels tall, inside `parent` (move it with pack.root:SetPos). `side` is
 -- "front" or "back". `piece` (optional) draws only the "cap" or the "body" of the pack torn open
--- (see PackArt.tearY). Draw it with PackArt.draw.
-function PackArt.new(parent, side, height, piece)
+-- (see PackArt.tearY). Draw it with PackArt.draw. `turnable` true cuts it on TURN_CHUNK's column lines so PackArt.turn
+-- can turn it: about twice the parts, so only a pack that turns has it (the reveal screen's sealed pack, not the Shop's).
+function PackArt.new(parent, side, height, piece, turnable)
     local s = height / PackArt.H
     local w = math.floor(PackArt.W * s + 0.5)
     -- artRects holds where each of artParts was put, and artStrips the strip it is in (for PackArt.turn).
     local pack = { side = side, s = s, w = w, h = height, strips = {}, stripLayers = {},
-        artParts = {}, topParts = {}, artRects = {}, artStrips = {}, columnW = TURN_CHUNK * s }
+        artParts = {}, topParts = {}, artRects = {}, artStrips = {}, columnW = turnable and TURN_CHUNK * s or nil }
     pack.root = ui.Layer.new(parent)
     pack.root:SetSize(w, height)
     -- Made in this order so the art is under the shading and the name and logo are on top.
@@ -295,12 +296,12 @@ function PackArt.new(parent, side, height, piece)
     pack.art:SetSize(w, height)
     -- The strips that trace the outline depend only on the side and size, so they are made once
     -- here and only the picture's tiles inside them are redrawn.
-    -- (cut on the column lines, see TURN_CHUNK)
+    -- (a turnable pack's are cut on the column lines, see TURN_CHUNK)
     local rects = {}
     for _, r in ipairs(pieceRects(piece)) do
         local x, right = r[1], r[1] + r[3]
         while x < right do
-            local nx = math.min(right, (x // TURN_CHUNK + 1) * TURN_CHUNK)
+            local nx = turnable and math.min(right, (x // TURN_CHUNK + 1) * TURN_CHUNK) or right
             rects[#rects + 1] = { x, r[2], nx - x, r[4], r[5] }
             x = nx
         end
@@ -319,7 +320,7 @@ function PackArt.new(parent, side, height, piece)
             layer:SetSize(x1 - x0, y1 - y0)
             pack.stripLayers[#pack.stripLayers + 1] = layer
             pack.strips[#pack.strips + 1] = { layer = layer, x = x0, y = y0, w = x1 - x0, h = y1 - y0, dy = dy * s,
-                column = columnAt(x0, pack.columnW) }
+                column = turnable and columnAt(x0, pack.columnW) or nil }
         end
     end
     local shading = image(side == "back" and "pack_shading_back" or "pack_shading")
@@ -342,13 +343,16 @@ function PackArt.new(parent, side, height, piece)
             if ww <= 0 or hh <= 0 then
                 return
             end
-            -- (cut on the column lines, as the strips are)
-            local column = columnAt(x, pack.columnW)
-            local line = math.floor((column + 1) * pack.columnW)      -- the next column line past x
-            if x + ww > line then
-                window(x, y, line - x, hh)
-                window(line, y, x + ww - line, hh)
-                return
+            -- (a turnable pack's are cut on the column lines, as its strips are)
+            local column = nil
+            if turnable then
+                column = columnAt(x, pack.columnW)
+                local line = math.floor((column + 1) * pack.columnW)      -- the next column line past x
+                if x + ww > line then
+                    window(x, y, line - x, hh)
+                    window(line, y, x + ww - line, hh)
+                    return
+                end
             end
             local clip = ui.Layer.new(shades)
             clip:SetPos(x, y)
@@ -497,6 +501,7 @@ end
 -- height scaled about the pack's middle by the scale at the middle of its column (TURN_CHUNK), so everything in a
 -- column stays together; what is inside it is scaled with it. Nothing is redrawn.
 function PackArt.turn(pack, angle)
+    assert(pack.columnW ~= nil, "PackArt.turn needs a pack made turnable (PackArt.new)")
     local mid, midY, columnW = pack.w / 2, pack.h / 2, pack.columnW
     local sinA, cosA = math.sin(angle), math.cos(angle)
     local function project(x)          -- where the line x across the flat pack shows, and the scale there

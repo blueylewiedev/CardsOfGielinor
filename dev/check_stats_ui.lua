@@ -167,7 +167,8 @@ overview = joined(Stats.overview(state))
 check(string.find(overview, "Time played: 2h 00m", 1, true), "two hours played, got " .. overview)
 check(string.find(overview, "Average credits per hour: 12 000", 1, true), "24000 credits in 2 hours is 12 000 an hour, got " .. overview)
 local rates = Stats.pullRates(state)
-check(#rates == 5, "a pull rate line per rarity")
+check(#rates == 6, "a pull rate line per rarity, and one for holos")
+check(string.find(rates[6][1], "Holo: ", 1, true) == 1, "the last line is the holo rate (" .. tostring(rates[6][1]) .. ")")
 check(rates[1][2] ~= rates[5][2], "the lines are in the rarities' colours")
 
 if failures == 0 then

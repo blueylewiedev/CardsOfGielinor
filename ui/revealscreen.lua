@@ -72,6 +72,7 @@ local GLINT_EVERY, GLINT_SECONDS = 1.6, 0.9
 local GLINT_SIZE = 20
 local SEALED_FLIP_SECONDS = 0.4         -- turning the sealed pack right over (Flip pack); edge-on halfway
 local PACK_DRAG_TURN = 1.0              -- half turns for a drag the pack's width
+local EDGE_SLACK = 0.05                 -- radians past edge-on before a turning pack changes side (see drawPackTurn)
 local FLIP_ICON = 24                    -- the Flip pack button (PrettyUI's sprite buttons are 24 x 24)
 
 -- The shuffle and the spread.
@@ -87,7 +88,7 @@ local AUTO_STEP = 0.18                  -- seconds between cards when they are t
 local FLIP_LIFT, FLIP_TURN, FLIP_OPEN, FLIP_REVEAL = 0.12, 0.15, 0.2, 0.5
 local FLIP_SECONDS = FLIP_LIFT + FLIP_TURN + FLIP_OPEN + FLIP_REVEAL
 local FLIP_SWELL = 0.06                 -- how much bigger the back gets as it lifts
-local FLIP_STRIPS = 20                  -- the strips a turning card back is cut into (see CardView.turnSprite)
+local FLIP_STRIPS = 10                  -- the strips a turning card (its back and its face) is cut into
 local GLOW_SPEED = 4                    -- how fast the glow breathes (radians per second)
 local GLOW_MIN = 0.45                   -- the dimmest it gets, as a fraction of its full brightness
 local GLOW_STRENGTH = 1.0
@@ -114,7 +115,7 @@ local image = PackArt.image
 -- tear, status, main, skip, newCards, auto, instant (Skip was used: no more animations).
 local R = nil
 
-local startTear, flipSealed, updateControls, startDealing, onMain, closeReveal, flipCard, makeFlipGrip
+local startTear, flipSealed, updateControls, startDealing, onMain, closeReveal, flipCard, makeFlipGrip, settlePackTurn
 
 local function setHidden(component, hidden)
     pcall(function() component.hidden = hidden end)
@@ -356,8 +357,10 @@ local function prepare(c)
             c.glow = { sprite = glow, strength = rarity.glow, age = 0 }
         end
         -- (opts.tilt: it turns over in perspective, CardView.tilt, made ready now with the face, so turning it does not
-        -- wait on it)
-        c.view = CardView.create(R.root, card, { animated = true, scale = R.scale, tilt = true, finish = c.result.finish })
+        -- wait on it. A turn over is left and right only, so one row of strips draws it: 10 parts, not the 140 of a
+        -- full grid, on every card dealt.)
+        c.view = CardView.create(R.root, card, { animated = true, scale = R.scale, tilt = true,
+            tiltGrid = { FLIP_STRIPS, 1 }, finish = c.result.finish })
         CardView.prepareTilt(c.view)
         own(c, c.view.root)
         c.view.root:SetPos(c.x, c.y)
@@ -418,11 +421,13 @@ local function showFaceUp(c)
         setHidden(c.view.root, false)
         CardView.tilt(c.view, 0, 0)        -- (flat, if the turn was cut short)
         revealFace(c, 1)
-        -- face up it can be picked up and tilted (a click on it does nothing more)
-        own(c, Wiggle.attach(R.root, c.view, { x = c.x, y = c.y, w = c.w, h = c.h }))
+        -- face up it can be picked up and turned left and right, as its one row of strips allows (a click on it does
+        -- nothing more)
+        own(c, Wiggle.attach(R.root, c.view, { x = c.x, y = c.y, w = c.w, h = c.h }, nil, true))
     end
     if c.backTurn ~= nil then
-        c.backTurn.hide(true)
+        destroy(c.backTurn.root)
+        c.backTurn = nil
     end
     if c.back ~= nil then
         destroy(c.back)
@@ -494,7 +499,8 @@ flipCard = function(c)
             turned = true
             setHidden(back, true)
             if c.backTurn ~= nil then
-                c.backTurn.hide(true)
+                destroy(c.backTurn.root)       -- (done with: the face is turning now)
+                c.backTurn = nil
             end
             setHidden(view.root, false)
         end
@@ -827,8 +833,9 @@ end
 -- Draws a designed pack, `side` up, as the two pieces it tears into (see PackArt.tearY), in the sealed pack's place.
 -- Returns body, cap.
 local function makePieces(tear, side, art)
-    local body = PackArt.new(R.root, side, R.packH, "body")
-    local cap = PackArt.new(R.root, side, R.packH, "cap")
+    -- (turnable: it can be turned over, PackArt.turn)
+    local body = PackArt.new(R.root, side, R.packH, "body", true)
+    local cap = PackArt.new(R.root, side, R.packH, "cap", true)
     for _, piece in ipairs({ body, cap }) do
         piece.root:SetPos(tear.x, tear.y)
         PackArt.draw(piece, art)
@@ -973,7 +980,9 @@ local function drawPackTurn(angle)
         return          -- (the mouse is held still)
     end
     turn.angle, turn.drawn = angle, angle
-    local over = math.abs(angle) >= math.pi / 2
+    -- (the side changes a little past edge-on, and changes back a little before it, so a mouse held near edge-on does
+    -- not rebuild the pieces on every move)
+    local over = math.abs(angle) >= math.pi / 2 + ((turn.shown == turn.from) and EDGE_SLACK or -EDGE_SLACK)
     local side = over and ((turn.from == "front") and "back" or "front") or turn.from
     if side ~= turn.shown then
         turn.shown = side
@@ -1011,22 +1020,22 @@ local function endPackTurn()
 end
 
 -- Finishes a turn from wherever it is: right over if it is past edge-on (or `over` is true), back flat if not.
-local function settlePackTurn(over)
+settlePackTurn = function(over)
     local from = R.packTurn.angle or 0
     local sign = (from < 0) and -1 or 1
     local to = (over or math.abs(from) >= math.pi / 2) and sign * math.pi or 0
     local seconds = SEALED_FLIP_SECONDS * math.abs(to - from) / math.pi
-    if seconds <= 0 then
+    local function done()
         drawPackTurn(to)
         endPackTurn()
+    end
+    if seconds <= 0 then
+        done()
         return
     end
     Anim.start(R, seconds, function(p)
         drawPackTurn(from + (to - from) * Anim.smooth(p))
-    end, function()
-        drawPackTurn(to)
-        endPackTurn()
-    end)
+    end, done)
 end
 
 -- The Flip pack button: turns the pack right over.
@@ -1217,6 +1226,13 @@ local function skipToCards()
     end
     R.instant = true
     R.auto = nil
+    -- (the pack held mid-turn by a drag: let go of it, and it settles at once below)
+    if R.flipDrag ~= nil then
+        R.flipDrag.release(true)
+    end
+    if R.packTurn ~= nil and not Anim.running(R) then
+        settlePackTurn(false)
+    end
     for _ = 1, 8 do
         if R == nil or R.stage == "cards" then
             break

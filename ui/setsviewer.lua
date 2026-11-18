@@ -153,26 +153,14 @@ local function collectionStamp(state)
     return kinds .. ":" .. copies
 end
 
--- How many copies of a card the player has, over every finish.
-local function copiesOf(state, card)
+-- How many copies of a card the player has, over every finish, from what they have of it ({ finish = copies },
+-- Browse.ownedByCard).
+local function copiesOf(have)
     local total = 0
-    for finish in pairs(Cards.finishes) do
-        total = total + (state.owned[Cards.variantKey(card.id, finish)] or 0)
+    for _, count in pairs(have or {}) do
+        total = total + count
     end
     return total
-end
-
--- The finish a card is shown in, as the collection shows it: a holo if the player has one, otherwise normal
--- (Browse.preferredFinish). Every finish counts towards the set.
-local function shownFinish(state, card)
-    local have = {}
-    for finish in pairs(Cards.finishes) do
-        local count = state.owned[Cards.variantKey(card.id, finish)]
-        if count ~= nil and count > 0 then
-            have[finish] = count
-        end
-    end
-    return Browse.preferredFinish(have)
 end
 
 -- What a card the player does not have says in place of its description: the packs it comes in ("Gielinor pack"
@@ -437,11 +425,12 @@ local function showSet(state, ownedIds)
     widgets.pageText.content = "Page " .. page .. " of " .. pageCount(cards)
 
     local first = (page - 1) * GRID_PER_PAGE
+    local owned = Browse.ownedByCard(state)          -- { card id = { finish = copies } }
     local keyParts = { set.id, tostring(page) }
     for slot = 1, GRID_PER_PAGE do
         local card = cards[first + slot]
         if card ~= nil then
-            keyParts[#keyParts + 1] = card.id .. "=" .. copiesOf(state, card)
+            keyParts[#keyParts + 1] = card.id .. "=" .. copiesOf(owned[card.id])
         end
     end
     local key = table.concat(keyParts, "|")
@@ -455,12 +444,14 @@ local function showSet(state, ownedIds)
         if card == nil then
             break
         end
-        local copies = copiesOf(state, card)
+        local copies = copiesOf(owned[card.id])
         local locked = copies == 0
         local x = columnX((slot - 1) % GRID_COLS + 2) + (COLUMN_W - CardView.WIDTH) // 2
         local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
         local view = CardView.create(content, card, { locked = locked, silhouette = true,
-            lockedText = locked and lockedText(card) or nil, tilt = true, finish = shownFinish(state, card) })
+            -- (every finish counts towards the set; a card is shown as the collection shows it, a holo first)
+            lockedText = locked and lockedText(card) or nil, tilt = true,
+            finish = Browse.preferredFinish(owned[card.id]) })
         view.root:SetPos(x, y)
         gridParts[#gridParts + 1] = view.root
 
