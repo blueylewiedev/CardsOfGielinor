@@ -156,6 +156,19 @@ local function toolButtons(api, refresh)
                 log("DEV: card updates are", status.phase, "-", status.message, "(attempt", status.attempt .. ")")
             end
         end, tooltip = "Fetches and applies the card overlay again; if one is under way, says what it is doing" },
+        { label = "Local overlay", action = function()
+            local found, module = pcall(require, "dev/local_overlay")
+            if not found or type(module) ~= "table" or type(module.text) ~= "string" then
+                log("DEV: no dev/local_overlay.lua: run  python dev/build_overlay.py --local  then reload the plugin (prl)")
+                return
+            end
+            local applied, why = OverlayLoader.applyText(module.text)
+            if applied then
+                log("DEV: applying the overlay in dev/local_overlay.lua (not fetched)")
+            else
+                log("DEV: the local overlay was not applied:", why)
+            end
+        end, tooltip = "Applies dev/local_overlay.lua as if it had been fetched (python dev/build_overlay.py --local writes it from docs/tuning.json and the deck). After rebuilding it, reload the plugin (prl)" },
         { label = "Delete saves", action = function() deleteSaves(api, refresh) end, style = "negative",
             tooltip = "Deletes every collection of this dev copy. Click twice within 10 seconds" },
     }

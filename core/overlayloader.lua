@@ -142,9 +142,21 @@ function Loader.tick()
             local job = state.job
             settle("done", Overlay.summary(job))
             state.revision, state.changes, state.job = job.revision, job.added + job.replaced + job.retired, nil
+            state.tuned = job.tuning ~= nil and #job.tuning.changed or 0
             say(state.message)
             for _, problem in ipairs(job.problems) do
                 Logger.error("card updates: skipped", problem)
+            end
+            if job.tuning ~= nil then
+                if #job.tuning.changed > 0 then
+                    say("tuning differs from the shipped numbers in:", table.concat(job.tuning.changed, ", "))
+                end
+                for _, problem in ipairs(job.tuning.ignored) do
+                    Logger.error("card updates: tuning ignored", problem)
+                end
+                if job.tuning.more > 0 then
+                    Logger.error("card updates: tuning ignored", job.tuning.more, "more keys")
+                end
             end
         end
     elseif phase == "retrying" then
@@ -192,6 +204,25 @@ function Loader.start(devCopy)
     end
 end
 
+-- Applies overlay text given directly, as if it had just been fetched (the Dev tools window's Local overlay button:
+-- dev/local_overlay.lua, made by dev/build_overlay.py --local), so a tuning change can be tried without publishing it.
+-- Only once the last go has ended. Returns true, or false and why.
+function Loader.applyText(text)
+    local phase = state.phase
+    if phase == "fetching" or phase == "applying" then
+        return false, "an overlay is being fetched or applied: try again in a moment"
+    end
+    local job, why = Overlay.begin(text)
+    if job == nil then
+        settle("ignored", why)
+        say("not applied:", why)
+        return false, why
+    end
+    state.job = job
+    state.phase, state.message, state.request, state.finished = "applying", "applying (from disk)", nil, nil
+    return true
+end
+
 -- Fetches and applies it again (the Dev tools window's button): only once the last go has ended.
 function Loader.refetch()
     local phase = state.phase
@@ -212,10 +243,11 @@ function Loader.shutdown()
 end
 
 -- What it is doing: { phase, message, attempt, revision, changes (cards added, changed or retired by the overlay),
--- needsPermission (waiting for httpAccess, which the player has not granted) }.
+-- tuned (how many tuning keys differ from the shipped numbers), needsPermission (waiting for httpAccess, which the
+-- player has not granted) }.
 function Loader.status()
     return { phase = state.phase, message = state.message, attempt = state.attempt, revision = state.revision,
-        changes = state.changes, needsPermission = state.phase == "waiting" and state.warned }
+        changes = state.changes, tuned = state.tuned, needsPermission = state.phase == "waiting" and state.warned }
 end
 
 -- True if the player has switched the httpAccess permission off (it can be turned off while the plugin runs).
@@ -235,13 +267,18 @@ function Loader.playerLine()
     if status.needsPermission or (phase ~= "off" and permissionOff()) then
         return "Off", "Turn on HTTP Access in this plugin's permissions to get card updates."
     elseif phase == "done" then
-        local changes = status.changes or 0
+        local changes, tuned = status.changes or 0, status.tuned or 0
+        local settings = tuned == 0 and "" or (" The update also adjusted " .. tuned
+            .. (tuned == 1 and " setting" or " settings") .. " (credit amounts and pull odds, within limits set in the plugin).")
         if changes == 0 then
+            if tuned > 0 then
+                return "On - settings updated", "Card updates are fetched when the plugin starts. The cards are up to date." .. settings
+            end
             return "On - up to date", "Card updates are fetched when the plugin starts. The cards are up to date."
         end
         return "On - " .. changes .. (changes == 1 and " card" or " cards") .. " updated",
             "An update fetched when the plugin started added, changed or removed " .. changes
-            .. (changes == 1 and " card." or " cards.")
+            .. (changes == 1 and " card." or " cards.") .. settings
     elseif phase == "ignored" then
         return "On - no updates", "The update on the server is for a different version of the plugin, so nothing was applied."
     elseif phase == "failed" then

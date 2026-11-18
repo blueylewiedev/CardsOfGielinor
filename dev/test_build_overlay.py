@@ -9,6 +9,7 @@ runs it.
 
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -60,6 +61,67 @@ class Text(unittest.TestCase):
         for text in B.overlay_text("0.1.0", 1, B.body_lines([line("a", name='q"uote')], ["x"])).split("\n"):
             if text:
                 json.loads(text)
+
+
+class Tuning(unittest.TestCase):
+    def read(self, text):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "tuning.json"
+            if text is not None:
+                path.write_text(text, encoding="utf-8")
+            return B.tuning_lines(path)
+
+    def test_no_file_and_an_empty_object_say_nothing(self):
+        self.assertEqual(self.read(None), [])
+        self.assertEqual(self.read("{}"), [])
+        self.assertEqual(self.read("  {\n}\n"), [])
+
+    def test_a_tuning_file_is_one_line(self):
+        lines = self.read('{"packs": {"price": 3000}, "earning": {"enabled": false}}')
+        self.assertEqual(len(lines), 1)
+        self.assertEqual(json.loads(lines[0]), {"tuning": {"packs": {"price": 3000}, "earning": {"enabled": False}}})
+        self.assertNotIn("\n", lines[0])
+
+    def test_the_line_is_stable(self):
+        first = self.read('{"b": 1, "a": 2}')
+        second = self.read('{"a": 2,\n "b": 1}')
+        self.assertEqual(first, second)
+
+    def test_a_file_that_is_not_an_object_is_refused(self):
+        for text in ("[1, 2]", "5", '"x"', "not json", ""):
+            with self.assertRaises(SystemExit):
+                self.read(text)
+
+    def test_it_goes_first_in_the_overlay(self):
+        tuning = self.read('{"packs": {"price": 3000}}')
+        text = B.overlay_text("0.1.0", 1, tuning + B.body_lines([line("a")], ["old"]))
+        lines = text.split("\n")
+        self.assertEqual(list(json.loads(lines[1])), ["tuning"])
+        self.assertEqual(json.loads(lines[2])["id"], "a")
+
+    def test_changing_the_tuning_raises_the_revision(self):
+        cards = B.body_lines([line("a")], [])
+        before = B.overlay_text("0.1.0", 2, self.read('{"packs": {"price": 3000}}') + cards)
+        same = B.next_revision(before, "0.1.0", self.read('{"packs": {"price": 3000}}') + cards)
+        changed = B.next_revision(before, "0.1.0", self.read('{"packs": {"price": 3100}}') + cards)
+        removed = B.next_revision(before, "0.1.0", cards)
+        self.assertEqual((same, changed, removed), (2, 3, 3))
+
+
+class LocalModule(unittest.TestCase):
+    def test_the_text_is_in_a_lua_long_string(self):
+        text = B.overlay_text("0.1.0", 0, ['{"tuning":{"packs":{"price":3000}}}'])
+        source = B.lua_module(text)
+        self.assertIn("return { text = [[\n", source)
+        self.assertTrue(source.endswith("]] }\n"))
+        self.assertIn(text, source)
+
+    def test_the_brackets_grow_until_the_text_cannot_close_them(self):
+        for text, opening in (("a ]] b", "[=["), ("a ]] ]=] b", "[==["), ("]]]=]]==]", "[===[")):
+            source = B.lua_module(text)
+            self.assertIn("return { text = " + opening + "\n", source)
+            closing = "]" + opening[1:-1] + "]"
+            self.assertEqual(source.count(closing), 1, text)           # only the one at the end
 
 
 class Revision(unittest.TestCase):
