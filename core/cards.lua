@@ -26,8 +26,8 @@ end
 
 -- Variants. Every card the player owns is one card + one finish, saved as "<card id>|<finish>".
 --   normal : the card as it is
---   holo   : a rainbow foil behind the picture (ui/cardview.lua, CardView.FOIL). (Reverse holo, a
---            shine over the frame, was taken out; a frame-shaped shine cannot be drawn well.)
+--   holo   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE). (Reverse holo was
+--            taken out.)
 Cards.finishes = {
     normal = { name = "Normal" },
     holo   = { name = "Holo" },

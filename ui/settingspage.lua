@@ -170,14 +170,20 @@ end
 local function checkboxPanelHeight(rows, extra)
     return HEADING_H + rows * Kit.CHECKBOX_ROW_H + (extra or 0) + PAD
 end
-local LINE_PANEL_H = HEADING_H + LINE_ROW_H + PAD
+local LINE_PANEL_MIN_H = HEADING_H + LINE_ROW_H + PAD
 -- General is as tall as Your collection and Card updates together, so the two columns end level (with the development tools
--- off); its rows are spaced out to fill it.
-local GENERAL_H = 2 * LINE_PANEL_H + MARGIN
+-- off); its rows are spaced out to fill it. With more options than that has room for it is taller, and the two panels on the
+-- right grow to match.
+local function generalHeight()
+    return math.max(2 * LINE_PANEL_MIN_H + MARGIN, checkboxPanelHeight(#choicesFor(false)))
+end
+local function linePanelHeight()
+    return (generalHeight() - MARGIN) // 2
+end
 
 -- How tall the window's content is: the taller of the two columns, with the margin round it.
 local function windowHeight(dev)
-    local height = GENERAL_H
+    local height = generalHeight()
     if dev then
         height = height + MARGIN + checkboxPanelHeight(#choicesFor(true), 20)
     end
@@ -217,17 +223,18 @@ local function buildWindow(content)
 
     -- Left: the effects, then (only with the development tools) the developer options.
     local nextY
-    page.widgets.effects, nextY = checkboxPanel(x1, MARGIN, "GENERAL", false, nil, GENERAL_H)
+    page.widgets.effects, nextY = checkboxPanel(x1, MARGIN, "GENERAL", false, nil, generalHeight())
     if api.devTools then
         page.widgets.dev, nextY = checkboxPanel(x1, nextY + MARGIN, "DEVELOPER", true, 20)
         Kit.text(content, x1 + PAD, nextY - PAD - 20, inner, 18, "Hides the development tools", GREY, ui.AlignMode.TOPLEFT)
     end
 
     -- Right: how the collection is saved, and the card updates. Each line has an icon with the explanation as its tooltip.
-    Kit.panel(content, x2, MARGIN, COLUMN_W, LINE_PANEL_H, "YOUR COLLECTION")
+    local linePanelH = linePanelHeight()
+    Kit.panel(content, x2, MARGIN, COLUMN_W, linePanelH, "YOUR COLLECTION")
     page.widgets.saved, page.widgets.savedIcon = lineWithIcon(content, x2, MARGIN + HEADING_H, COLUMN_W)
-    local y = MARGIN + LINE_PANEL_H + MARGIN
-    Kit.panel(content, x2, y, COLUMN_W, LINE_PANEL_H, "CARD UPDATES")
+    local y = MARGIN + linePanelH + MARGIN
+    Kit.panel(content, x2, y, COLUMN_W, linePanelH, "CARD UPDATES")
     page.widgets.updates, page.widgets.updatesIcon = lineWithIcon(content, x2, y + HEADING_H, COLUMN_W)
 end
 

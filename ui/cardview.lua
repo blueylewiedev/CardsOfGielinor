@@ -8,14 +8,9 @@
 
 local Cards = require("core/cards")
 local Logger = require("core/logger")
+local Settings = require("core/settings")
 
 local CardView = {}
-
--- The nearest whole number (halves up). PackArt uses it too.
-local function round(v)
-    return math.floor(v + 0.5)
-end
-CardView.round = round
 
 -- Card size. The layout below was measured on a 160 x 224 card; SCALE enlarges everything to
 -- fit (frame zones, the plain layout, the card itself). Change SCALE to resize the cards.
@@ -247,23 +242,9 @@ local function applyCamera(cam)
         targetY = cam.ty
         targetZ = cam.tx * sinYaw
     end
-    -- From the look-at point to the camera (d), and the card's left-to-right (r) and bottom-to-top (u) directions.
-    local sinPitch, cosPitch = math.sin(cam.pitch), math.cos(cam.pitch)
-    local dx, dy, dz = sinYaw * cosPitch, sinPitch, -cosYaw * cosPitch
-    -- cam.lean and cam.tip (radians, CardView.tilt) swing the camera round the look-at point, across the card and up or
-    -- down it: about the card's own upright and level lines, whichever way the camera looks. (A yaw would do that for
-    -- an NPC seen from the side, but spins an item seen from above.)
-    local lean, tip = cam.lean or 0, cam.tip or 0
-    if lean ~= 0 or tip ~= 0 then
-        local rx, rz = cosYaw, sinYaw
-        local ux, uy, uz = -sinYaw * sinPitch, cosPitch, cosYaw * sinPitch
-        local cl, sl, ct, st = math.cos(lean), math.sin(lean), math.cos(tip), math.sin(tip)
-        dx, dy, dz = dx * cl + rx * sl, dy * cl, dz * cl + rz * sl
-        dx, dy, dz = dx * ct + ux * st, dy * ct + uy * st, dz * ct + uz * st
-    end
-    local x = targetX + cam.dist * dx
-    local y = targetY + cam.dist * dy
-    local z = targetZ + cam.dist * dz
+    local x = targetX + cam.dist * sinYaw * math.cos(cam.pitch)
+    local y = targetY + cam.dist * math.sin(cam.pitch)
+    local z = targetZ - cam.dist * cosYaw * math.cos(cam.pitch)
     camera:SetPosition(Vector3.new(x, y, z), 0)
     camera:SetLookAt(Vector3.new(targetX, targetY, targetZ), 0)
     camera:SetClipPlanes(math.max(1, cam.dist * (cam.near or 0)), cam.dist * 20)
@@ -441,7 +422,7 @@ local function addArt(parent, card, box, bodyOverride, dark)
         child:SetSize(box.w, box.h)
         child:SetModel(modelType, modelId)
 
-        -- (screens: a silhouette's extra models, sized with the figure when the card tilts, fitArt)
+        -- (screens: a silhouette's extra models)
         local state = { group = group, body = body == true, anim = art.anim, kind = isItem and "item" or nil,
             screens = {} }
         if art.anim ~= nil and not isItem then
@@ -492,416 +473,90 @@ local function addArt(parent, card, box, bodyOverride, dark)
     return plain
 end
 
--- Foil (a holo card's finish, or opts.foil): a ui.Canvas over the art box's backdrop, under the model (models draw over every 2D
--- component). A see-through rainbow in diagonal bands. A canvas gradient only runs straight across or straight down,
--- so the bands are thin stripes of one colour each (two or three triangles, cut to the box), stepping round the hues
--- a little at a time. Colours are 0xRRGGBBAA.
-CardView.FOIL = {
-    hues = { 0xFF3B3B, 0xFF9F1C, 0xFFE14D, 0x4DDB6A, 0x3BC8FF, 0x5B6CFF, 0xC04DFF },   -- round the rainbow, back to the first
-    alpha = 0xA0,        -- the rainbow's see-through-ness (0 clear, 0xFF solid)
-    angle = 30,          -- how far the bands lean from upright, in degrees
-    stripes = 48,        -- how many stripes across the box (more is smoother)
-    cycles = 1.0,        -- how many times the rainbow goes round across the box
+-- Holo shine (a holo card's finish, or opts.foil): two almost see-through pastel images, the size of the whole card
+-- (resources/images/holo_a.png and holo_b.png, made by dev/make_holo.py), laid over it and cross-faded so the bands seem
+-- to drift. It is made after the picture, so it covers the whole card: the frame, the backdrop, the picture and the text.
+CardView.SHINE = {
+    alpha = 0.85,        -- how strong it is at its brightest (times the images' own see-through-ness)
+    speed = 1.4,         -- cross-fade speed (radians per second)
+    most = 60,           -- how many shining cards are animated at once (the oldest stop first)
 }
 
--- The colour `t` of the way round the hues (any number: it wraps), blended between the two nearest.
-local function foilColour(t)
-    local f = CardView.FOIL
-    local n = #f.hues
-    local at = (t % 1) * n
-    local i = math.floor(at)
-    local mix = at - i
-    local a, b = f.hues[i % n + 1], f.hues[(i + 1) % n + 1]
-    local colour = 0
-    for shift = 16, 0, -8 do
-        local ca, cb = (a >> shift) & 0xFF, (b >> shift) & 0xFF
-        colour = colour | (round(ca + (cb - ca) * mix) << shift)
-    end
-    return colour * 256 + f.alpha
-end
+local shineImages = {}           -- image name -> resource, or false if it is missing
 
--- The part of a convex polygon (a list of {x, y}) where x * dx + y * dy is at least `limit` (sign 1) or at most (-1).
-local function clipPolygon(points, dx, dy, limit, sign)
-    local out = {}
-    for i = 1, #points do
-        local p, q = points[i], points[i % #points + 1]
-        local vp = (p[1] * dx + p[2] * dy - limit) * sign
-        local vq = (q[1] * dx + q[2] * dy - limit) * sign
-        if vp >= 0 then
-            out[#out + 1] = p
-        end
-        if (vp >= 0) ~= (vq >= 0) then
-            local t = vp / (vp - vq)
-            out[#out + 1] = { p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t }
-        end
+local function shineImage(name)
+    local cached = shineImages[name]
+    if cached ~= nil then
+        return cached or nil
     end
-    return out
-end
-
--- Draws the foil's stripes on `canvas` (the size of the card) over `box` (the art box, in card units), the rainbow
--- moved round by `phase` (0 at rest; 1 is once round). `map`, if given, takes a point on the flat card to where it
--- shows (CardView.tilt's perspective); the stripes stay straight-edged, so their corners are all that is moved.
-local function drawFoil(canvas, box, phase, map)
-    local f = CardView.FOIL
-    canvas:Clear()
-    local w, h = box.w, box.h
-    local angle = math.rad(f.angle)
-    local dx, dy = math.cos(angle), math.sin(angle)        -- across the bands
-    local corners = { 0, w * dx, h * dy, w * dx + h * dy }
-    local low, high = math.min(table.unpack(corners)), math.max(table.unpack(corners))
-    local rect = { { 0, 0 }, { w, 0 }, { w, h }, { 0, h } }
-    local count = math.max(1, math.floor(f.stripes))
-    for i = 1, count do
-        local u0 = low + (high - low) * (i - 1) / count
-        local u1 = low + (high - low) * i / count
-        local piece = clipPolygon(clipPolygon(rect, dx, dy, u0, 1), dx, dy, u1, -1)
-        if #piece >= 3 then
-            local colour = foilColour((i - 0.5) / count * f.cycles + phase)
-            local function at(k)
-                local x, y = box.x + piece[k][1], box.y + piece[k][2]
-                if map ~= nil then
-                    x, y = map(x, y)
-                end
-                return round(x), round(y)
-            end
-            local x0, y0 = at(1)
-            for k = 2, #piece - 1 do
-                local x1, y1 = at(k)
-                local x2, y2 = at(k + 1)
-                canvas:AddTriangle(x0, y0, x1, y1, x2, y2, colour)
-            end
-        end
-    end
-end
-
--- Puts the foil over the art box (`box`, on a card W x H). Returns { draw = function(phase, map) }, or nil: draw
--- moves its rainbow round by `phase`, and with `map` draws it where the tilted card shows it (CardView.tilt).
-local function addFoil(parent, box, W, H)
-    local ok, result = pcall(function()
-        local canvas = ui.Canvas.new(parent)
-        canvas:SetPos(0, 0)
-        canvas:SetSize(W, H)
-        local function draw(phase, map)
-            drawFoil(canvas, box, phase, map)
-        end
-        draw(0)
-        return { draw = draw }
-    end)
-    if not ok then
-        Logger.error("card art: foil failed:", tostring(result))
+    local ok, resource = pcall(function() return Plugin.resources.images[name] end)
+    if not ok or resource == nil then
+        Logger.error("card shine: no image resources/images/" .. name .. ".png")
+        shineImages[name] = false
         return nil
     end
-    return result
+    pcall(function() resource:Load() end)
+    shineImages[name] = resource
+    return resource
 end
 
--- Wiggle: pressing on a card picks it up, and dragging tilts it: left and right turn it about its
--- upright middle line, up and down tip it about its level one, in perspective (CardView.tilt), and a foil's rainbow
--- moves round. On letting go it springs back flat, wobbling as it settles. CardView.newWiggle does the moving;
--- ui/wiggle.lua passes it the mouse.
-CardView.WIGGLE = {
-    follow = 0.35,       -- degrees of tilt for each interface unit the mouse moves while held
-    maxAngle = 35,       -- the most it tilts either way (degrees)
-    stiffness = 220,     -- how hard it springs back once let go
-    damping = 11,        -- how quickly the wobble dies down (lower wobbles longer)
-    foilShift = 0.5,     -- how far round the rainbow moves, per radian of tilt
-    turnModel = 1,       -- how much the figure's camera turns with the card (0 leaves the figure as it is)
-}
+local shines = {}                -- every shine being animated: { a, b, offset } (a and b are its two sprites)
+local shineClock = 0
 
--- Turning a card (or a card back, or a pack) in perspective: see CardView.tilt.
-CardView.TILT = {
-    gridX = 10, gridY = 14,   -- how many squares across and down the frame is cut into (more is smoother, and slower)
-    distance = 2.5,      -- how far away a turned card or pack is seen from, in its widths (nearer is stronger)
-    cameraStep = 0.03,   -- the figure's camera is turned again once the tilt has changed by this much (radians)
-}
-
--- How much a point `depth` behind the flat card (away from the viewer) is scaled, on a card `width` wide seen from
--- CardView.TILT.distance widths away. The tilt, CardView.turnSprite and PackArt.turn all use it.
-function CardView.perspective(depth, width)
-    local D = CardView.TILT.distance * width
-    return D / math.max(D * 0.1, D + depth)
-end
-
--- A line `xc` from the middle of something `width` wide, turned about its upright middle line (sinA, cosA of the
--- angle; + takes the right edge away): how far from the middle it shows, and how much it is scaled there.
--- CardView.turnSprite and PackArt.turn use it.
-function CardView.turnPoint(xc, sinA, cosA, width)
-    local s = CardView.perspective(xc * sinA, width)
-    return xc * cosA * s, s
-end
-
--- Cuts the frame into its grid of squares (CardView.tilt), the first time the card tilts: most cards never do, and a
--- page of cards would otherwise carry thousands of hidden parts. They are made in one layer on top of the card (shown
--- and hidden together); what they cover is in tiltParts.flat, hidden while the card is tilted.
-local function makeCells(p)
-    if p.cellLayer ~= nil then
-        return
+-- Lays the shine over the card (`W` x `H`) in `parent`. Returns its two sprites, or nil.
+local function addShine(parent, W, H)
+    local a, b = shineImage("holo_a"), shineImage("holo_b")
+    if a == nil or b == nil then
+        return nil
     end
-    p.cellLayer = ui.Layer.new(p.root)
-    p.cellLayer:SetSize(p.W, p.H)
-    p.cellLayer.hidden = not p.tilted
-    local grid = p.grid or { CardView.TILT.gridX, CardView.TILT.gridY }
-    local nx, ny = math.max(1, math.floor(grid[1])), math.max(1, math.floor(grid[2]))
-    p.gridX, p.gridY = nx, ny
-    for n = 0, nx * ny - 1 do
-        local clip = ui.Layer.new(p.cellLayer)
-        clip:SetSize(1, 1)
-        local sprite = ui.Sprite.new(clip)
-        sprite.sprite = p.frameImage
-        if p.locked then
-            sprite.alpha = 0.5
+    -- Each card starts at a different point, so a page of holos does not pulse in step.
+    local offset = math.random() * 6.28
+    local ok, sprites = pcall(function()
+        local made = {}
+        for _, image in ipairs({ a, b }) do
+            local sprite = ui.Sprite.new(parent)
+            sprite:SetPos(0, 0)
+            sprite:SetSize(W, H)
+            sprite.sprite = image
+            made[#made + 1] = sprite
         end
-        p.cells[#p.cells + 1] = { clip = clip, sprite = sprite, i = n % nx, j = n // nx }
-    end
-end
-
--- Makes a card's tilt parts now (CardView.tilt makes them the first time it is needed), for a card that will
--- certainly turn, so the first frames of its turn are not held up making them: the reveal screen's flip.
-function CardView.prepareTilt(view)
-    if view.tiltParts ~= nil then
-        makeCells(view.tiltParts)
-    end
-end
-
--- Draws the backdrop canvas: the art window flat, or (with `corners`, its four corners where they show, clockwise from
--- the top left, as whole numbers) the four-cornered shape the window becomes.
-local function drawBackdrop(p, corners)
-    local win = p.win
-    p.back:Clear()
-    if corners == nil then
-        p.back:AddRectangle(round(win.x), round(win.y), round(win.w), round(win.h), p.backColour)
-        return
-    end
-    local c = corners
-    p.back:AddTriangle(c[1], c[2], c[3], c[4], c[5], c[6], p.backColour)
-    p.back:AddTriangle(c[1], c[2], c[5], c[6], c[7], c[8], p.backColour)
-end
-
--- Places the picture's ModelGroup (its model, and a silhouette's screens) over x, y, w, h on the card.
-local function fitArt(view, x, y, w, h)
-    local cam = view.cam
-    if cam == nil or cam.group == nil then
-        return
-    end
-    pcall(function()
-        cam.group:SetPos(x, y)
-        cam.group:SetSize(w, h)
-        view.model:SetSize(w, h)
-        for _, screen in ipairs(cam.screens) do
-            screen:SetSize(w, h)
-        end
+        made[1].alpha = CardView.SHINE.alpha * math.sin(offset) ^ 2
+        made[2].alpha = CardView.SHINE.alpha * math.cos(offset) ^ 2
+        return made
     end)
+    if not ok then
+        Logger.error("card shine failed:", tostring(sprites))
+        return nil
+    end
+    shines[#shines + 1] = { a = sprites[1], b = sprites[2], offset = offset }
+    if #shines > CardView.SHINE.most then
+        table.remove(shines, 1)
+    end
+    return sprites
 end
 
-local function tiltPerspective(view, ax, ay)
-    local p = view.tiltParts
-    local W, H, win = p.W, p.H, p.win
-    local midX, midY = W / 2, H / 2
-    local tilted = math.abs(ax) > 0.002 or math.abs(ay) > 0.002
-    if not tilted and not p.tilted then
-        return          -- (flat, and already drawn flat)
+Event.Draw.Subscribe("cardcollector_shine", function(e)
+    local ok, dt = pcall(function() return e.timeDeltaSecs end)
+    if not ok or type(dt) ~= "number" then
+        dt = 0.016
     end
-    local sinA, cosA, sinB, cosB = math.sin(ax), math.cos(ax), math.sin(ay), math.cos(ay)
-    -- A point on the flat card to where it shows: turned about the upright line, then tipped, then seen from afar.
-    local function project(x, y)
-        local xc, yc = x - midX, y - midY
-        local x1, z1 = xc * cosA, xc * sinA
-        local y2, z2 = yc * cosB - z1 * sinB, z1 * cosB + yc * sinB
-        local s = CardView.perspective(z2, W)
-        return midX + x1 * s, midY + y2 * s
-    end
-
-    if tilted then
-        makeCells(p)
-    end
-    if tilted ~= p.tilted then
-        p.tilted = tilted
-        for _, comp in ipairs(p.flat) do
-            comp.hidden = tilted
-        end
-        p.cellLayer.hidden = not tilted
-    end
-
-    if tilted then
-        -- Where every grid corner shows, then each square between the halfway lines of its corners.
-        local nx, ny = p.gridX, p.gridY
-        local cellW, cellH = W / nx, H / ny
-        local px, py = p.px or {}, p.py or {}
-        p.px, p.py = px, py
-        for j = 0, ny do
-            px[j], py[j] = px[j] or {}, py[j] or {}
-            for i = 0, nx do
-                px[j][i], py[j][i] = project(i * cellW, j * cellH)
-            end
-        end
-        for _, cell in ipairs(p.cells) do
-            local i, j = cell.i, cell.j
-            local x0 = round((px[j][i] + px[j + 1][i]) / 2)
-            local x1 = round((px[j][i + 1] + px[j + 1][i + 1]) / 2)
-            local y0 = round((py[j][i] + py[j][i + 1]) / 2)
-            local y1 = round((py[j + 1][i] + py[j + 1][i + 1]) / 2)
-            local cw, ch = math.max(1, x1 - x0), math.max(1, y1 - y0)
-            local kx, ky = cw / cellW, ch / cellH
-            cell.clip:SetPos(x0, y0)
-            cell.clip:SetSize(cw, ch)
-            cell.sprite:SetPos(-round(i * cellW * kx), -round(j * cellH * ky))
-            cell.sprite:SetSize(math.max(1, round(W * kx)), math.max(1, round(H * ky)))
-        end
-        -- the art window's four corners: the backdrop drawn between them, and the picture fitted round them
-        local x1, y1 = project(win.x, win.y)
-        local x2, y2 = project(win.x + win.w, win.y)
-        local x3, y3 = project(win.x + win.w, win.y + win.h)
-        local x4, y4 = project(win.x, win.y + win.h)
-        drawBackdrop(p, { round(x1), round(y1), round(x2), round(y2), round(x3), round(y3), round(x4), round(y4) })
-        local left, top = math.min(x1, x4), math.min(y1, y2)
-        fitArt(view, round(left), round(top), math.max(1, round(math.max(x2, x3) - left)),
-            math.max(1, round(math.max(y3, y4) - top)))
-    else
-        drawBackdrop(p, nil)
-        fitArt(view, win.x, win.y, win.w, win.h)
-    end
-    if view.foil ~= nil then
-        pcall(view.foil.draw, (ax + ay) * CardView.WIGGLE.foilShift, tilted and project or nil)
-    end
-end
-
--- An image that turns about its upright middle line in perspective, as a tilted card does (CardView.tilt): cut into
--- `strips` upright strips, each a layer showing its slice of the image (a layer crops what is inside it). The reveal
--- screen turns its card backs over with it. Returns { root, place(x, y, w, h, angle), hide(hidden) }: place draws the
--- image w x h at (x, y) in `parent`, turned by `angle` radians (+ takes its right edge away; pi / 2 is edge-on).
-function CardView.turnSprite(parent, image, strips)
-    local root = ui.Layer.new(parent)
-    root:SetPos(0, 0)
-    root:SetSize(0, 0, 1, 1)          -- (as big as the parent, so the strips are never cropped by it)
-    local list = {}
-    for k = 1, math.max(1, math.floor(strips)) do
-        local clip = ui.Layer.new(root)
-        clip:SetSize(1, 1)
-        local sprite = ui.Sprite.new(clip)
-        sprite.sprite = image
-        list[k] = { clip = clip, sprite = sprite }
-    end
-    local turn = { root = root }
-    function turn.place(x, y, w, h, angle)
-        local sinA, cosA = math.sin(angle), math.cos(angle)
-        local stripW = w / #list
-        for k, strip in ipairs(list) do
-            local c0, c1 = (k - 1) * stripW, k * stripW
-            local x0, s0 = CardView.turnPoint(c0 - w / 2, sinA, cosA, w)
-            local x1, s1 = CardView.turnPoint(c1 - w / 2, sinA, cosA, w)
-            x0, x1 = round(x + w / 2 + x0), round(x + w / 2 + x1)
-            local sw = math.max(1, x1 - x0)
-            local sh = math.max(1, round(h * (s0 + s1) / 2))
-            local kx = sw / stripW
-            strip.clip:SetPos(x0, round(y + (h - sh) / 2))
-            strip.clip:SetSize(sw, sh)
-            strip.sprite:SetPos(-round(c0 * kx), 0)
-            strip.sprite:SetSize(math.max(1, round(w * kx)), sh)
-        end
-    end
-    function turn.hide(hidden)
-        pcall(function() root.hidden = hidden end)
-    end
-    return turn
-end
-
--- Tilts a card made with opts.tilt by ax radians about its upright middle line (turning it left or right) and ay about
--- its level one (tipping it, + takes the bottom away). 0, 0 is flat. Does nothing to any other card (one without a
--- frame image).
--- The card is turned in 3D and seen from CardView.TILT.distance card widths away. Its frame is cut into a grid of
--- squares, each a layer showing its patch of the frame image (a layer crops what is inside it), placed and sized
--- where that patch shows on the turned card. A square can only be upright, so it covers its patch's shape as near as
--- it can: its edges are halfway between the corners its neighbours share, so the squares meet without gaps. The
--- backdrop canvas is drawn as the four-cornered shape the art window becomes, the foil's stripes are moved the same
--- way, and the picture's ModelGroup is fitted round the art window (its camera turned with the card,
--- CardView.WIGGLE.turnModel; not a silhouette's, whose camera is the sun). Text cannot be stretched a patch at a time,
--- so it is hidden while the card is tilted, with the flat frame (tiltParts.flat).
-function CardView.tilt(view, ax, ay)
-    if view.tiltParts == nil then
-        return
-    end
-    tiltPerspective(view, ax, ay)
-    -- The figure turns with the card (turnModel). Not a silhouette's (its camera is the sun), and not while
-    -- CardView.uncover hides the picture (the reveal screen's flip).
-    local cam, turn = view.cam, CardView.WIGGLE.turnModel
-    if turn == 0 or cam == nil or cam.group == nil or view.silhouette
-        or (view.uncover ~= nil and view.uncover.shown == false) then
-        return
-    end
-    local last = view.camTilt or { 0, 0 }
-    if cam.kind == "item" then
-        -- An item's camera looks down on it from nearly straight above, where swinging the camera sideways also swings
-        -- which way is up on the card, and the item spins. So the item itself is turned instead, the camera left alone:
-        -- about the card's upright line as the card turns, and about its level line as it tips (both against the drag,
-        -- as seen in the client). That rotation is split onto SetTransform's yaw (about the world's upright), pitch
-        -- (about x) and roll (about z): exact for small turns, near enough for the wiggle's. It is one call, so it
-        -- follows every change.
-        if ax == last[1] and ay == last[2] then
-            return
-        end
-        view.camTilt = { ax, ay }
-        local sinY, cosY, sinP, cosP = math.sin(cam.yaw), math.cos(cam.yaw), math.sin(cam.pitch), math.cos(cam.pitch)
-        local a, b = -ax * turn, -ay * turn          -- about the card's upright line, and its level line
-        local yaw = cosP * a
-        local pitch = -sinY * sinP * a + cosY * b
-        local roll = cosY * sinP * a + sinY * b
-        pcall(function()
-            view.model:SetTransform(Vector3.new(0.0, 0.0, 0.0), Vector3.new(yaw, pitch, roll), Vector3.new(1.0, 1.0, 1.0), 0)
+    shineClock = shineClock + dt
+    local t = CardView.SHINE
+    local i = 1
+    while i <= #shines do
+        local shine = shines[i]
+        local theta = shineClock * t.speed + shine.offset
+        local alive = pcall(function()
+            shine.a.alpha = t.alpha * math.sin(theta) ^ 2
+            shine.b.alpha = t.alpha * math.cos(theta) ^ 2
         end)
-        return
-    end
-    -- An NPC's camera swings round it the other way to the card's turn, and the same way as its tip: a lean and a tip,
-    -- not a yaw and pitch (see applyCamera). Building a camera costs more, so only when the turn has changed enough to
-    -- see, and once more when the card is flat again.
-    local step = CardView.TILT.cameraStep
-    if math.abs(ax - last[1]) > step or math.abs(ay - last[2]) > step
-        or (ax == 0 and ay == 0 and (last[1] ~= 0 or last[2] ~= 0)) then
-        view.camTilt = { ax, ay }
-        cam.lean, cam.tip = -ax * turn, ay * turn
-        pcall(applyCamera, cam)
-        cam.lean, cam.tip = nil, nil
-    end
-end
-
--- A wiggle for `view` (from CardView.create with opts.tilt; ui/wiggle.lua makes and drives them).
---   w:press(x, y)        the mouse went down at screen position (x, y)
---   w:release()          the mouse came up
---   w:step(dt, x, y)     every frame, with where the mouse is now (nil if unknown)
--- `turnOnly` true: it only turns left and right (dragging up or down does not tip it).
-function CardView.newWiggle(view, turnOnly)
-    local w = { view = view, x = 0, y = 0, vx = 0, vy = 0, held = nil, turnOnly = turnOnly }   -- x, y: tilt in degrees
-    function w:press(x, y)
-        self.held = { x = x, y = y, fromX = self.x, fromY = self.y }
-    end
-    function w:release()
-        self.held = nil
-    end
-    function w:step(dt, mouseX, mouseY)
-        local t = CardView.WIGGLE
-        dt = math.min(dt, 0.05)
-        if dt <= 0 then
-            return
-        end
-        local oldX, oldY = self.x, self.y
-        if self.held ~= nil and mouseX ~= nil then
-            local x = self.held.fromX + (mouseX - self.held.x) * t.follow
-            local y = self.turnOnly and 0 or self.held.fromY + (mouseY - self.held.y) * t.follow
-            self.x = math.max(-t.maxAngle, math.min(t.maxAngle, x))
-            self.y = math.max(-t.maxAngle, math.min(t.maxAngle, y))
-            self.vx, self.vy = (self.x - oldX) / dt, (self.y - oldY) / dt     -- so letting go flings it on from there
-        elseif self.held == nil then
-            self.vx = self.vx + (-t.stiffness * self.x - t.damping * self.vx) * dt
-            self.vy = self.vy + (-t.stiffness * self.y - t.damping * self.vy) * dt
-            self.x, self.y = self.x + self.vx * dt, self.y + self.vy * dt
-            if math.abs(self.x) < 0.2 and math.abs(self.y) < 0.2 and math.abs(self.vx) < 2 and math.abs(self.vy) < 2 then
-                self.x, self.y, self.vx, self.vy = 0, 0, 0, 0
-            end
-        end
-        if self.x ~= oldX or self.y ~= oldY then
-            CardView.tilt(self.view, math.rad(self.x), math.rad(self.y))
+        if alive then
+            i = i + 1
+        else
+            table.remove(shines, i)          -- (its card was destroyed)
         end
     end
-    return w
-end
+end)
 
 -- A frame zone scaled by CardView.SCALE. The zone tables are in 160 x 224 card units.
 local function scaled(zone, s)
@@ -927,45 +582,35 @@ end
 
 -- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.)
 -- Builds a card that uses a frame image. Order matters: whatever is created later is drawn on
--- top, so the backdrop and the model go first, then the frame, then the text.
--- Returns the view's fields: model, cam, foil, tiltParts (CardView.tilt), and with opts.animated what
--- CardView.uncover needs (windows round the model and the text, and the middle of the art box). `silhouette`: a locked card drawn as its shadow (see CardView.create).
+-- top, so the backdrop and the model go first, then the frame, then the text, then a holo's shine.
+-- Returns the view's fields: model, cam, silhouette, and with opts.animated what CardView.squash needs (the
+-- pieces that can be narrowed, with their places and sizes) and what CardView.uncover needs (windows round the
+-- model and the text, which cannot be narrowed, and the middle of the art box). `silhouette`: a locked card drawn as
+-- its shadow (see CardView.create).
 local function buildFramed(root, card, opts, locked, silhouette, frameImage, rarity, rarityColour, s, W, H)
     local base = CardView.FRAME_ZONES
     local zones = { title = scaled(base.title, s), rarity = scaled(base.rarity, s), desc = scaled(base.desc, s) }
     local win = scaled(base.window[card.rarity] or base.window.common, s)
     local nameColour = locked and DIM_TEXT_COLOUR or TEXT_COLOUR
     local animated = opts ~= nil and opts.animated
+    local squash = { mid = W / 2, parts = {} }
+    local function part(comp, x, y, w, h)
+        squash.parts[#squash.parts + 1] = { comp = comp, x = x, y = y, w = w, h = h }
+    end
     -- Where the model and the text go: windows for uncover, or the card itself.
     local function holder()
         return animated and window(root, W, H) or { inner = root }
     end
 
-    -- The backdrop behind the model. A card that can tilt (opts.tilt) draws it on a canvas, so it can be drawn turned;
-    -- the rest of what CardView.tilt needs is made when it first tilts (makeCells). `flat` is what a tilted card hides.
-    local backColour = silhouette and SILHOUETTE_BACK or ART_COLOUR
-    local tiltParts = nil
-    if opts ~= nil and opts.tilt then
-        tiltParts = { W = W, H = H, win = win, backColour = backColour, flat = {}, cells = {}, tilted = false,
-            root = root, frameImage = frameImage, locked = locked, grid = opts.tiltGrid }
-        tiltParts.back = ui.Canvas.new(root)
-        tiltParts.back:SetSize(W, H)
-        drawBackdrop(tiltParts, nil)
-    else
-        solid(root, win.x, win.y, win.w, win.h, 0, 0, backColour)
-    end
-    local foil = nil
-    if opts ~= nil and (opts.foil or opts.finish == "holo") and not locked then
-        foil = addFoil(root, win, W, H)
-    end
+    -- the backdrop behind the model
+    part(solid(root, win.x, win.y, win.w, win.h, 0, 0, silhouette and SILHOUETTE_BACK or ART_COLOUR), win.x, win.y, win.w, win.h)
     local art = holder()
     local model, cam = nil, nil
     if not locked or silhouette then
         model, cam = addArt(art.inner, card, win, opts and opts.body, silhouette)
     end
-    local placeholder = nil
     if model == nil then
-        placeholder = label(art.inner, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
+        label(art.inner, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
     end
 
     local frame = ui.Sprite.new(root)                            -- frame on top of the model
@@ -975,28 +620,27 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
     if locked then
         frame.alpha = 0.5
     end
+    part(frame, 0, 0, W, H)
 
     local text = holder()
-    local texts = {
-        label(text.inner, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, titleOf(card), nameColour, nil,
-            nil, (CardView.nameFont(#titleOf(card), zones.title.w))),
-        label(text.inner, zones.rarity.x, zones.rarity.y, zones.rarity.w - W, zones.rarity.h, rarity.name,
-            locked and DIM_TEXT_COLOUR or rarityColour),
-        label(text.inner, zones.desc.x, zones.desc.y, zones.desc.w - W, zones.desc.h,
-            locked and (opts and opts.lockedText or "Not collected yet") or card.desc,
-            locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3),
-    }
-    if tiltParts ~= nil then
-        -- (the frame, the text and the "?" stay flat, so they are hidden while it tilts: a locked card's half
-        -- see-through squares would show them through)
-        tiltParts.flat[#tiltParts.flat + 1] = frame
-        tiltParts.flat[#tiltParts.flat + 1] = placeholder
-        for _, t in ipairs(texts) do
-            tiltParts.flat[#tiltParts.flat + 1] = t
+    label(text.inner, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, titleOf(card), nameColour, nil, nil,
+        (CardView.nameFont(#titleOf(card), zones.title.w)))
+    label(text.inner, zones.rarity.x, zones.rarity.y, zones.rarity.w - W, zones.rarity.h, rarity.name,
+        locked and DIM_TEXT_COLOUR or rarityColour)
+    label(text.inner, zones.desc.x, zones.desc.y, zones.desc.w - W, zones.desc.h,
+        locked and (opts and opts.lockedText or "Not collected yet") or card.desc,
+        locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
+
+    -- a holo's shine goes over the whole card, the text included (and narrows with the frame when the card is turned)
+    if opts ~= nil and (opts.foil or opts.finish == "holo") and not locked and Settings.get("shine") then
+        for _, sprite in ipairs(addShine(root, W, H) or {}) do
+            part(sprite, 0, 0, W, H)
         end
     end
-    local view = { model = model, cam = cam, foil = foil, tiltParts = tiltParts, silhouette = silhouette }
+
+    local view = { model = model, cam = cam, silhouette = silhouette }
     if animated then
+        view.squash = squash
         view.uncover = { windows = { art, text }, w = W, h = H, x = win.x + win.w / 2, y = win.y + win.h / 2 }
     end
     return view
@@ -1027,6 +671,22 @@ function CardView.shell(parent, rarity)
             pcall(function() frame:Destroy() end)
         end,
     }
+end
+
+-- Squeezes a card sideways to `f` (0 to 1) of its width, about its middle, as if it were turned
+-- away. Only the frame, the backdrop behind the model and a holo's shine narrow: the model and the text cannot
+-- be squeezed, so hide them first with CardView.uncover(view, 0). Only a card made with
+-- opts.animated and a frame image can be squeezed; for any other this returns false.
+function CardView.squash(view, f)
+    local squash = view.squash
+    if squash == nil then
+        return false
+    end
+    for _, part in ipairs(squash.parts) do
+        part.comp:SetPos(squash.mid + (part.x - squash.mid) * f, part.y)
+        part.comp:SetSize(math.max(1, part.w * f), part.h)
+    end
+    return true
 end
 
 -- Where CardView.uncover grows from (the middle of the art box), as x, y in card units, and how
@@ -1070,20 +730,17 @@ end
 -- with a "?" instead of the art and no description.
 -- opts.silhouette = true (with locked) shows the locked card's picture as a shadow silhouette instead of the "?"
 -- (the Sets window), still with no description.
--- opts.tilt = true lets CardView.tilt draw the card in perspective (the reveal screen's flip, and picking a card up,
--- ui/wiggle.lua). opts.tiltGrid = { across, down } cuts its frame into that many squares instead of CardView.TILT's (a
--- card that mostly turns left and right, as the reveal screen's do, needs only one row).
--- opts.finish = the card's finish (Cards.finishes): "holo" draws the foil behind the picture (CardView.FOIL;
+-- opts.finish = the card's finish (Cards.finishes): "holo" draws the holo shine over the card (CardView.SHINE;
 -- framed cards only, not locked ones). opts.foil = true draws it whatever the finish (the preview).
 -- opts.lockedText = what a locked card says in place of its description (default "Not collected yet").
 -- opts.frame = false skips the frame image and uses the plain layout (preview only).
 -- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text
 -- stays the same size; the picture, frame and layout scale.
 -- opts.body = true/false forces the body or head model, whatever the card says (preview only).
--- opts.animated = true makes a card whose picture and text can be revealed (CardView.uncover; the
--- pack opening). Other cards are built without the extra layers that needs.
+-- opts.animated = true makes a card that can be flipped and revealed (CardView.squash and
+-- CardView.uncover; the pack opening). Other cards are built without the extra layers that needs.
 -- Returns { root = <Layer>, model = <Model or nil>, cam = <camera settings or nil>, card = <card data>,
--- uncover = <what CardView.uncover uses, or nil>, foil, tiltParts, silhouette }.
+-- squash, uncover = <what CardView.squash and CardView.uncover use, or nil>, silhouette }.
 function CardView.create(parent, card, opts)
     local S, W, H = metrics(opts and opts.scale)
     local locked = opts ~= nil and opts.locked == true

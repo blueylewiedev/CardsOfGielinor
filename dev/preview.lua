@@ -45,7 +45,6 @@ local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
 local AnimSearch = require("dev/animsearch")
 local Builder = require("dev/builder")
-local Wiggle = require("ui/wiggle")
 
 local Preview = {}
 
@@ -123,9 +122,7 @@ function Preview.show()
     local reviewing = nil         -- while in Clip review, the indexes in Cards.list still to review
     local reviewStatus = nil
     local view = nil
-    local foil = false          -- the Foil button: the card drawn as a holo (CardView.FOIL)
-    local wiggle = false        -- the Wiggle button: pressing and dragging the card tilts it (ui/wiggle.lua)
-    local grip = nil            -- (the see-through layer over the card that takes the mouse, while Wiggle is on)
+    local foil = false          -- the Foil button: the card drawn as a holo (the shine, CardView.SHINE)
     local bodyOverride = nil      -- nil = the card's own setting; true/false = chosen with the button
     local modelButton = nil
     local showAnimLabel = nil      -- set once the Anim box is made
@@ -220,21 +217,14 @@ function Preview.show()
         if view ~= nil then
             view.root:Destroy()
         end
-        if grip ~= nil then
-            pcall(function() grip:Destroy() end)
-            grip = nil
-        end
         local card = Cards.list[index]
-        view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE, foil = foil, tilt = wiggle })
+        view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE, foil = foil })
         if reviewStatus ~= nil then
             local own = Cards.getArt(card).cam or {}
             reviewStatus.content = reviewing == nil and "" or string.format("Clip review: %d left. %s: zoom %.0f, size %.0f",
                 #reviewing, card.id, own.dist or 0, own.fov or 0)
         end
         view.root:SetPos(CARD_X, CARD_Y)
-        if wiggle then
-            grip = Wiggle.attach(content, view, { x = CARD_X, y = CARD_Y, w = PW, h = PH })
-        end
         if modelButton ~= nil then
             -- An item has one model (no body or head), so the button is greyed out for it.
             if Cards.kindOf(card) == "item" then
@@ -399,7 +389,7 @@ function Preview.show()
     reviewButton("Foil", 4, function()
         foil = not foil
         showCard()
-    end, "Shows the card as a holo (the foil, CardView.FOIL), or not")
+    end, "Shows the card as a holo (the shine, CardView.SHINE), or not")
     reviewStatus = Kit.text(content, CARD_X, UNDER_Y + 4 * STEP, PW, 20, "", GREY, ui.AlignMode.TOPLEFT)
     -- Find a card: typing jumps to the first card whose id and name hold every word typed (in any
     -- order; capitals, spaces and hyphens ignored), and the match buttons step through the rest.
@@ -553,7 +543,7 @@ function Preview.show()
     y = y + STEP
     -- Gives the shown card's camera to the card the Builder is making (what it says goes in the
     -- line under the Find box).
-    panelButton("Use in Builder", 1, y, function()
+    panelButton("Use in Builder", nil, y, function()
         if view == nil or view.cam == nil then
             findStatus.content = "No camera to give (no card is shown)"
             return
@@ -564,12 +554,6 @@ function Preview.show()
             Cards.kindOf(view.card), cam.body)
         findStatus.content = ok and ("Camera of " .. tostring(view.card.name or view.card.id) .. " sent to the Builder")
             or tostring(why)
-    end)
-    local wiggleButton
-    wiggleButton = panelButton("Wiggle: Off", 2, y, function()
-        wiggle = not wiggle
-        Kit.setLabel(wiggleButton, wiggle and "Wiggle: On" or "Wiggle: Off")
-        showCard()          -- (made again, with or without what a tilt needs)
     end)
 
     -- Animation: type an animation id into the box to play it, or step it with the buttons (by
