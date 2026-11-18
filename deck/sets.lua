@@ -1,0 +1,129 @@
+-- deck/sets.lua
+-- Sets: groups of cards to collect together, such as every shopkeeper or every musician. The Sets window
+-- (ui/setsviewer.lua) lists them with how many of each the player has, and shows a set's cards with the
+-- missing ones as dark silhouettes.
+--
+-- (Not to be confused with Cards.sets in core/cards.lua, which is the list of deck files.)
+--
+-- A set is written as its own block:
+--   {
+--       id = "musicians", name = "Musicians",
+--       names = { "Musician" },
+--   },
+--
+-- Fields:
+--   id     : unique among the sets, lower case. Nothing is saved under it, so it can be renamed.
+--   name   : what the Sets window calls it.
+--   names  : optional. Card names the set takes in, with every variant of each: "Musician" takes the card called
+--            "Musician" and every "Musician (...)", such as "Musician (Lumbridge)", but not "Musicianship".
+--            New variants join the set by themselves when they are added to the deck.
+--   filter : optional. Only cards that also match this are taken in, written as a pack filter (see Cards.packTypes
+--            in core/cards.lua), e.g. { kind = "npc" } or { category = "shopkeeper" }. On its own (no `names`)
+--            it takes in every card that matches.
+--   add    : optional. Card ids to put in the set although the rules above leave them out.
+--   leave  : optional. Card ids to keep out of the set although the rules above take them in.
+-- A set needs at least one of names, filter or add. The cards are shown in the deck's order (lowest rarity first).
+--
+-- `lua dev/check_sets.lua` checks every set: that the ids in add and leave are cards in the deck and that no set ends
+-- up empty. It also runs on every pull request.
+
+return {
+    {
+        id = "shopkeepers", name = "Shopkeepers",
+        names = { "Shopkeeper" },
+    },
+    {
+        id = "shop_assistants", name = "Shop assistants",
+        names = { "Shop assistant" },
+    },
+    {
+        id = "musicians", name = "Musicians",
+        names = { "Musician" },
+    },
+    {
+        id = "bartenders", name = "Bartenders",
+        names = { "Bartender" },
+        add = { "cheri" },
+    },
+    {
+        id = "guards", name = "Guards",
+        names = { "Guard" },
+        filter = { kind = "npc" },
+    },
+    {
+        id = "goblins", name = "Goblins",
+        names = { "Goblin" },
+        filter = { kind = "npc" },
+    },
+    {
+        id = "wizards", name = "Wizards",
+        names = { "Wizard" },
+        filter = { kind = "npc" },
+    },
+    {
+        id = "cooks", name = "Cooks",
+        names = { "Cook" },
+        filter = { kind = "npc" },
+    },
+    -- Bankers and bank keepers, named or not ("Banker" takes every "Banker (...)" added later).
+    {
+        id = "bankers", name = "Bankers",
+        names = { "Banker" },
+        filter = { kind = "npc" },
+        add = { "gnome_banker", "zombie_banker", "zanker", "emerald_benedict", "copperpot", "mr_pinsworth",
+            "claire_hick", "mimsy", "banky_crablet", "banky_crablet_cyclosis" },
+    },
+    -- The skill masters: the NPCs who sell a skill's cape, from the wiki's Skillcape page (and the Spirit of Mastery,
+    -- who sells the 120 Necromancy cape). The ones not carded yet join by themselves when they are.
+    {
+        id = "skill_masters", name = "Skill masters",
+        names = { "Cap'n Izzy No-Beard", "Acting Guildmaster Reiniger", "Ajjat", "Surgeon General Tafani", "Estate agent",
+            "Head chef", "Master Crafter", "Captain Harlan", "Orla Fairweather", "Thok of Daemonheim",
+            "Martin the Master Gardener", "Ignatius Vulcan", "Master fisher", "Hickton", "Kaqemeex", "Hunting expert",
+            "Doc", "Robe Store owner", "Gadrin", "The Spirit of Accomplishment", "The Spirit of Mastery", "Brother Jered",
+            "Armour salesman", "Larriar", "Kuradal", "Thurgo", "Sloane", "Yadech Strongarm", "Pikkupstix",
+            "Martin Thwait", "Wilfred" },
+        filter = { kind = "npc" },
+    },
+    -- Skill trainers: the skill masters of Burthorpe and Taverley (OMGE_SKILL_MASTER_* in the cache), the tutorial's
+    -- instructors (TUT6_*; Vannaka is its combat instructor as well as a Slayer master) and Lumbridge's smithing tutor.
+    {
+        id = "skill_trainers", name = "Skill trainers",
+        add = { "ayleth_beaststalker", "carwen_essencebinder", "chaplain_sarah", "alfred_stonemason",
+            "drill_sergeant_hartman", "brace_the_prayer_instructor", "dezzick_the_mining_instructor",
+            "lev_the_master_chef", "mogle_the_financial_advisor", "terrova_the_magic_instructor", "vannaka", "sani" },
+    },
+    -- The Slayer masters. The ones not carded yet join by themselves when they are.
+    {
+        id = "slayer_masters", name = "Slayer masters",
+        names = { "Turael", "Spria", "Mazchna", "Achtryn", "Vannaka", "Chaeldar", "Sumona", "Duradel", "Lapalok",
+            "Kuradal", "Morvran", "Laniakea", "Mandrith", "Jacquelyn" },
+        filter = { kind = "npc" },
+    },
+
+    -- Items. These are hand-picked: the tags (category = "bar", "ore"...) also take in quest, minigame and
+    -- Dungeoneering versions, which would bury the set people actually work through.
+    {
+        id = "swords", name = "Swords",
+        add = { "bronze_sword", "iron_sword", "steel_sword", "black_sword", "white_sword", "mithril_sword",
+            "adamant_sword", "rune_sword" },
+    },
+    {
+        id = "metal_bars", name = "Metal bars",
+        add = { "bronze_bar", "iron_bar", "silver_bar", "steel_bar", "gold_bar", "mithril_bar", "adamant_bar",
+            "rune_bar", "orikalkum_bar", "necronium_bar", "bane_bar", "elder_rune_bar" },
+    },
+    {
+        id = "ores", name = "Ores",
+        add = { "copper_ore", "tin_ore", "iron_ore", "coal", "silver_ore", "mithril_ore", "adamantite_ore",
+            "luminite", "gold_ore", "runite_ore", "orichalcite_ore", "drakolith", "necrite_ore", "phasmatite",
+            "banite_ore", "light_animica", "dark_animica" },
+    },
+    {
+        id = "grimy_herbs", name = "Grimy herbs",
+        add = { "grimy_guam", "grimy_tarromin", "grimy_marrentill", "grimy_harralander", "grimy_ranarr",
+            "grimy_toadflax", "grimy_spirit_weed", "grimy_irit", "grimy_wergali", "grimy_avantoe", "grimy_kwuarm",
+            "grimy_bloodweed", "grimy_snapdragon", "grimy_cadantine", "grimy_lantadyme", "grimy_dwarf_weed",
+            "grimy_torstol", "grimy_fellstalk", "grimy_arbuck" },
+    },
+}

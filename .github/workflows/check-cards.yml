@@ -41,6 +41,10 @@ jobs:
         run: lua5.4 dev/check_viewer.lua
       - name: Collection viewer controls against a stand-in client (ui/viewer.lua)
         run: lua5.4 dev/check_viewer_ui.lua
+      - name: Sets hold real cards and their rules work (deck/sets.lua, core/sets.lua)
+        run: lua5.4 dev/check_sets.lua
+      - name: Sets window controls against a stand-in client (ui/setsviewer.lua)
+        run: lua5.4 dev/check_sets_ui.lua
       - name: The credits text (core/format.lua)
         run: lua5.4 dev/check_format.lua
       - name: The performance probe's frame numbers (dev/framestats.lua)

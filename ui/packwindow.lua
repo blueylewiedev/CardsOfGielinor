@@ -7,7 +7,7 @@
 --               only runs once a character is in the game, so this is the wait for the tracking id, or for the
 --               permission to show up, not a prompt to log in)
 --   home      : the dashboard, in three sections (panels): CREDITS, COLLECTION (how much of the deck is owned, and the
---               Collection and Stats buttons) and PACKS (how many packs the credits buy, and the button that opens the
+--               Collection, Sets and Stats buttons) and PACKS (how many packs the credits buy, and the button that opens the
 --               Shop, ui/shopwindow.lua, where packs are bought)
 --
 -- Opening packs is not done here: the Shop buys them and ui/revealscreen.lua shows the cards (PackWindow.startReveal
@@ -19,6 +19,7 @@ local Storage = require("core/storage")
 local Packs = require("core/packs")
 local Format = require("core/format")
 local Viewer = require("ui/viewer")
+local SetsViewer = require("ui/setsviewer")
 local Kit = require("ui/kit")
 local PluginId = require("core/pluginid")
 local Stats = require("ui/stats")
@@ -40,13 +41,13 @@ local HOME_WIDTH = 256
 local HOME_SHIFT = Kit.available() and -10 or 0
 local HOME_MID = HOME_WIDTH + 2 * HOME_SHIFT   -- the width to centre things in
 -- The Home screen is three sections, each a dark panel with a gold heading: the
--- credits, the collection (a progress bar, then the Collection and Stats buttons, one to a row: PrettyUI makes a
+-- credits, the collection (a progress bar, then the Collection, Sets and Stats buttons, one to a row: PrettyUI makes a
 -- button as wide as its label needs, so two side by side would overlap) and the packs (the Shop button).
 -- (the window's content is HOME_WIDTH less its 8 pixel frame at each side, and the panels are 6 in from both sides of it)
 local PANEL_X, PANEL_W = 6, HOME_MID - 8
 local INNER_X, HOME_W = 16, HOME_MID - 28       -- where the text and buttons in a panel start, and their width
 local CREDITS_Y, CREDITS_H = 10, 80      -- (10 down from the top, and HEIGHTS.home leaves 10 under the last thing, so the window is even above and below)
-local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 146
+local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 180
 local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
 local EXTRA_TOP = PACKS_Y + PACKS_H + 10          -- where the extra buttons on the Home screen start
 local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)    -- the same dark panel and brown border as the credits overlay
@@ -221,7 +222,10 @@ local function buildScreens()
             Viewer.open(api)
         end
     end)
-    Kit.buttonAt(screens.home, "Stats", INNER_X, COLLECTION_Y + 112, HOME_W, 30, function()
+    Kit.buttonAt(screens.home, "Sets", INNER_X, COLLECTION_Y + 112, HOME_W, 30, function()
+        SetsViewer.toggle(api)
+    end)
+    Kit.buttonAt(screens.home, "Stats", INNER_X, COLLECTION_Y + 146, HOME_W, 30, function()
         Stats.toggle(api)
     end)
 
@@ -270,6 +274,7 @@ function PackWindow.refresh()
 
     if state == nil then
         Viewer.close()
+        SetsViewer.close()
         Shop.hide()
         Reveal.close()
         if current ~= "nosession" then
@@ -325,6 +330,7 @@ function PackWindow.hide()
         settingsButton = nil
     end
     Viewer.close()
+    SetsViewer.close()
     Stats.hide()
     Shop.hide()
     Reveal.close()

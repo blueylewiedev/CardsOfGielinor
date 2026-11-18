@@ -36,6 +36,7 @@ local Logger = require("core/logger")
 local PackArt = {}
 
 local MASK = require("ui/packmask")
+local CardView = require("ui/cardview")
 PackArt.TITLES = require("ui/packtitles")
 
 PackArt.W, PackArt.H = MASK.w, MASK.h
@@ -174,7 +175,7 @@ local image = PackArt.image
 
 -- Draws the picture's tiles into `container`, the picture filling (x, y, w, h). Tiles wholly
 -- outside (0, 0, clipW, clipH) are not made. New parts go in `parts`, and (if given) where each
--- one was put goes in `rects`, as { x, y, w, h }, for PackArt.squash.
+-- one was put goes in `rects`, as { x, y, w, h }, for PackArt.turn.
 function PackArt.drawPicture(container, parts, tiles, x, y, w, h, clipW, clipH, rects)
     local cols, rows = gridFor(#tiles)
     local tw, th = w / cols, h / rows
@@ -212,6 +213,22 @@ local destroyAll = PackArt.destroyAll
 PackArt.TEAR_Y = 52
 local TEAR_JAG = 3                     -- how far the line wanders above and below TEAR_Y
 local TEAR_COL = 2
+-- A turned pack (PackArt.turn) is drawn in upright columns this wide (pack units; PackArt.W must be a whole number
+-- of them, so the back's mirrored columns fall on the same lines). Every strip and window is cut on the column lines,
+-- and all of a column is scaled alike, so the picture, the shading, the banner and the logo in it move together.
+local TURN_CHUNK = 25
+
+local round = CardView.round
+
+-- The column (0 first) that the whole pixel x is in, the columns being `columnW` pixels wide and their lines falling
+-- on whole pixels (floored): the same lines the strips and windows are cut on.
+local function columnAt(x, columnW)
+    local k = math.floor(x / columnW)
+    if math.floor((k + 1) * columnW) <= x then
+        k = k + 1
+    end
+    return k
+end
 
 -- Where the tear crosses the column holding pack x (in pack units): jagged, but the same every time.
 function PackArt.tearY(x)
@@ -263,13 +280,14 @@ end
 
 -- A pack, `height` pixels tall, inside `parent` (move it with pack.root:SetPos). `side` is
 -- "front" or "back". `piece` (optional) draws only the "cap" or the "body" of the pack torn open
--- (see PackArt.tearY). Draw it with PackArt.draw.
-function PackArt.new(parent, side, height, piece)
+-- (see PackArt.tearY). Draw it with PackArt.draw. `turnable` true cuts it on TURN_CHUNK's column lines so PackArt.turn
+-- can turn it: about twice the parts, so only a pack that turns has it (the reveal screen's sealed pack, not the Shop's).
+function PackArt.new(parent, side, height, piece, turnable)
     local s = height / PackArt.H
     local w = math.floor(PackArt.W * s + 0.5)
-    -- artRects holds where each of artParts was put (for PackArt.squash).
+    -- artRects holds where each of artParts was put, and artStrips the strip it is in (for PackArt.turn).
     local pack = { side = side, s = s, w = w, h = height, strips = {}, stripLayers = {},
-        artParts = {}, topParts = {}, artRects = {} }
+        artParts = {}, topParts = {}, artRects = {}, artStrips = {}, columnW = turnable and TURN_CHUNK * s or nil }
     pack.root = ui.Layer.new(parent)
     pack.root:SetSize(w, height)
     -- Made in this order so the art is under the shading and the name and logo are on top.
@@ -278,7 +296,17 @@ function PackArt.new(parent, side, height, piece)
     pack.art:SetSize(w, height)
     -- The strips that trace the outline depend only on the side and size, so they are made once
     -- here and only the picture's tiles inside them are redrawn.
+    -- (a turnable pack's are cut on the column lines, see TURN_CHUNK)
+    local rects = {}
     for _, r in ipairs(pieceRects(piece)) do
+        local x, right = r[1], r[1] + r[3]
+        while x < right do
+            local nx = turnable and math.min(right, (x // TURN_CHUNK + 1) * TURN_CHUNK) or right
+            rects[#rects + 1] = { x, r[2], nx - x, r[4], r[5] }
+            x = nx
+        end
+    end
+    for _, r in ipairs(rects) do
         local rx, ry, rw, rh, dy = r[1], r[2], r[3], r[4], r[5]
         if side == "back" then
             rx = PackArt.W - rx - rw
@@ -291,7 +319,8 @@ function PackArt.new(parent, side, height, piece)
             layer:SetPos(x0, y0)
             layer:SetSize(x1 - x0, y1 - y0)
             pack.stripLayers[#pack.stripLayers + 1] = layer
-            pack.strips[#pack.strips + 1] = { layer = layer, x = x0, y = y0, w = x1 - x0, h = y1 - y0, dy = dy * s }
+            pack.strips[#pack.strips + 1] = { layer = layer, x = x0, y = y0, w = x1 - x0, h = y1 - y0, dy = dy * s,
+                column = turnable and columnAt(x0, pack.columnW) or nil }
         end
     end
     local shading = image(side == "back" and "pack_shading_back" or "pack_shading")
@@ -314,6 +343,17 @@ function PackArt.new(parent, side, height, piece)
             if ww <= 0 or hh <= 0 then
                 return
             end
+            -- (a turnable pack's are cut on the column lines, as its strips are)
+            local column = nil
+            if turnable then
+                column = columnAt(x, pack.columnW)
+                local line = math.floor((column + 1) * pack.columnW)      -- the next column line past x
+                if x + ww > line then
+                    window(x, y, line - x, hh)
+                    window(line, y, x + ww - line, hh)
+                    return
+                end
+            end
             local clip = ui.Layer.new(shades)
             clip:SetPos(x, y)
             clip:SetSize(ww, hh)
@@ -324,8 +364,8 @@ function PackArt.new(parent, side, height, piece)
                 shade.sprite = shading
             end
             pack.stripLayers[#pack.stripLayers + 1] = clip
-            -- parts: what is inside the window, placed relative to it (for PackArt.squash).
-            pack.windows[#pack.windows + 1] = { layer = clip, x = x, y = y, w = ww, h = hh,
+            -- parts: what is inside the window, placed relative to it (for PackArt.turn).
+            pack.windows[#pack.windows + 1] = { layer = clip, x = x, y = y, w = ww, h = hh, column = column,
                 parts = { { shade, -x, -y, w, height } } }
         end
         local bandTop, bandBottom = math.floor(TEAR_MIN * s), math.floor(TEAR_MAX * s)
@@ -355,6 +395,7 @@ end
 function PackArt.drawArt(pack, art)
     destroyAll(pack.artParts)
     pack.artRects = {}
+    pack.artStrips = {}        -- the strip each tile is in (for PackArt.turn)
     local tiles = PackArt.tiles(art.screen)
     if tiles == nil then
         return
@@ -369,8 +410,12 @@ function PackArt.drawArt(pack, art)
     local px = left * s - (back and art.back or art.front) * pw
     local py = outline.y * s
     for _, strip in ipairs(pack.strips) do
+        local before = #pack.artParts
         PackArt.drawPicture(strip.layer, pack.artParts, tiles, px - strip.x, py - strip.y + strip.dy, pw, ph,
             strip.w, strip.h, pack.artRects)
+        for i = before + 1, #pack.artParts do
+            pack.artStrips[i] = strip
+        end
     end
 end
 
@@ -450,38 +495,51 @@ function PackArt.draw(pack, art)
     PackArt.drawTop(pack, art)
 end
 
--- Squeezes a torn piece of a pack (see PackArt.new) sideways to `f` (0 to 1) of its width, about
--- the pack's middle, as if it were turned away (for flipping it over). Every part is moved and
--- resized; nothing is redrawn.
-function PackArt.squash(pack, f)
-    local mid = pack.w / 2
-    -- The strips and windows are placed in the pack's own units, so they close in towards its
-    -- middle. Whole pixels from the squeezed edges, so neighbouring strips still meet.
-    local function place(comp, x, y, w, h)
-        local x0 = math.floor(mid + (x - mid) * f + 0.5)
-        local x1 = math.floor(mid + (x + w - mid) * f + 0.5)
-        comp:SetPos(x0, y)
-        comp:SetSize(math.max(1, x1 - x0), h)
+-- Turns a torn piece of a pack (see PackArt.new) about its upright middle line by `angle` radians (+ takes its right
+-- edge away; pi / 2 is edge-on; 0 puts it back flat), in perspective as a turned card is (CardView.perspective): the
+-- far edge shorter than the near one. Every strip and window covers its rect as near as an upright rect can, its
+-- height scaled about the pack's middle by the scale at the middle of its column (TURN_CHUNK), so everything in a
+-- column stays together; what is inside it is scaled with it. Nothing is redrawn.
+function PackArt.turn(pack, angle)
+    assert(pack.columnW ~= nil, "PackArt.turn needs a pack made turnable (PackArt.new)")
+    local mid, midY, columnW = pack.w / 2, pack.h / 2, pack.columnW
+    local sinA, cosA = math.sin(angle), math.cos(angle)
+    local function project(x)          -- where the line x across the flat pack shows, and the scale there
+        local offset, s = CardView.turnPoint(x - mid, sinA, cosA, pack.w)
+        return mid + offset, s
+    end
+    local columnScale = {}
+    -- Places a strip or window over its rect; returns how much it was scaled across and down.
+    local function place(rec)
+        local s = columnScale[rec.column]
+        if s == nil then
+            s = select(2, project((rec.column + 0.5) * columnW))
+            columnScale[rec.column] = s
+        end
+        local X0, X1 = round(project(rec.x)), round(project(rec.x + rec.w))
+        local Y0, Y1 = round(midY + (rec.y - midY) * s), round(midY + (rec.y + rec.h - midY) * s)
+        rec.layer:SetPos(X0, Y0)
+        rec.layer:SetSize(math.max(1, X1 - X0), math.max(1, Y1 - Y0))
+        return math.max(1, X1 - X0) / rec.w, math.max(1, Y1 - Y0) / rec.h
     end
     for _, strip in ipairs(pack.strips) do
-        place(strip.layer, strip.x, strip.y, strip.w, strip.h)
+        strip.kx, strip.ky = place(strip)
     end
-    -- A tile is placed inside its strip, which has already moved, so it only narrows (with an
-    -- extra pixel, as when it was drawn, so tiles still overlap).
+    -- A tile is placed inside its strip, which has already moved, so it is only scaled (with an extra pixel, as when it
+    -- was drawn, so tiles still overlap).
     for i, tile in ipairs(pack.artParts) do
-        local r = pack.artRects[i]
-        if r ~= nil then
-            tile:SetPos(math.floor(r[1] * f), r[2])
-            tile:SetSize(math.max(1, math.ceil(r[3] * f) + 1), r[4])
+        local r, strip = pack.artRects[i], pack.artStrips[i]
+        if r ~= nil and strip ~= nil then
+            tile:SetPos(math.floor(r[1] * strip.kx), math.floor(r[2] * strip.ky))
+            tile:SetSize(math.max(1, math.ceil(r[3] * strip.kx) + 1), math.max(1, math.ceil(r[4] * strip.ky) + 1))
         end
     end
-    -- What is inside a window (the shading, banner and logo) only narrows, as the window has
-    -- already moved.
-    for _, win in ipairs(pack.windows) do
-        place(win.layer, win.x, win.y, win.w, win.h)
+    -- What is inside a window (the shading, banner and logo) is scaled with it, the window having already moved.
+    for _, win in ipairs(pack.windows or {}) do
+        local kx, ky = place(win)
         for _, part in ipairs(win.parts) do
-            part[1]:SetPos(math.floor(part[2] * f), part[3])
-            part[1]:SetSize(math.max(1, math.ceil(part[4] * f)), part[5])
+            part[1]:SetPos(math.floor(part[2] * kx), math.floor(part[3] * ky))
+            part[1]:SetSize(math.max(1, math.ceil(part[4] * kx)), math.max(1, math.ceil(part[5] * ky)))
         end
     end
 end

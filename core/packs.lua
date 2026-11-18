@@ -144,6 +144,29 @@ function Packs.poolSize(packTypeId)
     return size
 end
 
+-- The names of the packs a card can come from, in the order the pack window offers them (an empty list if none).
+-- Worked out for every card at once, again only when an overlay changes the cards (Cards.revision).
+local packNames, packNamesAt = {}, -1
+function Packs.namesFor(card)
+    if packNamesAt ~= Cards.revision then
+        packNames, packNamesAt = {}, Cards.revision
+        for _, packType in ipairs(Packs.offered()) do
+            local groups = Packs.poolFor(packType)
+            for _, list in pairs(groups) do
+                for _, member in ipairs(list) do
+                    local names = packNames[member.id]
+                    if names == nil then
+                        names = {}
+                        packNames[member.id] = names
+                    end
+                    names[#names + 1] = packType.name
+                end
+            end
+        end
+    end
+    return packNames[card.id] or {}
+end
+
 -- Rolls one card: its kind (NPC or item, see Packs.kindWeights), then its rarity, then which
 -- card of that rarity (all alike unless a card has a weight, see Packs.pickCard), then its
 -- finish. The rolls are separate, so they stack. `pool` and `kinds`

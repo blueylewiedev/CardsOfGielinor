@@ -27,14 +27,13 @@ local function ids(entries)
     return table.concat(list, ",")
 end
 
--- The ids of the cards for which `keep` is true, in deck order, as the entries of an all-variants list would have them.
+-- The ids of the cards for which `keep` is true, in deck order, as the entries of a list of a collection with no other
+-- finishes would have them: each card once, in the normal finish (only finishes the player has are listed beyond it).
 local function expected(keep)
     local list = {}
     for _, card in ipairs(Cards.list) do
         if keep(card) then
-            for finish in pairs(Cards.finishes) do
-                list[#list + 1] = card.id .. "|" .. finish
-            end
+            list[#list + 1] = card.id .. "|normal"
         end
     end
     return table.concat(list, ",")

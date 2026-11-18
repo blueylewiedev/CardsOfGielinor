@@ -747,13 +747,22 @@ end
 
 -- The mouse's x on the screen, or nil if the client can't say (for dragging).
 function Kit.mouseX()
-    local ok, x = pcall(function()
+    return (Kit.mousePosition())
+end
+
+-- Where the mouse is, as x, y, or nil if the client can't say.
+function Kit.mousePosition()
+    local ok, x, y = pcall(function()
         if not Mouse.IsAvailable() then
             return nil
         end
-        return Mouse.GetPosition().x
+        local position = Mouse.GetPosition()
+        return position.x, position.y
     end)
-    return ok and x or nil
+    if ok then
+        return x, y
+    end
+    return nil
 end
 
 -- Extra window height the PrettyUI title bar takes, to add to a plain window's height.

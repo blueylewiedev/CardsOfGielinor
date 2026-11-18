@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DECK = ROOT / "deck"
-NOT_DECKS = {"index.lua", "packs.lua"}
+NOT_DECKS = {"index.lua", "packs.lua", "sets.lua"}
 
 
 def listed_files():

@@ -337,30 +337,6 @@ function Storage.recordPack(state, results)
     state.dirty = true
 end
 
--- How much of the collection the player has, as { owned, total } for each of:
---   normal : cards owned in the normal finish, out of all cards
---   all    : every variant, out of all cards x all finishes
-function Storage.progress(state)
-    local cardCount = #Cards.list
-    local finishCount = 0
-    for _ in pairs(Cards.finishes) do
-        finishCount = finishCount + 1
-    end
-    local counts = { normal = 0 }
-    local all = 0
-    for key in pairs(state.owned) do
-        local cardId, finish = Cards.parseKey(key)
-        if cardId ~= nil and Cards.byId[cardId] ~= nil and counts[finish] ~= nil then
-            counts[finish] = counts[finish] + 1
-            all = all + 1
-        end
-    end
-    return {
-        normal = { owned = counts.normal, total = cardCount },
-        all = { owned = all, total = cardCount * finishCount },
-    }
-end
-
 -- Adds copies of one variant to the collection (one copy if `count` is omitted).
 -- `variantKey` comes from Cards.variantKey(cardId, finish).
 function Storage.addCard(state, variantKey, count)

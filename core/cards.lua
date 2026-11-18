@@ -24,16 +24,19 @@ for rank, key in ipairs(Cards.rarityOrder) do
     Cards.rarityRank[key] = rank
 end
 
--- Variants. Every card the player owns is one card + one finish. For now there is only the
--- normal finish; reverse holo and holo were taken out to keep things simple, but the saving
--- format ("<card id>|<finish>") still has room for them, so they can be added back later.
+-- Variants. Every card the player owns is one card + one finish, saved as "<card id>|<finish>".
+--   normal : the card as it is
+--   holo   : a rainbow foil behind the picture (ui/cardview.lua, CardView.FOIL). (Reverse holo, a
+--            shine over the frame, was taken out; a frame-shaped shine cannot be drawn well.)
 Cards.finishes = {
     normal = { name = "Normal" },
+    holo   = { name = "Holo" },
 }
 
 -- Pull odds. This is a relative weight, rolled separately from rarity, so they stack.
+--   finish : normal 9 / holo 1 (out of 10) -> holo 1 in 10
 Cards.odds = {
-    finish = { normal = 1 },
+    finish = { normal = 9, holo = 1 },
 }
 
 -- The card format (the cards are written in the files listed in deck/index.lua).
@@ -536,7 +539,7 @@ end
 Cards.resort()
 
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
--- "hans|normal".
+-- "hans|normal" or "hans|holo".
 function Cards.variantKey(cardId, finish)
     assert(Cards.finishes[finish], "Unknown finish " .. tostring(finish))
     return cardId .. "|" .. finish

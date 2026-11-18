@@ -16,11 +16,11 @@
 -- mouse and keyboard. The filters are kept while the plugin runs, so closing and opening the viewer does not lose them.
 
 local Cards = require("core/cards")
-local Storage = require("core/storage")
 local Logger = require("core/logger")
 local Browse = require("core/browse")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
+local Wiggle = require("ui/wiggle")
 
 local Viewer = {}
 
@@ -148,7 +148,8 @@ local filter = { owned = "all", sort = "rarity" }
 local filterStarted = false               -- the filter starts from the default the first time the viewer opens
 local gridView = false
 local page = 1
-local selectedKey = nil                -- "<card id>|<finish>" of the card shown beside the list
+local selectedKey = nil                -- the id of the card shown beside the list
+local chosenFinish = {}                -- { card id = finish } picked with a card's finish toggles (kept while the plugin runs)
 local entries = {}                     -- what the filter finds, worked out when the filter changes
 local watchedState, watchedStamp = nil, nil   -- the collection as the list was last worked out from it (see Viewer.refresh)
 
@@ -206,7 +207,35 @@ local function tint(hex, amount, alpha)
 end
 
 local function entryKey(entry)
-    return entry.card.id .. "|" .. entry.finish
+    return entry.card.id
+end
+
+-- The finish a card is shown in: the one picked with its toggles if the player still has it, otherwise the entry's
+-- own (the filter's finish, or a holo before a normal one, Browse.preferredFinish).
+local function shownFinish(entry)
+    local chosen = chosenFinish[entry.card.id]
+    if chosen ~= nil and entry.finishes[chosen] ~= nil then
+        return chosen
+    end
+    return entry.finish
+end
+
+-- The finishes the player has of a card, in the order the toggles show them (Browse.FINISH_PREFERENCE), as
+-- { finish, count } pairs.
+local function ownedFinishes(entry)
+    local list = {}
+    for _, finish in ipairs(Browse.FINISH_PREFERENCE) do
+        if entry.finishes[finish] ~= nil then
+            list[#list + 1] = { finish = finish, count = entry.finishes[finish] }
+        end
+    end
+    return list
+end
+
+-- Shows a card in another finish it is owned in (a toggle under it).
+local function chooseFinish(entry, finish)
+    chosenFinish[entry.card.id] = finish
+    Viewer.refreshView()
 end
 
 local function perPage()
@@ -427,8 +456,9 @@ local function showRows()
             local rarity = Cards.rarities[card.rarity]
             local locked = entry.locked
             local name = string.upper(card.name)
-            if entry.finish ~= "normal" then
-                name = name .. " (" .. string.upper(Cards.finishes[entry.finish].name) .. ")"
+            local finish = shownFinish(entry)
+            if finish ~= "normal" then
+                name = name .. " (" .. string.upper(Cards.finishes[finish].name) .. ")"
             end
             row.name.content = name
             row.name.colour = locked and DIM or WHITE
@@ -452,7 +482,8 @@ end
 -- What the detail panel shows depends on the picked card, how many of it the player has and the filters its chips set;
 -- this changes when any of them does.
 local function detailStamp(picked)
-    return table.concat({ tostring(selectedKey), picked ~= nil and picked.count or "-", tostring(filter.kind),
+    return table.concat({ tostring(selectedKey), picked ~= nil and picked.count or "-",
+        picked ~= nil and shownFinish(picked) or "-", tostring(filter.kind),
         tostring(filter.membership), tostring(filter.region), tostring(filter.skill), tostring(filter.category) }, "|")
 end
 
@@ -482,16 +513,29 @@ local function showDetail()
     end
 
     local x = DETAIL_X + (DETAIL_W - DETAIL_W_CARD) // 2
-    local view = CardView.create(content, picked.card, { locked = picked.locked, finish = picked.finish, scale = DETAIL_SCALE })
+    local view = CardView.create(content, picked.card, { locked = picked.locked, finish = shownFinish(picked),
+        scale = DETAIL_SCALE, tilt = true })
     view.root:SetPos(x, BODY_Y)
     detailParts[#detailParts + 1] = view.root
+    -- pressing on the card and dragging tilts it (ui/wiggle.lua)
+    local cardGrip = Wiggle.attach(content, view, { x = x, y = BODY_Y, w = DETAIL_W_CARD, h = DETAIL_H_CARD })
+    Kit.onWheel(cardGrip, wheelPage)
+    detailParts[#detailParts + 1] = cardGrip
 
-    -- What is known about the card, as chips: how many the player has, the type and whether it is members only on the
-    -- first line, then a line for each of region, skill and category (a chip for each word, wrapping onto more lines
-    -- when there are too many for one). Clicking a chip sets that filter (or clears it if it is on),
-    -- except the first, which only says what the player has.
+    -- What is known about the card, as chips: how many the player has (all finishes together), the type and whether
+    -- it is members only on the first line; then the finishes they have it in, each a toggle that shows the card in
+    -- it (the one shown lit); then a line for each of region, skill and category (a chip for each word, wrapping onto
+    -- more lines when there are too many for one). Clicking a tag chip sets that filter (or clears it if it is on).
     local card = picked.card
     local kindWord = Cards.kindOf(card) == "item" and "item" or "npc"
+    local finishItems = {}
+    local shown = shownFinish(picked)
+    for _, owned in ipairs(ownedFinishes(picked)) do
+        local finish = owned.finish
+        finishItems[#finishItems + 1] = { text = Cards.finishes[finish].name .. " x" .. owned.count,
+            colour = finish == shown and GOLD or WHITE, active = finish == shown,
+            onClick = function() chooseFinish(picked, finish) end }
+    end
     local rowsToShow = {
         { items = {
             { text = picked.locked and "Not collected" or ("Owned: " .. picked.count), colour = picked.locked and DIM or GOLD,
@@ -499,10 +543,13 @@ local function showDetail()
             { text = kindWord == "item" and "Item" or "NPC", field = "kind", value = kindWord },
             tagItems(card, "membership", "membership")[1],
         } },
-        { label = "Region", items = tagItems(card, "regions", "region") },
-        { label = "Skill", items = tagItems(card, "skills", "skill") },
-        { label = "Category", items = tagItems(card, "category", "category") },
     }
+    if #finishItems > 0 then            -- (a card not owned has no finish row)
+        rowsToShow[#rowsToShow + 1] = { label = "Finish", items = finishItems }
+    end
+    rowsToShow[#rowsToShow + 1] = { label = "Region", items = tagItems(card, "regions", "region") }
+    rowsToShow[#rowsToShow + 1] = { label = "Skill", items = tagItems(card, "skills", "skill") }
+    rowsToShow[#rowsToShow + 1] = { label = "Category", items = tagItems(card, "category", "category") }
     local y = 8
     for _, row in ipairs(rowsToShow) do
         local texts = {}
@@ -522,18 +569,22 @@ local function showDetail()
         end
         for index, place in ipairs(row.places) do
             local item = row.items[index]
-            local active = item.field ~= nil and filter[item.field] == item.value
+            local active = item.active or (item.field ~= nil and filter[item.field] == item.value)
             local x, cy = row.x0 + place.x, row.y + place.y
             chip(info, x, cy, place.w, item.text, item.colour or WHITE, active and SELECTED_BORDER or item.border,
                 active and CHIP_ACTIVE_BACK or nil)
-            if item.field ~= nil then
+            if item.field ~= nil or item.onClick ~= nil then
                 local grip = ui.Layer.new(info)
                 grip.clickthrough = false
                 grip:SetPos(x, cy)
                 grip:SetSize(place.w, CHIP_H, 0, 0)
-                local field, value = item.field, item.value
+                local field, value, onClick = item.field, item.value, item.onClick
                 grip:Subscribe(ui.Hook.ONCLICK, function()
-                    toggleFilter(field, value)
+                    if onClick ~= nil then
+                        onClick()
+                    else
+                        toggleFilter(field, value)
+                    end
                 end)
             end
         end
@@ -555,32 +606,57 @@ local function showGrid()
         end
         local x = columnX((slot - 1) % GRID_COLS + 1) + (COLUMN_W - GRID_CARD_W) // 2
         local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
-        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = entry.finish, scale = GRID_SCALE })
+        local shown = shownFinish(entry)
+        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = shown, scale = GRID_SCALE,
+            tilt = true })
         view.root:SetPos(x, y)
         gridParts[#gridParts + 1] = view.root
+        local key = entryKey(entry)
 
-        -- the caption: a bar under the card in the rarity's own colour
+        -- the caption: a bar under the card in the rarity's own colour. A card owned in more than one finish has a
+        -- toggle for each instead ("Holo x1 | Normal x2"), the one shown lit; clicking one shows the card in it.
+        -- Otherwise a click on the caption opens the card in the list, as a click on the card does.
         local rarity = Cards.rarities[entry.card.rarity]
-        local caption, back, border = panel(content, x, y + GRID_CARD_H + 6, GRID_CARD_W, 30)
+        local captionY = y + GRID_CARD_H + 6
+        local caption, back, border = panel(content, x, captionY, GRID_CARD_W, 30)
         back.colour = tint(rarity.colour, entry.locked and 0.08 or 0.22, 0.92)
         border.colour = toVec4(rarity.colour, entry.locked and 0.35 or 0.8)
-        local text = entry.locked and "Not collected" or ("Owned: " .. entry.count)
-        if entry.finish ~= "normal" then
-            text = Cards.finishes[entry.finish].name .. "  |  " .. text
-        end
-        Kit.text(caption, 0, 0, GRID_CARD_W, 30, text, entry.locked and DIM or GOLD)
         gridParts[#gridParts + 1] = caption
+        local finishes = ownedFinishes(entry)
+        local function captionGrip(cx, cw, onClick)
+            local grip = ui.Layer.new(content)
+            grip.clickthrough = false
+            grip:SetPos(x + cx, captionY)
+            grip:SetSize(cw, 30, 0, 0)
+            Kit.onWheel(grip, wheelPage)
+            grip:Subscribe(ui.Hook.ONCLICK, onClick)
+            gridParts[#gridParts + 1] = grip
+        end
+        if #finishes > 1 then
+            local segment = GRID_CARD_W / #finishes
+            for index, owned in ipairs(finishes) do
+                local cx = math.floor((index - 1) * segment)
+                local cw = math.floor(index * segment) - cx
+                local lit = owned.finish == shown
+                Kit.text(caption, cx, 0, cw, 30, Cards.finishes[owned.finish].name .. " x" .. owned.count,
+                    lit and GOLD or DIM)
+                local finish = owned.finish
+                captionGrip(cx, cw, function() chooseFinish(entry, finish) end)
+            end
+        else
+            local text = entry.locked and "Not collected" or ("Owned: " .. entry.count)
+            if shown ~= "normal" and not entry.locked then
+                text = Cards.finishes[shown].name .. "  |  " .. text
+            end
+            Kit.text(caption, 0, 0, GRID_CARD_W, 30, text, entry.locked and DIM or GOLD)
+            captionGrip(0, GRID_CARD_W, function() Viewer.showInList(key) end)
+        end
 
-        -- a click anywhere on the card or its caption opens it in the list
-        local grip = ui.Layer.new(content)
-        grip.clickthrough = false
-        grip:SetPos(x, y)
-        grip:SetSize(GRID_CARD_W, GRID_CARD_H + 36, 0, 0)
-        local key = entryKey(entry)
-        Kit.onWheel(grip, wheelPage)
-        grip:Subscribe(ui.Hook.ONCLICK, function()
+        -- a click on the card opens it in the list; pressing and dragging tilts it (ui/wiggle.lua)
+        local grip = Wiggle.attach(content, view, { x = x, y = y, w = GRID_CARD_W, h = GRID_CARD_H }, function()
             Viewer.showInList(key)
         end)
+        Kit.onWheel(grip, wheelPage)
         gridParts[#gridParts + 1] = grip
     end
     if #entries == 0 then
@@ -687,9 +763,10 @@ function Viewer.refilter(follow)
     watchedState, watchedStamp = state, collectionStamp(view)
     entries = Browse.entries(view, filter)
     local counts = Browse.counts(view, filter)
-    local progress = Storage.progress(view).normal
+    -- (the whole deck, a card counted when the player has it in any finish)
+    local whole = Browse.counts(view, {})
     widgets.counts.content = counts.owned .. " of " .. counts.cards .. " cards owned"
-        .. "   |   Whole collection: " .. progress.owned .. " / " .. progress.total
+        .. "   |   Whole collection: " .. whole.owned .. " / " .. whole.cards
     local pageBefore = page
     page = 1
     local keep, position = false, nil
@@ -776,6 +853,16 @@ local function buildFilters()
     filterDropdown("region", columnX(1), FILTER_Y[3], COLUMN_W, wordEntries("Any region", Cards.tagWords.regions))
     filterDropdown("skill", columnX(2), FILTER_Y[3], COLUMN_W, wordEntries("Any skill", Cards.tagWords.skills))
     filterDropdown("category", columnX(3), FILTER_Y[3], COLUMN_W, categoryEntries(), nil, true)
+    -- The finish (holo...), in the last place on the row unless the List / grid button needs it (no PrettyUI).
+    if widgets.swap == nil then
+        local finishes = { { label = "Any finish", value = ANY }, { label = "Normal", value = "normal" } }
+        for finish, info in pairs(Cards.finishes) do
+            if finish ~= "normal" then
+                finishes[#finishes + 1] = { label = info.name, value = finish }
+            end
+        end
+        filterDropdown("finish", columnX(4), FILTER_Y[3], COLUMN_W, finishes)
+    end
 end
 
 -- ----- open and close ---------------------------------------------------------------------------------------
