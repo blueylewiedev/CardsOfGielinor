@@ -494,7 +494,7 @@ local function showSet(state, ownedIds)
         local x = columnX((slot - 1) % GRID_COLS + 2) + (COLUMN_W - CARD_W) // 2
         local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
         local view = CardView.create(content, card, { locked = locked, silhouette = true, scale = CARD_SCALE,
-            -- (every finish counts towards the set; a card is shown as the collection shows it, a holo first)
+            -- (every finish counts towards the set; a card is shown as the collection shows it, the rarest finish first)
             lockedText = locked and lockedText(card) or nil,
             finish = Browse.preferredFinish(owned[card.id]) })
         view.root:SetPos(x, y)

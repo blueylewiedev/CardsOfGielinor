@@ -1,12 +1,12 @@
 -- ui/stats.lua
 -- The Stats window, three tabs across its top (the window can be resized; a tab scrolls when it is taller than the room):
---   Collection        : progress bars for all the cards, the NPC cards and the item cards, the cards owned as holos,
---                       then one for each rarity
+--   Collection        : progress bars for all the cards, the NPC cards and the item cards, the cards owned as foils and
+--                       as holos, then one for each rarity
 --   Regions           : a progress bar for each region, in two columns, and one for the cards that have no region (the
 --                       regions' counts alone would not add up to the deck)
 --   Packs and credits : an overview (packs opened, cards pulled, credits earned and spent, time played and the average
 --                       credits per hour over all sessions) beside the pull rates by rarity, in the rarities' colours,
---                       and the holo pull rate
+--                       and the foil and holo pull rates
 -- The bars come from Browse.progress (core/browse.lua), counted in one pass over the deck and kept for a few seconds
 -- (the window refreshes every tick, and nothing in a collection changes that fast); cards from a pack that is still being
 -- opened do not count until they have been turned over. The text of the last tab comes from state.stats (see
@@ -30,7 +30,10 @@ local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local GOLD_BAR = Vector4.new(0.85, 0.68, 0.16, 1.0)
-local HOLO = Vector4.new(0.55, 0.80, 1.0, 1.0)     -- the holo bar and line (a pale foil blue)
+-- The finishes' bars and pull rate lines, after the rarities': a pale silver-blue for a foil's shine, a violet for a
+-- holo's rainbow.
+local FINISH_ORDER = { "foil", "holo" }
+local FINISH_COLOURS = { foil = Vector4.new(0.55, 0.80, 1.0, 1.0), holo = Vector4.new(0.80, 0.55, 1.0, 1.0) }
 
 local WINDOW_BORDER = 8                 -- PrettyUI's frame at each side of a window's content
 local WIDTH = 560
@@ -80,8 +83,11 @@ function Stats.pullRates(state)
             lines[#lines + 1] = { info.name .. ": " .. rate(s.rarities[rarity] or 0, s.cardsPulled), Bars.colour(info.colour) }
         end
     end
-    -- (the finish is rolled apart from the rarity, so a holo is also one of the lines above)
-    lines[#lines + 1] = { "Holo: " .. rate(s.finishes and s.finishes.holo or 0, s.cardsPulled), HOLO }
+    -- (the finish is rolled apart from the rarity, so a foil or a holo is also one of the lines above)
+    for _, finish in ipairs(FINISH_ORDER) do
+        lines[#lines + 1] = { Cards.finishes[finish].name .. ": " .. rate(s.finishes and s.finishes[finish] or 0, s.cardsPulled),
+            FINISH_COLOURS[finish] }
+    end
     return lines
 end
 
@@ -117,7 +123,8 @@ local function viewProgress(page, width)
     bars.npc = Bars.new(page, left, y, column, "NPC cards")
     bars.item = Bars.new(page, second, y, column, "Item cards")
     y = y + BAR_STEP
-    bars.holo = Bars.new(page, left, y, full, "Holo cards", HOLO, HOLO)
+    bars.foil = Bars.new(page, left, y, column, "Foil cards", FINISH_COLOURS.foil, FINISH_COLOURS.foil)
+    bars.holo = Bars.new(page, second, y, column, "Holo cards", FINISH_COLOURS.holo, FINISH_COLOURS.holo)
     y = y + BAR_STEP + 4
     local heading = Kit.text(page, left, y, full, 20, "BY RARITY", GOLD, ui.AlignMode.TOPLEFT)
     y = y + 26
@@ -142,8 +149,10 @@ local function viewProgress(page, width)
             local npc, item = p.kinds.npc or EMPTY, p.kinds.item or EMPTY
             bars.npc.set(npc.owned, npc.cards)
             bars.item.set(item.owned, item.cards)
-            local holo = p.holo or EMPTY
-            bars.holo.set(holo.owned, holo.cards)
+            for _, finish in ipairs(FINISH_ORDER) do
+                local count = p.finishes[finish] or EMPTY
+                bars[finish].set(count.owned, count.cards)
+            end
             for id, bar in pairs(rarityBars) do
                 local count = p.rarities[id] or EMPTY
                 bar.set(count.owned, count.cards)
@@ -209,9 +218,9 @@ local function viewPacks(page, width)
         end
     end
     local overview = makeColumn(left, "OVERVIEW", 6)
-    local pulls = makeColumn(second, "PULL RATES", #RARITY_ORDER + 1)
+    local pulls = makeColumn(second, "PULL RATES", #RARITY_ORDER + #FINISH_ORDER)
     return {
-        height = TOP_PAD + 26 + 6 * LINE_H,
+        height = TOP_PAD + 26 + math.max(6, #RARITY_ORDER + #FINISH_ORDER) * LINE_H,
         refresh = function(_, state)
             fill(overview, Stats.overview(state))
             fill(pulls, Stats.pullRates(state))

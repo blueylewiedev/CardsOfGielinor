@@ -473,8 +473,96 @@ local function addArt(parent, card, box, bodyOverride, dark)
     return plain
 end
 
--- Holo shine (a holo card's finish, or opts.foil): two almost see-through pastel images, the size of the whole card
--- (resources/images/holo_a.png and holo_b.png, made by dev/make_holo.py), laid over it and cross-faded so the bands seem
+-- Holo (a holo card's finish): a ui.Canvas over the art box's backdrop, under the picture (models draw over every 2D
+-- component): a see-through rainbow in diagonal bands. A canvas gradient only runs straight across or straight down,
+-- so the bands are thin stripes of one colour each (two or three triangles, cut to the box), stepping round the hues
+-- a little at a time. Colours are 0xRRGGBBAA. It is drawn once, in the art window, so it is revealed with the
+-- picture when a card is turned over (CardView.uncover).
+CardView.HOLO = {
+    -- pastels round the rainbow, back to the first
+    hues = { 0xFFB3B3, 0xFFD9A8, 0xFFF2A8, 0xB8F0C4, 0xA8E4FF, 0xB8C2FF, 0xE0B8FF },
+    alpha = 0x60,        -- the rainbow's see-through-ness (0 clear, 0xFF solid): a tint over the backdrop
+    angle = 30,          -- how far the bands lean from upright, in degrees
+    stripes = 48,        -- how many stripes across the box (more is smoother)
+    cycles = 1.0,        -- how many times the rainbow goes round across the box
+}
+
+local function round(v)
+    return math.floor(v + 0.5)
+end
+
+-- The colour `t` of the way round the hues (any number: it wraps), blended between the two nearest.
+local function holoColour(t)
+    local f = CardView.HOLO
+    local n = #f.hues
+    local at = (t % 1) * n
+    local i = math.floor(at)
+    local mix = at - i
+    local a, b = f.hues[i % n + 1], f.hues[(i + 1) % n + 1]
+    local colour = 0
+    for shift = 16, 0, -8 do
+        local ca, cb = (a >> shift) & 0xFF, (b >> shift) & 0xFF
+        colour = colour | (round(ca + (cb - ca) * mix) << shift)
+    end
+    return colour * 256 + f.alpha
+end
+
+-- The part of a convex polygon (a list of {x, y}) where x * dx + y * dy is at least `limit` (sign 1) or at most (-1).
+local function clipPolygon(points, dx, dy, limit, sign)
+    local out = {}
+    for i = 1, #points do
+        local p, q = points[i], points[i % #points + 1]
+        local vp = (p[1] * dx + p[2] * dy - limit) * sign
+        local vq = (q[1] * dx + q[2] * dy - limit) * sign
+        if vp >= 0 then
+            out[#out + 1] = p
+        end
+        if (vp >= 0) ~= (vq >= 0) then
+            local t = vp / (vp - vq)
+            out[#out + 1] = { p[1] + (q[1] - p[1]) * t, p[2] + (q[2] - p[2]) * t }
+        end
+    end
+    return out
+end
+
+-- Draws the holo's stripes in `parent` over `box` (the art box, in card units). Returns the canvas, or nil.
+local function addHolo(parent, box)
+    local f = CardView.HOLO
+    local ok, result = pcall(function()
+        local canvas = ui.Canvas.new(parent)
+        canvas:SetPos(round(box.x), round(box.y))
+        canvas:SetSize(round(box.w), round(box.h))
+        local w, h = box.w, box.h
+        local angle = math.rad(f.angle)
+        local dx, dy = math.cos(angle), math.sin(angle)        -- across the bands
+        local corners = { 0, w * dx, h * dy, w * dx + h * dy }
+        local low, high = math.min(table.unpack(corners)), math.max(table.unpack(corners))
+        local rect = { { 0, 0 }, { w, 0 }, { w, h }, { 0, h } }
+        local count = math.max(1, math.floor(f.stripes))
+        for i = 1, count do
+            local u0 = low + (high - low) * (i - 1) / count
+            local u1 = low + (high - low) * i / count
+            local piece = clipPolygon(clipPolygon(rect, dx, dy, u0, 1), dx, dy, u1, -1)
+            if #piece >= 3 then
+                local colour = holoColour((i - 0.5) / count * f.cycles)
+                local x0, y0 = round(piece[1][1]), round(piece[1][2])
+                for k = 2, #piece - 1 do
+                    canvas:AddTriangle(x0, y0, round(piece[k][1]), round(piece[k][2]),
+                        round(piece[k + 1][1]), round(piece[k + 1][2]), colour)
+                end
+            end
+        end
+        return canvas
+    end)
+    if not ok then
+        Logger.error("card art: holo failed:", tostring(result))
+        return nil
+    end
+    return result
+end
+
+-- Foil shine (a foil card's finish): two almost see-through pastel images, the size of the whole card
+-- (resources/images/foil_a.png and foil_b.png, made by dev/make_foil.py), laid over it and cross-faded so the bands seem
 -- to drift. It is made after the picture, so it covers the whole card: the frame, the backdrop, the picture and the text.
 CardView.SHINE = {
     alpha = 0.85,        -- how strong it is at its brightest (times the images' own see-through-ness)
@@ -505,11 +593,11 @@ local shineClock = 0
 
 -- Lays the shine over the card (`W` x `H`) in `parent`. Returns its two sprites, or nil.
 local function addShine(parent, W, H)
-    local a, b = shineImage("holo_a"), shineImage("holo_b")
+    local a, b = shineImage("foil_a"), shineImage("foil_b")
     if a == nil or b == nil then
         return nil
     end
-    -- Each card starts at a different point, so a page of holos does not pulse in step.
+    -- Each card starts at a different point, so a page of foils does not pulse in step.
     local offset = math.random() * 6.28
     local ok, sprites = pcall(function()
         local made = {}
@@ -582,7 +670,8 @@ end
 
 -- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.)
 -- Builds a card that uses a frame image. Order matters: whatever is created later is drawn on
--- top, so the backdrop and the model go first, then the frame, then the text, then a holo's shine.
+-- top, so the backdrop (and a holo's rainbow) and the model go first, then the frame, then the text, then a foil's
+-- shine.
 -- Returns the view's fields: model, cam, silhouette, and with opts.animated what CardView.squash needs (the
 -- pieces that can be narrowed, with their places and sizes) and what CardView.uncover needs (windows round the
 -- model and the text, which cannot be narrowed, and the middle of the art box). `silhouette`: a locked card drawn as
@@ -605,6 +694,10 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
     -- the backdrop behind the model
     part(solid(root, win.x, win.y, win.w, win.h, 0, 0, silhouette and SILHOUETTE_BACK or ART_COLOUR), win.x, win.y, win.w, win.h)
     local art = holder()
+    -- a holo's rainbow over the backdrop, under the picture (in the art window, so it is revealed with the picture)
+    if opts ~= nil and opts.finish == "holo" and not locked then
+        addHolo(art.inner, win)
+    end
     local model, cam = nil, nil
     if not locked or silhouette then
         model, cam = addArt(art.inner, card, win, opts and opts.body, silhouette)
@@ -631,8 +724,8 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
         locked and (opts and opts.lockedText or "Not collected yet") or card.desc,
         locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
 
-    -- a holo's shine goes over the whole card, the text included (and narrows with the frame when the card is turned)
-    if opts ~= nil and (opts.foil or opts.finish == "holo") and not locked and Settings.get("shine") then
+    -- a foil's shine goes over the whole card, the text included (and narrows with the frame when the card is turned)
+    if opts ~= nil and opts.finish == "foil" and not locked and Settings.get("shine") then
         for _, sprite in ipairs(addShine(root, W, H) or {}) do
             part(sprite, 0, 0, W, H)
         end
@@ -730,8 +823,8 @@ end
 -- with a "?" instead of the art and no description.
 -- opts.silhouette = true (with locked) shows the locked card's picture as a shadow silhouette instead of the "?"
 -- (the Sets window), still with no description.
--- opts.finish = the card's finish (Cards.finishes): "holo" draws the holo shine over the card (CardView.SHINE;
--- framed cards only, not locked ones). opts.foil = true draws it whatever the finish (the preview).
+-- opts.finish = the card's finish (Cards.finishes): "foil" draws the foil shine over the card (CardView.SHINE), "holo"
+-- the holo rainbow behind its picture (CardView.HOLO); framed cards only, not locked ones.
 -- opts.lockedText = what a locked card says in place of its description (default "Not collected yet").
 -- opts.frame = false skips the frame image and uses the plain layout (preview only).
 -- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text

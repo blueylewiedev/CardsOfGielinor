@@ -26,17 +26,19 @@ end
 
 -- Variants. Every card the player owns is one card + one finish, saved as "<card id>|<finish>".
 --   normal : the card as it is
---   holo   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE). (Reverse holo was
---            taken out.)
+--   foil   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE)
+--   holo   : a rainbow in diagonal bands behind the picture (ui/cardview.lua, CardView.HOLO)
+-- (as the trading card games use the words: foil the shine over the card, holo the picture's rainbow)
 Cards.finishes = {
     normal = { name = "Normal" },
+    foil   = { name = "Foil" },
     holo   = { name = "Holo" },
 }
 
 -- Pull odds. This is a relative weight, rolled separately from rarity, so they stack.
---   finish : normal 9 / holo 1 (out of 10) -> holo 1 in 10
+--   finish : normal 17 / foil 2 / holo 1 (out of 20) -> foil 1 in 10, holo 1 in 20
 Cards.odds = {
-    finish = { normal = 9, holo = 1 },
+    finish = { normal = 17, foil = 2, holo = 1 },
 }
 
 -- The card format (the cards are written in the files listed in deck/index.lua).
@@ -539,7 +541,7 @@ end
 Cards.resort()
 
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
--- "hans|normal" or "hans|holo".
+-- "hans|normal", "hans|foil" or "hans|holo".
 function Cards.variantKey(cardId, finish)
     assert(Cards.finishes[finish], "Unknown finish " .. tostring(finish))
     return cardId .. "|" .. finish
