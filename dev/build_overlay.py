@@ -171,12 +171,12 @@ def main():
                         help="write dev/local_overlay.lua (for the Dev tools' Local overlay button) instead of docs/overlay.jsonl")
     args = parser.parse_args()
 
-    lua = find_lua(args.lua)
     base_ref = args.base or newest_tag()
     if base_ref is None:
         print("No v* tag yet (nothing has been submitted for approval): the overlay is empty.")
         base_version, body = plugin_version(None), tuning_lines(args.tuning)
     else:
+        lua = find_lua(args.lua)            # (only needed to compare the deck with the tag's: with no tag there is nothing to run)
         base_version = plugin_version(base_ref)
         current = export_lines(lua, ROOT)
         base = export_at(lua, base_ref)
