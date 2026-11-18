@@ -14,6 +14,7 @@ function log() end          -- the client's log function
 local Cards = require("core/cards")
 local Json = require("core/json")
 local Overlay = require("core/overlay")
+local Config = require("core/config")
 local Loader = require("core/overlayloader")
 local Packs = require("core/packs")
 local Version = require("core/version")
@@ -456,6 +457,67 @@ tick(5)
 check(Loader.refetch() == true and Loader.status().phase == "waiting", "after it is done, a fetch can be started again")
 check(Loader.refetch() == false, "but not while one is under way")
 Cards.deprecate("zz_loaded")
+
+-- tuning: the overlay's {"tuning": ...} line (core/config.lua) ---------------------------------------------------------------
+do
+    Config.reset()
+    local job = Overlay.begin(overlayText(header({ revision = 5 }), {
+        { tuning = { packs = { price = 3000 }, shine = { enabled = false }, odds = { finish = { holo = 99999 } }, junk = 1 } },
+        testCard("zz_tuned_card"),
+    }))
+    runJob(job, 10)
+    check(job.tuning ~= nil and #job.tuning.applied == 2 and #job.tuning.ignored == 2,
+        "a tuning line is applied: two keys kept, two ignored (" .. Overlay.summary(job) .. ")")
+    check(Config.get("packs.price") == 3000 and Config.get("shine.enabled") == false and Config.get("odds.finish.holo") == 1,
+        "the keys inside their limits are set, the one outside keeps its default")
+    check(job.added == 1 and Cards.byId["zz_tuned_card"] ~= nil, "the cards after it still apply")
+    check(string.find(Overlay.summary(job), "tuning: 2 keys changed, 2 ignored", 1, true) ~= nil, "the summary says what the tuning did")
+    Cards.deprecate("zz_tuned_card")
+
+    -- only the first tuning line counts; one that is not an object is skipped; neither stops the rest
+    Config.reset()
+    job = Overlay.begin(overlayText(header(), {
+        { tuning = { packs = { price = 2500 } } }, { tuning = { packs = { price = 2600 } } }, { tuning = 5 },
+    }))
+    runJob(job, 10)
+    check(Config.get("packs.price") == 2500 and job.skipped == 2, "a second tuning line and a tuning that is not an object are skipped (" .. job.skipped .. ")")
+
+    -- a new overlay replaces the tuning of the one before; one for another version leaves it alone
+    job = Overlay.begin(overlayText(header(), { testCard("zz_no_tuning") }))
+    check(Config.get("packs.price") == 4000, "an overlay with no tuning puts the defaults back")
+    runJob(job, 10)
+    Cards.deprecate("zz_no_tuning")
+    Config.apply({ packs = { price = 2500 } })
+    check(Overlay.begin(overlayText(header({ base = "9.9.9" }), { { tuning = { packs = { price = 7000 } } } })) == nil
+        and Config.get("packs.price") == 2500, "an overlay for another version changes nothing, tuning included")
+    Config.reset()
+
+    -- an empty tuning object is fine, and a tuning line alone is a whole overlay
+    job = Overlay.begin(overlayText(header(), { { tuning = {} } }))
+    runJob(job, 10)
+    check(job.tuning ~= nil and #job.tuning.changed == 0 and job.skipped == 0, "an empty tuning object changes nothing")
+
+    -- through the loader: what the player is told
+    fresh()
+    tick(1)
+    complete(requests[1], 200, overlayText(header({ revision = 6 }), { { tuning = { packs = { price = 3000 },
+        earning = { xpPerCredit = 20 } } } }), true)
+    tick(4)
+    check(Loader.status().phase == "done" and Loader.status().tuned == 2, "the loader counts the tuned keys (" .. tostring(Loader.status().tuned) .. ")")
+    check(seen() == "On - settings updated" and string.find(detail(), "2 settings", 1, true) ~= nil,
+        "a tuning-only update is shown as settings updated (" .. line() .. ")")
+    Config.reset()
+    fresh()
+    tick(1)
+    complete(requests[1], 200, overlayText(header({ revision = 6 }), { { tuning = { packs = { price = 3000 } } },
+        testCard("zz_tuned_two") }), true)
+    tick(4)
+    check(seen() == "On - 1 card updated" and string.find(detail(), "1 setting", 1, true) ~= nil,
+        "cards and tuning together: the line names the cards, the tooltip the setting (" .. line() .. ")")
+    check(Config.get("packs.price") == 3000, "and the tuning is in force")
+    Cards.deprecate("zz_tuned_two")
+    Config.reset()
+end
 
 check(cardCount() == startCount, "the deck ends the test at its starting size (" .. cardCount() .. " and " .. startCount .. ")")
 

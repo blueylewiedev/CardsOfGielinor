@@ -6,6 +6,7 @@
 --     {"base":"0.1.0","format":1,"revision":3}      the header: the version it is for
 --     {"id":"swamp_frog","name":...}                 a new card, or a card that replaces the one with that id
 --     {"deprecated":"old_card_id"}                   a card to take out of the game
+--     {"tuning":{"packs":{"price":3000}}}            numbers, lists and switches (core/config.lua): only the first counts
 --
 -- It is applied a few lines at a time (Overlay.step, from a tick), so a big overlay never stalls a frame, and it
 -- never raises an error: a line that is not sound is skipped and described in job.problems, and the rest is still
@@ -15,9 +16,12 @@
 --     repeat until Overlay.step(job, 100)     once a tick; true when everything is applied
 --
 -- Safety: the header's format must be one this plugin reads and its base must be this plugin's version, and an
--- overlay may retire only a few cards (a wrongly built one cannot empty the game).
+-- overlay may retire only a few cards (a wrongly built one cannot empty the game). The tuning line goes through
+-- Config.apply, which keeps only what is inside the limits written in core/config.lua; a key it does not accept is
+-- reported in job.tuning.ignored and the rest still applies.
 
 local Cards = require("core/cards")
+local Config = require("core/config")
 local Json = require("core/json")
 local Version = require("core/version")
 
@@ -74,6 +78,7 @@ function Overlay.begin(text, version)
     if head.base ~= version then
         return nil, "the overlay is for version " .. tostring(head.base) .. ", this is version " .. version
     end
+    Config.reset()          -- (a second overlay in one session, from the dev button, replaces the tuning of the first)
     return {
         text = text, pos = pos, finished = false, base = head.base,
         revision = type(head.revision) == "number" and head.revision or nil,
@@ -93,6 +98,16 @@ local function applyLine(job, line)
     local value, err = Json.decode(line)
     if type(value) ~= "table" then
         skip(job, err or "not an object")
+        return
+    end
+    if value.tuning ~= nil then
+        if job.tuning ~= nil then
+            skip(job, "a second tuning line (only the first counts)")
+        elseif type(value.tuning) ~= "table" then
+            skip(job, "tuning needs an object")
+        else
+            job.tuning = Config.apply(value.tuning)          -- (never raises)
+        end
         return
     end
     if value.deprecated ~= nil then
@@ -142,9 +157,13 @@ end
 
 -- One line saying what a finished job did.
 function Overlay.summary(job)
+    local tuning = ""
+    if job.tuning ~= nil then
+        tuning = ", tuning: " .. #job.tuning.changed .. " keys changed, " .. (#job.tuning.ignored + job.tuning.more) .. " ignored"
+    end
     return "revision " .. tostring(job.revision) .. " of the overlay for version " .. tostring(job.base) .. ": "
         .. job.added .. " new cards, " .. job.replaced .. " changed, " .. job.retired .. " retired, "
-        .. job.skipped .. " lines skipped"
+        .. job.skipped .. " lines skipped" .. tuning
 end
 
 return Overlay
