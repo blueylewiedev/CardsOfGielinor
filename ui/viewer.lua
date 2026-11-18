@@ -20,7 +20,6 @@ local Logger = require("core/logger")
 local Browse = require("core/browse")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
-local Wiggle = require("ui/wiggle")
 
 local Viewer = {}
 
@@ -514,13 +513,9 @@ local function showDetail()
 
     local x = DETAIL_X + (DETAIL_W - DETAIL_W_CARD) // 2
     local view = CardView.create(content, picked.card, { locked = picked.locked, finish = shownFinish(picked),
-        scale = DETAIL_SCALE, tilt = true })
+        scale = DETAIL_SCALE })
     view.root:SetPos(x, BODY_Y)
     detailParts[#detailParts + 1] = view.root
-    -- pressing on the card and dragging tilts it (ui/wiggle.lua)
-    local cardGrip = Wiggle.attach(content, view, { x = x, y = BODY_Y, w = DETAIL_W_CARD, h = DETAIL_H_CARD })
-    Kit.onWheel(cardGrip, wheelPage)
-    detailParts[#detailParts + 1] = cardGrip
 
     -- What is known about the card, as chips: how many the player has (all finishes together), the type and whether
     -- it is members only on the first line; then the finishes they have it in, each a toggle that shows the card in
@@ -607,8 +602,7 @@ local function showGrid()
         local x = columnX((slot - 1) % GRID_COLS + 1) + (COLUMN_W - GRID_CARD_W) // 2
         local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
         local shown = shownFinish(entry)
-        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = shown, scale = GRID_SCALE,
-            tilt = true })
+        local view = CardView.create(content, entry.card, { locked = entry.locked, finish = shown, scale = GRID_SCALE })
         view.root:SetPos(x, y)
         gridParts[#gridParts + 1] = view.root
         local key = entryKey(entry)
@@ -652,11 +646,15 @@ local function showGrid()
             captionGrip(0, GRID_CARD_W, function() Viewer.showInList(key) end)
         end
 
-        -- a click on the card opens it in the list; pressing and dragging tilts it (ui/wiggle.lua)
-        local grip = Wiggle.attach(content, view, { x = x, y = y, w = GRID_CARD_W, h = GRID_CARD_H }, function()
+        -- a click on the card opens it in the list
+        local grip = ui.Layer.new(content)
+        grip.clickthrough = false
+        grip:SetPos(x, y)
+        grip:SetSize(GRID_CARD_W, GRID_CARD_H, 0, 0)
+        Kit.onWheel(grip, wheelPage)
+        grip:Subscribe(ui.Hook.ONCLICK, function()
             Viewer.showInList(key)
         end)
-        Kit.onWheel(grip, wheelPage)
         gridParts[#gridParts + 1] = grip
     end
     if #entries == 0 then

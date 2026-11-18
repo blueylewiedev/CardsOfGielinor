@@ -17,6 +17,7 @@ local KEY = "card_settings"
 Settings.options = {
     { id = "glow", label = "Glow behind rare cards", default = true },
     { id = "burst", label = "Colour burst on card reveal", default = true },
+    { id = "shine", label = "Shine on holo cards", default = true },
     { id = "releasePreview", label = "Preview as released", default = false, dev = true },
     { id = "creditsWindow", label = "Show the credits overlay", default = true },
     { id = "debugLogging", label = "Detailed logging for bug reports", default = false },

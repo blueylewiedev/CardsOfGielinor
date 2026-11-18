@@ -168,7 +168,7 @@ for _, c in ipairs(live("Layer")) do if rawget(c, "clickthrough") == false then 
 local contentLayer = grips[1]._parent
 local rowGrips = 0
 for _, g in ipairs(grips) do if g._parent == contentLayer then rowGrips = rowGrips + 1 end end
-check(rowGrips == 14, "13 clickable rows and the shown card's grip (" .. rowGrips .. ")")
+check(rowGrips == 13, "13 clickable rows (" .. rowGrips .. ")")
 grips[2]._handlers["ONCLICK"](grips[2])
 
 -- the chips under the card: clicking one sets that filter, clicking it again clears it, and the picked card stays
