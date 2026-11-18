@@ -819,6 +819,11 @@ project owner does this; contributors just submit cards as usual.
   version it was not built for. A card in the overlay replaces the card with the same id; a deprecated one is
   taken out of the game (players keep their copies in their saves).
 - An id that has been published, in an approved version or in an overlay, is never renamed or reused.
+- **Tuning.** The same overlay can carry a few numbers and switches (credit amounts, pull odds, a switch to turn a credit
+  source off) from `docs/tuning.json`, within limits fixed in `core/config.lua`. That is also the project owner's job; see
+  "Tuning numbers and switches between reviews" in [RELEASING.md](RELEASING.md). If you add something that should be
+  adjustable, it is a key in `core/config.lua` (a default, limits and a check) read with `Config.get` at the point of use, and
+  a case in `dev/check_config.lua`; do not add a constant to another file.
 
 ---
 
