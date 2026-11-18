@@ -51,9 +51,11 @@ SHADOW = (2, 3)
 PAD = 8
 GOLD_TOP, GOLD_BOTTOM = (255, 240, 180), (196, 140, 52)
 OUTLINE_COLOUR = (36, 22, 8)
-# Titles for packs that aren't one region's, made after the regions' (gielinor: the standard
-# pack, which has every card).
-EXTRA_TITLES = ["gielinor", "packs"]
+# Titles for packs that aren't one region's, made after the regions' (gielinor: the cards from no one region; standard:
+# every card; free_to_play: the free-to-play cards).
+EXTRA_TITLES = ["gielinor", "standard", "free_to_play", "packs"]
+# A title's text, where it isn't the id's words each with a capital ("free_to_play" would be "Free To Play").
+TITLE_TEXT = {"free_to_play": "Free to Play"}
 
 
 def lum(p):
@@ -198,7 +200,7 @@ def make_titles(font_path):
     font.set_variation_by_name("Bold")
     rows = []
     for word in regions() + EXTRA_TITLES:
-        text = " ".join(part.capitalize() for part in word.split("_"))
+        text = TITLE_TEXT.get(word) or " ".join(part.capitalize() for part in word.split("_"))
         image = render_title(font, text)
         image.save(IMAGES / ("title_" + word + ".png"), optimize=True)
         rows.append((word, text, image.width, image.height))

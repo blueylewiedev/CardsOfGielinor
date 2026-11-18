@@ -179,7 +179,7 @@ do
     check(standard == 4000, "a standard pack costs 4,000")
     local themed
     for id, packType in pairs(Cards.packTypes) do
-        if packType.themed then themed = id break end
+        if packType.themed and packType.priceFactor == nil then themed = id break end
     end
     check(themed ~= nil and Packs.priceFor(themed) == 5000, "a themed pack costs 5,000 (" .. tostring(themed) .. ")")
     Config.apply({ packs = { price = 2000, themedPriceFactor = 1.5 } })

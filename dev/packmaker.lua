@@ -2,17 +2,18 @@
 -- The Pack Maker: a window for designing a themed pack, opened from the Home window's developer
 -- buttons.
 --
---   1. Login screen : the game's login screen pictures, found by search and a drop-down (or
---                     stepped through). The picture is shown whole, with a Front box and a Back
+--   1. Login screen : the game's login screen pictures and cutscenes, found by search and a drop-down
+--                     (or stepped through); a second drop-down shows only login screens or only
+--                     cutscenes. The picture is shown whole, with a Front box and a Back
 --                     box: drag them along it to choose what each side of the pack shows.
 --   2. Pack name    : the title on the banner (one per region, from ui/packtitles.lua), moved and
 --                     resized with the buttons.
 --   3. Logo         : which RuneScape logo (or none), moved and resized with the buttons.
---   4. Cards        : which cards the pack gives: a region for now (the pack's filter, see
---                     Cards.packTypes, so other tags can be added later), or "All cards", which
---                     makes the design the standard pack's look instead of a new pack. It follows
---                     the pack name until a region is picked here (a name that isn't a region,
---                     such as Gielinor, gives All cards).
+--   4. Cards        : which cards the pack gives (the pack's filter, see Cards.packTypes): a
+--                     region, Global only (no one region), Free to play, or All cards, which makes
+--                     the design the standard pack's look instead of a new pack. It follows the
+--                     pack name until it is picked here (Gielinor gives Global only, Free to Play
+--                     gives Free to play, and any other name that isn't a region gives All cards).
 --   5. Save         : the pack's name and Save. Saved designs are kept in the plugin's database
 --                     (PersistentDB, on this computer only) and can be loaded again or deleted.
 --                     To put a pack in the game, its line (shown under Save) is pasted into
@@ -22,7 +23,7 @@
 -- The pictures are found by walking the game's sprite names the first time the window opens (a
 -- few seconds; the list is kept while the plugin runs): the tiled login screens named
 -- RS3_LOGINSCREEN_<name>_0, _1, ... and the single cutscene sprites (names with CUTSCENE in
--- them). Search "CUTSCENE" or a place name to find the cutscenes.
+-- them). The picture kind drop-down (or a search for "CUTSCENE" or a place name) finds the cutscenes.
 --
 -- Dragging a box: pressing it stretches its (invisible) grip over the whole window and brings
 -- it to the front, so the grip keeps getting the hold and release wherever the mouse goes; the
@@ -41,6 +42,11 @@ local PackMaker = {}
 local SUBSCRIBER = "cardcollector_packmaker"
 local DB_KEY = "packmaker_designs"
 local SCREEN_PREFIX = "RS3_LOGINSCREEN_"
+
+-- True for a cutscene's sprite name (it has CUTSCENE in it), false for a login screen's.
+local function isCutscene(name)
+    return string.find(name, "CUTSCENE", 1, true) ~= nil
+end
 local GOLD = Vector4.new(0.96, 0.82, 0.45, 1)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1)
 local BLUE = Vector4.new(0.55, 0.78, 0.95, 1)
@@ -52,6 +58,7 @@ local BACK_COLOUR = Vector4.new(0.5, 0.8, 1, 1)
 -- Layout: the login screen, name and logo on the left; the pack's two sides, its cards and
 -- saving on the right.
 local LEFT_X, LEFT_W = 10, 448
+local KIND_W = 150                        -- the picture kind drop-down (All pictures, Login screens, Cutscenes)
 local ART_X, ART_Y, ART_W, ART_H = 10, 96, 448, 252
 local DROPDOWN_W = 294                    -- the drop-downs under the picture
 local ICON, ICON_GAP = 24, 6              -- PrettyUI sprite buttons
@@ -64,7 +71,9 @@ local WIN_H = 676
 
 local MOVE_STEP, SIZE_STEP = 4, 10        -- pack units per press
 local SCAN_PER_FRAME = 4000               -- sprite ids checked per frame while finding screens
-local SCAN_GIVE_UP = 3000                 -- stop after this many missing ids in a row
+-- Stop after this many missing ids in a row. Generous, so sprites added past a gap in the ids are still found: the
+-- end of the list costs only a few more frames (SCAN_PER_FRAME a frame).
+local SCAN_GIVE_UP = 20000
 local DRAG_REDRAW_SECONDS = 0.12
 
 -- The logos as the drop-down names them.
@@ -113,6 +122,7 @@ local design = freshDesign()
 local screens = nil                       -- every login screen found, sorted
 local scan = nil                          -- { nextId, misses, tiles } while finding them
 local search = ""                         -- the search box's text
+local pictureKind = "all"                 -- the kind drop-down: "all", "login" (login screens) or "cutscene"
 local shownScreens = {}                   -- the screens matching the search
 
 local window, content = nil, nil
@@ -185,10 +195,24 @@ end
 -- The "region" that means every card: the design is the standard pack's look, not a new pack.
 local ALL_CARDS = "*all"
 
--- The region a title gives: its own (the region titles are named after the regions), or all
--- cards for a title that isn't a region (such as Gielinor).
+-- The card choices that are not one region: their label in the Cards drop-down, the pack's filter (none for all cards),
+-- and the title that picks them (see regionForTitle). A region's own choice is its word, with the filter
+-- { regions = <word> }.
+local OTHER_CARDS = {
+    { value = ALL_CARDS, label = "All cards", title = "standard" },
+    { value = "*global", label = "Global only", filter = { regions = Cards.NO_TAG }, title = "gielinor" },
+    { value = "*f2p", label = "Free to play", filter = { membership = "f2p" }, title = "free_to_play" },
+}
+local otherCards, choiceForTitle = {}, {}
+for _, choice in ipairs(OTHER_CARDS) do
+    otherCards[choice.value] = choice
+    choiceForTitle[choice.title] = choice.value
+end
+
+-- The region a title gives: its own (the region titles are named after the regions), the choice a title is made for
+-- (Gielinor: the cards from no one region; Free to Play: the free-to-play cards), or all cards for any other title.
 local function regionForTitle(titleId)
-    return Cards.isKnownWord("regions", titleId) and titleId or ALL_CARDS
+    return choiceForTitle[titleId] or (Cards.isKnownWord("regions", titleId) and titleId) or ALL_CARDS
 end
 
 -- The pack's id: its name in lower case with underscores ("Misthalin pack" -> misthalin_pack), or
@@ -204,8 +228,9 @@ end
 
 -- The pack's filter (none for all cards).
 local function filter()
-    if design.region == ALL_CARDS then
-        return nil
+    local choice = otherCards[design.region]
+    if choice ~= nil then
+        return choice.filter
     end
     return { regions = design.region }
 end
@@ -224,9 +249,23 @@ end
 
 -- The pack type as one line, to paste into deck/packs.lua. All cards has no filter (and its id,
 -- "standard", makes the line the standard pack's name and look; see deck/packs.lua).
+-- The pack type fields the Pack Maker doesn't design: a pack already in the game keeps its own in the line.
+local KEPT_FIELDS = { "priceFactor", "size", "minRarity", "featured" }
+
 local function packLine()
-    local regions = filter() and string.format("filter = { regions = %q }, ", design.region) or ""
-    return string.format("{ id = %q, name = %q, %s%s },", packId(), packName(), regions, artBlock(design.art))
+    local fields = ""
+    local key, word = next(filter() or {})           -- (each filter has one key)
+    if key ~= nil then
+        fields = string.format("filter = { %s = %q }, ", key, word)
+    end
+    local existing = Cards.packTypes[packId()] or {}
+    for _, field in ipairs(KEPT_FIELDS) do
+        if existing[field] ~= nil then
+            fields = fields .. string.format("%s = %s, ", field,
+                type(existing[field]) == "string" and string.format("%q", existing[field]) or tostring(existing[field]))
+        end
+    end
+    return string.format("{ id = %q, name = %q, %s%s },", packId(), packName(), fields, artBlock(design.art))
 end
 
 -- -------------------------------------------------------------------------------------------
@@ -274,14 +313,14 @@ local function scanStep()
     for _ = 1, SCAN_PER_FRAME do
         local spriteNumber = scan.nextId
         scan.nextId = spriteNumber + 1
-        local ok, name = pcall(function() return id.Sprite.FromID(spriteNumber) end)
+        local ok, name = pcall(id.Sprite.FromID, spriteNumber)
         if ok and type(name) == "string" and name ~= "" then
             scan.misses = 0
             local base, n = name:match("^(" .. SCREEN_PREFIX .. ".+)_(%d+)$")
             if base ~= nil then
                 tiles[base] = tiles[base] or {}
                 tiles[base][tonumber(n)] = true
-            elseif name:find("CUTSCENE", 1, true) then
+            elseif isCutscene(name) then
                 scan.singles[#scan.singles + 1] = name
             end
         else
@@ -419,14 +458,16 @@ local function matchNames(bases)
     log(string.format("pack maker: login screen names: %d matched, %d by their words", direct, byWords))
 end
 
--- The screens whose names contain the search text (any case), and the drop-down filled with them.
+-- The screens of the kind chosen (a cutscene's sprite name has CUTSCENE in it) whose names contain the search text (any
+-- case), and the drop-down filled with them.
 local function applySearch()
     shownScreens = {}
     local labels = {}
     local wanted = string.lower(search)
     for _, screen in ipairs(screens or {}) do
         local label = labelOf(screen)
-        if wanted == "" or string.find(string.lower(label), wanted, 1, true) then
+        local kindOk = pictureKind == "all" or (pictureKind == "cutscene") == isCutscene(screen)
+        if kindOk and (wanted == "" or string.find(string.lower(label), wanted, 1, true)) then
             shownScreens[#shownScreens + 1] = screen
             labels[screen] = label
         end
@@ -520,8 +561,9 @@ local function showScreen()
         design.art.screen = shownScreens[1] or screens[1]
     end
     local position = positionOf(design.art.screen)
-    setText(widgets.screenName, string.format("%s of %d shown, %d in all%s", position and tostring(position) or "-",
-        #shownScreens, #screens, #shownScreens > MAX_LISTED and " (search to list them all)" or ""))
+    setText(widgets.screenName, string.format("%s of %d (%d in all)%s", position and tostring(position) or "-",
+        #shownScreens, #screens, #shownScreens > MAX_LISTED and ", search for more" or ""))
+    setText(widgets.pictureName, design.art.screen ~= nil and labelOf(design.art.screen) or "")
     local tiles = PackArt.tiles(design.art.screen)
     if tiles ~= nil then
         PackArt.drawPicture(widgets.artLayer, artParts, tiles, 0, 0, ART_W, ART_H)
@@ -763,7 +805,7 @@ function PackMaker.show()
         function() PackMaker.hide() end, 0.15, 0.04, false, false)
 
     -- 1. Login screen: search, drop-down, steps, the picture.
-    section("1. Picture (login screens and cutscenes)", LEFT_X, 4, LEFT_W)
+    section("1. Picture: drag the Front and Back boxes along it", LEFT_X, 4, LEFT_W)
     widgets.searchField = field(LEFT_X, 28, 150, 40, function(text)
         -- The box also reports a "change" when it loses focus; refilling the drop-down then
         -- would reset it while it is being clicked, so only a real change counts.
@@ -777,11 +819,12 @@ function PackMaker.show()
     setField(widgets.searchField, search)
     icon("ARROW_LEFT", LEFT_X, 64, "Previous picture", "Back", function() stepScreen(-1) end)
     icon("ARROW_RIGHT", LEFT_X + ICON + ICON_GAP, 64, "Next picture", "Next", function() stepScreen(1) end)
-    widgets.screenName = caption("", LEFT_X + 2 * (ICON + ICON_GAP) + 10, 67, LEFT_W - 70)
+    widgets.screenName = caption("", LEFT_X + 2 * (ICON + ICON_GAP) + 10, 67, LEFT_W - 70 - KIND_W - 10)
     widgets.artLayer = ui.Layer.new(content)
     widgets.artLayer:SetPos(ART_X, ART_Y)
     widgets.artLayer:SetSize(ART_W, ART_H)
-    caption("Drag the Front and Back boxes to choose what each side shows.", LEFT_X, ART_Y + ART_H + 4, LEFT_W)
+    -- the name of the picture shown, under it (the game's name for a login screen, with its sprite name)
+    widgets.pictureName = caption("", LEFT_X, ART_Y + ART_H + 4, LEFT_W, GOLD)
 
     -- 2. Pack name and 3. Logo
     local nameY = ART_Y + ART_H + 30
@@ -836,6 +879,17 @@ function PackMaker.show()
     makeMark("back", BACK_COLOUR, "Back")
     makeMark("front", FRONT_COLOUR, "Front")
 
+    -- The kind of picture (both, the login screens or the cutscenes, beside the arrows), made before the picture list so
+    -- that list opens over it. Like the search, it only changes what is listed: the design keeps its picture.
+    widgets.kindDropdown = Kit.dropdown(content, LEFT_X + LEFT_W - KIND_W, 62, KIND_W, 28, {
+        { label = "All pictures", value = "all" }, { label = "Login screens", value = "login" },
+        { label = "Cutscenes", value = "cutscene" } }, pictureKind, function(kind)
+            if kind ~= pictureKind then
+                pictureKind = kind
+                applySearch()
+                showScreen()
+            end
+        end)
     -- The picture list can't be typed in (the search box does that); it is sorted by name.
     widgets.screenDropdown = Kit.dropdown(content, LEFT_X + 160, 28, LEFT_W - 160, 28, {}, nil, chooseScreen, true)
 
@@ -844,15 +898,16 @@ function PackMaker.show()
         titleEntries[#titleEntries + 1] = { label = t.text, value = t.id }
     end
     -- (Short: the drop-down's box scrolls a longer label to its end, cutting off the start.)
-    regionEntries[1] = { label = "All cards", value = ALL_CARDS }
+    for _, choice in ipairs(OTHER_CARDS) do
+        regionEntries[#regionEntries + 1] = { label = choice.label, value = choice.value }
+    end
     for _, word in ipairs(Cards.tagWords.regions) do
         regionEntries[#regionEntries + 1] = { label = titleText(word), value = word }
     end
     widgets.titleDropdown = Kit.dropdown(content, LEFT_X, nameY + 24, DROPDOWN_W, 28, titleEntries,
         design.art.name.title, function(titleId)
             design.art.name.title = titleId
-            -- The region follows the title (the region titles are named after the regions, by
-            -- dev/make_pack_art.py) until it is set by hand.
+            -- The cards follow the title (see regionForTitle) until they are set by hand.
             if not design.regionTouched then
                 design.region = regionForTitle(titleId)
                 widgets.regionDropdown.select(design.region)

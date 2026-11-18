@@ -25,16 +25,17 @@ function Packs.typeById(packTypeId)
     return Cards.packTypes[packTypeId or "standard"]
 end
 
--- The pack types on offer, in the order to show them: the standard pack first, then the themed
--- packs (deck/packs.lua) by name.
+-- The pack types on offer, in the order to show them: the featured packs (a pack type's `featured`, see Cards.packTypes)
+-- first, in that order, then the rest by name.
 function Packs.offered()
     local list = {}
     for _, packType in pairs(Cards.packTypes) do
         list[#list + 1] = packType
     end
     table.sort(list, function(a, b)
-        if (a.id == "standard") ~= (b.id == "standard") then
-            return a.id == "standard"
+        local rankA, rankB = a.featured or math.huge, b.featured or math.huge
+        if rankA ~= rankB then
+            return rankA < rankB
         end
         return a.name < b.name
     end)

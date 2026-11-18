@@ -107,15 +107,18 @@ Cards.MAX_WEIGHT = 1000
 --   filter        : optional. Only cards matching it can be pulled. Each key is a tag kind
 --                   (or "kind"), each value a word or a list of words (any one matches). All
 --                   keys must match. Example: { skills = "thieving" } or
---                   { category = { "weapon", "tool" } }
+--                   { category = { "weapon", "tool" } }. The word Cards.NO_TAG ("none") matches a
+--                   card with no words of that kind: { regions = "none" } is every card from no one
+--                   region (the Gielinor pack).
 --   minRarity     : optional. Only cards of this rarity or better can be pulled.
 --   art           : optional. How the pack looks (see ui/packart.lua; made in the Pack Maker).
+--   featured      : optional. A number: the pack is on the Shop's top row, in this order (see Packs.offered).
 -- Themed packs (made in the Pack Maker) are listed in deck/packs.lua and added below. They cost
 -- a little more than the standard pack (Config "packs.themedPriceFactor") unless they set their own priceFactor.
 -- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later
 -- only needs the window; nothing in this table touches the game.
 Cards.packTypes = {
-    standard = { id = "standard", name = "Standard pack", priceFactor = 1 },
+    standard = { id = "standard", name = "Standard pack", priceFactor = 1, featured = 1 },
 }
 
 -- The words allowed for the tag kinds that come from a closed list. A card with any other word
@@ -569,6 +572,9 @@ function Cards.hasTag(card, tagKind, word)
     return false
 end
 
+-- The filter word that matches a card with no words of that tag kind (see Cards.packTypes).
+Cards.NO_TAG = "none"
+
 -- True if the card matches a pack filter (see Cards.packTypes). No filter matches every card.
 function Cards.matches(card, filter)
     if filter == nil then
@@ -580,6 +586,9 @@ function Cards.matches(card, filter)
         for _, word in ipairs(words) do
             if key == "kind" then
                 hit = hit or Cards.kindOf(card) == word
+            elseif word == Cards.NO_TAG then
+                local list = card.tags and card.tags[key]
+                hit = hit or list == nil or #list == 0
             else
                 hit = hit or Cards.hasTag(card, key, word)
             end
@@ -859,12 +868,22 @@ local function packProblem(packType)
     if packType.minRarity ~= nil and not Cards.rarities[packType.minRarity] then
         return "Unknown minRarity on pack " .. packType.id
     end
+    if packType.featured ~= nil and type(packType.featured) ~= "number" then
+        return "The featured of pack " .. packType.id .. " must be a number"
+    end
     if packType.filter ~= nil and type(packType.filter) ~= "table" then
         return "The filter of pack " .. packType.id .. " must be a table"
     end
     for kind, wanted in pairs(packType.filter or {}) do
         for _, word in ipairs(type(wanted) == "table" and wanted or { wanted }) do
-            if not isKnownWord(kind, word) then
+            -- (NO_TAG only on a tag kind with a word list: on a misspelt kind every card has no words, so it would match
+            -- every card)
+            if word == Cards.NO_TAG then
+                if Cards.tagWords[kind] == nil then
+                    return "Pack " .. packType.id .. " filters on " .. tostring(kind) .. " = \"" .. Cards.NO_TAG
+                        .. "\", but that is only for a tag kind with a word list"
+                end
+            elseif not isKnownWord(kind, word) then
                 return "Pack " .. packType.id .. " filters on unknown " .. kind .. " word " .. tostring(word)
             end
         end

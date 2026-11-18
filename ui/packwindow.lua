@@ -305,7 +305,7 @@ function PackWindow.refresh()
     end
     setText(widgets.collectionText, Format.credits(owned) .. " of " .. Format.credits(total) .. " cards ("
         .. string.format("%.1f", 100 * fraction) .. "%)")
-    -- How many packs the credits buy, at the standard pack's price (the themed packs cost more).
+    -- How many packs the credits buy, at the standard pack's price (other packs can cost more or less).
     local price = Packs.priceFor("standard")
     local affordable = price > 0 and state.credits // price or 0
     if affordable >= 1 then

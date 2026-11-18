@@ -13,6 +13,10 @@ return {
     { id = "wilderness", text = "Wilderness", w = 263, h = 42 },
     { id = "anachronia", text = "Anachronia", w = 285, h = 42 },
     { id = "havenhythe", text = "Havenhythe", w = 281, h = 42 },
+    { id = "daemonheim", text = "Daemonheim", w = 292, h = 42 },
+    { id = "the_arc", text = "The Arc", w = 183, h = 42 },
     { id = "gielinor", text = "Gielinor", w = 207, h = 42 },
+    { id = "standard", text = "Standard", w = 226, h = 42 },
+    { id = "free_to_play", text = "Free to Play", w = 283, h = 42 },
     { id = "packs", text = "Packs", w = 136, h = 43 },
 }
