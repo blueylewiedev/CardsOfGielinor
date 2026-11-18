@@ -30,10 +30,11 @@ local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local GOLD_BAR = Vector4.new(0.85, 0.68, 0.16, 1.0)
--- The finishes' bars and pull rate lines, after the rarities': a pale silver-blue for a foil's shine, a violet for a
--- holo's rainbow.
-local FINISH_ORDER = { "foil", "holo" }
-local FINISH_COLOURS = { foil = Vector4.new(0.55, 0.80, 1.0, 1.0), holo = Vector4.new(0.80, 0.55, 1.0, 1.0) }
+-- The finishes' bars and pull rate lines (every finish but the plain one, Cards.specialFinishes), in their colours.
+local FINISH_COLOURS = {}
+for _, finish in ipairs(Cards.specialFinishes) do
+    FINISH_COLOURS[finish] = Bars.colour(Cards.finishes[finish].colour)
+end
 
 local WINDOW_BORDER = 8                 -- PrettyUI's frame at each side of a window's content
 local WIDTH = 560
@@ -84,7 +85,7 @@ function Stats.pullRates(state)
         end
     end
     -- (the finish is rolled apart from the rarity, so a foil or a holo is also one of the lines above)
-    for _, finish in ipairs(FINISH_ORDER) do
+    for _, finish in ipairs(Cards.specialFinishes) do
         lines[#lines + 1] = { Cards.finishes[finish].name .. ": " .. rate(s.finishes and s.finishes[finish] or 0, s.cardsPulled),
             FINISH_COLOURS[finish] }
     end
@@ -123,9 +124,16 @@ local function viewProgress(page, width)
     bars.npc = Bars.new(page, left, y, column, "NPC cards")
     bars.item = Bars.new(page, second, y, column, "Item cards")
     y = y + BAR_STEP
-    bars.foil = Bars.new(page, left, y, column, "Foil cards", FINISH_COLOURS.foil, FINISH_COLOURS.foil)
-    bars.holo = Bars.new(page, second, y, column, "Holo cards", FINISH_COLOURS.holo, FINISH_COLOURS.holo)
-    y = y + BAR_STEP + 4
+    -- a bar for each finish (but the plain one), two to a row
+    for i, finish in ipairs(Cards.specialFinishes) do
+        local colour = FINISH_COLOURS[finish]
+        bars[finish] = Bars.new(page, (i % 2 == 1) and left or second, y, column, Cards.finishes[finish].name .. " cards",
+            colour, colour)
+        if i % 2 == 0 or i == #Cards.specialFinishes then
+            y = y + BAR_STEP
+        end
+    end
+    y = y + 4
     local heading = Kit.text(page, left, y, full, 20, "BY RARITY", GOLD, ui.AlignMode.TOPLEFT)
     y = y + 26
     local rarityBars = {}
@@ -149,8 +157,8 @@ local function viewProgress(page, width)
             local npc, item = p.kinds.npc or EMPTY, p.kinds.item or EMPTY
             bars.npc.set(npc.owned, npc.cards)
             bars.item.set(item.owned, item.cards)
-            for _, finish in ipairs(FINISH_ORDER) do
-                local count = p.finishes[finish] or EMPTY
+            for _, finish in ipairs(Cards.specialFinishes) do
+                local count = (p.finishes or {})[finish] or EMPTY
                 bars[finish].set(count.owned, count.cards)
             end
             for id, bar in pairs(rarityBars) do
@@ -218,9 +226,9 @@ local function viewPacks(page, width)
         end
     end
     local overview = makeColumn(left, "OVERVIEW", 6)
-    local pulls = makeColumn(second, "PULL RATES", #RARITY_ORDER + #FINISH_ORDER)
+    local pulls = makeColumn(second, "PULL RATES", #RARITY_ORDER + #Cards.specialFinishes)
     return {
-        height = TOP_PAD + 26 + math.max(6, #RARITY_ORDER + #FINISH_ORDER) * LINE_H,
+        height = TOP_PAD + 26 + math.max(#overview.texts, #pulls.texts) * LINE_H,
         refresh = function(_, state)
             fill(overview, Stats.overview(state))
             fill(pulls, Stats.pullRates(state))

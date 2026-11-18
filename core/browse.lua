@@ -108,9 +108,12 @@ function Browse.ownedByCard(state)
     return owned
 end
 
--- The finish a card is shown in by default: the first of these the player has (the rarest first: a holo, then a foil,
+-- The finish a card is shown in by default: the rarest the player has (Cards.finishOrder backwards: a holo, then a foil,
 -- then a normal one), or normal if they have none. The Sets window shows cards the same way.
-Browse.FINISH_PREFERENCE = { "holo", "foil", "normal" }
+Browse.FINISH_PREFERENCE = {}
+for index = #Cards.finishOrder, 1, -1 do
+    Browse.FINISH_PREFERENCE[#Browse.FINISH_PREFERENCE + 1] = Cards.finishOrder[index]
+end
 
 function Browse.preferredFinish(have)
     for _, finish in ipairs(Browse.FINISH_PREFERENCE) do
@@ -245,22 +248,20 @@ end
 -- the pack opening gives it) are copies the player has not seen yet: they do not count, so the numbers do not give away
 -- what is in a pack that is still being opened.
 function Browse.progress(state, hidden)
-    local have, inFinish = {}, {}             -- card id = true; finish = { card id = true }
+    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
+        noRegion = { cards = 0, owned = 0 }, finishes = {} }
+    for _, finish in ipairs(Cards.specialFinishes) do
+        result.finishes[finish] = { cards = #Cards.list, owned = 0 }
+    end
+    local have = {}                          -- card id = true
     for key, count in pairs(state.owned) do
         local cardId, finish = Cards.parseKey(key)
         if cardId ~= nil and Cards.byId[cardId] ~= nil and count > ((hidden and hidden[key]) or 0) then
             have[cardId] = true
-            inFinish[finish] = inFinish[finish] or {}
-            inFinish[finish][cardId] = true
-        end
-    end
-    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
-        noRegion = { cards = 0, owned = 0 }, finishes = {} }
-    for finish in pairs(Cards.finishes) do
-        if finish ~= "normal" then
-            result.finishes[finish] = { cards = #Cards.list, owned = 0 }
-            for _ in pairs(inFinish[finish] or {}) do
-                result.finishes[finish].owned = result.finishes[finish].owned + 1
+            -- (a key is one card in one finish, so each counts once)
+            local bucket = result.finishes[finish]
+            if bucket ~= nil then
+                bucket.owned = bucket.owned + 1
             end
         end
     end

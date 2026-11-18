@@ -9,6 +9,7 @@
 local Cards = require("core/cards")
 local Logger = require("core/logger")
 local Settings = require("core/settings")
+local Config = require("core/config")
 
 local CardView = {}
 
@@ -483,7 +484,7 @@ CardView.HOLO = {
     hues = { 0xFFB3B3, 0xFFD9A8, 0xFFF2A8, 0xB8F0C4, 0xA8E4FF, 0xB8C2FF, 0xE0B8FF },
     alpha = 0x60,        -- the rainbow's see-through-ness (0 clear, 0xFF solid): a tint over the backdrop
     angle = 30,          -- how far the bands lean from upright, in degrees
-    stripes = 48,        -- how many stripes across the box (more is smoother)
+    stripes = 48,        -- the most stripes across the box (more is smoother; a small box has fewer)
     cycles = 1.0,        -- how many times the rainbow goes round across the box
 }
 
@@ -525,40 +526,65 @@ local function clipPolygon(points, dx, dy, limit, sign)
     return out
 end
 
--- Draws the holo's stripes in `parent` over `box` (the art box, in card units). Returns the canvas, or nil.
-local function addHolo(parent, box)
+-- The holo's stripes for an art box w x h (whole numbers), as a list of { x0, y0, x1, y1, x2, y2, colour } triangles.
+-- They depend only on the size and CardView.HOLO, so each size is worked out once (a page of holo cards shares them).
+local holoTriangles = {}
+
+local function holoStripes(w, h)
+    local key = w .. "x" .. h
+    if holoTriangles[key] ~= nil then
+        return holoTriangles[key]
+    end
     local f = CardView.HOLO
-    local ok, result = pcall(function()
-        local canvas = ui.Canvas.new(parent)
-        canvas:SetPos(round(box.x), round(box.y))
-        canvas:SetSize(round(box.w), round(box.h))
-        local w, h = box.w, box.h
-        local angle = math.rad(f.angle)
-        local dx, dy = math.cos(angle), math.sin(angle)        -- across the bands
-        local corners = { 0, w * dx, h * dy, w * dx + h * dy }
-        local low, high = math.min(table.unpack(corners)), math.max(table.unpack(corners))
-        local rect = { { 0, 0 }, { w, 0 }, { w, h }, { 0, h } }
-        local count = math.max(1, math.floor(f.stripes))
-        for i = 1, count do
-            local u0 = low + (high - low) * (i - 1) / count
-            local u1 = low + (high - low) * i / count
-            local piece = clipPolygon(clipPolygon(rect, dx, dy, u0, 1), dx, dy, u1, -1)
-            if #piece >= 3 then
-                local colour = holoColour((i - 0.5) / count * f.cycles)
-                local x0, y0 = round(piece[1][1]), round(piece[1][2])
-                for k = 2, #piece - 1 do
-                    canvas:AddTriangle(x0, y0, round(piece[k][1]), round(piece[k][2]),
-                        round(piece[k + 1][1]), round(piece[k + 1][2]), colour)
-                end
+    local triangles = {}
+    local angle = math.rad(f.angle)
+    local dx, dy = math.cos(angle), math.sin(angle)        -- across the bands
+    local corners = { 0, w * dx, h * dy, w * dx + h * dy }
+    local low, high = math.min(table.unpack(corners)), math.max(table.unpack(corners))
+    local rect = { { 0, 0 }, { w, 0 }, { w, h }, { 0, h } }
+    -- (about 4 pixels a stripe, up to f.stripes: a small card's are as smooth with half as many, each one call to draw)
+    local count = math.max(1, math.min(math.floor(f.stripes), math.ceil((high - low) / 4)))
+    for i = 1, count do
+        local u0 = low + (high - low) * (i - 1) / count
+        local u1 = low + (high - low) * i / count
+        local piece = clipPolygon(clipPolygon(rect, dx, dy, u0, 1), dx, dy, u1, -1)
+        if #piece >= 3 then
+            local colour = holoColour((i - 0.5) / count * f.cycles)
+            local x0, y0 = round(piece[1][1]), round(piece[1][2])
+            for k = 2, #piece - 1 do
+                triangles[#triangles + 1] = { x0, y0, round(piece[k][1]), round(piece[k][2]),
+                    round(piece[k + 1][1]), round(piece[k + 1][2]), colour }
             end
         end
-        return canvas
-    end)
-    if not ok then
-        Logger.error("card art: holo failed:", tostring(result))
+    end
+    holoTriangles[key] = triangles
+    return triangles
+end
+
+-- Draws the holo's stripes in `parent` over `box` (the art box, in card units), in whole pixels. Returns the canvas, or
+-- nil (and nothing is left behind) if it could not be made. Config "holo.enabled" false turns holos off.
+local function addHolo(parent, box)
+    if not Config.get("holo.enabled") then
         return nil
     end
-    return result
+    local canvas = nil
+    local ok, err = pcall(function()
+        local w, h = round(box.w), round(box.h)
+        canvas = ui.Canvas.new(parent)
+        canvas:SetPos(round(box.x), round(box.y))
+        canvas:SetSize(w, h)
+        for _, t in ipairs(holoStripes(w, h)) do
+            canvas:AddTriangle(t[1], t[2], t[3], t[4], t[5], t[6], t[7])
+        end
+    end)
+    if not ok then
+        Logger.error("card art: holo failed:", tostring(err))
+        if canvas ~= nil then
+            pcall(function() canvas:Destroy() end)
+        end
+        return nil
+    end
+    return canvas
 end
 
 -- Foil shine (a foil card's finish): two almost see-through pastel images, the size of the whole card
@@ -725,7 +751,8 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
         locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
 
     -- a foil's shine goes over the whole card, the text included (and narrows with the frame when the card is turned)
-    if opts ~= nil and opts.finish == "foil" and not locked and Settings.get("shine") then
+    if opts ~= nil and opts.finish == "foil" and not locked and Settings.get("shine")
+        and Config.get("shine.enabled") then
         for _, sprite in ipairs(addShine(root, W, H) or {}) do
             part(sprite, 0, 0, W, H)
         end
@@ -767,7 +794,7 @@ function CardView.shell(parent, rarity)
 end
 
 -- Squeezes a card sideways to `f` (0 to 1) of its width, about its middle, as if it were turned
--- away. Only the frame, the backdrop behind the model and a holo's shine narrow: the model and the text cannot
+-- away. Only the frame, the backdrop behind the model and a foil's shine narrow: the model and the text cannot
 -- be squeezed, so hide them first with CardView.uncover(view, 0). Only a card made with
 -- opts.animated and a frame image can be squeezed; for any other this returns false.
 function CardView.squash(view, f)

@@ -9,7 +9,7 @@
 --   filter   : which cards it can give, as in Cards.packTypes, e.g. { regions = "misthalin" }
 --   art      : how the pack looks (see ui/packart.lua)
 --   and any of the other pack type fields (size, minRarity, and priceFactor: themed packs cost
---   Cards.THEMED_PRICE_FACTOR times the standard price unless they set their own).
+--   the "packs.themedPriceFactor" tuning key (core/config.lua) times the standard price unless they set their own).
 --
 -- Every pack listed here is offered in the pack window, after the standard pack.
 --

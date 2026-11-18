@@ -5,16 +5,17 @@
 local Cards = {}
 
 -- Rarity tiers.
---   weight : relative chance of pulling this tier from a pack. They add up to 100, so each is also its percentage:
---            an epic about every 50 cards (10 packs of 5), a legendary about every 167 cards (33 packs)
+--   (How often each tier is pulled is Config "odds.rarity.<rarity>" in core/config.lua: 63 / 25 / 9.4 / 2 / 0.6, relative
+--   weights that add up to 100, so each is also its percentage: an epic about every 50 cards (10 packs of 5), a legendary
+--   about every 167 cards (33 packs).)
 --   colour : 0xRRGGBBAA colour used for the card frame and the pack opening pips
 --   glow   : 0..1, how strongly a flipped card of this rarity glows in the pack opening
 Cards.rarities = {
-    common    = { name = "Common",    weight = 63, colour = 0x9AA0A6FF, glow = 0.0 },
-    uncommon  = { name = "Uncommon",  weight = 25, colour = 0x4CAF50FF, glow = 0.6 },
-    rare      = { name = "Rare",      weight = 9.4, colour = 0x2196F3FF, glow = 0.75 },
-    epic      = { name = "Epic",      weight = 2,  colour = 0x9C27B0FF, glow = 0.9 },
-    legendary = { name = "Legendary", weight = 0.6, colour = 0xFFC107FF, glow = 1.0 },
+    common    = { name = "Common",    colour = 0x9AA0A6FF, glow = 0.0 },
+    uncommon  = { name = "Uncommon",  colour = 0x4CAF50FF, glow = 0.6 },
+    rare      = { name = "Rare",      colour = 0x2196F3FF, glow = 0.75 },
+    epic      = { name = "Epic",      colour = 0x9C27B0FF, glow = 0.9 },
+    legendary = { name = "Legendary", colour = 0xFFC107FF, glow = 1.0 },
 }
 
 -- The rarities from lowest to highest. Used by packs that guarantee a minimum rarity.
@@ -29,17 +30,29 @@ end
 --   foil   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE)
 --   holo   : a rainbow in diagonal bands behind the picture (ui/cardview.lua, CardView.HOLO)
 -- (as the trading card games use the words: foil the shine over the card, holo the picture's rainbow)
-Cards.finishes = {
-    normal = { name = "Normal" },
-    foil   = { name = "Foil" },
-    holo   = { name = "Holo" },
+-- Written once, in order (the commonest first, the plain finish first of all); the tables below are made from it:
+--   Cards.finishes[id]      : { id, name, short (a caption too narrow for the name), colour (0xRRGGBBAA, the Stats
+--                             window's bar and line; the plain finish has none) }
+--   Cards.finishOrder       : the ids in order (how lists of them are shown: the filter, the Stats window, the preview)
+--   Cards.specialFinishes   : the same without the plain finish (the ones the Stats window and the filter count)
+--   Cards.finishRank[id]    : its place in the order (higher is rarer)
+local FINISHES = {
+    { id = "normal", name = "Normal", short = "N" },
+    { id = "foil",   name = "Foil",   short = "F", colour = 0x8CCCFFFF },     -- a pale silver-blue
+    { id = "holo",   name = "Holo",   short = "H", colour = 0xCC8CFFFF },     -- a violet
 }
+Cards.finishes, Cards.finishOrder, Cards.specialFinishes, Cards.finishRank = {}, {}, {}, {}
+for rank, finish in ipairs(FINISHES) do
+    Cards.finishes[finish.id] = finish
+    Cards.finishOrder[rank] = finish.id
+    Cards.finishRank[finish.id] = rank
+    if rank > 1 then
+        Cards.specialFinishes[#Cards.specialFinishes + 1] = finish.id
+    end
+end
 
--- Pull odds. This is a relative weight, rolled separately from rarity, so they stack.
---   finish : normal 17 / foil 2 / holo 1 (out of 20) -> foil 1 in 10, holo 1 in 20
-Cards.odds = {
-    finish = { normal = 17, foil = 2, holo = 1 },
-}
+-- Pull odds are Config keys (core/config.lua): "odds.finish.normal" 17, "odds.finish.foil" 2 and "odds.finish.holo" 1
+-- (out of 20: foil 1 in 10, holo 1 in 20), relative weights rolled separately from rarity, so they stack.
 
 -- The card format (the cards are written in the files listed in deck/index.lua).
 --   id     : unique, never change it once players own the card (it is what gets saved).
@@ -105,7 +118,8 @@ Cards.MAX_WEIGHT = 1000
 
 -- Pack types. The pack the player buys today is "standard". A pack type holds:
 --   id, name      : id is for code, name is what the player sees
---   priceFactor   : multiplies the price of a pack, Packs.PRICE (default 1)
+--   priceFactor   : multiplies the price of a pack, Packs.price() (default 1; a themed pack with none is multiplied by
+--                   Config "packs.themedPriceFactor", 1.25)
 --   size          : cards in the pack (default Packs.PACK_SIZE)
 --   filter        : optional. Only cards matching it can be pulled. Each key is a tag kind
 --                   (or "kind"), each value a word or a list of words (any one matches). All
@@ -114,7 +128,7 @@ Cards.MAX_WEIGHT = 1000
 --   minRarity     : optional. Only cards of this rarity or better can be pulled.
 --   art           : optional. How the pack looks (see ui/packart.lua; made in the Pack Maker).
 -- Themed packs (made in the Pack Maker) are listed in deck/packs.lua and added below. They cost
--- a little more than the standard pack (THEMED_PRICE_FACTOR) unless they set their own priceFactor.
+-- a little more than the standard pack (Config "packs.themedPriceFactor") unless they set their own priceFactor.
 -- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later
 -- only needs the window; nothing in this table touches the game.
 Cards.packTypes = {
@@ -853,7 +867,6 @@ function Cards.deprecate(cardId)
     end
     return true
 end
-Cards.THEMED_PRICE_FACTOR = 1.25
 -- Why a pack type is not sound, or nil. Filter words from a closed list must be on it, so a typo can't make an
 -- empty pack.
 local function packProblem(packType)
@@ -900,7 +913,7 @@ for _, packType in ipairs(deckPacks) do
                 existing[field] = value
             end
         else
-            packType.priceFactor = packType.priceFactor or Cards.THEMED_PRICE_FACTOR
+            packType.themed = true
             Cards.packTypes[packType.id] = packType
         end
     end
@@ -911,9 +924,7 @@ for key, packType in pairs(Cards.packTypes) do
     local problem = packProblem(packType)
     assert(problem == nil, problem)
 end
-for finish in pairs(Cards.odds.finish) do
-    assert(Cards.finishes[finish], "Odds mention unknown finish " .. finish)
-end
+
 
 -- True if an id.NPC value is a real NPC. The client gives -1, not nil, for a name it does
 -- not know, so both mean "not found".

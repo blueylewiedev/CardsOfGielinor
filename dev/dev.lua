@@ -72,12 +72,22 @@ local function deleteSaves(api, refresh)
         log("DEV: saves NOT deleted:", why)
         return
     end
-    log("DEV:", deleted, "save keys deleted. Log out and in again (the plugin still holds the old collection in memory)")
+    -- The collection in memory is made a new one, in place (what Storage.load makes for a character with nothing saved).
+    -- Left alone it would be saved again the next minute: the play time marks it changed, and the autosave or the save on
+    -- logout then writes the old collection back (the credits came back after "Delete saves", 2026-11-18).
     local state = api.getState()
     if state ~= nil then
-        state.dirty = false                      -- or the next save would write the old one back
-        state.dirtyBuckets = {}
+        local fresh = Storage.newState()
+        fresh.credits = Storage.starterCredits()
+        fresh.dirty = true
+        for key in pairs(state) do
+            state[key] = nil
+        end
+        for key, value in pairs(fresh) do
+            state[key] = value
+        end
     end
+    log("DEV:", deleted, "save keys deleted; the collection in memory is a new one with", Storage.starterCredits(), "credits")
     refresh()
 end
 
@@ -146,6 +156,19 @@ local function toolButtons(api, refresh)
                 log("DEV: card updates are", status.phase, "-", status.message, "(attempt", status.attempt .. ")")
             end
         end, tooltip = "Fetches and applies the card overlay again; if one is under way, says what it is doing" },
+        { label = "Local overlay", action = function()
+            local found, module = pcall(require, "dev/local_overlay")
+            if not found or type(module) ~= "table" or type(module.text) ~= "string" then
+                log("DEV: no dev/local_overlay.lua: run  python dev/build_overlay.py --local  then reload the plugin (prl)")
+                return
+            end
+            local applied, why = OverlayLoader.applyText(module.text)
+            if applied then
+                log("DEV: applying the overlay in dev/local_overlay.lua (not fetched)")
+            else
+                log("DEV: the local overlay was not applied:", why)
+            end
+        end, tooltip = "Applies dev/local_overlay.lua as if it had been fetched (python dev/build_overlay.py --local writes it from docs/tuning.json and the deck). After rebuilding it, reload the plugin (prl)" },
         { label = "Delete saves", action = function() deleteSaves(api, refresh) end, style = "negative",
             tooltip = "Deletes every collection of this dev copy. Click twice within 10 seconds" },
     }

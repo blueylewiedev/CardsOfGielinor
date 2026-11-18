@@ -7,3 +7,5 @@ __pycache__/
 dev/.card_queue_state.json
 docs/img/
 card-collector-handover.md
+# Made by  python dev/build_overlay.py --local : the overlay as Lua text for the Dev tools' Local overlay button.
+dev/local_overlay.lua

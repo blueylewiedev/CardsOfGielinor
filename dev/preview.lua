@@ -122,7 +122,7 @@ function Preview.show()
     local reviewing = nil         -- while in Clip review, the indexes in Cards.list still to review
     local reviewStatus = nil
     local view = nil
-    local finish = "normal"     -- the Finish button: the card drawn as a foil (CardView.SHINE) or a holo (CardView.HOLO)
+    local finishIndex = 1       -- the Finish button: Cards.finishOrder's, the card drawn as a foil or a holo
     local bodyOverride = nil      -- nil = the card's own setting; true/false = chosen with the button
     local modelButton = nil
     local showAnimLabel = nil      -- set once the Anim box is made
@@ -218,7 +218,8 @@ function Preview.show()
             view.root:Destroy()
         end
         local card = Cards.list[index]
-        view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE, finish = finish })
+        view = CardView.create(content, card, { body = bodyOverride, scale = PREVIEW_SCALE,
+            finish = Cards.finishOrder[finishIndex] })
         if reviewStatus ~= nil then
             local own = Cards.getArt(card).cam or {}
             reviewStatus.content = reviewing == nil and "" or string.format("Clip review: %d left. %s: zoom %.0f, size %.0f",
@@ -386,9 +387,8 @@ function Preview.show()
     reviewButton("Depth fix", 3, function()
         withCamera(function(c) c.near = Builder.nextDepthFix(c.near) end)
     end, "Each press goes 0.25, 0.5, then off; off again if the front of the model is cut")
-    local FINISH_NEXT = { normal = "foil", foil = "holo", holo = "normal" }
     reviewButton("Finish", 4, function()
-        finish = FINISH_NEXT[finish]
+        finishIndex = finishIndex % #Cards.finishOrder + 1      -- (the next, round to the first)
         showCard()
     end, "Shows the card as it is, then as a foil (the shine), then as a holo (the rainbow)")
     reviewStatus = Kit.text(content, CARD_X, UNDER_Y + 4 * STEP, PW, 20, "", GREY, ui.AlignMode.TOPLEFT)

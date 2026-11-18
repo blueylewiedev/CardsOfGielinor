@@ -11,6 +11,7 @@
 package.path = "./?.lua;" .. package.path
 
 local Slayer = require("core/slayer")
+local Config = require("core/config")
 
 local failures = 0
 local function check(ok, what)
@@ -90,13 +91,13 @@ check(Slayer.creditsForLevel(70) == 70 and Slayer.creditsForLevel(5) == 5, "a ki
 check(Slayer.creditsForLevel(nil) == 1 and Slayer.creditsForLevel(0) == 1, "an unknown level pays at least 1")
 check(Slayer.bonusForLevel(70) == 350, "the bonus is five times the level")
 do
-    Slayer.LEVEL_CAP = 150
+    Config.apply({ slayer = { levelCap = 150 } })
     check(Slayer.creditsForLevel(3000) == 150 and Slayer.bonusForLevel(3000) == 750, "a level cap limits both")
-    Slayer.LEVEL_CAP = nil
-    check(Slayer.creditsForLevel(3000) == 3000, "and nil is no cap")
-    Slayer.CREDITS_PER_LEVEL = 0.5
+    Config.reset()
+    check(Slayer.creditsForLevel(3000) == 3000, "and no cap is no cap")
+    Config.apply({ slayer = { creditsPerLevel = 0.5 } })
     check(Slayer.creditsForLevel(5) == 3 and Slayer.creditsForLevel(1) == 1, "a smaller rate rounds, never below 1")
-    Slayer.CREDITS_PER_LEVEL = 1
+    Config.reset()
 end
 
 -- An Imp (Demons task): the count fell at tick 6, Slayer XP one logic tick later, the Imp left at 8. A Cow and a
@@ -319,7 +320,7 @@ end
 -- XP credits: combat skills earn nothing (fighting pays through the Slayer credits), every other skill does.
 do
     -- The game's SkillType, every member in its order (developer.runescape.com/rs/game/player.html: 0 ATTACK ... 3 HITPOINTS ...
-    -- 28 NECROMANCY). A wrong name in Earning.COMBAT_SKILLS (Constitution is HITPOINTS) let that skill's XP earn credits.
+    -- 28 NECROMANCY). A wrong name in the combat skills list (Constitution is HITPOINTS) let that skill's XP earn credits.
     local members = { "ATTACK", "DEFENCE", "STRENGTH", "HITPOINTS", "RANGED", "PRAYER", "MAGIC", "COOKING", "WOODCUTTING",
         "FLETCHING", "FISHING", "FIREMAKING", "CRAFTING", "SMITHING", "MINING", "HERBLORE", "AGILITY", "THIEVING", "SLAYER",
         "FARMING", "RUNECRAFTING", "HUNTER", "CONSTRUCTION", "SUMMONING", "DUNGEONEERING", "DIVINATION", "INVENTION",
@@ -332,8 +333,8 @@ do
     local Earning = require("core/earning")
     local function gain(skill, from, to) return Earning.xpGainFromEvent({ skill = skill, oldXP = from, newXP = to }) end
     local combat = {}
-    for _, name in ipairs(Earning.COMBAT_SKILLS) do
-        check(SkillType[name] ~= nil, name .. " is a skill the game has (Earning.COMBAT_SKILLS lists real SkillType names)")
+    for _, name in ipairs(Config.get("earning.combatSkills")) do
+        check(SkillType[name] ~= nil, name .. " is a skill the game has (the earning.combatSkills default lists real SkillType names)")
         check(gain(SkillType[name], 0, 5000) == 0, name .. " XP earns nothing")
         combat[name] = true
     end

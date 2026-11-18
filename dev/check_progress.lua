@@ -30,6 +30,18 @@ check(progress.all.cards == #Cards.list, "all.cards is the deck")
 check(progress.all.cards == all.cards and progress.all.owned == all.owned,
     "all matches Browse.counts: " .. progress.all.owned .. " vs " .. all.owned)
 
+-- each finish but normal: every card, owned when the player has it in that finish
+do
+    local finishState = { owned = { [Cards.variantKey(Cards.list[1].id, "foil")] = 1,
+        [Cards.variantKey(Cards.list[2].id, "holo")] = 2, [Cards.variantKey(Cards.list[2].id, "normal")] = 1 } }
+    local p = Browse.progress(finishState)
+    check(p.finishes ~= nil and p.finishes.normal == nil, "progress has the finishes but normal")
+    for _, finish in ipairs({ "foil", "holo" }) do
+        local got = p.finishes and p.finishes[finish]
+        check(got ~= nil and got.cards == #Cards.list and got.owned == 1, finish .. ": every card, one owned")
+    end
+end
+
 for _, kind in ipairs({ "npc", "item" }) do
     local want = Browse.counts(state, { kind = kind })
     local got = progress.kinds[kind] or { cards = 0, owned = 0 }

@@ -455,8 +455,7 @@ local function showRows()
             local rarity = Cards.rarities[card.rarity]
             local locked = entry.locked
             -- (just the card's name: its finishes are variants of the one entry, shown under the picked card)
-            local name = string.upper(card.name)
-            row.name.content = name
+            row.name.content = string.upper(card.name)
             row.name.colour = locked and DIM or WHITE
             row.rarity.content = rarity.name
             row.rarity.colour = locked and DIM or toVec4(rarity.colour)
@@ -629,8 +628,10 @@ local function showGrid()
                 local cx = math.floor((index - 1) * segment)
                 local cw = math.floor(index * segment) - cx
                 local lit = owned.finish == shown
-                Kit.text(caption, cx, 0, cw, 30, Cards.finishes[owned.finish].name .. " x" .. owned.count,
-                    lit and GOLD or DIM)
+                -- (three toggles do not fit the finishes' names in a small card: their short names, "H x1")
+                local info = Cards.finishes[owned.finish]
+                local name = #finishes > 2 and info.short or info.name
+                Kit.text(caption, cx, 0, cw, 30, name .. " x" .. owned.count, lit and GOLD or DIM)
                 local finish = owned.finish
                 captionGrip(cx, cw, function() chooseFinish(entry, finish) end)
             end
@@ -850,11 +851,9 @@ local function buildFilters()
     filterDropdown("category", columnX(3), FILTER_Y[3], COLUMN_W, categoryEntries(), nil, true)
     -- The finish (foil, holo...), in the last place on the row unless the List / grid button needs it (no PrettyUI).
     if widgets.swap == nil then
-        local finishes = { { label = "Any finish", value = ANY }, { label = "Normal", value = "normal" } }
-        for finish, info in pairs(Cards.finishes) do
-            if finish ~= "normal" then
-                finishes[#finishes + 1] = { label = info.name, value = finish }
-            end
+        local finishes = { { label = "Any finish", value = ANY } }
+        for _, finish in ipairs(Cards.finishOrder) do
+            finishes[#finishes + 1] = { label = Cards.finishes[finish].name, value = finish }
         end
         filterDropdown("finish", columnX(4), FILTER_Y[3], COLUMN_W, finishes)
     end

@@ -12,6 +12,7 @@ function log() end          -- the client's log function
 local Json = require("core/json")
 local Cards = require("core/cards")
 local Packs = require("core/packs")
+local Config = require("core/config")
 local Encode = require("jsonencode")
 
 local failures = 0
@@ -98,15 +99,16 @@ do
     -- rarity still comes first: a weight does not lift a card over a rarer rarity's share
     local pool = { common = { { id = "c", rarity = "common", weight = 1000 } }, legendary = { { id = "l", rarity = "legendary" } } }
     local legendaryShare = share(pool, "l", 20000)
-    local expected = Cards.rarities.legendary.weight / (Cards.rarities.common.weight + Cards.rarities.legendary.weight)
+    local legendary, common = Config.get("odds.rarity.legendary"), Config.get("odds.rarity.common")
+    local expected = legendary / (common + legendary)
     check(math.abs(legendaryShare - expected) < 0.005, "a weight does not change how often a rarity comes up (" .. legendaryShare .. ", expected " .. expected .. ")")
 end
 
 -- The rarity weights are percentages: they add up to 100 (their comment in core/cards.lua says so) ---------------
 do
     local total = 0
-    for _, rarity in pairs(Cards.rarities) do
-        total = total + rarity.weight
+    for _, name in ipairs(Config.RARITIES) do
+        total = total + Config.get("odds.rarity." .. name)
     end
     check(math.abs(total - 100) < 1e-9, "the rarity weights add up to 100 (they add up to " .. total .. ")")
 end
@@ -135,15 +137,16 @@ end
 -- The price, the starter credits and buying several packs at once ----------------------------------------------
 do
     local Storage = require("core/storage")
-    check(Storage.STARTER_CREDITS == 2 * Packs.PRICE, "the starter credits are two standard packs")
-    check(Packs.priceFor("standard") == Packs.PRICE, "the standard pack costs the price")
+    check(Storage.starterCredits() == 2 * Packs.price(), "the starter credits are two standard packs")
+    check(Packs.priceFor("standard") == Packs.price(), "the standard pack costs the price")
     check(Packs.priceFor("no_such_pack") == nil, "an unknown pack has no price")
     for id, packType in pairs(Cards.packTypes) do
-        check(Packs.priceFor(id) == math.ceil(Packs.PRICE * (packType.priceFactor or 1)), "pack " .. id .. " costs the price times its factor")
+        local factor = packType.priceFactor or (packType.themed and Config.get("packs.themedPriceFactor") or 1)
+        check(Packs.priceFor(id) == math.ceil(Packs.price() * factor), "pack " .. id .. " costs the price times its factor")
     end
 
     local state = Storage.newState()
-    state.credits = Packs.PRICE * 3 + 10
+    state.credits = Packs.price() * 3 + 10
     local results, why = Packs.open(state, "standard", 0)
     check(results == nil and why == "bad count", "0 packs is refused")
     results, why = Packs.open(state, "standard", 1.5)
@@ -151,12 +154,12 @@ do
     results, why = Packs.open(state, "no_such_pack", 1)
     check(results == nil and why == "unknown pack", "an unknown pack is refused")
     results, why = Packs.open(state, "standard", 4)
-    check(results == nil and why == "not enough credits" and state.credits == Packs.PRICE * 3 + 10
+    check(results == nil and why == "not enough credits" and state.credits == Packs.price() * 3 + 10
         and state.stats.packsOpened == 0, "four packs for the price of three and a bit: refused, nothing taken")
 
     results = Packs.open(state, "standard", 3)
     check(results ~= nil and #results == 3 * Packs.PACK_SIZE, "three packs give three packs of cards")
-    check(state.credits == 10 and state.stats.creditsSpent == Packs.PRICE * 3, "and cost three times the price")
+    check(state.credits == 10 and state.stats.creditsSpent == Packs.price() * 3, "and cost three times the price")
     check(state.stats.packsOpened == 3 and state.stats.cardsPulled == 3 * Packs.PACK_SIZE, "and are counted as three packs")
     for position, result in ipairs(results) do
         check(result.pack == (position - 1) // Packs.PACK_SIZE + 1, "card " .. position .. " says which pack it came from")
