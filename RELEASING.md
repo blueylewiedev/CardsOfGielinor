@@ -117,6 +117,7 @@ the line still applies. A key left out keeps its default.
 | `starterCredits` | 8,000 | whole number 0 to 20,000 | Credits a new collection starts with |
 | `packs.price` | 4,000 | whole number 2,000 to 8,000 | Price of a standard pack |
 | `packs.themedPriceFactor` | 1.25 | 1 to 2 | Themed packs cost this times the price (unless a pack sets its own) |
+| (a pack's own `priceFactor`) | Free to Play 0.75 | set in `deck/packs.lua`, not tunable | The Free to Play pack costs 0.75 times `packs.price` (3,000 at the default), whatever `packs.themedPriceFactor` is, and follows `packs.price` when that changes. Changing the 0.75 needs a new version |
 | `odds.rarity.<rarity>` | 63, 25, 9.4, 2, 0.6 | 0 to 100; `common` above 0 | Relative weight of each rarity in a pack |
 | `odds.finish.normal` / `.foil` / `.holo` | 17 / 2 / 1 | normal 1 to 1,000; foil and holo 0 to 1,000 | Relative weight of each finish, so foil is 1 in 10 and holo 1 in 20 at the defaults (0 means none of that finish are pulled) |
 | `slayer.enabled` | `true` | `false` turns it off | Switch for all Slayer credits |
