@@ -297,6 +297,15 @@ group: move it if another fits better), then runs the same check. Add `--dry-run
 it would add. It does not add item categories, or fix typos in regions, skills or membership; it
 lists those for you to fix.
 
+### Sets
+
+Sets are groups of cards to collect together, such as every shopkeeper or every musician. The **Sets** window
+lists them with how many of each the player has, and shows a missing card as a dark silhouette. They are written
+in `deck/sets.lua` (not listed in `deck/index.lua`). A set takes in cards by name (`names = { "Musician" }` takes
+"Musician" and every "Musician (...)"), by a pack-style `filter`, or both, plus card ids to `add` and to `leave`
+out. A new variant with a name the set already uses joins it by itself. Run `lua dev/check_sets.lua` to check
+that every id is a real card and no set is empty. It also runs on every pull request.
+
 ---
 
 ## Card rules

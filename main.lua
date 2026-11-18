@@ -28,6 +28,7 @@ local Earning = require("core/earning")
 local SlayerEvents = require("core/slayerevents")
 local PackWindow = require("ui/packwindow")
 local Viewer = require("ui/viewer")
+local SetsViewer = require("ui/setsviewer")
 local Stats = require("ui/stats")
 local Settings = require("core/settings")
 local SettingsPage = require("ui/settingspage")
@@ -149,6 +150,7 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
     Hub.refresh()
     CreditsWindow.refresh()
     Viewer.refresh()
+    SetsViewer.refresh()
     if session == nil then
         local profile = Identity.profile(currentCharacterName())
         if profile ~= nil then
@@ -295,6 +297,7 @@ Hub.init({
     openMain = api.openMain,
     toggleCredits = toggleCredits,
     openCollection = function() Viewer.open(api) end,
+    openSets = function() SetsViewer.open(api) end,
     toggleStats = function() Stats.toggle(api) end,
 })
 

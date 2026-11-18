@@ -19,6 +19,7 @@ local Storage = require("core/storage")
 local Packs = require("core/packs")
 local CardView = require("ui/cardview")
 local Viewer = require("ui/viewer")
+local SetsViewer = require("ui/setsviewer")
 local Kit = require("ui/kit")
 local PluginId = require("core/pluginid")
 local Stats = require("ui/stats")
@@ -26,6 +27,7 @@ local Settings = require("core/settings")
 local PackArt = require("ui/packart")
 local Carousel = require("ui/carousel")
 local Anim = require("ui/anim")
+local Wiggle = require("ui/wiggle")
 
 local PackWindow = {}
 
@@ -54,14 +56,14 @@ local STAGE_H = REVEAL_TOP - 4               -- the card area: what moves in it 
 local PACK_BOTTOM = CARD_Y + math.floor((PackArt.OUTLINE.y + PackArt.OUTLINE.h) * CardView.HEIGHT / PackArt.H)
 -- The Home screen is as wide as the reveal screen, for the pack chooser at its top: a drop-down
 -- of the packs over a carousel of them (ui/carousel.lua), kept in step. Under it, from HOME_TOP:
--- the price and collection count, the Open pack button, a hint, then the Collection and Stats
+-- the price and collection count, the Open pack button, a hint, then the Collection, Sets and Stats
 -- buttons. The buttons each have a row of their own: PrettyUI makes a button as wide as its label
 -- needs, so two side by side would overlap.
 local DROPDOWN_Y = 32
 local CAROUSEL_Y, CAROUSEL_H = 64, 200
 local HOME_TOP = CAROUSEL_Y + CAROUSEL_H + 4
 local HOME_W = REVEAL_MID - 20                -- the width of the text and buttons
-local EXTRA_TOP = HOME_TOP + 182              -- where the extra buttons on the Home screen start
+local EXTRA_TOP = HOME_TOP + 218              -- where the extra buttons on the Home screen start
 -- Window height for each screen (Home's is set by buildExtras, as it depends on the extra buttons).
 local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
 local HEIGHTS = { nosession = 90, setup = 262, reveal = REVEAL_TOP + 124 }
@@ -164,17 +166,19 @@ local GUIDE_H = 24
 local GUIDE_PULSE = 3                  -- radians per second
 local GLINT_EVERY, GLINT_SECONDS = 1.6, 0.9
 local GLINT_SIZE = 20
-local SEALED_FLIP_SECONDS = 0.4        -- turning the sealed pack over (Flip pack); edge-on halfway
+local SEALED_FLIP_SECONDS = 0.4        -- turning the sealed pack right over (Flip pack); edge-on halfway
+local PACK_DRAG_TURN = 1.0             -- half turns for a drag the pack's width
 local FLIP_ICON = 24                   -- the Flip pack button (PrettyUI's sprite buttons are 24 x 24)
 local LEAVE_SECONDS = 0.3              -- a revealed card sliding off to the left before the next
 -- Flipping a card, in four steps (each one's length in seconds): the back lifts, swelling a
--- little; it turns edge-on (its width closes to nothing); the face widens back out from the
--- middle (see CardView.squash), still without its picture and text, which cannot be squeezed;
+-- little; it turns edge-on, in perspective (CardView.turnSprite); the face turns on round to flat
+-- (CardView.tilt), still without its picture and text, which cannot be turned;
 -- then those burst into view from the middle of the art box (CardView.uncover) inside a growing
 -- ring, in a flash of the card's rarity colour.
 local FLIP_LIFT, FLIP_TURN, FLIP_OPEN, FLIP_REVEAL = 0.12, 0.15, 0.2, 0.5
 local FLIP_SECONDS = FLIP_LIFT + FLIP_TURN + FLIP_OPEN + FLIP_REVEAL
 local FLIP_SWELL = 0.06                -- how much bigger the back gets as it lifts
+local FLIP_STRIPS = 20                 -- the strips a turning card back is cut into (see CardView.turnSprite)
 -- The burst images are made per rarity by dev/make_burst.py (resources/images/burst_<rarity>.png
 -- and so on). The flash grows from BURST_FROM to BURST_TO times the card's width while it flares
 -- and fades.
@@ -199,7 +203,7 @@ local CARD_BACK_COLOUR = Vector4.new(0.10, 0.10, 0.14, 1.0)   -- if the card bac
 -- Loads an image from resources/images, once. Returns nil (and logs) if it is not there.
 local image = PackArt.image
 
-local startTear, flipSealed   -- (below) used by the sealed pack's controls
+local startTear, flipSealed, makeFlipGrip   -- (below) used by the sealed pack's controls
 
 -- Turns a 0xRRGGBBAA colour number into a Vector4 (parts 0-1), with a different alpha.
 local function toColour(hex, alpha)
@@ -239,11 +243,14 @@ local function clearParts()
     end
     reveal.packArts = {}
     reveal.tear = nil
+    reveal.packTurn = nil
+    reveal.flipDrag = nil
     reveal.flipButton = nil
     reveal.mover = nil
     reveal.view = nil
     reveal.burst = nil
     reveal.back = nil
+    reveal.backTurn = nil
     reveal.glow = nil
     reveal.pack = nil
 end
@@ -635,6 +642,7 @@ local function showSealed()
         catcher.colour = Vector4.new(0, 0, 0, 0)
         clickable(catcher)
         makeGrip()
+        makeFlipGrip()
         drawRip(0)
         placeStack(0)
         setFlipButton(true)
@@ -694,7 +702,12 @@ local function showFaceDown()
         reveal.glow = { sprite = glow, strength = rarity.glow, age = 0 }
     end
 
-    reveal.view = CardView.create(layer, result.card, { animated = true })
+    -- (opts.tilt: the face turns over in perspective, CardView.tilt, made ready now if it is to be flipped, so the flip
+    -- does not wait on it; face up it can be picked up, ui/wiggle.lua)
+    reveal.view = CardView.create(layer, result.card, { animated = true, tilt = true, finish = result.finish })
+    if not reveal.faceUp then
+        CardView.prepareTilt(reveal.view)
+    end
     reveal.view.root:SetPos(x, CARD_Y)
     track(reveal.view.root)
     -- Hidden until it is flipped, so nothing of it (a frame edge, the glow) can show round the
@@ -708,6 +721,20 @@ local function showFaceDown()
     reveal.back:SetPos(x, CARD_Y)
     reveal.back:SetSize(CardView.WIDTH, CardView.HEIGHT)
     clickable(reveal.back)
+    -- The back as it turns over, in perspective (CardView.turnSprite), shown in its place while it turns. (A plain
+    -- dark back, with no image, just narrows.)
+    reveal.backTurn = nil
+    local backImage = image("card_back")
+    if backImage ~= nil and not reveal.faceUp then
+        local made, turn = pcall(CardView.turnSprite, layer, backImage, FLIP_STRIPS)
+        if made then
+            track(turn.root)
+            turn.hide(true)
+            reveal.backTurn = turn
+        else
+            Logger.error("pack window: the turning card back could not be made:", tostring(turn))
+        end
+    end
     buildBurst(x, result.card.rarity)
 
     setText(widgets.variantText, "")
@@ -721,22 +748,24 @@ end
 local function showFaceUp()
     reveal.stage = "faceup"
     setHidden(reveal.view.root, false)
-    CardView.squash(reveal.view, 1)
+    CardView.tilt(reveal.view, 0, 0)        -- (flat, if the flip was cut short)
+    if reveal.backTurn ~= nil then
+        reveal.backTurn.hide(true)
+    end
     revealFace(1)
     if reveal.back ~= nil then
         pcall(function() reveal.back:Destroy() end)
         reveal.back = nil
     end
-    -- Clicking the revealed card moves on to the next one, like the Next button. The card is
-    -- made of several pieces that may take the click themselves, so a see-through rectangle is
-    -- laid over the whole card to catch it.
-    local overlay = track(ui.Rectangle.new(content))
-    overlay:SetPos(revealCardX(), CARD_Y)
-    overlay:SetSize(CardView.WIDTH, CardView.HEIGHT)
-    overlay.fill = true
-    overlay.colour = Vector4.new(0.0, 0.0, 0.0, 0.0)
-    clickable(overlay)
+    -- Clicking the revealed card moves on to the next one, like the Next button; pressing and dragging picks it up
+    -- and tilts it (ui/wiggle.lua). The card is made of several pieces that may take the click themselves, so a
+    -- see-through grip is laid over the whole card to catch it.
+    track(Wiggle.attach(content, reveal.view, { x = revealCardX(), y = CARD_Y, w = CardView.WIDTH, h = CardView.HEIGHT },
+        function() PackWindow.advance() end))
     local result = reveal.results[reveal.index]
+    -- (the finish, over the card's name line, when it is not the normal one)
+    setText(widgets.variantText, result.finish ~= "normal" and string.upper(Cards.finishes[result.finish].name) or "")
+    widgets.variantText.colour = GOLD
     if result.isNewCard then
         setText(widgets.newText, "NEW CARD!")
         widgets.newText.colour = GOLD
@@ -776,27 +805,48 @@ local function flipCard()
     local seconds = (reveal.burst ~= nil) and FLIP_SECONDS or (FLIP_SECONDS - FLIP_REVEAL)
     -- `t` seconds in: the back eases up to its full swell, then shrinks back to its normal
     -- height while its width closes (slowly at first, then quickly, like a card turning).
+    local turning = false      -- (the turning back is showing)
     local function drawBack(t)
         local lift = Anim.easeOut(math.min(1, t / FLIP_LIFT))
         local close = math.max(0, (t - FLIP_LIFT) / FLIP_TURN)
         local grow = 1 + FLIP_SWELL * lift * (1 - close)
-        local w = math.max(1, math.floor(W * grow * math.cos(close * math.pi / 2) + 0.5))
-        local h = math.floor(H * grow + 0.5)
+        local h = CardView.round(H * grow)
+        local turn = reveal.backTurn
+        if turn ~= nil and close > 0 then
+            -- turning: the perspective back in place of the flat one, its right edge going away
+            local w = CardView.round(W * grow)
+            if not turning then
+                turning = true
+                setHidden(back, true)
+                turn.hide(false)
+            end
+            turn.place(x + (W - w) // 2, CARD_Y + (H - h) // 2, w, h, math.min(1, close) * math.pi / 2)
+            return
+        end
+        local w = math.max(1, CardView.round(W * grow * math.cos(close * math.pi / 2)))
         back:SetPos(x + (W - w) // 2, CARD_Y + (H - h) // 2)
         back:SetSize(w, h)
     end
-    -- `t` seconds after it was edge-on: the face widens out from the middle (quickly at first,
-    -- then slowing), then its picture and text come in. (A card without a frame image can't be
-    -- squeezed, so it just appears.)
-    local turned = false
+    -- `t` seconds after it was edge-on: the face turns round to flat (quickly at first, then
+    -- slowing), then its picture and text come in. (A card without a frame image can't be turned,
+    -- so it just appears.)
+    local turned, opened = false, false
     local function drawFace(t)
         local open = math.sin(math.min(1, t / FLIP_OPEN) * math.pi / 2)
         if not turned then
             turned = true
             setHidden(back, true)
+            if reveal.backTurn ~= nil then
+                reveal.backTurn.hide(true)
+            end
             setHidden(view.root, false)
         end
-        CardView.squash(view, math.max(open, 0.01))
+        -- the face comes round from edge-on with its left edge away (the back's right edge, turned over); once flat
+        -- it is left alone
+        if not opened then
+            opened = t >= FLIP_OPEN
+            CardView.tilt(view, -(1 - open) * math.pi / 2, 0)
+        end
         if t >= FLIP_OPEN then
             revealFace(math.min(1, (t - FLIP_OPEN) / FLIP_REVEAL))
         end
@@ -845,21 +895,19 @@ local function swellPack()
     end)
 end
 
--- Turns the sealed pack over (the Flip pack button); opened back side up, its cards are dealt
--- face up. The torn pieces themselves narrow to nothing (PackArt.squash); then, while the pack is
--- edge-on, they are swapped for the other side's pieces, which widen out. Only one side exists at
--- a time, as each is many parts. The stack of cards inside and the tear guide are hidden
--- meanwhile, as the narrowing pack would show the stack.
-flipSealed = function()
+-- Turning the sealed pack over (opened back side up, its cards are dealt face up). It can be turned by dragging it
+-- sideways (makeFlipGrip) or with the Flip pack button. The torn pieces turn in perspective (PackArt.turn); while the
+-- pack is edge-on they are swapped for the other side's pieces, which turn on round to flat. Only one side exists at
+-- a time, as each is many parts. The stack of cards inside and the tear guide are hidden meanwhile, as the turning
+-- pack would show the stack. reveal.packTurn holds the turn: `angle` (0 flat, pi or -pi turned right over; + takes
+-- the right edge away) and the side it started on.
+
+-- Starts a turn (hides what the turning pack would show). Returns false if the pack cannot be turned now.
+local function beginPackTurn()
     local tear = reveal.tear
-    local art = PackArt.designFor(reveal.packTypeId)
-    if tear == nil or art == nil or Anim.running(reveal) or tear.rip > 0 then
-        return
-    end
-    local to = (reveal.side == "front") and "back" or "front"
-    local function squash(f)
-        PackArt.squash(tear.body, f)
-        PackArt.squash(tear.cap, f)
+    if tear == nil or PackArt.designFor(reveal.packTypeId) == nil or Anim.running(reveal) or tear.rip > 0
+        or reveal.stage ~= "sealed" then
+        return false
     end
     setHidden(tear.stackLayer, true)
     if tear.guide ~= nil then
@@ -867,41 +915,153 @@ flipSealed = function()
     end
     reveal.stage = "flipping"
     setFlipButton(false)
-    local turned = false
-    Anim.start(reveal, SEALED_FLIP_SECONDS, function(p)
-        local f = math.abs(math.cos(p * math.pi))
-        if p < 0.5 then
-            squash(f)
-            return
+    reveal.packTurn = { angle = 0, from = reveal.side, shown = reveal.side }
+    return true
+end
+
+-- Draws the pack turned to `angle`: the side it started on up to edge-on, the other side past it.
+local function drawPackTurn(angle)
+    local tear, turn = reveal.tear, reveal.packTurn
+    if turn.drawn == angle then
+        return          -- (the mouse is held still)
+    end
+    turn.angle, turn.drawn = angle, angle
+    local over = math.abs(angle) >= math.pi / 2
+    local side = over and ((turn.from == "front") and "back" or "front") or turn.from
+    if side ~= turn.shown then
+        turn.shown = side
+        for _, piece in ipairs(reveal.packArts) do
+            PackArt.destroy(piece)
         end
-        if not turned then
-            turned = true
-            for _, piece in ipairs(reveal.packArts) do
-                PackArt.destroy(piece)
-            end
-            tear.body, tear.cap = makePieces(tear, to, art)
-            reveal.packArts = { tear.body, tear.cap }
-        end
-        squash(math.max(f, 0.01))
-    end, function()
-        squash(1)
-        if tear.guide ~= nil then
-            setHidden(tear.guide.clip, false)
-            pcall(function() tear.guide.clip:MoveToFront() end)
-        end
-        reveal.side, reveal.faceUp = to, to == "back"
+        tear.body, tear.cap = makePieces(tear, side, PackArt.designFor(reveal.packTypeId))
+        reveal.packArts = { tear.body, tear.cap }
+    end
+    -- past edge-on the other side comes round from edge-on to flat, its near edge the first side's far one
+    local shown = over and (angle - (angle > 0 and math.pi or -math.pi)) or angle
+    for _, piece in ipairs({ tear.body, tear.cap }) do
+        PackArt.turn(piece, shown)
+    end
+end
+
+-- Ends a turn flat on whichever side is up, and puts back what beginPackTurn hid.
+local function endPackTurn()
+    local tear, turn = reveal.tear, reveal.packTurn
+    reveal.packTurn = nil       -- (the pack was last drawn flat, at 0 or a half turn)
+    if tear.guide ~= nil then
+        setHidden(tear.guide.clip, false)
+        pcall(function() tear.guide.clip:MoveToFront() end)
+    end
+    if turn.shown ~= reveal.side then
+        reveal.side, reveal.faceUp = turn.shown, turn.shown == "back"
         -- The cards inside turn with the pack: face up if it is now back side up.
         for _, card in ipairs(tear.stack) do
             card.destroy()
         end
         tear.stack = makeStack(tear.stackLayer, 1, #reveal.results, reveal.faceUp)
-        placeStack(0)
-        setHidden(tear.stackLayer, false)
-        reveal.stage = "sealed"
-        drawRip(0)
-        sealedTexts()
-        setFlipButton(true)
+    end
+    placeStack(0)
+    setHidden(tear.stackLayer, false)
+    reveal.stage = "sealed"
+    drawRip(0)
+    sealedTexts()
+    setFlipButton(true)
+end
+
+-- Finishes a turn from wherever it is: right over if it is past edge-on (or `over` is true), back flat if not.
+local function settlePackTurn(over)
+    local from = reveal.packTurn.angle
+    local sign = (from < 0) and -1 or 1
+    local to = (over or math.abs(from) >= math.pi / 2) and sign * math.pi or 0
+    local seconds = SEALED_FLIP_SECONDS * math.abs(to - from) / math.pi
+    if seconds <= 0 then
+        endPackTurn()
+        return
+    end
+    Anim.start(reveal, seconds, function(p)
+        drawPackTurn(from + (to - from) * Anim.smooth(p))
+    end, function()
+        drawPackTurn(to)
+        endPackTurn()
     end)
+end
+
+-- The Flip pack button: turns the pack right over.
+flipSealed = function()
+    if beginPackTurn() then
+        settlePackTurn(true)
+    end
+end
+
+-- Dragging the pack sideways (below the strip along its top, which tears it) turns it with the mouse: a drag the
+-- pack's width is a half turn. Let go past edge-on and it turns the rest of the way over; before that it turns back.
+-- A press without a drag tears the pack open, as a click on it always has. The grip stretches over the whole screen
+-- while held, as the tear's does, so it keeps the hold and release wherever the mouse goes.
+makeFlipGrip = function()
+    local tear = reveal.tear
+    local gripH = math.floor(GRIP_H * tear.cap.s)
+    local grip = track(ui.Layer.new(content))
+    grip.clickthrough = false
+    local function rest()
+        grip:SetPos(tear.x, tear.y + gripH)
+        grip:SetSize(tear.w, math.max(1, tear.h - gripH))
+    end
+    rest()
+    -- The hold, while the mouse is down: drag = { mouseX, turning, heldAt, release }, also reveal.flipDrag, so onDraw
+    -- can let go if the holds stop coming (the release was missed).
+    local drag = nil
+    -- (`missed`: the release never came, onDraw gave up on it; a press that never turned the pack is then no click)
+    local function release(missed)
+        if drag == nil then
+            return
+        end
+        local turning = drag.turning
+        drag = nil
+        reveal.flipDrag = nil
+        rest()
+        if reveal.tear ~= tear then
+            return
+        end
+        if turning and reveal.packTurn ~= nil then
+            settlePackTurn(false)
+        elseif not turning and not missed then
+            PackWindow.advance()
+        end
+    end
+    grip:Subscribe(ui.Hook.ONCLICK, function()
+        if reveal.tear ~= tear or drag ~= nil then
+            return
+        end
+        local x = Kit.mouseX()
+        if x == nil or Anim.running(reveal) or reveal.stage ~= "sealed" then
+            PackWindow.advance()        -- (as a click on the pack always did: it skips a running animation)
+            return
+        end
+        drag = { mouseX = x, turning = false, heldAt = reveal.clock, release = release }
+        reveal.flipDrag = drag
+        grip:SetPos(0, 0)
+        grip:SetSize(0, 0, 1, 1)
+        pcall(function() grip:MoveToFront() end)
+    end)
+    grip:Subscribe(ui.Hook.ONHOLD, function()
+        local x = drag and Kit.mouseX()
+        if x == nil or reveal.tear ~= tear then
+            return
+        end
+        drag.heldAt = reveal.clock
+        local dx = x - drag.mouseX
+        if not drag.turning then
+            if math.abs(dx) <= Wiggle.DRAG_PX then
+                return
+            end
+            drag.turning = beginPackTurn()
+            if not drag.turning then
+                return
+            end
+        end
+        local angle = math.max(-math.pi, math.min(math.pi, dx / tear.w * math.pi * PACK_DRAG_TURN))
+        drawPackTurn(angle)
+    end)
+    grip:Subscribe(ui.Hook.ONRELEASE, function() release(false) end)
 end
 
 -- Tears the designed pack open from wherever the tear has got to: the rest of the tear, the cap
@@ -994,6 +1154,10 @@ local function onDraw(e)
     local dt = Anim.frameSeconds(e)
     reveal.clock = reveal.clock + dt
     animateGuide(reveal.clock)
+    local flipDrag = reveal.flipDrag
+    if flipDrag ~= nil and reveal.clock - flipDrag.heldAt > Wiggle.IDLE_SECONDS then
+        flipDrag.release(true)
+    end
 
     local glow = reveal.glow
     if glow ~= nil and glow.on then
@@ -1125,7 +1289,10 @@ local function buildScreens()
             Viewer.open(api)
         end
     end)
-    makeButton(screens.home, "Stats", 10, HOME_TOP + 144, HOME_W, 30, function()
+    makeButton(screens.home, "Sets", 10, HOME_TOP + 144, HOME_W, 30, function()
+        SetsViewer.toggle(api)
+    end)
+    makeButton(screens.home, "Stats", 10, HOME_TOP + 180, HOME_W, 30, function()
         Stats.toggle(api)
     end)
     -- A cog in the top right corner opens the settings window.
@@ -1177,6 +1344,7 @@ function PackWindow.refresh()
 
     if state == nil then
         Viewer.close()
+        SetsViewer.close()
         clearReveal()
         if current ~= "nosession" then
             showScreen("nosession")
@@ -1226,6 +1394,7 @@ end
 -- Closes the window and everything that belongs to it (collection, statistics, any reveal).
 function PackWindow.hide()
     Viewer.close()
+    SetsViewer.close()
     Stats.hide()
     clearReveal()
     if widgets.spinner ~= nil then

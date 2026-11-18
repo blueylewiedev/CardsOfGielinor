@@ -64,6 +64,7 @@ prettyui = nil
 Vector4 = { new = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end }
 Plugin = { resources = { images = {} } }
 Mouse = { IsAvailable = function() return false end }
+Event = { Draw = { Subscribe = function() end } }
 
 local Cards = require("core/cards")
 local Browse = require("core/browse")
@@ -143,7 +144,7 @@ for _, c in ipairs(live("Layer")) do if rawget(c, "clickthrough") == false then 
 local contentLayer = grips[1]._parent
 local rowGrips = 0
 for _, g in ipairs(grips) do if g._parent == contentLayer then rowGrips = rowGrips + 1 end end
-check(rowGrips == 13, "13 clickable rows (" .. rowGrips .. ")")
+check(rowGrips == 14, "13 clickable rows and the shown card's grip (" .. rowGrips .. ")")
 grips[2]._handlers["ONCLICK"](grips[2])
 
 -- the chips under the card: clicking one sets that filter, clicking it again clears it, and the picked card stays
@@ -161,7 +162,7 @@ end
 local function selectedStillListed()
     local d = Viewer.debugInfo()
     for _, entry in ipairs(Browse.entries(state, d.filter)) do
-        if entry.card.id .. "|" .. entry.finish == d.selected then return true end
+        if entry.card.id == d.selected then return true end
     end
     return false
 end
@@ -186,7 +187,7 @@ check(selectedStillListed(), "the picked card is still listed after a tag chip")
 local d = Viewer.debugInfo()
 check(d.page == (function()
     for i, entry in ipairs(Browse.entries(state, d.filter)) do
-        if entry.card.id .. "|" .. entry.finish == d.selected then return (i - 1) // 13 + 1 end
+        if entry.card.id == d.selected then return (i - 1) // 13 + 1 end
     end
 end)(), "the list shows the page the picked card is on")
 for _, b in ipairs(live("Button")) do
@@ -327,7 +328,7 @@ Viewer.refresh()
 check(Viewer.debugInfo().matches == ownedBefore + 1, "a card added while the viewer is open appears in the list (" .. ownedBefore .. " to " .. Viewer.debugInfo().matches .. ")")
 -- a copy more of the picked card: its detail shows the new count
 local selected = Viewer.debugInfo().selected
-local selectedId = string.match(selected, "^(.-)|")
+local selectedId = selected      -- (the picked card's id)
 local key = Cards.variantKey(selectedId, "normal")
 local function showsCount(n)
     for _, c in ipairs(live("Text")) do if rawget(c, "content") == "Owned: " .. n then return true end end

@@ -1,20 +1,23 @@
 -- core/browse.lua
--- What the collection viewer shows: the cards (and each variant of them) that match a search and some filters, in
--- an order. No drawing and no client calls, so it is tested on its own against the real deck (dev/check_viewer.lua).
+-- What the collection viewer shows: the cards that match a search and some filters, in an order, each with the
+-- finishes (normal, holo) the player has of it. No drawing and no client calls, so it is tested on its own against the real deck (dev/check_viewer.lua).
 --
 -- A filter is a table, every field optional (a missing one, or nil, means "any"):
 --   search     text: every word of it must be in the card's name, whatever the case ("abyssal dem" finds Abyssal demon)
---   owned      "all" (the default), "owned" (the variants the player has) or "unowned" (the ones they have not)
+--   owned      "all" (the default), "owned" (the cards the player has, in any finish) or "unowned" (the ones they
+--              have none of)
 --   kind       "npc" or "item"
 --   rarity     a rarity id, such as "rare"
 --   region     a word of the regions tag, such as "asgarnia"
 --   skill      a word of the skills tag, such as "thieving"
 --   category   a word of the category tag, such as "food"
 --   membership "f2p" or "p2p"
+--   finish     a finish, such as "holo": only the cards the player has in that finish, shown in it
 --   sort       "rarity" (lowest first, the default), "rarity_desc", "name" or "owned" (most copies first)
 --
--- An entry is { card, finish, count, locked }, the same as the viewer has always used: locked is a variant the
--- player does not have (count 0). Anything a filter names that no card has (a mistyped word) simply matches nothing.
+-- An entry is { card, finishes, count, locked, finish }: finishes is { finish = copies } of what the player has of the
+-- card, count all its copies together, locked true if they have none, and finish the one to show it in (the filter's
+-- finish, or Browse.preferredFinish). Anything a filter names that no card has (a mistyped word) simply matches nothing.
 
 local Cards = require("core/cards")
 
@@ -76,6 +79,16 @@ local function tagFilterOf(filter)
     return tagFilter
 end
 
+-- True if a card the player has `have` (a { finish = count } table, or nil) of is listed under this `owned` mode.
+local function hasEntry(have, mode)
+    if mode == "owned" then
+        return have ~= nil
+    elseif mode == "unowned" then
+        return have == nil
+    end
+    return true
+end
+
 -- What the player owns, by card: { card id = { finish = count } }. Cards the deck no longer has are left out.
 local function ownedByCard(state)
     local owned = {}
@@ -93,31 +106,20 @@ local function ownedByCard(state)
     return owned
 end
 
--- The order variants of one card are listed in: normal first, then by finish name.
-local FINISH_ORDER = { normal = 1 }
-local function finishesOf(owned, includeUnowned)
-    local finishes = {}
-    for finish in pairs(owned or {}) do
-        finishes[#finishes + 1] = finish
-    end
-    if includeUnowned then
-        for finish in pairs(Cards.finishes) do
-            if owned == nil or owned[finish] == nil then
-                finishes[#finishes + 1] = finish
-            end
+-- The finish a card is shown in by default: the first of these the player has (a holo before a normal one), or
+-- normal if they have none. The Sets window shows cards the same way.
+Browse.FINISH_PREFERENCE = { "holo", "normal" }
+
+function Browse.preferredFinish(have)
+    for _, finish in ipairs(Browse.FINISH_PREFERENCE) do
+        if have ~= nil and have[finish] ~= nil then
+            return finish
         end
     end
-    table.sort(finishes, function(a, b)
-        local orderA, orderB = FINISH_ORDER[a] or 99, FINISH_ORDER[b] or 99
-        if orderA ~= orderB then
-            return orderA < orderB
-        end
-        return a < b
-    end)
-    return finishes
+    return "normal"
 end
 
--- The entries that match `filter` (see the top), for the collection in `state`.
+-- The entries that match `filter` (see the top), for the collection in `state`: one a card.
 function Browse.entries(state, filter)
     filter = filter or {}
     local terms, tagFilter = searchTerms(filter.search), tagFilterOf(filter)
@@ -125,17 +127,17 @@ function Browse.entries(state, filter)
     local owned = ownedByCard(state)
     local entries, position = {}, {}
     for _, card in ipairs(Cards.list) do
-        if cardMatches(card, filter, terms, tagFilter) then
-            local have = owned[card.id]
-            for _, finish in ipairs(finishesOf(have, mode ~= "owned")) do
-                local count = have ~= nil and have[finish] or 0
-                local locked = have == nil or have[finish] == nil
-                if (mode == "all") or (mode == "owned" and not locked) or (mode == "unowned" and locked) then
-                    local entry = { card = card, finish = finish, count = count, locked = locked }
-                    entries[#entries + 1] = entry
-                    position[entry] = #entries
-                end
+        local have = owned[card.id]
+        if cardMatches(card, filter, terms, tagFilter) and hasEntry(have, mode)
+            and (filter.finish == nil or (have ~= nil and have[filter.finish] ~= nil)) then
+            local count = 0
+            for _, n in pairs(have or {}) do
+                count = count + n
             end
+            local entry = { card = card, finishes = have or {}, count = count, locked = have == nil,
+                finish = filter.finish or Browse.preferredFinish(have) }
+            entries[#entries + 1] = entry
+            position[entry] = #entries
         end
     end
 
@@ -171,21 +173,6 @@ function Browse.entries(state, filter)
     return entries
 end
 
--- True if a card the player has `have` (a { finish = count } table, or nil) of has an entry under this `owned` mode.
-local function hasEntry(have, mode)
-    if mode == "owned" then
-        return have ~= nil
-    end
-    if mode == "unowned" then
-        for finish in pairs(Cards.finishes) do
-            if have == nil or have[finish] == nil then
-                return true
-            end
-        end
-        return false
-    end
-    return true
-end
 
 -- The words of one tag kind ("category", "region"...) that the cards matching `filter` have, as { word = true }: what a
 -- drop-down for that tag can offer so that every word in it finds something. The filter's own choice for that tag is
@@ -224,7 +211,9 @@ function Browse.counts(state, filter)
     for _, card in ipairs(Cards.list) do
         if cardMatches(card, filter, terms, tagFilter) then
             counts.cards = counts.cards + 1
-            if owned[card.id] ~= nil then
+            -- (with a finish chosen, a card counts as owned when the player has it in that finish)
+            local have = owned[card.id]
+            if have ~= nil and (filter.finish == nil or have[filter.finish] ~= nil) then
                 counts.owned = counts.owned + 1
             end
         end

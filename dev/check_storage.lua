@@ -225,7 +225,7 @@ reset()
 do
     db["collection_a"] = { version = 1, buckets = Storage.BUCKETS, credits = 3 }
     db[Storage.bucketKey("collection_a", 1)] = {
-        ["gone_card|normal"] = 2, ["x|holo"] = 1, ["plain_id"] = 1, ["bad|normal"] = -1, ["ok|normal"] = "many",
+        ["gone_card|normal"] = 2, ["x|reverse"] = 1, ["plain_id"] = 1, ["bad|normal"] = -1, ["ok|normal"] = "many",
     }
     local state = Storage.load("collection_a")
     check(state.owned["gone_card|normal"] == 2, "a card the deck does not have is kept")
