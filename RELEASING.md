@@ -118,7 +118,7 @@ the line still applies. A key left out keeps its default.
 | `packs.price` | 4,000 | whole number 2,000 to 8,000 | Price of a standard pack |
 | `packs.themedPriceFactor` | 1.25 | 1 to 2 | Themed packs cost this times the price (unless a pack sets its own) |
 | `odds.rarity.<rarity>` | 63, 25, 9.4, 2, 0.6 | 0 to 100; `common` above 0 | Relative weight of each rarity in a pack |
-| `odds.finish.normal` / `.holo` | 9 / 1 | normal 1 to 1,000; holo 0 to 1,000 | Relative weight of each finish (holo 0 means none are pulled) |
+| `odds.finish.normal` / `.foil` / `.holo` | 17 / 2 / 1 | normal 1 to 1,000; foil and holo 0 to 1,000 | Relative weight of each finish, so foil is 1 in 10 and holo 1 in 20 at the defaults (0 means none of that finish are pulled) |
 | `slayer.enabled` | `true` | `false` turns it off | Switch for all Slayer credits |
 | `slayer.creditsPerLevel` | 1 | 0.5 to 2 | Credits for each combat level of a kill |
 | `slayer.bonusMultiplier` | 5 | 0 to 10 | The task bonus, as a multiple of the kill credits at the average level |
@@ -129,7 +129,8 @@ the line still applies. A key left out keeps its default.
 | `bosses.activities` | the Barrows chest, 1,800 | up to 20 entries: a `BSLAY_BOSS_KILLS<n>` variable, a rise that is a power of two, a name, credits 0 to 20,000 | Counts that rise for something other than a kill. Added to the shipped ones; credits 0 stops one paying |
 | `bosses.overrides` | none | up to 60: boss id 1 to 200, credits 0 to 20,000 | Credits for one boss, whatever its level |
 | `bosses.ignore` | none | up to 60 boss ids, 1 to 200 | Bosses that pay nothing |
-| `shine.enabled` | `true` | `false` turns it off | Switch for the holo shine |
+| `shine.enabled` | `true` | `false` turns it off | Switch for the foil shine (the pastel shine over the whole card) |
+| `holo.enabled` | `true` | `false` turns it off | Switch for the holo rainbow (behind the picture); holo cards then look like normal ones |
 | `revision` | none | whole number | Optional number for your own bookkeeping |
 
 `earning.combatSkills` is a name list, so a wrong name is the same mistake that once let Hitpoints XP earn credits (the game's
