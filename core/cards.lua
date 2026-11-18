@@ -27,15 +27,32 @@ end
 
 -- Variants. Every card the player owns is one card + one finish, saved as "<card id>|<finish>".
 --   normal : the card as it is
---   holo   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE). (Reverse holo was
---            taken out.)
-Cards.finishes = {
-    normal = { name = "Normal" },
-    holo   = { name = "Holo" },
+--   foil   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE)
+--   holo   : a rainbow in diagonal bands behind the picture (ui/cardview.lua, CardView.HOLO)
+-- (as the trading card games use the words: foil the shine over the card, holo the picture's rainbow)
+-- Written once, in order (the commonest first, the plain finish first of all); the tables below are made from it:
+--   Cards.finishes[id]      : { id, name, short (a caption too narrow for the name), colour (0xRRGGBBAA, the Stats
+--                             window's bar and line; the plain finish has none) }
+--   Cards.finishOrder       : the ids in order (how lists of them are shown: the filter, the Stats window, the preview)
+--   Cards.specialFinishes   : the same without the plain finish (the ones the Stats window and the filter count)
+--   Cards.finishRank[id]    : its place in the order (higher is rarer)
+local FINISHES = {
+    { id = "normal", name = "Normal", short = "N" },
+    { id = "foil",   name = "Foil",   short = "F", colour = 0x8CCCFFFF },     -- a pale silver-blue
+    { id = "holo",   name = "Holo",   short = "H", colour = 0xCC8CFFFF },     -- a violet
 }
+Cards.finishes, Cards.finishOrder, Cards.specialFinishes, Cards.finishRank = {}, {}, {}, {}
+for rank, finish in ipairs(FINISHES) do
+    Cards.finishes[finish.id] = finish
+    Cards.finishOrder[rank] = finish.id
+    Cards.finishRank[finish.id] = rank
+    if rank > 1 then
+        Cards.specialFinishes[#Cards.specialFinishes + 1] = finish.id
+    end
+end
 
--- Pull odds are Config keys (core/config.lua): "odds.finish.normal" 9 and "odds.finish.holo" 1 (out of 10: holo 1 in 10), a
--- relative weight rolled separately from rarity, so they stack.
+-- Pull odds are Config keys (core/config.lua): "odds.finish.normal" 17, "odds.finish.foil" 2 and "odds.finish.holo" 1
+-- (out of 20: foil 1 in 10, holo 1 in 20), relative weights rolled separately from rarity, so they stack.
 
 -- The card format (the cards are written in the files listed in deck/index.lua).
 --   id     : unique, never change it once players own the card (it is what gets saved).
@@ -538,7 +555,7 @@ end
 Cards.resort()
 
 -- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
--- "hans|normal" or "hans|holo".
+-- "hans|normal", "hans|foil" or "hans|holo".
 function Cards.variantKey(cardId, finish)
     assert(Cards.finishes[finish], "Unknown finish " .. tostring(finish))
     return cardId .. "|" .. finish
