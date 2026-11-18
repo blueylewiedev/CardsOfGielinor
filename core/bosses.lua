@@ -15,7 +15,7 @@
 --
 -- Activities. Some counts are not rises while a boss is in view: the Barrows count rises when the chest is looted, about
 -- 90 seconds after the last brother died, and only Verac of the brothers carries a BSLAY_ID. Those are listed in
--- Bosses.ACTIVITIES by variable and rise, and pay a fixed amount whatever is in view.
+-- the "bosses.activities" tuning key (core/config.lua) by variable and rise, and pay a fixed amount whatever is in view.
 --
 -- Safeguards. A rise with no boss seen within SEEN_WINDOW ticks pays nothing (the game sends many variables when a character
 -- logs in, and a count can rise for other reasons); everything in the first QUIET_TICKS after the collection loaded is
@@ -23,26 +23,23 @@
 --
 -- Time here is the server tick (about 0.6 seconds): `now` counts them, and advance() is called once for each.
 
+local Config = require("core/config")
+
 local Bosses = {}
 
--- The credits, by the boss's combat level: { lowest level, credits }, highest first. Combat levels run from about 150 to 14,000
--- and say how hard a boss is better than how quickly it dies, so the levels are grouped. Placeholders, to be tuned with the
--- credit system once there are real credits per hour from play-testing.
-Bosses.TIERS = {
-    { 9000, 8000 },     -- Vorago, Seiryu, Zamorak, Amascut, TzKal-Zuk
-    { 5000, 4000 },     -- Solak, Rasial, Arch-Glacor, Croesus, Raksha, Nex: Angel of Death, the Ambassador
-    { 1000, 1800 },     -- Telos, Araxxi, Kalphite King, Nex, Kezalam, Nakatra, and most others of the last years
-    { 500, 800 },       -- the God Wars bosses, Corporeal Beast, Har-Aken, Queen Black Dragon, TzTok-Jad, Zemouregal
-    { 0, 400 },         -- King Black Dragon, Giant Mole, Kalphite Queen, Chaos Elemental, the Dagannoth Kings
-}
-
--- Counts that rise for something other than a boss dying in view: { [variable name] = { [rise] = { name, credits } } }. Found
--- with the Boss probe; add one only after seeing the count rise in the game.
-Bosses.ACTIVITIES = {
-    BSLAY_BOSS_KILLS2 = {
-        [65536] = { name = "Barrows chest", credits = 1800 },     -- the chest looted (high half of the count)
-    },
-}
+-- The credits, by the boss's combat level (Config "bosses.tiers": { lowest level, credits }, highest first). Combat levels run
+-- from about 150 to 14,000 and say how hard a boss is better than how quickly it dies, so the levels are grouped.
+-- Placeholders, to be tuned with the credit system once there are real credits per hour from play-testing. As shipped:
+--     9000 -> 8000    Vorago, Seiryu, Zamorak, Amascut, TzKal-Zuk
+--     5000 -> 4000    Solak, Rasial, Arch-Glacor, Croesus, Raksha, Nex: Angel of Death, the Ambassador
+--     1000 -> 1800    Telos, Araxxi, Kalphite King, Nex, Kezalam, Nakatra, and most others of the last years
+--      500 ->  800    the God Wars bosses, Corporeal Beast, Har-Aken, Queen Black Dragon, TzTok-Jad, Zemouregal
+--        0 ->  400    King Black Dragon, Giant Mole, Kalphite Queen, Chaos Elemental, the Dagannoth Kings
+-- Counts that rise for something other than a boss dying in view (Config "bosses.activities": { [variable name] = { [rise] =
+-- { name, credits } } }). Found with the Boss probe; add one only after seeing the count rise in the game. Shipped: the Barrows
+-- chest (BSLAY_BOSS_KILLS2 rising by 65,536, 1,800 credits). Also Config "bosses.overrides" (credits for one boss by its
+-- BSLAY_ID), "bosses.ignore" (bosses that pay nothing) and "bosses.enabled" (the switch for all boss credits,
+-- core/bossevents.lua).
 Bosses.DEFAULT_LEVEL = 1        -- the level of a kill when the boss's level is not known
 
 -- How the game's behaviour is read.
@@ -75,12 +72,13 @@ function Bosses.creditsForLevel(level)
     if type(level) ~= "number" or level < 1 then
         level = Bosses.DEFAULT_LEVEL
     end
-    for _, tier in ipairs(Bosses.TIERS) do
+    local tiers = Config.get("bosses.tiers")
+    for _, tier in ipairs(tiers) do
         if level >= tier[1] then
             return tier[2]
         end
     end
-    return Bosses.TIERS[#Bosses.TIERS][2]
+    return tiers[#tiers][2]
 end
 
 local Tracker = {}
@@ -131,7 +129,7 @@ function Tracker:onKillVar(name, old, new)
         self:say("boss kill count", name, old, "->", new, "ignored: the collection has only just loaded")
         return false
     end
-    local activity = Bosses.ACTIVITIES[name]
+    local activity = Config.get("bosses.activities")[name]
     activity = activity ~= nil and activity[math.tointeger(new) - math.tointeger(old)] or nil
     if activity ~= nil then
         self.env.award("activity", activity.credits, { name = activity.name })
@@ -150,7 +148,16 @@ function Tracker:onKillVar(name, old, new)
         return false
     end
     best.paidAt = self.now
-    self.env.award("boss", Bosses.creditsForLevel(best.level), { name = best.name, level = best.level, id = bestId })
+    if Config.get("bosses.ignore")[bestId] then
+        self:say("boss", bestId, best.name, "is ignored (tuning): nothing paid")
+        return false
+    end
+    local credits = Config.get("bosses.overrides")[bestId] or Bosses.creditsForLevel(best.level)
+    if credits <= 0 then
+        self:say("boss", bestId, best.name, "pays 0 credits (tuning): nothing paid")
+        return false
+    end
+    self.env.award("boss", credits, { name = best.name, level = best.level, id = bestId })
     return true
 end
 

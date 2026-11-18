@@ -13,15 +13,18 @@
 
 local Cards = require("core/cards")
 local Rate = require("core/rate")
+local Config = require("core/config")
 
 local Storage = {}
 
 -- The layout of a save. Stays at 1 until there is a release candidate.
 local DATA_VERSION = 1
 
--- The credits a brand new collection starts with: two standard packs, so a new player can open some at once. Two times
--- Packs.PRICE (that file needs this one, so the number is repeated here; dev/check_packs.lua checks they agree).
-Storage.STARTER_CREDITS = 8000
+-- The credits a brand new collection starts with (Config "starterCredits", 8,000: two standard packs, so a new player can
+-- open some at once).
+function Storage.starterCredits()
+    return Config.get("starterCredits")
+end
 
 -- How many keys the owned cards are spread over. A character's saved count is read back, so changing
 -- this loses nothing (the next save rewrites the buckets), but it is a lot of rewriting: leave it.
@@ -142,7 +145,7 @@ function Storage.load(key)
     if saved == nil then
         -- A new collection starts with the starter credits (two packs). It is marked as changed so they are saved with
         -- the first save, and the grant is not made again.
-        state.credits = Storage.STARTER_CREDITS
+        state.credits = Storage.starterCredits()
         state.dirty = true
         return state
     end

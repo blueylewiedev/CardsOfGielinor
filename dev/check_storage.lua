@@ -121,7 +121,7 @@ end
 reset()
 do
     local state = Storage.load("collection_nobody")
-    check(state.credits == Storage.STARTER_CREDITS and count(state.owned) == 0 and state.dirty == true,
+    check(state.credits == Storage.starterCredits() and count(state.owned) == 0 and state.dirty == true,
         "a fresh collection has only the starter credits, and is marked for saving")
 end
 
@@ -342,7 +342,7 @@ reset()
 do
     local trackingKey, nameKey = Storage.keyForTracking("1"), Storage.keyForName("Nobody")
     local state, adopted = Storage.loadOrAdopt(trackingKey, nameKey)
-    check(not adopted and state.credits == Storage.STARTER_CREDITS and count(state.owned) == 0,
+    check(not adopted and state.credits == Storage.starterCredits() and count(state.owned) == 0,
         "no name collection: a fresh one, nothing copied")
     state, adopted = Storage.loadOrAdopt(trackingKey, nil)
     check(not adopted, "no old key: nothing copied")

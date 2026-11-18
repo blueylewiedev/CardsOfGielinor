@@ -9,6 +9,7 @@
 local Cards = require("core/cards")
 local Logger = require("core/logger")
 local Settings = require("core/settings")
+local Config = require("core/config")
 
 local CardView = {}
 
@@ -632,7 +633,8 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
         locked and DIM_TEXT_COLOUR or DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
 
     -- a holo's shine goes over the whole card, the text included (and narrows with the frame when the card is turned)
-    if opts ~= nil and (opts.foil or opts.finish == "holo") and not locked and Settings.get("shine") then
+    if opts ~= nil and (opts.foil or opts.finish == "holo") and not locked and Settings.get("shine")
+        and Config.get("shine.enabled") then
         for _, sprite in ipairs(addShine(root, W, H) or {}) do
             part(sprite, 0, 0, W, H)
         end
