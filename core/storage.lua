@@ -8,15 +8,20 @@
 -- The client refuses a single value that is too big. Measured with a throwaway probe (2026-11-12): a table
 -- of 2,000 entries is accepted and 3,000 refused; a string of 100,000 letters is accepted and 131,056
 -- refused. A full collection has thousands of entries. So a character has one main key (credits,
--- XP pool, difficulty, stats) and the owned cards are spread over BUCKETS more keys, the bucket
+-- XP pool, stats) and the owned cards are spread over BUCKETS more keys, the bucket
 -- chosen by a hash of the card's id. A pack only rewrites the buckets it changed.
 
 local Cards = require("core/cards")
+local Rate = require("core/rate")
 
 local Storage = {}
 
 -- The layout of a save. Stays at 1 until there is a release candidate.
 local DATA_VERSION = 1
+
+-- The credits a brand new collection starts with: two standard packs, so a new player can open some at once. Two times
+-- Packs.PRICE (that file needs this one, so the number is repeated here; dev/check_packs.lua checks they agree).
+Storage.STARTER_CREDITS = 8000
 
 -- How many keys the owned cards are spread over. A character's saved count is read back, so changing
 -- this loses nothing (the next save rewrites the buckets), but it is a lot of rewriting: leave it.
@@ -70,7 +75,6 @@ end
 
 -- A fresh, empty collection.
 --   credits : spendable credits
---   difficulty : id of the pack price tier the player chose (see core/packs.lua), or nil
 --   xpPool  : XP gained that has not yet added up to a whole credit
 --   owned   : { [variantKey] = how many copies the player owns }, where the key is
 --             "<card id>|<finish>" (see Cards.variantKey). Each variant is
@@ -82,7 +86,7 @@ end
 --   staleBuckets : how many buckets the loaded save was spread over, if that is not BUCKETS (the keys
 --             past the new count are deleted once everything is saved again), else nil
 function Storage.newState()
-    return { version = DATA_VERSION, credits = 0, xpPool = 0, difficulty = nil, owned = {},
+    return { version = DATA_VERSION, credits = 0, xpPool = 0, owned = {},
         stats = Storage.newStats(), dirty = false, dirtyBuckets = {} }
 end
 
@@ -90,10 +94,12 @@ end
 --   packsOpened, cardsPulled : how many packs were opened and cards pulled from them
 --   creditsEarned            : credits earned from XP (not credits added by the dev tools)
 --   creditsSpent             : credits spent on packs
+--   playTicks                : ticks of play (about 0.6 seconds each, counted while a character's collection is loaded),
+--                              for the average credits per hour over all sessions (core/rate.lua)
 --   finishes                 : { [finish] = cards pulled with that finish }
 --   rarities                 : { [rarity] = cards pulled of that rarity }
 function Storage.newStats()
-    return { packsOpened = 0, cardsPulled = 0, creditsEarned = 0, creditsSpent = 0,
+    return { packsOpened = 0, cardsPulled = 0, creditsEarned = 0, creditsSpent = 0, playTicks = 0,
         finishes = {}, rarities = {} }
 end
 
@@ -134,6 +140,10 @@ function Storage.load(key)
     local state = Storage.newState()
     local saved = PersistentDB:GetStructuredData(key)
     if saved == nil then
+        -- A new collection starts with the starter credits (two packs). It is marked as changed so they are saved with
+        -- the first save, and the grant is not made again.
+        state.credits = Storage.STARTER_CREDITS
+        state.dirty = true
         return state
     end
 
@@ -142,9 +152,6 @@ function Storage.load(key)
     end
     if type(saved.xpPool) == "number" and saved.xpPool > 0 then
         state.xpPool = math.floor(saved.xpPool)
-    end
-    if type(saved.difficulty) == "string" then
-        state.difficulty = saved.difficulty
     end
 
     -- The owned cards, from as many buckets as the save was made with.
@@ -166,7 +173,7 @@ function Storage.load(key)
 
     if type(saved.stats) == "table" then
         local stats = state.stats
-        for _, field in ipairs({ "packsOpened", "cardsPulled", "creditsEarned", "creditsSpent" }) do
+        for _, field in ipairs({ "packsOpened", "cardsPulled", "creditsEarned", "creditsSpent", "playTicks" }) do
             local value = saved.stats[field]
             if type(value) == "number" and value > 0 then
                 stats[field] = math.floor(value)
@@ -239,7 +246,6 @@ function Storage.save(key, state)
         buckets = BUCKETS,
         credits = state.credits,
         xpPool = state.xpPool,
-        difficulty = state.difficulty,
         stats = state.stats,
     })
     if not ok then
@@ -305,6 +311,16 @@ end
 function Storage.earnCredits(state, amount)
     state.stats.creditsEarned = state.stats.creditsEarned + amount
     Storage.addCredits(state, amount)
+    Rate.add(amount)
+end
+
+-- Adds ticks of play to the stats and marks the collection as needing a save (main.lua calls it once a minute of play,
+-- and with what is left over at logout).
+function Storage.addPlayTicks(state, ticks)
+    if ticks > 0 then
+        state.stats.playTicks = state.stats.playTicks + ticks
+        state.dirty = true
+    end
 end
 
 -- Counts one opened pack in the stats. `results` is the list Packs.open builds, each with a
@@ -352,12 +368,6 @@ end
 function Storage.addCard(state, variantKey, count)
     state.owned[variantKey] = (state.owned[variantKey] or 0) + (count or 1)
     state.dirtyBuckets[Storage.bucketOf(variantKey)] = true
-    state.dirty = true
-end
-
--- Sets the pack price tier. `tierId` is an id from Packs.tiers.
-function Storage.setDifficulty(state, tierId)
-    state.difficulty = tierId
     state.dirty = true
 end
 

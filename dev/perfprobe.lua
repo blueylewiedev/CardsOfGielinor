@@ -7,7 +7,7 @@
 --   PROBE <mark>          "start", "main.lua finished", "main window shown", "session loaded", "main window usable": the
 --                         seconds of frames since the probe loaded, and the logic ticks since the first one. "main window
 --                         shown" is when the window was created; "main window usable" is when it first shows the home
---                         or setup screen instead of "Log in to a character".
+--                         screen instead of the loading screen.
 --   PROBE reload gap      the logic ticks between the old plugin stopping (its last tick is kept in PersistentDB) and
 --                         the first tick of the new one: how long the reload took, as the client counts it. Nothing
 --                         is drawn while the plugin's files load, so the frame clock cannot see it.
@@ -146,7 +146,7 @@ function Probe.start()
         local result = refresh(...)
         if not markedUsable then
             local screen = PackWindow.currentScreen()
-            if screen == "home" or screen == "setup" then
+            if screen == "home" then
                 markedUsable = true
                 Probe.mark("main window usable")
             end

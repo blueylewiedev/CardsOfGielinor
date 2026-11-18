@@ -546,4 +546,74 @@ function PackArt.destroy(pack)
     pcall(function() pack.root:Destroy() end)
 end
 
+-- The front of a pack type's pack, `height` tall, in `parent`: { root, w, destroy() }. A pack type with a design is drawn
+-- from it (hundreds of parts, so draw it once and keep it); any other shows the plain pack image.
+function PackArt.drawFront(parent, packTypeId, height)
+    local art = PackArt.designFor(packTypeId)
+    if art ~= nil then
+        local pack = PackArt.new(parent, "front", height)
+        PackArt.draw(pack, art)
+        return { root = pack.root, w = pack.w, destroy = function() PackArt.destroy(pack) end }
+    end
+    local w = math.floor(height * PackArt.PACK_IMAGE_ASPECT)
+    local root = ui.Layer.new(parent)
+    root:SetSize(w, height)
+    local sprite = ui.Sprite.new(root)
+    sprite:SetSize(w, height)
+    local picture = PackArt.image("pack")
+    if picture ~= nil then
+        sprite.sprite = picture
+    end
+    return { root = root, w = w, destroy = function() pcall(function() root:Destroy() end) end }
+end
+
+local tileImages = {}
+
+-- The picture shipped for a pack type's tile (resources/images/tile_<pack id>.png: a capture of what the code below draws
+-- from the login screen, at 2.4 times the Shop's tile size), or nil if there is none. A pack type without one is drawn
+-- from the login screen's sprites instead. Not logged when missing: that is how a new pack type starts.
+local function tileImage(packTypeId)
+    if tileImages[packTypeId] == nil then
+        local ok, resource = pcall(function() return Plugin.resources.images["tile_" .. tostring(packTypeId)] end)
+        if ok and resource ~= nil then
+            pcall(function() resource:Load() end)
+            tileImages[packTypeId] = resource
+        else
+            tileImages[packTypeId] = false
+        end
+    end
+    return tileImages[packTypeId] or nil
+end
+
+-- A small flat picture of a pack type's pack for a list of packs, in a layer `height` tall and as wide as the pack's
+-- outline: its shipped tile image if it has one (one sprite, and it loads at once), otherwise the part of the login
+-- screen its front shows (one sprite per picture tile, not the hundreds of parts of the full pack, but the client
+-- takes about 20 ms to load each). A pack type with no design gets the plain pack image. Returns { root, w, destroy() }.
+function PackArt.drawTile(parent, packTypeId, height)
+    local art = PackArt.designFor(packTypeId)
+    local w = math.floor(height * PackArt.OUTLINE.w / PackArt.OUTLINE.h)
+    local root = ui.Layer.new(parent)
+    root:SetSize(w, height)
+    local parts = {}
+    local shipped = tileImage(packTypeId)
+    if shipped ~= nil then
+        local sprite = ui.Sprite.new(root)
+        parts[#parts + 1] = sprite
+        sprite:SetSize(w, height)
+        sprite.sprite = shipped
+    elseif art ~= nil then
+        local pictureW = height * PackArt.PICTURE_ASPECT
+        PackArt.drawPicture(root, parts, PackArt.tiles(art.screen), -math.floor(art.front * pictureW), 0, pictureW,
+            height, w, height)
+    else
+        local sprite = ui.Sprite.new(root)
+        sprite:SetSize(w, height)
+        local picture = PackArt.image("pack")
+        if picture ~= nil then
+            sprite.sprite = picture
+        end
+    end
+    return { root = root, w = w, destroy = function() destroyAll(parts); pcall(function() root:Destroy() end) end }
+end
+
 return PackArt

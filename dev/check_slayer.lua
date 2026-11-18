@@ -3,8 +3,8 @@
 -- (an Imp, an AOE on Lesser demons, a Black demon, Bronze dragons, finishing a task, cancelling and skipping one) and
 -- the cases around them: a monster that left before the count fell, a count drop with no Slayer XP, a drop too big
 -- to be kills, an abyssal lord counting as five, a task cancelled and a new one taken. The tick numbers are the
--- server ticks the probe logged (shifted to start near 0). It also checks that XP in the combat skills earns no
--- credits (core/earning.lua).
+-- server ticks the probe logged (shifted to start near 0). It also checks that XP in the combat skills and Slayer
+-- earns no credits (core/earning.lua).
 --
 -- Run from the plugin's folder:  lua dev/check_slayer.lua
 
@@ -318,18 +318,35 @@ end
 
 -- XP credits: combat skills earn nothing (fighting pays through the Slayer credits), every other skill does.
 do
+    -- The game's SkillType, every member in its order (developer.runescape.com/rs/game/player.html: 0 ATTACK ... 3 HITPOINTS ...
+    -- 28 NECROMANCY). A wrong name in Earning.COMBAT_SKILLS (Constitution is HITPOINTS) let that skill's XP earn credits.
+    local members = { "ATTACK", "DEFENCE", "STRENGTH", "HITPOINTS", "RANGED", "PRAYER", "MAGIC", "COOKING", "WOODCUTTING",
+        "FLETCHING", "FISHING", "FIREMAKING", "CRAFTING", "SMITHING", "MINING", "HERBLORE", "AGILITY", "THIEVING", "SLAYER",
+        "FARMING", "RUNECRAFTING", "HUNTER", "CONSTRUCTION", "SUMMONING", "DUNGEONEERING", "DIVINATION", "INVENTION",
+        "ARCHAEOLOGY", "NECROMANCY" }
     SkillType = {}
-    for number, name in ipairs({ "ATTACK", "DEFENCE", "STRENGTH", "CONSTITUTION", "RANGED", "PRAYER", "MAGIC", "COOKING",
-        "MINING", "SLAYER", "SUMMONING", "DUNGEONEERING", "NECROMANCY", "DIVINATION" }) do
-        SkillType[name] = { name = name, number = number }   -- the game's members are not plain numbers; compare as given
+    for number, name in ipairs(members) do
+        SkillType[name] = { name = name, number = number - 1 }   -- the game's members are not plain numbers; compare as given
     end
+    check(#members == 29, "the stand-in has the game's 29 skills")
     local Earning = require("core/earning")
     local function gain(skill, from, to) return Earning.xpGainFromEvent({ skill = skill, oldXP = from, newXP = to }) end
+    local combat = {}
     for _, name in ipairs(Earning.COMBAT_SKILLS) do
+        check(SkillType[name] ~= nil, name .. " is a skill the game has (Earning.COMBAT_SKILLS lists real SkillType names)")
         check(gain(SkillType[name], 0, 5000) == 0, name .. " XP earns nothing")
+        combat[name] = true
+    end
+    for _, name in ipairs({ "ATTACK", "DEFENCE", "STRENGTH", "HITPOINTS", "RANGED", "PRAYER", "MAGIC", "SUMMONING", "NECROMANCY", "SLAYER" }) do
+        check(combat[name], name .. " is one of the skills that earn nothing")
+    end
+    for _, name in ipairs(members) do
+        if not combat[name] then
+            check(gain(SkillType[name], 0, 5000) == 5000, name .. " XP still counts")
+        end
     end
     check(gain(SkillType.COOKING, 100, 600) == 500 and gain(SkillType.MINING, 0, 40) == 40, "non-combat XP still counts")
-    check(gain(SkillType.SLAYER, 0, 300) == 300, "Slayer XP is not a combat skill, it still counts")
+    check(gain(SkillType.SLAYER, 0, 300) == 0, "Slayer XP earns nothing too (the kills pay)")
     check(gain(SkillType.COOKING, 600, 600) == 0 and gain(SkillType.COOKING, nil, 5) == 0, "no gain and missing values still earn nothing")
     check(gain(nil, 0, 50) == 50, "an event with no skill is not mistaken for a combat skill")
     local seen = SkillType.ATTACK

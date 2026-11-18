@@ -221,4 +221,56 @@ function Browse.counts(state, filter)
     return counts
 end
 
+-- How much of the deck the player has, in one pass over it (the Stats window shows all of these at once):
+--   all      : { cards, owned } for every card
+--   kinds    : { npc = { cards, owned }, item = { cards, owned } }
+--   rarities : { [rarity id] = { cards, owned } }
+--   regions  : { [region word] = { cards, owned } }   (a card with several regions counts in each)
+--   noRegion : { cards, owned } for the cards that have no region at all (the ones every region's count leaves out)
+-- A card counts as owned when the player has at least one variant of it. `hidden` (optional, { [variant key] = copies }, as
+-- the pack opening gives it) are copies the player has not seen yet: they do not count, so the numbers do not give away
+-- what is in a pack that is still being opened.
+function Browse.progress(state, hidden)
+    local have = {}
+    for key, count in pairs(state.owned) do
+        local cardId = Cards.parseKey(key)
+        if cardId ~= nil and Cards.byId[cardId] ~= nil and count > ((hidden and hidden[key]) or 0) then
+            have[cardId] = true
+        end
+    end
+    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
+        noRegion = { cards = 0, owned = 0 } }
+    local function count(group, name, owned)
+        local bucket = group[name]
+        if bucket == nil then
+            bucket = { cards = 0, owned = 0 }
+            group[name] = bucket
+        end
+        bucket.cards = bucket.cards + 1
+        if owned then
+            bucket.owned = bucket.owned + 1
+        end
+    end
+    for _, card in ipairs(Cards.list) do
+        local owned = have[card.id] == true
+        result.all.cards = result.all.cards + 1
+        if owned then
+            result.all.owned = result.all.owned + 1
+        end
+        count(result.kinds, Cards.kindOf(card), owned)
+        count(result.rarities, card.rarity, owned)
+        local regions = card.tags and card.tags.regions or {}
+        for _, word in ipairs(regions) do
+            count(result.regions, word, owned)
+        end
+        if #regions == 0 then
+            result.noRegion.cards = result.noRegion.cards + 1
+            if owned then
+                result.noRegion.owned = result.noRegion.owned + 1
+            end
+        end
+    end
+    return result
+end
+
 return Browse

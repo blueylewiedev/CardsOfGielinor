@@ -6,14 +6,16 @@ local Storage = require("core/storage")
 local Earning = {}
 
 -- How much XP adds up to one credit.
-Earning.XP_PER_CREDIT = 1000
+Earning.XP_PER_CREDIT = 10
 
--- The combat skills (the game's own "combat" group). Their XP earns nothing: fighting pays through the Slayer
--- credits (core/slayer.lua) and, later, boss kills. Names are SkillType members.
-Earning.COMBAT_SKILLS = { "ATTACK", "STRENGTH", "DEFENCE", "CONSTITUTION", "RANGED", "PRAYER", "MAGIC",
-    "SUMMONING", "NECROMANCY" }
+-- The skills whose XP earns nothing: the combat skills (the game's own "combat" group) and Slayer. Fighting pays
+-- through the Slayer credits (core/slayer.lua: a kill and a finished task) and, later, boss kills; Slayer's own XP
+-- would pay for the same kills twice. Names are SkillType members (Constitution is HITPOINTS, skill 3: it was listed as
+-- CONSTITUTION, which is not a member, so its XP earned credits until 2026-11-17).
+Earning.COMBAT_SKILLS = { "ATTACK", "STRENGTH", "DEFENCE", "HITPOINTS", "RANGED", "PRAYER", "MAGIC",
+    "SUMMONING", "NECROMANCY", "SLAYER" }
 
--- True if `skill` (the skill of a SkillTransmit event) is one of the combat skills.
+-- True if `skill` (the skill of a SkillTransmit event) earns nothing: one of the combat skills, or Slayer.
 function Earning.isCombatSkill(skill)
     if skill == nil or SkillType == nil then
         return false
@@ -29,7 +31,7 @@ end
 
 -- Works out how much XP a SkillTransmit event is worth, or 0 if it should be ignored.
 -- Every real gain counts, including big ones (quest rewards, lamps) and the first XP
--- in a brand new skill. Ignored: a missing value, no gain at all, and combat skills.
+-- in a brand new skill. Ignored: a missing value, no gain at all, and the combat skills and Slayer.
 function Earning.xpGainFromEvent(e)
     local oldXP, newXP = e.oldXP, e.newXP
     if type(oldXP) ~= "number" or type(newXP) ~= "number" then

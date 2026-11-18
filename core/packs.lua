@@ -1,5 +1,5 @@
 -- core/packs.lua
--- Difficulty tiers and pack opening: what a pack costs and how its cards are rolled.
+-- The price of a pack and pack opening: what a pack costs and how its cards are rolled.
 -- This file has no UI. The window that shows packs is in ui/packwindow.lua.
 
 local Cards = require("core/cards")
@@ -10,23 +10,13 @@ local Packs = {}
 -- Cards in each pack.
 Packs.PACK_SIZE = 5
 
--- Difficulty tiers, chosen once per character. Price is in credits (1,000 XP = 1 credit,
--- see core/earning.lua). `id` is what gets saved, so never change an id once players use it.
-Packs.tiers = {
-    { id = "easy",   name = "Easy",   price = 4 },
-    { id = "normal", name = "Normal", price = 7 },
-    { id = "hard",   name = "Hard",   price = 12 },
-    { id = "master", name = "Master", price = 20 },
-}
-Packs.tierById = {}
-for _, tier in ipairs(Packs.tiers) do
-    Packs.tierById[tier.id] = tier
-end
+-- What a standard pack costs, in credits (1,000 XP = 100 credits, see core/earning.lua). One price for everyone: the
+-- themed packs multiply it by their `priceFactor`. Storage.STARTER_CREDITS is two of these; keep them in step
+-- (dev/check_packs.lua checks).
+Packs.PRICE = 4000
 
--- The tier a character chose, or nil if they have not chosen yet.
-function Packs.tierFor(state)
-    return Packs.tierById[state.difficulty]
-end
+-- The most packs one purchase can buy (the Shop's quantity drop-down offers these, up to the largest).
+Packs.QUANTITIES = { 1, 2, 3, 5, 10 }
 
 -- The pack type with this id (default "standard"), or nil if there is none.
 function Packs.typeById(packTypeId)
@@ -49,16 +39,14 @@ function Packs.offered()
     return list
 end
 
--- What a pack costs this character in credits, or nil if they have not chosen a tier.
--- `packTypeId` is optional (default "standard"): themed packs multiply the tier's price by
--- their `priceFactor`, rounded up.
-function Packs.priceFor(state, packTypeId)
-    local tier = Packs.tierFor(state)
+-- What one pack costs in credits, or nil if there is no such pack type. `packTypeId` is optional (default
+-- "standard"): themed packs multiply the price by their `priceFactor`, rounded up.
+function Packs.priceFor(packTypeId)
     local packType = Packs.typeById(packTypeId)
-    if tier == nil or packType == nil then
+    if packType == nil then
         return nil
     end
-    return math.ceil(tier.price * (packType.priceFactor or 1))
+    return math.ceil(Packs.PRICE * (packType.priceFactor or 1))
 end
 
 -- Picks a key from a { key = weight } table, in proportion to the weights. Keys are
@@ -216,47 +204,53 @@ function Packs.rollCard(pool, kinds)
     return { card = card, finish = finish, key = Cards.variantKey(card.id, finish) }
 end
 
--- Buys and opens a pack for this character: takes the credits, rolls the cards and adds
--- them to the collection. Returns a list of results, one per card, each with:
+-- Buys and opens `count` packs (default 1) of a type for this character: takes the credits for all of them at once
+-- (all or nothing), rolls the cards and adds them to the collection. Returns a list of results, one per card, packs one
+-- after the other, each with:
 --   card, finish, key       : what was pulled
---   isNewCard               : the player had no variant of this card before
---   isNewVariant            : the player had none of this exact variant before
+--   pack                    : which of the packs bought it came from (1 to count)
+--   isNewCard               : the player had no variant of this card before (counting the cards pulled before it)
+--   isNewVariant            : the player had none of this exact variant before (likewise)
 --   owned                   : how many of this variant the player now has
--- If the pack could not be bought, returns nil and a reason ("no difficulty" or
+-- If the packs could not be bought, returns nil and a reason ("unknown pack", "bad count", "no cards" or
 -- "not enough credits").
-function Packs.open(state, packTypeId)
+function Packs.open(state, packTypeId, count)
+    count = count or 1
     local packType = Packs.typeById(packTypeId)
     if packType == nil then
         return nil, "unknown pack"
     end
-    local price = Packs.priceFor(state, packTypeId)
-    if price == nil then
-        return nil, "no difficulty"
+    if type(count) ~= "number" or count < 1 or count ~= math.floor(count) then
+        return nil, "bad count"
     end
     local pool, poolSize, kinds = Packs.poolFor(packType)
     if poolSize == 0 then
         return nil, "no cards"
     end
-    if not Storage.spendCredits(state, price) then
+    if not Storage.spendCredits(state, Packs.priceFor(packTypeId) * count) then
         return nil, "not enough credits"
     end
 
     local size = packType.size or Packs.PACK_SIZE
-    local rolled = {}
-    for i = 1, size do
-        rolled[i] = Packs.rollCard(pool, kinds)
-    end
-
     local results = {}
-    for i = 1, size do
-        local result = rolled[i]
-        result.isNewCard = not Storage.ownsCard(state, result.card.id)
-        result.isNewVariant = Storage.countOwned(state, result.key) == 0
-        Storage.addCard(state, result.key)
-        result.owned = Storage.countOwned(state, result.key)
-        results[i] = result
+    for pack = 1, count do
+        local rolled = {}
+        for i = 1, size do
+            rolled[i] = Packs.rollCard(pool, kinds)
+            rolled[i].pack = pack
+        end
+        local ofPack = {}
+        for i = 1, size do
+            local result = rolled[i]
+            result.isNewCard = not Storage.ownsCard(state, result.card.id)
+            result.isNewVariant = Storage.countOwned(state, result.key) == 0
+            Storage.addCard(state, result.key)
+            result.owned = Storage.countOwned(state, result.key)
+            results[#results + 1] = result
+            ofPack[i] = result
+        end
+        Storage.recordPack(state, ofPack)
     end
-    Storage.recordPack(state, results)
     return results
 end
 

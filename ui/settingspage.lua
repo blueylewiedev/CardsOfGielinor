@@ -1,16 +1,17 @@
 -- ui/settingspage.lua
--- The plugin's settings, built with PrettyUI. They let the player change the pack difficulty
--- of the logged-in character and switch the card effects on and off.
+-- The plugin's settings. They let the player switch the card effects on and off and show how the collection is saved and
+-- whether card updates are on.
 --
--- The same page is shown in two places, each kept up to date:
---   "client" : the plugin's page in the client's settings (needs "hasSettingsIcon" in plugin.json)
---   "window" : a window of its own, opened by the Settings button in the main window
+-- The same settings are shown in two places, each kept up to date:
+--   "client" : the plugin's page in the client's settings (needs "hasSettingsIcon" in plugin.json), a single column made
+--              with PrettyUI's SimpleView
+--   "window" : a window of its own, opened by the cog in the main window's title bar: two columns of panels with a gold
+--              heading each. General (the effects) and, in the development copy, Developer are on the left; Your
+--              collection and Card updates are on the right.
 
-local Packs = require("core/packs")
 local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
 local Settings = require("core/settings")
-local Storage = require("core/storage")
 local Format = require("core/format")
 local OverlayLoader = require("core/overlayloader")
 local Kit = require("ui/kit")
@@ -22,15 +23,22 @@ local SUBSCRIBER = "cardcollector_settings"
 -- the space below keeps the next heading off it. Adjust these to move it.
 local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
--- Dividers separate the page's parts: difficulty, effects, how the collection is saved, card updates and (with
--- the development tools) the developer options.
+-- Dividers separate the page's parts: the options, how the collection is saved, card updates and (with the
+-- development tools) the developer options.
 -- The "Your collection" part adds a heading, one line of text and a divider. Its text and the card updates text are
 -- short, with an info icon beside them that shows the explanation as a tooltip (the tooltip wraps itself, so the
 -- rows stay one line). The text is as wide as the page less the margins and the icon.
-local SAVED_HEIGHT = 56         -- the heading and the line, a guess like the other heights here
 local ICON_WIDTH, MARGINS = 24, 44
-local WINDOW_WIDTH, WINDOW_HEIGHT = 320, 445 + 2 * DIVIDER_STEP + SAVED_HEIGHT
-local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer options, when the development tools are there
+
+-- The window: two columns of panels, MARGIN apart and from the edges. A window's content is its width less the frame (8 each side).
+local WINDOW_WIDTH = 600
+local WINDOW_BORDER = 8
+local MARGIN, PAD = 10, 10                 -- round the panels, and inside one
+local COLUMN_W = (WINDOW_WIDTH - 2 * WINDOW_BORDER - 3 * MARGIN) // 2
+local HEADING_H = Kit.PANEL_HEADING_H + 4  -- a panel's heading and the space under it
+local LINE_ROW_H = 24                      -- a line of text with its info icon
+local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
+local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 
 -- api.getState() and api.saveNow(), as for the pack window; api.keyKind() (how the collection is saved: "tracking",
 -- "name" or nil); api.devTools (true when the
@@ -38,13 +46,14 @@ local DEV_HEIGHT = 40 + DIVIDER_STEP    -- extra height for the Developer option
 local api = nil
 local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, widgets = {...} }
 local window = nil       -- the settings window's frame, while it is open
-local updating = false   -- true while the page itself changes a control, so that is not mistaken for the player
 
 -- Removes one of the two copies of the page ("client" or "window") from the screen.
 local function destroyPage(key)
     local page = pages[key]
     if page ~= nil then
-        pcall(function() page.view:Destroy() end)
+        if page.view ~= nil then
+            pcall(function() page.view:Destroy() end)
+        end
         pages[key] = nil
     end
 end
@@ -57,30 +66,10 @@ local function build(key, parent, width, height)
     pages[key] = page
     view:AddTitle(PluginId.TITLE)
 
-    view:AddText("Pack difficulty")
-    local choices = {}
-    for _, tier in ipairs(Packs.tiers) do
-        choices[#choices + 1] = { text = tier.name .. " - " .. tier.price .. " credits per pack", value = tier.id }
-    end
-    page.widgets.difficulty = view:AddRadioButton(choices, {
-        onChange = function(_, value)
-            if updating then
-                return
-            end
-            local state = api.getState()
-            if state ~= nil then
-                Storage.setDifficulty(state, value)
-                api.saveNow()
-            end
-        end,
-    })
-    page.widgets.note = view:AddText("")
-
     -- PrettyUI's divider is 60 units tall by default; `height` shrinks it if it is supported.
     local function divider()
         view:AddDivider({ height = DIVIDER_HEIGHT, marginTop = DIVIDER_ABOVE, marginBottom = DIVIDER_BELOW })
     end
-    divider()
 
     -- The options, as checkboxes: the effects, then (only with the development tools) theirs.
     local function checkboxes(heading, dev)
@@ -140,22 +129,6 @@ end
 -- Brings one page in step with the logged-in character.
 local function refreshPage(page)
     local widgets = page.widgets
-    local state = api.getState()
-    local tier = state and Packs.tierFor(state) or nil
-    widgets.difficulty:SetDisabled(state == nil or tier == nil)
-
-    local note
-    if state == nil then
-        note = "Loading your collection..."
-    elseif tier == nil then
-        note = "Choose one in the main window first."
-    else
-        note = "Applies to this character."
-    end
-    if widgets.note.content ~= note then
-        widgets.note.content = note
-    end
-
     -- How this session's collection is saved is fixed at login; the permission can change after that, and takes
     -- effect at the next login, so the line says so (Format.collectionLine).
     local granted = false
@@ -163,13 +136,6 @@ local function refreshPage(page)
     local kind = api.keyKind ~= nil and api.keyKind() or nil
     showLine(page, "saved", Format.collectionLine(kind, granted))
     showLine(page, "updates", OverlayLoader.playerLine())
-
-    local shown = tier and tier.id or nil
-    if widgets.difficulty:GetSelectedValue() ~= shown then
-        updating = true
-        widgets.difficulty:SetSelectedValue(shown)
-        updating = false
-    end
 end
 
 -- Keeps every open page in step. Called every tick.
@@ -189,6 +155,82 @@ function SettingsPage.closeWindow()
     window = nil
 end
 
+-- The options of one kind (the effects, or the developer ones), as the checkboxes' choices.
+local function choicesFor(dev)
+    local list = {}
+    for _, option in ipairs(Settings.options) do
+        if (option.dev == true) == dev and not option.hidden then
+            list[#list + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
+        end
+    end
+    return list
+end
+
+-- The heights of the panels (a heading, then the rows, then PAD).
+local function checkboxPanelHeight(rows, extra)
+    return HEADING_H + rows * Kit.CHECKBOX_ROW_H + (extra or 0) + PAD
+end
+local LINE_PANEL_H = HEADING_H + LINE_ROW_H + PAD
+-- General is as tall as Your collection and Card updates together, so the two columns end level (with the development tools
+-- off); its rows are spaced out to fill it.
+local GENERAL_H = 2 * LINE_PANEL_H + MARGIN
+
+-- How tall the window's content is: the taller of the two columns, with the margin round it.
+local function windowHeight(dev)
+    local height = GENERAL_H
+    if dev then
+        height = height + MARGIN + checkboxPanelHeight(#choicesFor(true), 20)
+    end
+    return height + 2 * MARGIN
+end
+
+-- A line of text with an info icon at its right, inside a panel at (x, y): returns the text and the icon.
+local function lineWithIcon(content, x, y, w)
+    local text = Kit.text(content, x + PAD, y, w - 2 * PAD - ICON_WIDTH - 6, LINE_ROW_H, "", WHITE, ui.AlignMode.TOPLEFT)
+    local icon = Kit.iconButton(content, "INFO", x + w - PAD - ICON_WIDTH, y, function() end, "...", "?", 30)
+    return text, icon
+end
+
+-- Fills the settings window's content with its panels. `page` is what refreshPage keeps up to date.
+local function buildWindow(content)
+    local page = { widgets = {} }
+    pages.window = page
+    local x1, x2 = MARGIN, MARGIN + COLUMN_W + MARGIN
+    local inner = COLUMN_W - 2 * PAD
+
+    -- A panel of checkboxes. With `height` it is that tall and the rows are spaced evenly down it.
+    local function checkboxPanel(x, y, heading, dev, extra, height)
+        local choices = choicesFor(dev)
+        height = height or checkboxPanelHeight(#choices, extra)
+        local step = nil
+        if #choices > 1 then
+            step = (height - HEADING_H - PAD - Kit.CHECKBOX_ROW_H) // (#choices - 1)
+        end
+        Kit.panel(content, x, y, COLUMN_W, height, heading)
+        return Kit.checkboxes(content, x + PAD, y + HEADING_H, inner, choices, function(value, selected)
+            Settings.set(value, selected)
+            if api.onSettingChanged ~= nil then
+                api.onSettingChanged(value, selected)
+            end
+        end, height ~= checkboxPanelHeight(#choices, extra) and step or nil), y + height
+    end
+
+    -- Left: the effects, then (only with the development tools) the developer options.
+    local nextY
+    page.widgets.effects, nextY = checkboxPanel(x1, MARGIN, "GENERAL", false, nil, GENERAL_H)
+    if api.devTools then
+        page.widgets.dev, nextY = checkboxPanel(x1, nextY + MARGIN, "DEVELOPER", true, 20)
+        Kit.text(content, x1 + PAD, nextY - PAD - 20, inner, 18, "Hides the development tools", GREY, ui.AlignMode.TOPLEFT)
+    end
+
+    -- Right: how the collection is saved, and the card updates. Each line has an icon with the explanation as its tooltip.
+    Kit.panel(content, x2, MARGIN, COLUMN_W, LINE_PANEL_H, "YOUR COLLECTION")
+    page.widgets.saved, page.widgets.savedIcon = lineWithIcon(content, x2, MARGIN + HEADING_H, COLUMN_W)
+    local y = MARGIN + LINE_PANEL_H + MARGIN
+    Kit.panel(content, x2, y, COLUMN_W, LINE_PANEL_H, "CARD UPDATES")
+    page.widgets.updates, page.widgets.updatesIcon = lineWithIcon(content, x2, y + HEADING_H, COLUMN_W)
+end
+
 -- Opens the settings window, if it is not open already.
 function SettingsPage.openWindow()
     if window ~= nil or prettyui == nil then
@@ -196,10 +238,10 @@ function SettingsPage.openWindow()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     local content
-    local height = WINDOW_HEIGHT + (api.devTools and DEV_HEIGHT or 0)
+    local height = windowHeight(api.devTools)
     window, content = Kit.window(gameWindow, "Settings", WINDOW_WIDTH, height + Kit.titleBarHeight(),
         function() SettingsPage.closeWindow() end, 0.3, 0.2)
-    local ok, err = pcall(build, "window", content, WINDOW_WIDTH, height)
+    local ok, err = pcall(buildWindow, content)
     if not ok then
         Logger.error("settings window failed:", err)
         SettingsPage.closeWindow()

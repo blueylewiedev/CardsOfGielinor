@@ -90,6 +90,30 @@ do
     check(pick(26, 165) == 11 and CardView.nameFont(26, 165, { fonts[1], fonts[3] }) == 11, "a size the client lacks is skipped")
 end
 
+-- the window's size follows the screen: Viewer.layoutFor
+do
+    local full = Viewer.layoutFor(nil)
+    check(full.listRows == 13 and full.gridRows == 2 and full.detailScale == 2.0,
+        "an unknown screen height gets the full-size layout")
+    local big = Viewer.layoutFor(5000)
+    check(big.height == full.height and big.listRows == 13 and big.gridRows == 2 and big.detailScale == 2.0,
+        "a tall screen gets the full-size layout")
+    local before = nil
+    for height = 500, 1500, 10 do
+        local layout = Viewer.layoutFor(height)
+        local ok = layout.listRows >= 10 and layout.listRows <= 13 and layout.gridRows >= 1 and layout.gridRows <= 2
+            and layout.detailScale >= 1.25 and layout.detailScale <= 2.0 and layout.gridScale >= 1.1
+            and layout.bodyH >= layout.listRows * 50 and layout.bodyH >= layout.gridRows * layout.tileH
+            and layout.bodyH >= math.floor(224 * layout.detailScale) + 10 + 190
+        check(ok, "the layout for a screen " .. height .. " units tall is within its limits")
+        if layout.budget >= 10 * 50 and layout.budget >= layout.gridRows * layout.tileH then
+            check(layout.bodyH <= layout.budget, "the body for a screen " .. height .. " units tall fits it")
+        end
+        check(before == nil or layout.height >= before, "a taller screen never gets a shorter window (" .. height .. ")")
+        before = layout.height
+    end
+end
+
 local state = { owned = {}, credits = 0, stats = {}, dirtyBuckets = {} }
 for i = 1, 40, 3 do state.owned[Cards.variantKey(Cards.list[i].id, "normal")] = i end
 local api = { getState = function() return state end }
@@ -451,6 +475,30 @@ do
     prettyui = {}
     check(Kit.titleButton(window, "SWAP", function() end) == nil, "no SpriteButton: no button")
     prettyui = nil
+end
+
+-- a short screen: the window opens with fewer list rows and one row of cards in the grid, and pages by those
+do
+    state = keepState
+    Viewer.close()
+    local realGet = ui.Interfaces.GetComponent
+    ui.Interfaces.GetComponent = function()
+        local parent = component("parent")
+        parent.width, parent.height = 1366, 560
+        return parent
+    end
+    local opened, err = pcall(Viewer.open, api)
+    check(opened, "opening on a short screen does not error: " .. tostring(err))
+    local short = Viewer.layoutFor(560)
+    check(short.listRows == 10 and short.gridRows == 1, "a 560 unit screen gets 10 list rows and one row of cards")
+    local info = Viewer.debugInfo()
+    check(info.open, "it opens on a short screen"); check(info.pages == math.max(1, math.ceil(info.matches / 10)),
+        "the list pages by the 10 rows it has (" .. tostring(info.pages) .. " pages for " .. tostring(info.matches) .. ")")
+    Viewer.refilter()
+    Viewer.close()
+    ui.Interfaces.GetComponent = realGet
+    check(not Viewer.isOpen(), "it closes again")
+    state = nil
 end
 
 if failures > 0 then os.exit(1) end
