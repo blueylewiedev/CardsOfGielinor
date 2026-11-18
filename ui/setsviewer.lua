@@ -208,18 +208,26 @@ local function copiesOf(have)
     return total
 end
 
--- What a card the player does not have says in place of its description: the packs it comes in ("Standard pack"
--- shortened to "Standard", so a few fit on the card's three lines).
-local function lockedText(card)
-    local names = {}
+-- What a card the player does not have says in place of its description: the packs it comes in, with " pack" taken off
+-- each name. The description box holds 3 lines of about 17 to 19 letters, so this has to be short: the Standard pack is
+-- left out (it has every card, so it would only take room) unless it is the only one, and the lead-in is "Packs:".
+-- dev/check_sets_ui.lua checks that every card in a set fits in 3 lines of 17 letters, so a new pack cannot clip it.
+function SetsViewer.lockedText(card)
+    local standard = Packs.typeById("standard")
+    local names, onlyStandard = {}, false
     for _, name in ipairs(Packs.namesFor(card)) do
-        names[#names + 1] = (name:gsub(" [Pp]ack$", ""))
+        if standard ~= nil and name == standard.name then
+            onlyStandard = true
+        else
+            names[#names + 1] = (name:gsub(" [Pp]ack$", ""))
+        end
     end
     if #names == 0 then
-        return "Not in any pack"
+        return onlyStandard and "Packs: Standard" or "Not in any pack"
     end
-    return "Found in packs: " .. table.concat(names, ", ")
+    return "Packs: " .. table.concat(names, ", ")
 end
+local lockedText = SetsViewer.lockedText
 
 -- Destroys the grid's cards, and forgets the turns their silhouettes were to be sent again (CardView.applyPending).
 local function clearGrid()
