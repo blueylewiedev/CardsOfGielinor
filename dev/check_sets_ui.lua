@@ -63,6 +63,7 @@ Event = { Draw = { Subscribe = function() end } }
 
 local Cards = require("core/cards")
 local Sets = require("core/sets")
+local Packs = require("core/packs")
 local CardView = require("ui/cardview")
 local SetsViewer = require("ui/setsviewer")
 
@@ -209,6 +210,45 @@ do
     SetsViewer.close()
     ui.Interfaces.GetComponent = realGet
     check(not SetsViewer.isOpen(), "it closes again")
+end
+
+-- what a card the player does not have says in place of its description: the packs it comes in, in 3 lines at most
+do
+    local function wrapLines(text, width)       -- a greedy word wrap: how many lines `text` takes at `width` letters a line
+        local count, line = 1, ""
+        for word in string.gmatch(text, "%S+") do
+            if line == "" then
+                line = word
+            elseif #line + 1 + #word <= width then
+                line = line .. " " .. word
+            else
+                count, line = count + 1, word
+            end
+        end
+        return count
+    end
+    local LINES, LETTERS = 3, 17                -- the box's 3 lines, and the fewest letters a line has been seen to hold
+    local checked, worst, worstLines = 0, "", 0
+    local seen = {}
+    for _, set in ipairs(Sets.list) do
+        for _, card in ipairs(Sets.cardsOf(set)) do
+            if not seen[card.id] then
+                seen[card.id] = true
+                local text = SetsViewer.lockedText(card)
+                local lines = wrapLines(text, LETTERS)
+                checked = checked + 1
+                if lines > worstLines then worst, worstLines = text, lines end
+                check(lines <= LINES, "a locked card's pack text fits " .. LINES .. " lines of " .. LETTERS .. " letters: \"" .. text
+                    .. "\" (" .. card.id .. ")")
+            end
+        end
+    end
+    check(checked > 100, "the pack text of the cards in the sets was checked (" .. checked .. ")")
+    local standard = Packs.typeById("standard")
+    local sample = Sets.cardsOf(Sets.list[1])[1]
+    local text = SetsViewer.lockedText(sample)
+    check(string.sub(text, 1, 7) == "Packs: " and not string.find(text, standard.name:gsub(" [Pp]ack$", ""), 1, true),
+        "the text starts \"Packs:\" and leaves the Standard pack out (" .. text .. ")")
 end
 
 if failures > 0 then os.exit(1) end
