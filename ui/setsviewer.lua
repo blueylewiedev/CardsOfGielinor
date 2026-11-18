@@ -5,7 +5,7 @@
 --          its cards the player has ("3 / 4"), gold once it is complete. Clicking one shows it. When there are more
 --          sets than fit, a scroll bar beside the tiles shows where the list is; the mouse wheel over the list scrolls
 --          it, and the bar can be dragged.
---   right  the picked set's name, its progress and a bar, then its cards, 6 a page (Prev and Next under them, or the
+--   right  the picked set's name, its progress and a bar, then its cards, 6 a page (3 on a short screen; Prev and Next under them, or the
 --          mouse wheel). A card the player does not have is a shadow silhouette of its picture, with its name and rarity,
 --          and the packs it comes in where its description would be (CardView's opts.silhouette and lockedText).
 --
@@ -19,7 +19,6 @@ local Packs = require("core/packs")
 local Logger = require("core/logger")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
-local Wiggle = require("ui/wiggle")
 
 local SetsViewer = {}
 
@@ -45,30 +44,76 @@ local LEFT = Kit.available() and 4 or 10
 local TOP = 4
 local HEADER_H = 52                    -- the set's name, its progress and the bar over the cards
 local BODY_Y = TOP + HEADER_H
-local GRID_COLS, GRID_ROWS = COLUMNS - 1, 2
-local GRID_PER_PAGE = GRID_COLS * GRID_ROWS
-local TILE_H = CardView.HEIGHT + 44    -- a card, then its caption
-local BODY_H = GRID_ROWS * TILE_H
-local LIST_H = HEADER_H + BODY_H       -- the set list runs from the top to the footer
+local GRID_COLS = COLUMNS - 1
+local CAPTION_H = 44                   -- under a card: the gap and the bar with its count
+local FOOTER_GAP, FOOTER_H = 8, 42     -- under the body: the gap, then the counts and the page buttons
+local FRAME = Kit.available() and 16 or 0
 local ROW_H, ROW_STEP = 46, 50         -- a set's tile, and the distance from one to the next
 local FILTER_H, FILTER_STEP = 28, 34   -- the search box and the drop-down over the list
 local LIST_TOP = TOP + 2 * FILTER_STEP -- the set list runs from under them to the footer
-local LIST_ROWS = math.floor((LIST_H - (LIST_TOP - TOP) + ROW_STEP - ROW_H) / ROW_STEP)
 local SCROLL_W = 8                     -- the scroll bar at the right of the list
 local TILE_W = COLUMN_W - SCROLL_W - 4 -- a set's tile, leaving room for it
-local TRACK_H = LIST_ROWS * ROW_STEP - (ROW_STEP - ROW_H)
 local THUMB_MIN = 24
 local SCROLL_BACK = Vector4.new(0.18, 0.16, 0.13, 0.9)
 local SCROLL_THUMB = Vector4.new(0.62, 0.52, 0.32, 0.95)
-local FOOTER_Y = BODY_Y + BODY_H + 8
-local HEIGHT = FOOTER_Y + 42
 local FOOTER_SHIFT = 22                -- Prev and Next sit this far left of their column, or Next is clipped by the frame
+
+-- How tall the window is depends on the screen, as the collection viewer's does (see layoutFor): two rows of cards at the
+-- full card size where the screen allows, else the cards are made smaller (down to GRID_MIN_SCALE, where the text on a
+-- card still fits), else one row of them.
+local GRID_MIN_SCALE = 1.1
+local SCREEN_USED = 0.97                     -- the window may take this much of the screen's height
+
+-- The numbers that depend on the screen, set by applyLayout when the window opens (the full-size layout until then).
+local GRID_ROWS, GRID_PER_PAGE
+local CARD_SCALE, CARD_W, CARD_H, TILE_H
+local BODY_H, LIST_ROWS, TRACK_H, FOOTER_Y, HEIGHT
 
 local function columnX(number)
     return LEFT + (number - 1) * (COLUMN_W + GAP)
 end
 local GRID_X = columnX(2)
 local GRID_W = GRID_COLS * COLUMN_W + (GRID_COLS - 1) * GAP
+
+-- The sizes that fit a screen `screenHeight` units tall (nil if unknown: then the full size). The window takes at most
+-- SCREEN_USED of the height, less its title bar and frame; what is left after the header and the footer is the body's.
+-- Returns a table of the numbers; `budget` is the body's height the screen allows.
+function SetsViewer.layoutFor(screenHeight)
+    local layout = { gridRows = 2, scale = CardView.SCALE }
+    if screenHeight ~= nil then
+        local budget = math.floor(screenHeight * SCREEN_USED) - Kit.titleBarHeight() - FRAME // 2 - BODY_Y - FOOTER_GAP
+            - FOOTER_H
+        layout.budget = budget
+        if budget < 2 * (CardView.HEIGHT + CAPTION_H) then
+            local fit = math.floor((budget // 2 - CAPTION_H) / 224 * 100) / 100     -- the card scale two rows allow
+            if fit >= GRID_MIN_SCALE then
+                layout.scale = math.min(CardView.SCALE, fit)
+            else
+                layout.gridRows = 1
+            end
+        end
+    end
+    layout.cardW, layout.cardH = math.floor(160 * layout.scale), math.floor(224 * layout.scale)
+    layout.tileH = layout.cardH + CAPTION_H
+    layout.bodyH = layout.gridRows * layout.tileH
+    -- the set list runs from under the search box and drop-down to the footer
+    layout.listRows = math.floor((HEADER_H + layout.bodyH - (LIST_TOP - TOP) + ROW_STEP - ROW_H) / ROW_STEP)
+    layout.height = BODY_Y + layout.bodyH + FOOTER_GAP + FOOTER_H
+    return layout
+end
+
+-- Makes the numbers above the ones the window is built from.
+local function applyLayout(layout)
+    GRID_ROWS = layout.gridRows
+    GRID_PER_PAGE = GRID_COLS * GRID_ROWS
+    CARD_SCALE, CARD_W, CARD_H, TILE_H = layout.scale, layout.cardW, layout.cardH, layout.tileH
+    BODY_H = layout.bodyH
+    LIST_ROWS = layout.listRows
+    TRACK_H = LIST_ROWS * ROW_STEP - (ROW_STEP - ROW_H)
+    FOOTER_Y = BODY_Y + BODY_H + FOOTER_GAP
+    HEIGHT = layout.height
+end
+applyLayout(SetsViewer.layoutFor(nil))
 
 local api = nil                        -- api.getState(), api.hiddenCards() (optional)
 local window, content = nil, nil
@@ -446,26 +491,29 @@ local function showSet(state, ownedIds)
         end
         local copies = copiesOf(owned[card.id])
         local locked = copies == 0
-        local x = columnX((slot - 1) % GRID_COLS + 2) + (COLUMN_W - CardView.WIDTH) // 2
+        local x = columnX((slot - 1) % GRID_COLS + 2) + (COLUMN_W - CARD_W) // 2
         local y = BODY_Y + ((slot - 1) // GRID_COLS) * TILE_H
-        local view = CardView.create(content, card, { locked = locked, silhouette = true,
+        local view = CardView.create(content, card, { locked = locked, silhouette = true, scale = CARD_SCALE,
             -- (every finish counts towards the set; a card is shown as the collection shows it, a holo first)
-            lockedText = locked and lockedText(card) or nil, tilt = true,
+            lockedText = locked and lockedText(card) or nil,
             finish = Browse.preferredFinish(owned[card.id]) })
         view.root:SetPos(x, y)
         gridParts[#gridParts + 1] = view.root
 
         -- the caption: a bar under the card in the rarity's own colour
         local rarity = Cards.rarities[card.rarity]
-        local caption, back, border = panel(content, x, y + CardView.HEIGHT + 6, CardView.WIDTH, 30)
+        local caption, back, border = panel(content, x, y + CARD_H + 6, CARD_W, 30)
         back.colour = toVec4(rarity.colour, locked and 0.08 or 0.22)
         border.colour = toVec4(rarity.colour, locked and 0.35 or 0.8)
-        Kit.text(caption, 0, 0, CardView.WIDTH, 30, locked and "Not collected" or ("Owned: " .. copies),
+        Kit.text(caption, 0, 0, CARD_W, 30, locked and "Not collected" or ("Owned: " .. copies),
             locked and DIM or GOLD)
         gridParts[#gridParts + 1] = caption
 
-        -- the wheel over a card turns the page; pressing and dragging tilts the card (ui/wiggle.lua)
-        local grip = Wiggle.attach(content, view, { x = x, y = y, w = CardView.WIDTH, h = CardView.HEIGHT + 36 })
+        -- the wheel over a card turns the page
+        local grip = ui.Layer.new(content)
+        grip.clickthrough = false
+        grip:SetPos(x, y)
+        grip:SetSize(CARD_W, CARD_H + 36, 0, 0)
         Kit.onWheel(grip, wheelPage)
         gridParts[#gridParts + 1] = grip
     end
@@ -532,6 +580,20 @@ function SetsViewer.refresh()
     end
 end
 
+-- A number the client gives, or nil if the call fails or gives something else (or 0 or less).
+local function readNumber(read)
+    local ok, value = pcall(read)
+    return (ok and type(value) == "number" and value > 0) and value or nil
+end
+
+-- One line in the log when the window opens: the screen's size in units and what the window made of it. For a report that
+-- the window does not fit.
+local function logScreen(gameWindow, screenHeight)
+    Logger.note("sets window: screen", tostring(readNumber(function() return gameWindow.width end)), "x",
+        tostring(screenHeight), "units | grid rows", GRID_ROWS, "at card scale", CARD_SCALE, "| list rows", LIST_ROWS,
+        "| window", HEIGHT + Kit.titleBarHeight(), "units tall")
+end
+
 -- Opens the window. `newApi` needs getState(), and can have hiddenCards().
 function SetsViewer.open(newApi)
     if window ~= nil then
@@ -545,9 +607,11 @@ function SetsViewer.open(newApi)
         selectedId = Sets.list[1] ~= nil and Sets.list[1].id or nil
         page = 1
     end
-    listTop = math.max(0, math.min(listTop, #Sets.list - LIST_ROWS))
-
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
+    local screenHeight = readNumber(function() return gameWindow.height end)
+    applyLayout(SetsViewer.layoutFor(screenHeight))
+    logScreen(gameWindow, screenHeight)
+    listTop = math.max(0, math.min(listTop, #Sets.list - LIST_ROWS))
     local width = CONTENT_W + (Kit.available() and WINDOW_SLACK or 0)
     window, content = Kit.window(gameWindow, "Sets", width, HEIGHT + Kit.titleBarHeight(), function()
         SetsViewer.close()

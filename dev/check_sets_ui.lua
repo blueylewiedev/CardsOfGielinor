@@ -63,6 +63,7 @@ Event = { Draw = { Subscribe = function() end } }
 
 local Cards = require("core/cards")
 local Sets = require("core/sets")
+local CardView = require("ui/cardview")
 local SetsViewer = require("ui/setsviewer")
 
 local failures = 0
@@ -91,6 +92,31 @@ local function texts()
     local list = {}
     for _, t in ipairs(live("Text")) do list[#list + 1] = tostring(rawget(t, "content")) end
     return table.concat(list, "\n")
+end
+
+-- the window's size follows the screen: SetsViewer.layoutFor
+do
+    local full = SetsViewer.layoutFor(nil)
+    check(full.gridRows == 2 and full.scale == CardView.SCALE and full.listRows >= 10,
+        "an unknown screen height gets the full-size layout (" .. full.listRows .. " list rows)")
+    local big = SetsViewer.layoutFor(5000)
+    check(big.height == full.height and big.gridRows == 2 and big.scale == CardView.SCALE,
+        "a tall screen gets the full-size layout")
+    local before = nil
+    for height = 500, 1500, 10 do
+        local layout = SetsViewer.layoutFor(height)
+        local ok = layout.gridRows >= 1 and layout.gridRows <= 2 and layout.scale >= 1.1 and layout.scale <= CardView.SCALE
+            and layout.listRows >= 1 and layout.bodyH == layout.gridRows * layout.tileH
+        check(ok, "the layout for a screen " .. height .. " units tall is within its limits")
+        if layout.budget >= layout.gridRows * layout.tileH then
+            check(layout.bodyH <= layout.budget, "the body for a screen " .. height .. " units tall fits it")
+        end
+        check(before == nil or layout.height >= before, "a taller screen never gets a shorter window (" .. height .. ")")
+        before = layout.height
+    end
+    check(SetsViewer.layoutFor(768).gridRows == 2 and SetsViewer.layoutFor(768).scale < CardView.SCALE,
+        "a 768 unit screen keeps two rows with smaller cards")
+    check(SetsViewer.layoutFor(560).gridRows == 1, "a 560 unit screen gets one row of cards")
 end
 
 -- the set with the most cards, so paging has something to do
@@ -166,6 +192,24 @@ check(not SetsViewer.isOpen(), "toggle closes it")
 local noState = { getState = function() return nil end }
 SetsViewer.open(noState)
 check(not SetsViewer.isOpen(), "no character, no window")
+
+-- a short screen: the window opens with one row of cards, pages by the 3 it shows, and closes again
+do
+    local realGet = ui.Interfaces.GetComponent
+    ui.Interfaces.GetComponent = function()
+        local parent = component("parent")
+        parent.width, parent.height = 1366, 560
+        return parent
+    end
+    local opened, err = pcall(SetsViewer.open, api)
+    check(opened, "opening on a short screen does not error: " .. tostring(err))
+    local info = SetsViewer.debugInfo()
+    check(info.open and info.selected == biggest.id and info.pages == math.ceil(#Sets.cardsOf(biggest) / 3),
+        "it pages by the 3 cards a row holds (" .. tostring(info.pages) .. " pages)")
+    SetsViewer.close()
+    ui.Interfaces.GetComponent = realGet
+    check(not SetsViewer.isOpen(), "it closes again")
+end
 
 if failures > 0 then os.exit(1) end
 print("OK: the sets window's controls pick sets, turn pages and follow the collection")
