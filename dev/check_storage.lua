@@ -14,7 +14,8 @@ function log() end          -- the client's log function
 -- too big if it has more than `maxEntries` entries in all.
 -- ---------------------------------------------------------------------------------------------------
 local db, writes, failKeys = {}, {}, {}
-local maxEntries = 2000          -- measured: 2,000 entries are accepted and 3,000 refused
+local MEASURED_LIMIT = 2000      -- measured: 2,000 entries are accepted and 3,000 refused
+local maxEntries = MEASURED_LIMIT
 
 local function copy(value)
     if type(value) ~= "table" then
@@ -73,7 +74,7 @@ end
 
 local function reset()
     db, writes, failKeys = {}, {}, {}
-    maxEntries = 1000
+    maxEntries = MEASURED_LIMIT      -- (this was 1000, which made "room to double" fire at 500, not half of the measured 2,000)
 end
 
 -- ---------------------------------------------------------------------------------------------------
@@ -109,10 +110,14 @@ local function sameOwned(a, b)
 end
 
 -- A collection with every card in it (copies of the first few, to see counts survive).
+-- The worst case: every card in every finish (so adding a finish grows this, and the "room to double" check below
+-- notices when the buckets are filling up).
 local function fullState()
     local state = Storage.newState()
     for i, card in ipairs(Cards.list) do
-        Storage.addCard(state, Cards.variantKey(card.id, "normal"), i <= 5 and 3 or 1)
+        for _, finish in ipairs(Cards.finishOrder) do
+            Storage.addCard(state, Cards.variantKey(card.id, finish), i <= 5 and 3 or 1)
+        end
     end
     return state
 end
@@ -235,25 +240,31 @@ do
     check(count(state.owned) == 1, "a retired finish, an old key, a negative or a text count are dropped (" .. count(state.owned) .. ")")
 end
 
--- 9. A save made with another bucket count loads whole, is rewritten, and its extra keys go
-reset()
-do
+-- 9. A save made with another bucket count loads whole, is rewritten, and its extra keys go. Both ways: a save with fewer
+-- buckets (what a save made before the count went from 16 to 32 looks like) and one with more.
+for _, old in ipairs({ Storage.BUCKETS // 2, Storage.BUCKETS + 16 }) do
+    reset()
     local state = fullState()
-    db["collection_a"] = { version = 1, buckets = 20, credits = 5 }
+    db["collection_a"] = { version = 1, buckets = old, credits = 5 }
     local n = 0
-    for variantKey, owned in pairs(state.owned) do          -- spread over 20 buckets (any way will do)
+    for variantKey, owned in pairs(state.owned) do          -- spread over `old` buckets (any way will do)
         n = n + 1
-        local key = Storage.bucketKey("collection_a", n % 20 + 1)
+        local key = Storage.bucketKey("collection_a", n % old + 1)
         db[key] = db[key] or {}
         db[key][variantKey] = owned
     end
     local back = Storage.load("collection_a")
-    check(sameOwned(back.owned, state.owned), "a save with 20 buckets loads every card")
-    check(back.dirty and back.staleBuckets == 20, "it is marked to be rewritten")
+    check(sameOwned(back.owned, state.owned), "a save with " .. old .. " buckets loads every card")
+    check(back.dirty and back.staleBuckets == old, "it is marked to be rewritten")
     check(Storage.save("collection_a", back), "it saves again")
     check(db[Storage.bucketKey("collection_a", Storage.BUCKETS + 1)] == nil, "the buckets past the new count are gone")
     check(db["collection_a"].buckets == Storage.BUCKETS, "the main key records the new count")
     check(sameOwned(Storage.load("collection_a").owned, state.owned), "every card survives the rewrite")
+    local biggest = 0
+    for bucket = 1, Storage.BUCKETS do
+        biggest = math.max(biggest, count(db[Storage.bucketKey("collection_a", bucket)] or {}))
+    end
+    check(biggest <= maxEntries / 2, "and the rewritten buckets are within the limit (biggest " .. biggest .. ")")
 end
 
 -- 10. Deleting the saves takes only this profile's collections

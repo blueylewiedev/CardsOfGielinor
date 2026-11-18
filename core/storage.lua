@@ -28,7 +28,11 @@ end
 
 -- How many keys the owned cards are spread over. A character's saved count is read back, so changing
 -- this loses nothing (the next save rewrites the buckets), but it is a lot of rewriting: leave it.
-local BUCKETS = 16
+-- 32, not 16: a card is kept in up to one entry per finish (normal, foil, holo), so a full three-finish collection of
+-- today's 5,595 cards is 600 entries in the fullest bucket at 32 (1,131 at 16), against the 2,000 known to be accepted.
+-- That is room for about 18,600 cards; dev/check_storage.lua fails when the fullest bucket passes half of the 2,000
+-- (about 9,300 cards at three finishes), which is the time to think again.
+local BUCKETS = 32
 Storage.BUCKETS = BUCKETS
 
 -- Added to the end of every key while the development tools are present (main.lua sets it).
