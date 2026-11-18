@@ -430,13 +430,6 @@ Set.cards = {
         tags = { skills = { "smithing", "defence" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
     },
     {
-        id = "primal_full_helm_dungeoneering", name = "Primal full helm (Dungeoneering)", kind = "item", rarity = "epic",
-        title = "Primal full helm (Dg)",
-        desc = "A full face helmet.",
-        art = { item = "RAND_FULL_HELM_11", cam = { yaw = -6.76, pitch = 0.48, dist = 248, ty = 57, tx = -6 } },
-        tags = { regions = { "daemonheim" }, skills = { "defence", "dungeoneering" }, category = { "armour", "helmet", "melee_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "promethium_full_helm", name = "Promethium full helm", kind = "item", rarity = "epic",
         desc = "A full face helmet.",
         art = { item = "RAND_FULL_HELM_10", cam = { yaw = -6.92, pitch = 0.46, dist = 248, ty = 63, tx = -2 } },
@@ -504,12 +497,6 @@ Set.cards = {
         tags = { skills = { "crafting" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
     },
     {
-        id = "paraleather_coif", name = "Paraleather coif", kind = "item", rarity = "common",
-        desc = "Crafted out of thick lizard hides.",
-        art = { item = "RAND_COIF_3", cam = { yaw = -6.92, pitch = 0.32, dist = 273, ty = 65, tx = 5 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "protoleather_coif", name = "Protoleather coif", kind = "item", rarity = "common",
         desc = "Crafted out of thick lizard hides.",
         art = { item = "RAND_COIF_1", cam = { yaw = -6.92, pitch = 0.32, dist = 273, ty = 65, tx = 5 } },
@@ -520,12 +507,6 @@ Set.cards = {
         desc = "Light weight head protection.",
         art = { item = "COIF", cam = { yaw = -6.75, pitch = 0.32, dist = 248, ty = 41, tx = 11 } },
         tags = { skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "subleather_coif", name = "Subleather coif", kind = "item", rarity = "common",
-        desc = "Crafted out of thick lizard hides.",
-        art = { item = "RAND_COIF_2", cam = { yaw = -6.92, pitch = 0.32, dist = 273, ty = 65, tx = 5 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
     },
     {
         id = "archer_helm", name = "Archer helm", kind = "item", rarity = "uncommon",
@@ -564,12 +545,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "ranged", "defence", "slayer" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
-        id = "gallileather_coif", name = "Gallileather coif", kind = "item", rarity = "uncommon",
-        desc = "Crafted out of thick lizard hides.",
-        art = { item = "RAND_COIF_7", cam = { yaw = -6.67, pitch = 0.36, dist = 248, ty = 67, tx = -1 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "green_dragonhide_coif", name = "Green dragonhide coif", kind = "item", rarity = "uncommon",
         desc = "A coif made of green dragonhide.",
         art = { item = "HVH_GREEN_DHIDE_COIF_100", cam = { yaw = -6.10, pitch = 0.36, dist = 225, ty = 63, tx = 5 } },
@@ -600,12 +575,6 @@ Set.cards = {
         tags = { regions = { "morytania" }, skills = { "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
-        id = "megaleather_coif", name = "Megaleather coif", kind = "item", rarity = "rare",
-        desc = "Crafted out of thick lizard hides.",
-        art = { item = "RAND_COIF_9", cam = { yaw = -6.87, pitch = 0.36, dist = 273, ty = 76, tx = 1 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "ranged", "defence", "dungeoneering" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "morrigans_coif", name = "Morrigan's coif", kind = "item", rarity = "epic",
         desc = "This item degrades in combat, and will turn to dust.",
         art = { item = "PVPW_COIF", cam = { yaw = -6.25, dist = 273, ty = -10, tx = 6 } },
@@ -634,12 +603,6 @@ Set.cards = {
         desc = "A coif made from the hides of Vorkath and enhanced with Vorkath's spikes.",
         art = { item = "VORKATH_TIER90_HEAD_NEW", cam = { yaw = -6.27, dist = 169, ty = 11, tx = -2 } },
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "sagittarian_coif", name = "Sagittarian coif", kind = "item", rarity = "epic",
-        desc = "Crafted out of thick lizard hides.",
-        art = { item = "RAND_COIF_11", cam = { yaw = -6.79, pitch = 0.23, dist = 273, ty = 80, tx = 1 } },
-        tags = { regions = { "daemonheim" }, skills = { "ranged", "defence", "dungeoneering" }, category = { "armour", "helmet", "ranged_gear" }, membership = { "p2p" } },
     },
     {
         id = "tyrannoleather_coif", name = "Tyrannoleather coif", kind = "item", rarity = "epic",
@@ -824,33 +787,15 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
     },
     {
-        id = "roseblood_hood", name = "Roseblood hood", kind = "item", rarity = "common",
-        desc = "A hood worn by mages.",
-        art = { item = "RAND_HOOD_4", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "salve_hood", name = "Salve hood", kind = "item", rarity = "common",
         desc = "A hood worn by mages.",
         art = { item = "RAND_HOOD_1", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
     },
     {
-        id = "wildercress_hood", name = "Wildercress hood", kind = "item", rarity = "common",
-        desc = "A hood worn by mages.",
-        art = { item = "RAND_HOOD_2", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
         id = "bryll_hood", name = "Bryll hood", kind = "item", rarity = "uncommon",
         desc = "A hood worn by mages.",
         art = { item = "RAND_HOOD_5", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
-    },
-    {
-        id = "duskweed_hood", name = "Duskweed hood", kind = "item", rarity = "uncommon",
-        desc = "A hood worn by mages.",
-        art = { item = "RAND_HOOD_6", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "f2p" } },
     },
     {
@@ -863,12 +808,6 @@ Set.cards = {
         id = "ectohood", name = "Ectohood", kind = "item", rarity = "rare",
         desc = "A hood worn by mages.",
         art = { item = "RAND_HOOD_8", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "runic_hood", name = "Runic hood", kind = "item", rarity = "rare",
-        desc = "A hood worn by mages.",
-        art = { item = "RAND_HOOD_9", cam = { yaw = -7.05, pitch = 0.23, ty = 66, tx = 25 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "magic", "defence", "dungeoneering" }, category = { "armour", "helmet", "magic_gear" }, membership = { "p2p" } },
     },
     {
@@ -1210,12 +1149,6 @@ Set.cards = {
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "f2p" } },
     },
     {
-        id = "deathleaf_hood", name = "Deathleaf hood", kind = "item", rarity = "common",
-        desc = "A hood infused with the power of death.",
-        art = { item = "RAND_NECRO_HOOD_3", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "deathsalve_hood", name = "Deathsalve hood", kind = "item", rarity = "common",
         desc = "A hood infused with the power of death.",
         art = { item = "RAND_NECRO_HOOD_1", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
@@ -1306,21 +1239,9 @@ Set.cards = {
         tags = { regions = { "misthalin" }, skills = { "crafting", "defence" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
-        id = "shadowblood_hood", name = "Shadowblood hood", kind = "item", rarity = "common",
-        desc = "A hood infused with the power of death.",
-        art = { item = "RAND_NECRO_HOOD_4", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
         id = "deathbell_hood", name = "Deathbell hood", kind = "item", rarity = "uncommon",
         desc = "A hood infused with the power of death.",
         art = { item = "RAND_NECRO_HOOD_7", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "deathweed_hood", name = "Deathweed hood", kind = "item", rarity = "uncommon",
-        desc = "A hood infused with the power of death.",
-        art = { item = "RAND_NECRO_HOOD_6", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {
@@ -1333,12 +1254,6 @@ Set.cards = {
         id = "nectrohood", name = "Nectrohood", kind = "item", rarity = "rare",
         desc = "A hood infused with the power of death.",
         art = { item = "RAND_NECRO_HOOD_8", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
-        tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
-    },
-    {
-        id = "soulrune_hood", name = "Soulrune hood", kind = "item", rarity = "rare",
-        desc = "A hood infused with the power of death.",
-        art = { item = "RAND_NECRO_HOOD_9", cam = { yaw = -6.30, dist = 186, ty = -8, tx = -1 } },
         tags = { regions = { "daemonheim" }, skills = { "crafting", "necromancy", "defence", "dungeoneering" }, category = { "armour", "helmet", "necromancy_gear" }, membership = { "p2p" } },
     },
     {

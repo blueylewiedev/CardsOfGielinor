@@ -5,6 +5,9 @@ The plugin cannot look inside folders, so every deck file has to be listed in de
 This fails if a deck file is not listed (it would never load) or if the index lists a file
 that does not exist (it would break loading).
 
+It also checks dev/parked_cards/index.lua against the files under dev/parked_cards/deck/ the same way (the parked
+cards, which dev/check_parked.lua loads: a file missing from that index is never checked).
+
 Run from anywhere:  python dev/check_deck_index.py
 """
 import re
@@ -23,9 +26,33 @@ def listed_files():
     return re.findall(r'"([^"]+)"', text)
 
 
+PARKED = ROOT / "dev" / "parked_cards"
+
+
+def parked_problems():
+    """The same check for dev/parked_cards/: every file under deck/ there is in its index.lua, and every entry exists."""
+    index = PARKED / "index.lua"
+    if not index.is_file():
+        return []
+    text = chr(10).join(line.split("--", 1)[0] for line in index.read_text(encoding="utf-8").splitlines())
+    listed = re.findall(r'"([^"]+)"', text)
+    problems = []
+    seen = set()
+    for name in listed:
+        if name in seen:
+            problems.append(f'dev/parked_cards/index.lua lists "{name}" more than once')
+        seen.add(name)
+        if not (ROOT / (name + ".lua")).is_file():
+            problems.append(f'dev/parked_cards/index.lua lists "{name}" but {name}.lua does not exist')
+    on_disk = {p.relative_to(ROOT).as_posix()[: -len(".lua")] for p in (PARKED / "deck").rglob("*.lua")}
+    for name in sorted(on_disk - seen):
+        problems.append(f'{name}.lua is not listed in dev/parked_cards/index.lua (add "{name}")')
+    return problems
+
+
 def main():
     listed = listed_files()
-    problems = []
+    problems = parked_problems()
 
     seen = set()
     for name in listed:

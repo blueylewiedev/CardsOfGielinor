@@ -116,12 +116,6 @@ Set.cards = {
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "claw" }, membership = { "f2p" } },
     },
     {
-        id = "offhand_chaotic_claw", name = "Off-hand chaotic claw", kind = "item", rarity = "rare",
-        desc = "An off-hand chaotic slashing claw.",
-        art = { item = "RAND_CLAW_80_REWARD_O", cam = { yaw = 2.23, dist = 635, fov = 30, ty = 15, tx = -10 } },
-        tags = { regions = { "daemonheim" }, skills = { "attack" }, category = { "weapon", "melee_gear", "claw" }, membership = { "p2p" } },
-    },
-    {
         id = "offhand_ripper_claw", name = "Off-hand ripper claw", kind = "item", rarity = "rare",
         desc = "Deals bonus damage to targets below half health with the main hand pair.",
         art = { item = "HLM_RIPPER_CLAW_O", cam = { yaw = 4.36, pitch = 0.99, dist = 578, fov = 30, ty = -14, tx = 35 } },

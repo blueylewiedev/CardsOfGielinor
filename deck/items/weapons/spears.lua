@@ -14,18 +14,6 @@ Set.cards = {
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
     },
     {
-        id = "argonite_spear", name = "Argonite spear", kind = "item", rarity = "uncommon",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_7", cam = { yaw = -1.80, pitch = 1.25, dist = 525, fov = 45, ty = -40 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
-    },
-    {
-        id = "bathus_spear", name = "Bathus spear", kind = "item", rarity = "common",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_2", cam = { yaw = -1.80, dist = 525, fov = 45, ty = -20 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
-    },
-    {
         id = "black_spear", name = "Black spear", kind = "item", rarity = "common",
         desc = "A black tipped spear.",
         art = { item = "BLACK_SPEAR", cam = { yaw = -1.60, dist = 603, ty = -20 } },
@@ -80,18 +68,6 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
     },
     {
-        id = "fractite_spear", name = "Fractite spear", kind = "item", rarity = "uncommon",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_5", cam = { yaw = -6.80, dist = 525, fov = 40, tx = -20 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
-    },
-    {
-        id = "gorgonite_spear", name = "Gorgonite spear", kind = "item", rarity = "rare",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_9", cam = { yaw = -6.80, dist = 694, fov = 35, ty = -20, tx = -20 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
-    },
-    {
         id = "guthans_warspear", name = "Guthan's warspear", kind = "item", rarity = "rare",
         desc = "Guthan the Infested's warspear.",
         art = { item = "BARROWS_GUTHAN_WEAPON", cam = { yaw = -6.40, dist = 603, fov = 45, ty = -20 } },
@@ -110,12 +86,6 @@ Set.cards = {
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
     },
     {
-        id = "novite_spear", name = "Novite spear", kind = "item", rarity = "common",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_1", cam = { yaw = -0.48, dist = 453, ty = -16, tx = -14 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
-    },
-    {
         id = "steel_hasta", name = "Steel hasta", kind = "item", rarity = "common",
         desc = "A steel-tipped, one-handed hasta.",
         art = { item = "BRUT_STEEL_SPEAR", cam = { yaw = -7.57, dist = 545, ty = -10, tx = -20 } },
@@ -126,18 +96,6 @@ Set.cards = {
         desc = "A steel tipped spear.",
         art = { item = "STEEL_SPEAR", cam = { yaw = -1.70, dist = 730, ty = -19, tx = 14 } },
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
-    },
-    {
-        id = "kratonite_spear", name = "Kratonite spear", kind = "item", rarity = "common",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_4", cam = { yaw = -0.50, dist = 453, ty = -19, tx = -10 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
-    },
-    {
-        id = "marmaros_spear", name = "Marmaros spear", kind = "item", rarity = "common",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_3", cam = { yaw = -0.50, dist = 453, ty = -19, tx = -18 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
     },
     {
         id = "mithril_hasta", name = "Mithril hasta", kind = "item", rarity = "common",
@@ -176,18 +134,6 @@ Set.cards = {
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
     },
     {
-        id = "zephyrium_spear", name = "Zephyrium spear", kind = "item", rarity = "uncommon",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_6", cam = { yaw = -3.66, dist = 412, ty = 3, tx = 30 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "f2p" } },
-    },
-    {
-        id = "katagon_spear", name = "Katagon spear", kind = "item", rarity = "rare",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_8", cam = { yaw = -3.67, dist = 412, ty = 12, tx = 36 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
-    },
-    {
         id = "laniakeas_spear", name = "Laniakea's spear", kind = "item", rarity = "rare",
         desc = "A savage spear of unknown origin.",
         art = { item = "DINO_SLAYER_LANIAKEA_SPEAR", cam = { yaw = -4.32, dist = 603, ty = -10, tx = -9 } },
@@ -222,12 +168,6 @@ Set.cards = {
         desc = "A stick made for poking - violent poking.",
         art = { item = "RAND_SPEAR_11", cam = { yaw = -0.49, dist = 453, ty = -19, tx = -5 } },
         tags = { regions = { "daemonheim" }, skills = { "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
-    },
-    {
-        id = "promethium_spear", name = "Promethium spear", kind = "item", rarity = "epic",
-        desc = "A stick made for poking - violent poking.",
-        art = { item = "RAND_SPEAR_10", cam = { yaw = -0.50, dist = 412, ty = -16, tx = -19 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "spear" }, membership = { "p2p" } },
     },
 }
 

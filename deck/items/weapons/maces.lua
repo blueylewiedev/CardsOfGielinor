@@ -38,18 +38,6 @@ Set.cards = {
         tags = { skills = { "prayer", "attack" }, category = { "weapon", "melee_gear", "quest_item", "mace" }, membership = { "p2p" } },
     },
     {
-        id = "argonite_warhammer", name = "Argonite warhammer", kind = "item", rarity = "uncommon",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_7", cam = { yaw = -1.80, dist = 525, fov = 25, ty = -40, tx = -20 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
-        id = "bathus_warhammer", name = "Bathus warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_2", cam = { yaw = -1.80, dist = 456, fov = 25, ty = -40, tx = -20 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
         id = "black_mace", name = "Black mace", kind = "item", rarity = "common",
         desc = "A spiky mace.",
         art = { item = "BLACK_MACE", cam = { yaw = -0.80, dist = 525, fov = 45 } },
@@ -128,12 +116,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
-        id = "fractite_warhammer", name = "Fractite warhammer", kind = "item", rarity = "uncommon",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_5", cam = { yaw = -6.80, dist = 525, fov = 30, ty = 20, tx = -10 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
         id = "granite_mace", name = "Granite mace", kind = "item", rarity = "uncommon",
         desc = "The favoured weapon of Bandos.",
         art = { item = "CHOSEN_GRANITE_MACE", cam = { yaw = -7.80, dist = 603, fov = 35, ty = -40, tx = 50 } },
@@ -164,40 +146,10 @@ Set.cards = {
         tags = { skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
     },
     {
-        id = "marmaros_warhammer", name = "Marmaros warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_3", cam = { yaw = -6.97, dist = 359, fov = 35, ty = 8, tx = -16 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
-        id = "novite_warhammer", name = "Novite warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_1", cam = { yaw = -7.02, dist = 359, fov = 35, ty = 14, tx = -18 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
         id = "oakblackjack", name = "Oak-blackjack", kind = "item", rarity = "common",
         desc = "A handy little club made out of oak.",
         art = { item = "BLACKJACK_OAK", cam = { yaw = -9.02, dist = 269, fov = 35, ty = 26, tx = 12 } },
         tags = { regions = { "kharidian_desert" }, category = { "weapon", "melee_gear", "mace", "quest_item" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_bathus_warhammer", name = "Off-hand bathus warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_2", cam = { yaw = -4.90, dist = 394, fov = 30, ty = 31, tx = 26 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
-        id = "offhand_marmaros_warhammer", name = "Off-hand marmaros warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_3", cam = { yaw = -4.89, dist = 394, fov = 30, ty = 30, tx = 24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
-        id = "offhand_novite_warhammer", name = "Off-hand novite warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_1", cam = { yaw = -4.89, dist = 394, fov = 30, ty = 30, tx = 24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
     },
     {
         id = "ogre_club", name = "Ogre club", kind = "item", rarity = "common",
@@ -234,12 +186,6 @@ Set.cards = {
         desc = "A handy little club made out of willow.",
         art = { item = "BLACKJACK_WILLOW", cam = { yaw = -8.26, dist = 326, fov = 35, ty = 6, tx = 28 } },
         tags = { regions = { "kharidian_desert" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
-        id = "kratonite_warhammer", name = "Kratonite warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_4", cam = { yaw = -0.78, dist = 456, fov = 25, ty = 11, tx = -26 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
     },
     {
         id = "maple_blackjack", name = "Maple blackjack", kind = "item", rarity = "common",
@@ -284,18 +230,6 @@ Set.cards = {
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
     },
     {
-        id = "offhand_fractite_warhammer", name = "Off-hand fractite warhammer", kind = "item", rarity = "uncommon",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_5", cam = { yaw = -4.89, dist = 394, fov = 30, ty = 30, tx = 24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
-        id = "offhand_kratonite_warhammer", name = "Off-hand kratonite warhammer", kind = "item", rarity = "common",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_4", cam = { yaw = -4.89, dist = 394, fov = 30, ty = 30, tx = 24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
         id = "white_mace", name = "White mace", kind = "item", rarity = "common",
         desc = "A spiky mace.",
         art = { item = "WHITE_MACE", cam = { yaw = -8.07, dist = 578, fov = 35, ty = 27, tx = -9 } },
@@ -308,12 +242,6 @@ Set.cards = {
         tags = { skills = { "attack", "prayer" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
-        id = "offhand_argonite_warhammer", name = "Off-hand argonite warhammer", kind = "item", rarity = "uncommon",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_7", cam = { yaw = -4.89, dist = 394, fov = 30, ty = 30, tx = 24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
         id = "offhand_dragon_mace", name = "Off-hand dragon mace", kind = "item", rarity = "uncommon",
         desc = "A spiky off-hand mace.",
         art = { item = "DRAGON_MACE_O", cam = { yaw = -5.22, dist = 635, fov = 30, ty = 5, tx = -10 } },
@@ -324,12 +252,6 @@ Set.cards = {
         desc = "A solid-looking off-hand warhammer.",
         art = { item = "DRAGON_WARHAMMER_O", cam = { yaw = -5.24, dist = 578, fov = 30, ty = 28, tx = -1 } },
         tags = { skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_zephyrium_warhammer", name = "Off-hand zephyrium warhammer", kind = "item", rarity = "uncommon",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_6", cam = { yaw = -4.89, dist = 394, fov = 30, ty = 30, tx = 24 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
     },
     {
         id = "orikalkum_2h_warhammer", name = "Orikalkum 2h warhammer", kind = "item", rarity = "uncommon",
@@ -386,30 +308,6 @@ Set.cards = {
         tags = { regions = { "karamja" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
-        id = "zephyrium_warhammer", name = "Zephyrium warhammer", kind = "item", rarity = "uncommon",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_6", cam = { yaw = -6.92, dist = 394, fov = 35, ty = 14, tx = -17 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "f2p" } },
-    },
-    {
-        id = "katagon_warhammer", name = "Katagon warhammer", kind = "item", rarity = "rare",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_8", cam = { yaw = -6.92, dist = 394, fov = 35, ty = 14, tx = -17 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_gorgonite_warhammer", name = "Off-hand gorgonite warhammer", kind = "item", rarity = "rare",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_9", cam = { yaw = -4.99, dist = 434, fov = 30, ty = 22, tx = 11 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
-        id = "offhand_katagon_warhammer", name = "Off-hand katagon warhammer", kind = "item", rarity = "rare",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_8", cam = { yaw = -4.90, dist = 394, fov = 30, ty = 31, tx = 26 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
         id = "superior_dragon_mace", name = "Superior dragon mace", kind = "item", rarity = "rare",
         desc = "A very, very powerful mace.",
         art = { item = "DMBH_DRAGON_MACE", cam = { yaw = -7.16, dist = 578, fov = 35, ty = 11, tx = -6 } },
@@ -440,12 +338,6 @@ Set.cards = {
         tags = { regions = { "kharidian_desert" }, skills = { "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
-        id = "offhand_promethium_warhammer", name = "Off-hand promethium warhammer", kind = "item", rarity = "epic",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_O_10", cam = { yaw = -5.04, dist = 433, fov = 30, ty = 29, tx = 17 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
         id = "primal_off_hand_warhammer", name = "Primal off hand warhammer", kind = "item", rarity = "epic",
         desc = "A primal off hand warhammer.",
         art = { item = "PRIMAL_WARHAMMER_O", cam = { yaw = -5.19, dist = 577, fov = 30, ty = 6, tx = 56 } },
@@ -456,12 +348,6 @@ Set.cards = {
         desc = "A primal warhammer.",
         art = { item = "PRIMAL_WARHAMMER", cam = { yaw = -7.18, dist = 477, fov = 35, ty = 71, tx = -1 } },
         tags = { regions = { "daemonheim" }, skills = { "smithing", "attack" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
-    },
-    {
-        id = "promethium_warhammer", name = "Promethium warhammer", kind = "item", rarity = "epic",
-        desc = "I don't think it's intended for joinery.",
-        art = { item = "RAND_WARHAMMER_10", cam = { yaw = -7.02, dist = 394, fov = 35, ty = 20, tx = -15 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "attack", "dungeoneering" }, category = { "weapon", "melee_gear", "mace" }, membership = { "p2p" } },
     },
     {
         id = "linzas_hammer", name = "Linza's hammer", kind = "item", rarity = "rare",

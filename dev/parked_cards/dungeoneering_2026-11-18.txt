@@ -1,0 +1,259 @@
+1 twin|antidragon_shield_dungeoneering|Anti-dragon shield (Dungeoneering)|common
+1 twin|primal_full_helm_dungeoneering|Primal full helm (Dungeoneering)|epic
+1 twin|primal_platebody_dungeoneering|Primal platebody (Dungeoneering)|epic
+1 twin|primal_platelegs_dungeoneering|Primal platelegs (Dungeoneering)|epic
+1 twin|primal_gauntlets_dungeoneering|Primal gauntlets (Dungeoneering)|epic
+1 twin|primal_kiteshield_dungeoneering|Primal kiteshield (Dungeoneering)|epic
+2 off-hand|offhand_bathus_dagger|Off-hand bathus dagger|common
+2 off-hand|offhand_marmaros_dagger|Off-hand marmaros dagger|common
+2 off-hand|offhand_novite_dagger|Off-hand novite dagger|common
+2 off-hand|offhand_kratonite_dagger|Off-hand kratonite dagger|common
+2 off-hand|offhand_bathus_longsword|Off-hand bathus longsword|common
+2 off-hand|offhand_bathus_rapier|Off-hand bathus rapier|common
+2 off-hand|offhand_marmaros_longsword|Off-hand marmaros longsword|common
+2 off-hand|offhand_marmaros_rapier|Off-hand marmaros rapier|common
+2 off-hand|offhand_novite_longsword|Off-hand novite longsword|common
+2 off-hand|offhand_novite_rapier|Off-hand novite rapier|common
+2 off-hand|offhand_kratonite_longsword|Off-hand kratonite longsword|common
+2 off-hand|offhand_kratonite_rapier|Off-hand kratonite rapier|common
+2 off-hand|offhand_bathus_battleaxe|Off-hand bathus battleaxe|common
+2 off-hand|offhand_novite_battleaxe|Off-hand novite battleaxe|common
+2 off-hand|offhand_kratonite_battleaxe|Off-hand kratonite battleaxe|common
+2 off-hand|offhand_marmaros_battleaxe|Off-hand marmaros battleaxe|common
+2 off-hand|offhand_bathus_warhammer|Off-hand bathus warhammer|common
+2 off-hand|offhand_marmaros_warhammer|Off-hand marmaros warhammer|common
+2 off-hand|offhand_novite_warhammer|Off-hand novite warhammer|common
+2 off-hand|offhand_kratonite_warhammer|Off-hand kratonite warhammer|common
+2 off-hand|offhand_fractite_dagger|Off-hand fractite dagger|uncommon
+2 off-hand|offhand_argonite_dagger|Off-hand argonite dagger|uncommon
+2 off-hand|offhand_zephyrium_dagger|Off-hand zephyrium dagger|uncommon
+2 off-hand|offhand_fractite_longsword|Off-hand fractite longsword|uncommon
+2 off-hand|offhand_fractite_rapier|Off-hand fractite rapier|uncommon
+2 off-hand|offhand_argonite_longsword|Off-hand argonite longsword|uncommon
+2 off-hand|offhand_argonite_rapier|Off-hand argonite rapier|uncommon
+2 off-hand|offhand_gravite_longsword|Off-hand gravite longsword|uncommon
+2 off-hand|offhand_gravite_rapier|Off-hand gravite rapier|uncommon
+2 off-hand|offhand_zephyrium_longsword|Off-hand zephyrium longsword|uncommon
+2 off-hand|offhand_zephyrium_rapier|Off-hand zephyrium rapier|uncommon
+2 off-hand|offhand_fractite_battleaxe|Off-hand fractite battleaxe|uncommon
+2 off-hand|offhand_argonite_battleaxe|Off-hand argonite battleaxe|uncommon
+2 off-hand|offhand_zephyrium_battleaxe|Off-hand zephyrium battleaxe|uncommon
+2 off-hand|offhand_fractite_warhammer|Off-hand fractite warhammer|uncommon
+2 off-hand|offhand_argonite_warhammer|Off-hand argonite warhammer|uncommon
+2 off-hand|offhand_zephyrium_warhammer|Off-hand zephyrium warhammer|uncommon
+2 off-hand|offhand_gorgonite_dagger|Off-hand gorgonite dagger|rare
+2 off-hand|offhand_katagon_dagger|Off-hand katagon dagger|rare
+2 off-hand|offhand_chaotic_longsword|Off-hand chaotic longsword|rare
+2 off-hand|offhand_chaotic_rapier|Off-hand chaotic rapier|rare
+2 off-hand|offhand_gorgonite_longsword|Off-hand gorgonite longsword|rare
+2 off-hand|offhand_gorgonite_rapier|Off-hand gorgonite rapier|rare
+2 off-hand|offhand_katagon_longsword|Off-hand katagon longsword|rare
+2 off-hand|offhand_katagon_rapier|Off-hand katagon rapier|rare
+2 off-hand|offhand_gorgonite_battleaxe|Off-hand gorgonite battleaxe|rare
+2 off-hand|offhand_katagon_battleaxe|Off-hand katagon battleaxe|rare
+2 off-hand|offhand_gorgonite_warhammer|Off-hand gorgonite warhammer|rare
+2 off-hand|offhand_katagon_warhammer|Off-hand katagon warhammer|rare
+2 off-hand|offhand_chaotic_claw|Off-hand chaotic claw|rare
+2 off-hand|offhand_chaotic_crossbow|Off-hand chaotic crossbow|rare
+2 off-hand|offhand_primal_dagger|Off-hand primal dagger|epic
+2 off-hand|offhand_promethium_dagger|Off-hand promethium dagger|epic
+2 off-hand|offhand_primal_longsword|Off-hand primal longsword|epic
+2 off-hand|offhand_primal_rapier|Off-hand primal rapier|epic
+2 off-hand|offhand_promethium_rapier|Off-hand promethium rapier|epic
+2 off-hand|offhand_ruinous_rapier|Off-hand ruinous rapier|epic
+2 off-hand|offhand_primal_battleaxe|Off-hand primal battleaxe|epic
+2 off-hand|offhand_promethium_battleaxe|Off-hand promethium battleaxe|epic
+2 off-hand|offhand_promethium_warhammer|Off-hand promethium warhammer|epic
+2 off-hand|offhand_ruinous_crossbow|Off-hand ruinous crossbow|epic
+3 stage|grimy_aloe|Grimy aloe|common
+3 stage|grimy_sagewort|Grimy sagewort|common
+3 stage|grimy_valerian|Grimy valerian|common
+3 stage|raw_dusk_eel|Raw dusk eel|common
+3 stage|raw_giant_flatfish|Raw giant flatfish|common
+3 stage|raw_heim_crab|Raw heim crab|common
+3 stage|raw_redeye|Raw red-eye|common
+3 stage|grimy_featherfoil|Grimy featherfoil|uncommon
+3 stage|grimy_magebane|Grimy magebane|uncommon
+3 stage|grimy_wormwood_leaf|Grimy wormwood leaf|uncommon
+3 stage|raw_bouldabass|Raw bouldabass|uncommon
+3 stage|raw_shortfinned_eel|Raw short-finned eel|uncommon
+3 stage|raw_web_snipper|Raw web snipper|uncommon
+3 stage|grimy_lycopus|Grimy lycopus|rare
+3 stage|grimy_winters_grip|Grimy winter's grip|rare
+3 stage|raw_blue_crab|Raw blue crab|rare
+3 stage|raw_salve_eel|Raw salve eel|rare
+3 stage|grimy_buckthorn|Grimy buckthorn|epic
+3 stage|raw_cave_moray|Raw cave moray|epic
+4 metal tier|bathus_rapier|Bathus rapier|common
+4 metal tier|marmaros_rapier|Marmaros rapier|common
+4 metal tier|novite_rapier|Novite rapier|common
+4 metal tier|kratonite_rapier|Kratonite rapier|common
+4 metal tier|bathus_battleaxe|Bathus battleaxe|common
+4 metal tier|novite_battleaxe|Novite battleaxe|common
+4 metal tier|kratonite_battleaxe|Kratonite battleaxe|common
+4 metal tier|marmaros_battleaxe|Marmaros battleaxe|common
+4 metal tier|bathus_warhammer|Bathus warhammer|common
+4 metal tier|marmaros_warhammer|Marmaros warhammer|common
+4 metal tier|novite_warhammer|Novite warhammer|common
+4 metal tier|kratonite_warhammer|Kratonite warhammer|common
+4 metal tier|bathus_spear|Bathus spear|common
+4 metal tier|novite_spear|Novite spear|common
+4 metal tier|kratonite_spear|Kratonite spear|common
+4 metal tier|marmaros_spear|Marmaros spear|common
+4 metal tier|bathus_knife|Bathus knife|common
+4 metal tier|marmaros_knife|Marmaros knife|common
+4 metal tier|novite_knife|Novite knife|common
+4 metal tier|kratonite_knife|Kratonite knife|common
+4 metal tier|bathus_lantern|Bathus lantern|common
+4 metal tier|kratonite_lantern|Kratonite lantern|common
+4 metal tier|marmaros_lantern|Marmaros lantern|common
+4 metal tier|novite_lantern|Novite lantern|common
+4 metal tier|kratonite_guard|Kratonite guard|common
+4 metal tier|marmaros_guard|Marmaros guard|common
+4 metal tier|novite_guard|Novite guard|common
+4 metal tier|bathus_guard|Bathus guard|common
+4 metal tier|bathus_maul|Bathus maul|common
+4 metal tier|novite_maul|Novite maul|common
+4 metal tier|kratonite_maul|Kratonite maul|common
+4 metal tier|marmaros_maul|Marmaros maul|common
+4 metal tier|bathus_chainbody|Bathus chainbody|common
+4 metal tier|kratonite_chainbody|Kratonite chainbody|common
+4 metal tier|marmaros_chainbody|Marmaros chainbody|common
+4 metal tier|novite_chainbody|Novite chainbody|common
+4 metal tier|bathus_plateskirt|Bathus plateskirt|common
+4 metal tier|kratonite_plateskirt|Kratonite plateskirt|common
+4 metal tier|marmaros_plateskirt|Marmaros plateskirt|common
+4 metal tier|novite_plateskirt|Novite plateskirt|common
+4 metal tier|argonite_rapier|Argonite rapier|uncommon
+4 metal tier|fractite_rapier|Fractite rapier|uncommon
+4 metal tier|zephyrium_rapier|Zephyrium rapier|uncommon
+4 metal tier|argonite_battleaxe|Argonite battleaxe|uncommon
+4 metal tier|fractite_battleaxe|Fractite battleaxe|uncommon
+4 metal tier|zephyrium_battleaxe|Zephyrium battleaxe|uncommon
+4 metal tier|argonite_warhammer|Argonite warhammer|uncommon
+4 metal tier|fractite_warhammer|Fractite warhammer|uncommon
+4 metal tier|zephyrium_warhammer|Zephyrium warhammer|uncommon
+4 metal tier|argonite_spear|Argonite spear|uncommon
+4 metal tier|fractite_spear|Fractite spear|uncommon
+4 metal tier|zephyrium_spear|Zephyrium spear|uncommon
+4 metal tier|fractite_knife|Fractite knife|uncommon
+4 metal tier|argonite_knife|Argonite knife|uncommon
+4 metal tier|zephyrium_knife|Zephyrium knife|uncommon
+4 metal tier|argonite_lantern|Argonite lantern|uncommon
+4 metal tier|fractite_lantern|Fractite lantern|uncommon
+4 metal tier|zephyrium_lantern|Zephyrium lantern|uncommon
+4 metal tier|argonite_guard|Argonite guard|uncommon
+4 metal tier|fractite_guard|Fractite guard|uncommon
+4 metal tier|zephyrium_guard|Zephyrium guard|uncommon
+4 metal tier|argonite_maul|Argonite maul|uncommon
+4 metal tier|zephyrium_maul|Zephyrium maul|uncommon
+4 metal tier|fractite_maul|Fractite maul|uncommon
+4 metal tier|argonite_chainbody|Argonite chainbody|uncommon
+4 metal tier|fractite_chainbody|Fractite chainbody|uncommon
+4 metal tier|zephyrium_chainbody|Zephyrium chainbody|uncommon
+4 metal tier|argonite_plateskirt|Argonite plateskirt|uncommon
+4 metal tier|fractite_plateskirt|Fractite plateskirt|uncommon
+4 metal tier|zephyrium_plateskirt|Zephyrium plateskirt|uncommon
+4 metal tier|gorgonite_rapier|Gorgonite rapier|rare
+4 metal tier|katagon_rapier|Katagon rapier|rare
+4 metal tier|gorgonite_battleaxe|Gorgonite battleaxe|rare
+4 metal tier|katagon_battleaxe|Katagon battleaxe|rare
+4 metal tier|katagon_warhammer|Katagon warhammer|rare
+4 metal tier|gorgonite_spear|Gorgonite spear|rare
+4 metal tier|katagon_spear|Katagon spear|rare
+4 metal tier|gorgonite_knife|Gorgonite knife|rare
+4 metal tier|katagon_knife|Katagon knife|rare
+4 metal tier|gorgonite_lantern|Gorgonite lantern|rare
+4 metal tier|katagon_lantern|Katagon lantern|rare
+4 metal tier|gorgonite_guard|Gorgonite guard|rare
+4 metal tier|katagon_guard|Katagon guard|rare
+4 metal tier|gorgonite_maul|Gorgonite maul|rare
+4 metal tier|katagon_maul|Katagon maul|rare
+4 metal tier|gorgonite_chainbody|Gorgonite chainbody|rare
+4 metal tier|katagon_chainbody|Katagon chainbody|rare
+4 metal tier|gorgonite_plateskirt|Gorgonite plateskirt|rare
+4 metal tier|katagon_plateskirt|Katagon plateskirt|rare
+4 metal tier|promethium_rapier|Promethium rapier|epic
+4 metal tier|promethium_battleaxe|Promethium battleaxe|epic
+4 metal tier|promethium_warhammer|Promethium warhammer|epic
+4 metal tier|promethium_spear|Promethium spear|epic
+4 metal tier|promethium_knife|Promethium knife|epic
+4 metal tier|promethium_lantern|Promethium lantern|epic
+4 metal tier|promethium_guard|Promethium guard|epic
+4 metal tier|promethium_maul|Promethium maul|epic
+4 metal tier|promethium_chainbody|Promethium chainbody|epic
+4 metal tier|promethium_plateskirt|Promethium plateskirt|epic
+5 armour set|deathleaf_hood|Deathleaf hood|common
+5 armour set|deathleaf_robe_top|Deathleaf robe top|common
+5 armour set|deathleaf_robe_bottom|Deathleaf robe bottom|common
+5 armour set|deathleaf_gloves|Deathleaf gloves|common
+5 armour set|deathleaf_shoes|Deathleaf shoes|common
+5 armour set|shadowblood_hood|Shadowblood hood|common
+5 armour set|shadowblood_robe_top|Shadowblood robe top|common
+5 armour set|shadowblood_robe_bottom|Shadowblood robe bottom|common
+5 armour set|shadowblood_gloves|Shadowblood gloves|common
+5 armour set|shadowblood_shoes|Shadowblood shoes|common
+5 armour set|deathweed_hood|Deathweed hood|uncommon
+5 armour set|deathweed_robe_top|Deathweed robe top|uncommon
+5 armour set|deathweed_robe_bottom|Deathweed robe bottom|uncommon
+5 armour set|deathweed_gloves|Deathweed gloves|uncommon
+5 armour set|deathweed_shoes|Deathweed shoes|uncommon
+5 armour set|soulrune_hood|Soulrune hood|rare
+5 armour set|soulrune_robe_top|Soulrune robe top|rare
+5 armour set|soulrune_robe_bottom|Soulrune robe bottom|rare
+5 armour set|soulrune_gloves|Soulrune gloves|rare
+5 armour set|soulrune_shoes|Soulrune shoes|rare
+5 armour set|roseblood_hood|Roseblood hood|common
+5 armour set|roseblood_robe_top|Roseblood robe top|common
+5 armour set|roseblood_robe_bottom|Roseblood robe bottom|common
+5 armour set|roseblood_gloves|Roseblood gloves|common
+5 armour set|roseblood_shoes|Roseblood shoes|common
+5 armour set|roseblood_shield|Roseblood shield|common
+5 armour set|wildercress_hood|Wildercress hood|common
+5 armour set|wildercress_robe_top|Wildercress robe top|common
+5 armour set|wildercress_robe_bottom|Wildercress robe bottom|common
+5 armour set|wildercress_gloves|Wildercress gloves|common
+5 armour set|wildercress_shoes|Wildercress shoes|common
+5 armour set|wildercress_shield|Wildercress shield|common
+5 armour set|duskweed_hood|Duskweed hood|uncommon
+5 armour set|duskweed_robe_top|Duskweed robe top|uncommon
+5 armour set|duskweed_robe_bottom|Duskweed robe bottom|uncommon
+5 armour set|duskweed_gloves|Duskweed gloves|uncommon
+5 armour set|duskweed_shoes|Duskweed shoes|uncommon
+5 armour set|duskweed_shield|Duskweed shield|uncommon
+5 armour set|runic_hood|Runic hood|rare
+5 armour set|runic_robe_top|Runic robe top|rare
+5 armour set|runic_robe_bottom|Runic robe bottom|rare
+5 armour set|runic_gloves|Runic gloves|rare
+5 armour set|runic_shoes|Runic shoes|rare
+5 armour set|runic_shield|Runic shield|rare
+5 armour set|paraleather_coif|Paraleather coif|common
+5 armour set|paraleather_body|Paraleather body|common
+5 armour set|paraleather_chaps|Paraleather chaps|common
+5 armour set|paraleather_vambraces|Paraleather vambraces|common
+5 armour set|paraleather_boots|Paraleather boots|common
+5 armour set|paraleather_shield|Paraleather shield|common
+5 armour set|subleather_coif|Subleather coif|common
+5 armour set|subleather_body|Subleather body|common
+5 armour set|subleather_chaps|Subleather chaps|common
+5 armour set|subleather_vambraces|Subleather vambraces|common
+5 armour set|subleather_boots|Subleather boots|common
+5 armour set|subleather_shield|Subleather shield|common
+5 armour set|gallileather_coif|Gallileather coif|uncommon
+5 armour set|gallileather_body|Gallileather body|uncommon
+5 armour set|gallileather_chaps|Gallileather chaps|uncommon
+5 armour set|gallileather_vambraces|Gallileather vambraces|uncommon
+5 armour set|gallileather_boots|Gallileather boots|uncommon
+5 armour set|gallileather_shield|Gallileather shield|uncommon
+5 armour set|megaleather_coif|Megaleather coif|rare
+5 armour set|megaleather_body|Megaleather body|rare
+5 armour set|megaleather_chaps|Megaleather chaps|rare
+5 armour set|megaleather_vambraces|Megaleather vambraces|rare
+5 armour set|megaleather_boots|Megaleather boots|rare
+5 armour set|megaleather_shield|Megaleather shield|rare
+5 armour set|sagittarian_coif|Sagittarian coif|epic
+5 armour set|sagittarian_body|Sagittarian body|epic
+5 armour set|sagittarian_chaps|Sagittarian chaps|epic
+5 armour set|sagittarian_vambraces|Sagittarian vambraces|epic
+5 armour set|sagittarian_boots|Sagittarian boots|epic
+5 armour set|sagittarian_shield|Sagittarian shield|epic

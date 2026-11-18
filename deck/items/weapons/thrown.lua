@@ -2,12 +2,6 @@ local Set = {}
 
 Set.cards = {
     {
-        id = "bathus_knife", name = "Bathus knife", kind = "item", rarity = "common",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_2", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
         id = "bronze_dart", name = "Bronze dart", kind = "item", rarity = "common",
         desc = "A deadly throwing dart with a bronze tip.",
         art = { item = "BRONZE_DART", cam = { yaw = -0.34, dist = 186, ty = -45, tx = 16 } },
@@ -48,18 +42,6 @@ Set.cards = {
         desc = "A finely balanced throwing axe.",
         art = { item = "IRON_THROWNAXE", cam = { yaw = -7.40, dist = 296, fov = 35, ty = 3, tx = 17 } },
         tags = { skills = { "smithing", "ranged" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
-        id = "marmaros_knife", name = "Marmaros knife", kind = "item", rarity = "common",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_3", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
-        id = "novite_knife", name = "Novite knife", kind = "item", rarity = "common",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_1", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
     },
     {
         id = "steel_dart", name = "Steel dart", kind = "item", rarity = "common",
@@ -134,18 +116,6 @@ Set.cards = {
         tags = { skills = { "ranged" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
     },
     {
-        id = "fractite_knife", name = "Fractite knife", kind = "item", rarity = "uncommon",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_5", cam = { yaw = 0.77, dist = 226, ty = -22, tx = -14 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
-        id = "kratonite_knife", name = "Kratonite knife", kind = "item", rarity = "common",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_4", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
         id = "mithril_dart", name = "Mithril dart", kind = "item", rarity = "common",
         desc = "A deadly throwing dart with a mithril tip.",
         art = { item = "MITHRIL_DART", cam = { yaw = -0.34, dist = 186, ty = -45, tx = 16 } },
@@ -168,12 +138,6 @@ Set.cards = {
         desc = "A finely balanced throwing axe.",
         art = { item = "MITHRIL_THROWNAXE", cam = { yaw = -7.40, dist = 223, fov = 35, ty = 6, tx = -2 } },
         tags = { skills = { "smithing", "ranged" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
-        id = "argonite_knife", name = "Argonite knife", kind = "item", rarity = "uncommon",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_7", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
     },
     {
         id = "black_chinchompa", name = "Black chinchompa", kind = "item", rarity = "uncommon",
@@ -272,12 +236,6 @@ Set.cards = {
         tags = { regions = { "karamja" }, skills = { "ranged" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
     },
     {
-        id = "zephyrium_knife", name = "Zephyrium knife", kind = "item", rarity = "uncommon",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_6", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "f2p" } },
-    },
-    {
         id = "blisterwood_stake", name = "Blisterwood stake", kind = "item", rarity = "rare",
         desc = "A stake, carved from the blisterwood tree.",
         art = { item = "MYQ5_BLISTERWOOD_STAKE", cam = { yaw = -0.68, pitch = 1.24, dist = 226, ty = -1, tx = 9 } },
@@ -294,18 +252,6 @@ Set.cards = {
         desc = "A throwing disc fashioned from crystal.",
         art = { item = "ELFCITY_CRYSTAL_CHAKRAM_100", cam = { yaw = 0.73, pitch = 1.05, dist = 205, ty = -12, tx = 4 } },
         tags = { regions = { "tirannwn" }, skills = { "smithing", "ranged", "agility" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
-    },
-    {
-        id = "gorgonite_knife", name = "Gorgonite knife", kind = "item", rarity = "rare",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_9", cam = { yaw = 0.74, dist = 248, ty = -23, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
-    },
-    {
-        id = "katagon_knife", name = "Katagon knife", kind = "item", rarity = "rare",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_8", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
     },
     {
         id = "mechanised_chinchompa", name = "Mechanised chinchompa", kind = "item", rarity = "rare",
@@ -373,12 +319,6 @@ Set.cards = {
         desc = "A small knife balanced for throwing.",
         art = { item = "RAND_THROWN_KNIFE_11", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
         tags = { regions = { "daemonheim" }, skills = { "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
-    },
-    {
-        id = "promethium_knife", name = "Promethium knife", kind = "item", rarity = "epic",
-        desc = "A small knife balanced for throwing.",
-        art = { item = "RAND_THROWN_KNIFE_10", cam = { yaw = 0.74, dist = 248, ty = -26, tx = -25 } },
-        tags = { regions = { "daemonheim" }, skills = { "smithing", "ranged", "dungeoneering" }, category = { "weapon", "ranged_gear", "thrown" }, membership = { "p2p" } },
     },
 }
 
