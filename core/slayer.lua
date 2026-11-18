@@ -17,26 +17,21 @@
 --
 -- Completion. VarPlayer 10077 (SMKI_MISSION_COUNT, the streak) rises by exactly 1 when a task is completed. Cancelling
 -- keeps the streak, and skipping resets it to 0, so neither is mistaken for a completion. The bonus is
--- BONUS_MULTIPLIER times the average level of the kills paid on that task, and is paid once the last kill is.
+-- "slayer.bonusMultiplier" times the average level of the kills paid on that task, and is paid once the last kill is.
 --
 -- Time here is the server tick (about 0.6 seconds): `now` counts them, and advance() is called once for each.
 
 local SlayerTasks = require("core/slayertasks")
+local Config = require("core/config")
 
 local Slayer = {}
 
--- The variables the game keeps the task in (VarPlayer ids).
-Slayer.COUNT_VAR = 183
-Slayer.TASK_VAR = 185
-Slayer.STREAK_VAR = 10077
-
--- The credits. A kill pays CREDITS_PER_LEVEL for each combat level of the monster, and the bonus is BONUS_MULTIPLIER times
--- that for the average level. Whole credits only (at least 1). LEVEL_CAP, if set, is the highest level that is
--- paid for (a few bosses report levels in the thousands); nil is no cap. These numbers are to be tuned
--- with the rest of the credit system.
-Slayer.CREDITS_PER_LEVEL = 1
-Slayer.BONUS_MULTIPLIER = 5
-Slayer.LEVEL_CAP = nil
+-- The variables the game keeps the task in (VarPlayer ids): Config "slayer.vars.count", ".task" and ".streak" (183, 185 and
+-- 10077; a game update may move them).
+-- The credits. A kill pays "slayer.creditsPerLevel" (1) for each combat level of the monster, and the bonus is
+-- "slayer.bonusMultiplier" (5) times that for the average level. Whole credits only (at least 1). "slayer.levelCap", if
+-- set, is the highest level that is paid for (a few bosses report levels in the thousands); none is no cap. "slayer.enabled"
+-- is the switch for all Slayer credits (core/slayerevents.lua).
 Slayer.DEFAULT_LEVEL = 1        -- the level of a kill when nothing at all is known about it
 
 -- How the game's behaviour is read.
@@ -50,10 +45,11 @@ function Slayer.creditsForLevel(level)
     if type(level) ~= "number" or level < 1 then
         level = Slayer.DEFAULT_LEVEL
     end
-    if Slayer.LEVEL_CAP ~= nil and level > Slayer.LEVEL_CAP then
-        level = Slayer.LEVEL_CAP
+    local cap = Config.get("slayer.levelCap")
+    if cap ~= nil and level > cap then
+        level = cap
     end
-    return math.max(1, math.floor(level * Slayer.CREDITS_PER_LEVEL + 0.5))
+    return math.max(1, math.floor(level * Config.get("slayer.creditsPerLevel") + 0.5))
 end
 
 -- The bonus for completing a task whose kills averaged this level.
@@ -61,10 +57,11 @@ function Slayer.bonusForLevel(level)
     if type(level) ~= "number" or level < 1 then
         level = Slayer.DEFAULT_LEVEL
     end
-    if Slayer.LEVEL_CAP ~= nil and level > Slayer.LEVEL_CAP then
-        level = Slayer.LEVEL_CAP
+    local cap = Config.get("slayer.levelCap")
+    if cap ~= nil and level > cap then
+        level = cap
     end
-    return math.max(1, math.floor(level * Slayer.CREDITS_PER_LEVEL * Slayer.BONUS_MULTIPLIER + 0.5))
+    return math.max(1, math.floor(level * Config.get("slayer.creditsPerLevel") * Config.get("slayer.bonusMultiplier") + 0.5))
 end
 
 -- Makes the function that says whether a monster counts for a task: isMember(task, category), where both are keys of

@@ -27,6 +27,8 @@ jobs:
         run: lua5.4 dev/check_slayer.lua
       - name: Boss kill credits (core/bosses.lua)
         run: lua5.4 dev/check_bosses.lua
+      - name: The tuning keys, their limits and what reads them (core/config.lua)
+        run: lua5.4 dev/check_config.lua
       - name: The deck survives the overlay format (dev/export_overlay.lua)
         run: lua5.4 dev/check_overlay.lua
       - name: Overlay build logic (dev/build_overlay.py)

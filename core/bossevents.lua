@@ -7,6 +7,7 @@
 
 local Bosses = require("core/bosses")
 local Logger = require("core/logger")
+local Config = require("core/config")
 local Storage = require("core/storage")
 
 local BossEvents = {}
@@ -77,7 +78,7 @@ end
 -- Pays what the tracker decides, into the logged-in character's collection.
 local function award(kind, credits, info)
     local state = api.getState()
-    if state == nil then
+    if state == nil or not Config.get("bosses.enabled") then
         return
     end
     Storage.earnCredits(state, credits)

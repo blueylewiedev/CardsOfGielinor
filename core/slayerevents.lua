@@ -8,6 +8,7 @@
 
 local Slayer = require("core/slayer")
 local Logger = require("core/logger")
+local Config = require("core/config")
 local Storage = require("core/storage")
 
 local SlayerEvents = {}
@@ -140,7 +141,7 @@ end
 -- Pays what the tracker decides, into the logged-in character's collection.
 local function award(kind, credits, info)
     local state = api.getState()
-    if state == nil then
+    if state == nil or not Config.get("slayer.enabled") then
         return
     end
     Storage.earnCredits(state, credits)
@@ -156,11 +157,11 @@ local function onVariable(e)
     end
     local ok, err = pcall(function()
         local varId = prop(prop(e, "var"), "id")
-        if varId == Slayer.COUNT_VAR then
+        if varId == Config.get("slayer.vars.count") then
             tracker:onCount(e.oldValue, e.newValue)
-        elseif varId == Slayer.TASK_VAR then
+        elseif varId == Config.get("slayer.vars.task") then
             tracker:onTask(e.oldValue, e.newValue)
-        elseif varId == Slayer.STREAK_VAR then
+        elseif varId == Config.get("slayer.vars.streak") then
             tracker:onStreak(e.oldValue, e.newValue)
         end
     end)
@@ -232,9 +233,9 @@ end
 function SlayerEvents.begin()
     loadNames()
     tracker = Slayer.new({
-        count = readVar(Slayer.COUNT_VAR),
-        task = readVar(Slayer.TASK_VAR),
-        streak = readVar(Slayer.STREAK_VAR),
+        count = readVar(Config.get("slayer.vars.count")),
+        task = readVar(Config.get("slayer.vars.task")),
+        streak = readVar(Config.get("slayer.vars.streak")),
         isMember = isMember,
         unitsOf = unitsOf,
         fallbackLevel = function(task) return exampleLevel[task] end,

@@ -4,16 +4,18 @@
 
 local Cards = require("core/cards")
 local Storage = require("core/storage")
+local Config = require("core/config")
 
 local Packs = {}
 
 -- Cards in each pack.
 Packs.PACK_SIZE = 5
 
--- What a standard pack costs, in credits (1,000 XP = 100 credits, see core/earning.lua). One price for everyone: the
--- themed packs multiply it by their `priceFactor`. Storage.STARTER_CREDITS is two of these; keep them in step
--- (dev/check_packs.lua checks).
-Packs.PRICE = 4000
+-- What a standard pack costs, in credits (Config "packs.price", 4,000; 1,000 XP = 100 credits, see core/earning.lua). One price
+-- for everyone: a themed pack multiplies it by its `priceFactor`, or by "packs.themedPriceFactor" if it has none.
+function Packs.price()
+    return Config.get("packs.price")
+end
 
 -- The most packs one purchase can buy (the Shop's quantity drop-down offers these, up to the largest).
 Packs.QUANTITIES = { 1, 2, 3, 5, 10 }
@@ -40,13 +42,17 @@ function Packs.offered()
 end
 
 -- What one pack costs in credits, or nil if there is no such pack type. `packTypeId` is optional (default
--- "standard"): themed packs multiply the price by their `priceFactor`, rounded up.
+-- "standard"): themed packs multiply the price by their `priceFactor` (or the themed factor), rounded up.
 function Packs.priceFor(packTypeId)
     local packType = Packs.typeById(packTypeId)
     if packType == nil then
         return nil
     end
-    return math.ceil(Packs.PRICE * (packType.priceFactor or 1))
+    local factor = packType.priceFactor
+    if factor == nil then
+        factor = packType.themed and Config.get("packs.themedPriceFactor") or 1
+    end
+    return math.ceil(Packs.price() * factor)
 end
 
 -- Picks a key from a { key = weight } table, in proportion to the weights. Keys are
@@ -189,17 +195,30 @@ function Packs.rollCard(pool, kinds)
             pool = kinds[pickWeighted(weights)]
         end
     end
-    -- Only rarities that actually have cards can be rolled.
-    local rarityWeights = {}
-    for rarity, rarityData in pairs(Cards.rarities) do
+    -- Only rarities that actually have cards can be rolled (Config "odds.rarity.<rarity>"). If tuning has left every rarity
+    -- this pack has at 0, they are rolled alike rather than not at all.
+    local rarityWeights, total = {}, 0
+    for rarity in pairs(Cards.rarities) do
         if pool[rarity] ~= nil then
-            rarityWeights[rarity] = rarityData.weight
+            local weight = Config.get("odds.rarity." .. rarity)
+            rarityWeights[rarity] = weight
+            total = total + weight
+        end
+    end
+    if total <= 0 then
+        for rarity in pairs(rarityWeights) do
+            rarityWeights[rarity] = 1
         end
     end
     local rarity = pickWeighted(rarityWeights)
     local card = Packs.pickCard(pool[rarity])
 
-    local finish = pickWeighted(Cards.odds.finish)
+    -- (Config "odds.finish.<finish>": normal 9, holo 1)
+    local finishWeights = {}
+    for finish in pairs(Cards.finishes) do
+        finishWeights[finish] = Config.get("odds.finish." .. finish)
+    end
+    local finish = pickWeighted(finishWeights)
 
     return { card = card, finish = finish, key = Cards.variantKey(card.id, finish) }
 end
