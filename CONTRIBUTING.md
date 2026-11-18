@@ -670,8 +670,9 @@ Some words have more to say about the kind, and open their own choice once the w
 
 **Choosing regions for an item.** A region tag says that an item belongs to a region's story or
 loot. It does not say that the item can be found there. Anything that can be had almost anywhere is
-left without a region, and is still given out by the Gielinor pack, which has every card. Work down
-this list and use the first rule that fits:
+left without a region, and is given out by the Standard pack, which has every card, and by the
+Gielinor pack, which has every card from no one region. Work down this list and use the first rule
+that fits:
 
 1. **One clear source.** A boss drop, a dungeon, a quest reward, a shop found in one region, or a
    named set (Barrows, Noxious weaponry, God Wars drops). Tag that region. Barrows items are

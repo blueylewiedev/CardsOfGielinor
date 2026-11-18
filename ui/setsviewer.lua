@@ -208,8 +208,8 @@ local function copiesOf(have)
     return total
 end
 
--- What a card the player does not have says in place of its description: the packs it comes in ("Gielinor pack"
--- shortened to "Gielinor", so a few fit on the card's three lines).
+-- What a card the player does not have says in place of its description: the packs it comes in ("Standard pack"
+-- shortened to "Standard", so a few fit on the card's three lines).
 local function lockedText(card)
     local names = {}
     for _, name in ipairs(Packs.namesFor(card)) do

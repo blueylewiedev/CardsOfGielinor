@@ -83,8 +83,12 @@ local function describe(packType, id)
     local filter = packType.filter
     if filter == nil then
         lines[2] = "Any card in the game"
+    elseif filter.regions == Cards.NO_TAG then
+        lines[2] = "Only cards that are considered global"
     elseif filter.regions ~= nil then
         lines[2] = "Only cards from " .. shortName(packType)
+    elseif filter.membership == "f2p" then
+        lines[2] = "Only free-to-play cards"
     else
         lines[2] = "A themed selection of cards"
     end
@@ -248,9 +252,25 @@ function Shop.hide()
     end
 end
 
+-- Where each pack's tile goes, as a slot in the grid (0 first, COLUMNS a row): the featured packs (first in `offered`)
+-- on the top row, then the rest from the start of the next row. Returns the slots, by the packs' places in `offered`,
+-- and how many rows they take.
+local function slotsFor(offered)
+    local featured = 0
+    while offered[featured + 1] ~= nil and offered[featured + 1].featured ~= nil do
+        featured = featured + 1
+    end
+    local gap = (-featured) % COLUMNS               -- (the empty slots ending the featured row)
+    local slots = {}
+    for index = 1, #offered do
+        slots[index] = index - 1 + (index > featured and gap or 0)
+    end
+    return slots, math.max(1, (#offered + gap + COLUMNS - 1) // COLUMNS)
+end
+
 local function build()
     local offered = Packs.offered()
-    local rows = math.max(1, (#offered + COLUMNS - 1) // COLUMNS)
+    local slots, rows = slotsFor(offered)
     -- The tiles' rows are spaced out so the last row's names end level with the bottom of the panel (never closer than ROW_H).
     local lastRowH = TILE_H + LABEL_H + 6
     rowStep = ROW_H
@@ -281,10 +301,10 @@ local function build()
         widgets.heading = Kit.text(content, gridMiddle - 100, TOP + HEADING_NUDGE, 200, HEADING_H, "Packs", GOLD)
     end
     for index, packType in ipairs(offered) do
-        addTile(packType, index - 1)
+        addTile(packType, slots[index])
     end
-    if #offered > COLUMNS * 4 then
-        Logger.error("shop: " .. #offered .. " packs, but the grid shows " .. COLUMNS * 4)
+    if rows > 4 then
+        Logger.error("shop: " .. #offered .. " packs take " .. rows .. " rows, but the grid shows 4")
     end
 
     -- The panel behind the chosen pack and the buying controls: made after the tiles and before what goes on it.
