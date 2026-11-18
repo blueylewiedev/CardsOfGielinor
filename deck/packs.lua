@@ -12,7 +12,8 @@
 --   and any of the other pack type fields (size, minRarity, featured, and priceFactor: themed packs cost
 --   the "packs.themedPriceFactor" tuning key (core/config.lua) times the standard price unless they set their own).
 --
--- Every pack listed here is offered in the Shop: the featured ones on the top row, then the rest by name.
+-- Every pack listed here is offered in the Shop: the featured ones in its General section, in that order, then the rest
+-- under Regions by name.
 -- The Pack Maker's line keeps the pack's other fields (priceFactor, size, minRarity, featured), so pasting
 -- it over a pack's line changes only its name, cards and look.
 --
@@ -22,8 +23,8 @@
 
 return {
     { id = "standard", name = "Standard pack", art = { screen = "RS3_LOGINSCREEN_DEFAULT_NXT", front = 0.549, back = 0.040, name = { title = "standard", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
-    { id = "gielinor_pack", name = "Gielinor pack", filter = { regions = "none" }, art = { screen = "RS3_LOGINSCREEN_MEGAMAY_NXT", front = 0.585, back = 0.013, name = { title = "gielinor", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
-    -- (priceFactor 0.75: cheaper than the standard pack. featured 2: beside the standard pack on the Shop's top row)
+    { id = "gielinor_pack", name = "Gielinor pack", filter = { regions = "none" }, featured = 3, art = { screen = "RS3_LOGINSCREEN_MEGAMAY_NXT", front = 0.585, back = 0.013, name = { title = "gielinor", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
+    -- (priceFactor 0.75: cheaper than the standard pack. featured 2: in the Shop's General section, after the standard pack)
     { id = "free_to_play_pack", name = "Free to Play pack", filter = { membership = "f2p" }, priceFactor = 0.75, featured = 2, art = { screen = "RS3_LOGINSCREEN_ANNIVERSARY20_NXT", front = 0.027, back = 0.507, name = { title = "free_to_play", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
     { id = "misthalin_pack", name = "Misthalin pack", filter = { regions = "misthalin" }, art = { screen = "RS3_LOGINSCREEN_CONCONTRACTS_NXT", front = 0.067, back = 0.553, name = { title = "misthalin", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },
     { id = "kharidian_pack", name = "Kharidian pack", filter = { regions = "kharidian_desert" }, art = { screen = "RS3_LOGINSCREEN_MENAPHOS_CHARS_ALL_NXT", front = 0.600, back = 0.029, name = { title = "kharidian_desert", x = 0, y = 226, w = 150 }, logo = { sprite = "RS3_LOGO_MEDIUM", x = 0, y = 40, w = 130 } } },

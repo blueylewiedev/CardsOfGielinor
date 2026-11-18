@@ -18,6 +18,7 @@ local Logger = require("core/logger")
 local Packs = require("core/packs")
 local PackArt = require("ui/packart")
 local Kit = require("ui/kit")
+local ShopLayout = require("ui/shoplayout")
 
 local Shop = {}
 
@@ -39,8 +40,21 @@ local HEADING_H = 34                                 -- the "Packs" heading over
 local HEADING_NUDGE = 0                             -- (the heading is level with the top of the panel)
 local GRID_TOP = TOP + HEADING_H + 8
 local BOTTOM = MARGIN                                -- room under the panel, above the window's frame
+-- The tiles are in a scrolling container (PrettyUI's SimpleView) from GRID_TOP down to the bottom of the right-hand panel, so
+-- the window is as tall as the panel however many packs there are. It is GRID_W wide plus its scroll bar (16 and a gap of 2),
+-- which only shows when the packs are taller than the container.
+local SCROLL_W = 18
+local CONTAINER_W = GRID_W + SCROLL_W
+local WHEEL_STEP = 32                                -- what one notch of the wheel scrolls, as for the container's own
+-- Inside the container: a section's title (the pack titles' lettering at a smaller size, left-justified over the first column),
+-- the divider between the sections, and the spaces round them (see ui/shoplayout.lua).
+local SECTION_TITLE_H = 20
+local SECTION_TITLE_GAP = 12
+local DIVIDER_GAP = 14
+local GRID_PAD_TOP = 6                               -- (a tile's gold outline sticks out 4 above it)
+local GRID_PAD_BOTTOM = 10
 -- The right-hand panel (the chosen pack and the buying controls) has a background and border of its own.
-local PANEL_X, PANEL_PAD, DETAIL_W = GRID_W + 16, 16, 250
+local PANEL_X, PANEL_PAD, DETAIL_W = CONTAINER_W + 16, 16, 250
 local PANEL_W = DETAIL_W + 2 * PANEL_PAD
 local DETAIL_X = PANEL_X + PANEL_PAD
 local PACK_H = 340                                  -- the large pack (the tiles are 144)
@@ -61,8 +75,9 @@ local api = nil
 local window, content = nil, nil
 local widgets = {}
 local tiles = {}                  -- pack type id -> { draw, outline }
+local decor = {}                  -- the section titles and dividers in the grid
+local grid = nil                  -- the scrolling container the tiles are in: a PrettyUI SimpleView, or nil if it could not be made
 local bigPack = nil               -- the large pack: { root, w, destroy() }
-local rowStep = ROW_H             -- the distance from one row of tiles to the next (worked out by build)
 local selected = "standard"       -- the pack type chosen (kept while the plugin runs)
 local quantity = 1                -- how many packs to buy (kept while the plugin runs)
 
@@ -137,27 +152,32 @@ local function choose(packTypeId)
     Shop.refresh()
 end
 
--- One pack's picture, name and click area, in grid cell `index` (counting from 0).
-local function addTile(packType, index)
-    local x = LEFT + (index % COLUMNS) * (TILE_W + GAP_X)
-    local y = GRID_TOP + (index // COLUMNS) * rowStep
+-- Scrolls the grid by `delta` notches of the wheel (above 0 is down). The tiles' click areas take the wheel, so they hand it on.
+local function scrollGrid(delta)
+    if grid ~= nil and type(delta) == "number" and delta ~= 0 then
+        pcall(function() grid:ScrollBy(delta * WHEEL_STEP) end)
+    end
+end
+
+-- One pack's picture, name and click area, at x, y in `parent` (the scrolling grid).
+local function addTile(parent, packType, x, y)
     local tile = {}
     -- A shadow, the picture, a thin brown border round it, and (when chosen) a gold outline outside that.
-    tile.shadow = ui.Rectangle.new(content)
+    tile.shadow = ui.Rectangle.new(parent)
     tile.shadow:SetPos(x + 4, y + 4)
     tile.shadow:SetSize(TILE_W, TILE_H)
     tile.shadow.fill = true
     tile.shadow.colour = TILE_SHADOW
-    tile.draw = PackArt.drawTile(content, packType.id, TILE_H)
+    tile.draw = PackArt.drawTile(parent, packType.id, TILE_H)
     tile.draw.root:SetPos(x, y)
-    tile.border = ui.Rectangle.new(content)
+    tile.border = ui.Rectangle.new(parent)
     tile.border:SetPos(x - 1, y - 1)
     tile.border:SetSize(TILE_W + 2, TILE_H + 2)
     tile.border.fill = false
     tile.border.outlineThickness = 1
     tile.border.colour = TILE_BORDER
-    tile.label = Kit.text(content, x - GAP_X // 2, y + TILE_H + 6, TILE_W + GAP_X, LABEL_H, shortName(packType), GREY)
-    tile.outline = ui.Rectangle.new(content)
+    tile.label = Kit.text(parent, x - GAP_X // 2, y + TILE_H + 6, TILE_W + GAP_X, LABEL_H, shortName(packType), GREY)
+    tile.outline = ui.Rectangle.new(parent)
     tile.outline:SetPos(x - 4, y - 4)
     tile.outline:SetSize(TILE_W + 8, TILE_H + 8)
     tile.outline.fill = false
@@ -165,13 +185,36 @@ local function addTile(packType, index)
     tile.outline.colour = GOLD
     tile.outline.hidden = true
     -- The click area is a layer of its own on top, the way the credits bar takes its clicks.
-    tile.grip = ui.Layer.new(content)
+    tile.grip = ui.Layer.new(parent)
     tile.grip:SetPos(x, y)
     tile.grip:SetSize(TILE_W, TILE_H)
     tile.grip.clickthrough = false
     tile.grip:Subscribe(ui.Hook.ONCLICK, function() choose(packType.id) end)
+    Kit.onWheel(tile.grip, scrollGrid)
     tiles[packType.id] = tile
 end
+
+-- A title in the pack titles' gold lettering (an image drawn by dev/make_pack_art.py, as text can't be scaled), `h` high, at
+-- x, y in `parent`; with `centred` x is its middle instead of its left edge. Plain gold text if the image is missing.
+local function addTitle(parent, titleId, text, h, x, y, centred)
+    local title = PackArt.titleById(titleId)
+    local image = title ~= nil and PackArt.image("title_" .. titleId) or nil
+    if image ~= nil then
+        local w = math.floor(title.w * h / title.h + 0.5)
+        local sprite = ui.Sprite.new(parent)
+        sprite.sprite = image
+        sprite:SetPos(centred and x - w // 2 or x, y)
+        sprite:SetSize(w, h)
+        return sprite
+    end
+    if centred then
+        return Kit.text(parent, x - 100, y, 200, h, text, GOLD)
+    end
+    return Kit.text(parent, x, y, 200, h, text, GOLD, ui.AlignMode.TOPLEFT)
+end
+
+-- What the two sections of the grid are called.
+local SECTION_TITLES = { general = "General", regions = "Regions" }
 
 local function buy()
     local state = api ~= nil and api.getState() or nil
@@ -242,6 +285,14 @@ function Shop.hide()
         end
     end
     tiles = {}
+    for _, part in ipairs(decor) do
+        pcall(function() part:Destroy() end)
+    end
+    decor = {}
+    if grid ~= nil then
+        pcall(function() grid:Destroy() end)
+        grid = nil
+    end
     if widgets.quantity ~= nil then
         widgets.quantity.destroy()
     end
@@ -252,33 +303,25 @@ function Shop.hide()
     end
 end
 
--- Where each pack's tile goes, as a slot in the grid (0 first, COLUMNS a row): the featured packs (first in `offered`)
--- on the top row, then the rest from the start of the next row. Returns the slots, by the packs' places in `offered`,
--- and how many rows they take.
-local function slotsFor(offered)
-    local featured = 0
-    while offered[featured + 1] ~= nil and offered[featured + 1].featured ~= nil do
-        featured = featured + 1
-    end
-    local gap = (-featured) % COLUMNS               -- (the empty slots ending the featured row)
-    local slots = {}
-    for index = 1, #offered do
-        slots[index] = index - 1 + (index > featured and gap or 0)
-    end
-    return slots, math.max(1, (#offered + gap + COLUMNS - 1) // COLUMNS)
+-- Where the tiles, section titles and dividers go in the grid (ui/shoplayout.lua).
+local function gridLayout(offered)
+    return ShopLayout.place(offered, {
+        columns = COLUMNS, tileW = TILE_W, gapX = GAP_X, left = LEFT, top = GRID_PAD_TOP,
+        titleH = SECTION_TITLE_H, titleGap = SECTION_TITLE_GAP, rowH = ROW_H, lastRowH = TILE_H + LABEL_H + 6,
+        dividerGap = DIVIDER_GAP, bottom = GRID_PAD_BOTTOM,
+    })
 end
 
 local function build()
     local offered = Packs.offered()
-    local slots, rows = slotsFor(offered)
-    -- The tiles' rows are spaced out so the last row's names end level with the bottom of the panel (never closer than ROW_H).
-    local lastRowH = TILE_H + LABEL_H + 6
-    rowStep = ROW_H
-    if rows > 1 then
-        rowStep = math.max(ROW_H, (TOP + PANEL_H - GRID_TOP - lastRowH) // (rows - 1))
+    local layout = gridLayout(offered)
+    -- The tiles scroll in a container as tall as the right-hand panel, so the window is as tall as the panel. Without
+    -- PrettyUI's SimpleView they are made in the window itself, which then has to be as tall as they are.
+    local scrolling = Kit.available() and prettyui ~= nil and prettyui.SimpleView ~= nil
+    local height = TOP + PANEL_H + BOTTOM
+    if not scrolling then
+        height = math.max(TOP + PANEL_H, GRID_TOP + layout.height) + BOTTOM
     end
-    local gridBottom = GRID_TOP + (rows - 1) * rowStep + lastRowH
-    local height = math.max(TOP + PANEL_H, gridBottom) + BOTTOM
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,
         0.3, 0.12)
@@ -286,25 +329,39 @@ local function build()
     if Packs.typeById(selected) == nil then
         selected = "standard"
     end
-    -- The heading is the pack titles' gold lettering (an image, as text can't be scaled), centred over the tiles; plain
-    -- gold text if the image is missing.
+    -- The heading, centred over the tiles.
     local gridMiddle = (LEFT + GRID_W - 4) // 2
-    local title = PackArt.titleById("packs")
-    local titleImage = title ~= nil and PackArt.image("title_packs") or nil
-    if titleImage ~= nil then
-        local w = math.floor(title.w * HEADING_H / title.h + 0.5)
-        widgets.heading = ui.Sprite.new(content)
-        widgets.heading.sprite = titleImage
-        widgets.heading:SetPos(gridMiddle - w // 2, TOP + HEADING_NUDGE)
-        widgets.heading:SetSize(w, HEADING_H)
-    else
-        widgets.heading = Kit.text(content, gridMiddle - 100, TOP + HEADING_NUDGE, 200, HEADING_H, "Packs", GOLD)
+    widgets.heading = addTitle(content, "packs", "Packs", HEADING_H, gridMiddle, TOP + HEADING_NUDGE, true)
+
+    -- The scrolling grid: from under the heading to the bottom of the panel. `parent` is where the tiles go, and `originY`
+    -- where its top is in it.
+    local parent, originY = content, GRID_TOP
+    if scrolling then
+        local ok, view = pcall(prettyui.SimpleView.new, content, {
+            x = 0, y = GRID_TOP, width = CONTAINER_W, height = TOP + PANEL_H - GRID_TOP,
+            contentHeight = layout.height, scrollable = true, scrollStep = WHEEL_STEP,
+        })
+        if ok and view ~= nil and view.content ~= nil then
+            grid, parent, originY = view, view.content, 0
+        else
+            Logger.error("shop: the scrolling grid could not be made:", tostring(view))
+        end
+    end
+    for _, heading in ipairs(layout.headings) do
+        decor[#decor + 1] = addTitle(parent, heading.id, SECTION_TITLES[heading.id] or heading.id, SECTION_TITLE_H,
+            heading.x, originY + heading.y, false)
+    end
+    for _, y in ipairs(layout.dividers) do
+        local line = ui.Rectangle.new(parent)
+        line:SetPos(LEFT, originY + y)
+        line:SetSize(layout.width, 1)
+        line.fill = true
+        line.colour = TILE_BORDER
+        decor[#decor + 1] = line
     end
     for index, packType in ipairs(offered) do
-        addTile(packType, slots[index])
-    end
-    if rows > 4 then
-        Logger.error("shop: " .. #offered .. " packs take " .. rows .. " rows, but the grid shows 4")
+        local at = layout.tiles[index]
+        addTile(parent, packType, at.x, originY + at.y)
     end
 
     -- The panel behind the chosen pack and the buying controls: made after the tiles and before what goes on it.

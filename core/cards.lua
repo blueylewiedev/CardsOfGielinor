@@ -112,7 +112,8 @@ Cards.MAX_WEIGHT = 1000
 --                   region (the Gielinor pack).
 --   minRarity     : optional. Only cards of this rarity or better can be pulled.
 --   art           : optional. How the pack looks (see ui/packart.lua; made in the Pack Maker).
---   featured      : optional. A number: the pack is on the Shop's top row, in this order (see Packs.offered).
+--   featured      : optional. A number: the pack is in the Shop's General section (the others are under Regions), in this
+--                   order, first in the grid (see Packs.offered and ui/shoplayout.lua).
 -- Themed packs (made in the Pack Maker) are listed in deck/packs.lua and added below. They cost
 -- a little more than the standard pack (Config "packs.themedPriceFactor") unless they set their own priceFactor.
 -- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later

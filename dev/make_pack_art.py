@@ -52,8 +52,9 @@ PAD = 8
 GOLD_TOP, GOLD_BOTTOM = (255, 240, 180), (196, 140, 52)
 OUTLINE_COLOUR = (36, 22, 8)
 # Titles for packs that aren't one region's, made after the regions' (gielinor: the cards from no one region; standard:
-# every card; free_to_play: the free-to-play cards).
-EXTRA_TITLES = ["gielinor", "standard", "free_to_play", "packs"]
+# every card; free_to_play: the free-to-play cards), then the Shop's headings (packs over the grid; general and regions over
+# its two sections).
+EXTRA_TITLES = ["gielinor", "standard", "free_to_play", "general", "regions", "packs"]
 # A title's text, where it isn't the id's words each with a capital ("free_to_play" would be "Free To Play").
 TITLE_TEXT = {"free_to_play": "Free to Play"}
 
