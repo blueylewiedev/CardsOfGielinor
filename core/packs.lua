@@ -214,7 +214,7 @@ function Packs.rollCard(pool, kinds)
     local rarity = pickWeighted(rarityWeights)
     local card = Packs.pickCard(pool[rarity])
 
-    -- (Config "odds.finish.<finish>": normal 9, holo 1)
+    -- (Config "odds.finish.<finish>": normal 17, foil 2, holo 1)
     local finishWeights = {}
     for finish in pairs(Cards.finishes) do
         finishWeights[finish] = Config.get("odds.finish." .. finish)

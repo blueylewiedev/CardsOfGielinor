@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Makes the two images of the holo shine (see CardView.SHINE in ui/cardview.lua).
+"""Makes the two images of the foil shine (see CardView.SHINE in ui/cardview.lua).
 
-Usage:  python dev/make_holo.py     (run from anywhere)
+Usage:  python dev/make_foil.py     (run from anywhere)
 
-  resources/images/holo_a.png, holo_b.png   the size of a whole card (twice 160 x 224), a faint pastel rainbow in
+  resources/images/foil_a.png, foil_b.png   the size of a whole card (twice 160 x 224), a faint pastel rainbow in
                                             diagonal bands with a few small sparkles, almost see-through. The game
-                                            lays both over a holo card and cross-fades between them, so the bands
+                                            lays both over a foil card and cross-fades between them, so the bands
                                             seem to drift; b has the bands half a cycle on and its sparkles
                                             elsewhere.
 
@@ -69,5 +69,5 @@ def make(name, phase, seed):
 
 
 if __name__ == "__main__":
-    make("holo_a", 0.0, 1)
-    make("holo_b", 0.5, 2)
+    make("foil_a", 0.0, 1)
+    make("foil_b", 0.5, 2)

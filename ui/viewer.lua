@@ -210,7 +210,7 @@ local function entryKey(entry)
 end
 
 -- The finish a card is shown in: the one picked with its toggles if the player still has it, otherwise the entry's
--- own (the filter's finish, or a holo before a normal one, Browse.preferredFinish).
+-- own (the filter's finish, or the rarest the player has, Browse.preferredFinish).
 local function shownFinish(entry)
     local chosen = chosenFinish[entry.card.id]
     if chosen ~= nil and entry.finishes[chosen] ~= nil then
@@ -454,12 +454,8 @@ local function showRows()
             local card = entry.card
             local rarity = Cards.rarities[card.rarity]
             local locked = entry.locked
-            local name = string.upper(card.name)
-            local finish = shownFinish(entry)
-            if finish ~= "normal" then
-                name = name .. " (" .. string.upper(Cards.finishes[finish].name) .. ")"
-            end
-            row.name.content = name
+            -- (just the card's name: its finishes are variants of the one entry, shown under the picked card)
+            row.name.content = string.upper(card.name)
             row.name.colour = locked and DIM or WHITE
             row.rarity.content = rarity.name
             row.rarity.colour = locked and DIM or toVec4(rarity.colour)
@@ -608,7 +604,7 @@ local function showGrid()
         local key = entryKey(entry)
 
         -- the caption: a bar under the card in the rarity's own colour. A card owned in more than one finish has a
-        -- toggle for each instead ("Holo x1 | Normal x2"), the one shown lit; clicking one shows the card in it.
+        -- toggle for each instead ("Foil x1 | Normal x2"), the one shown lit; clicking one shows the card in it.
         -- Otherwise a click on the caption opens the card in the list, as a click on the card does.
         local rarity = Cards.rarities[entry.card.rarity]
         local captionY = y + GRID_CARD_H + 6
@@ -632,8 +628,10 @@ local function showGrid()
                 local cx = math.floor((index - 1) * segment)
                 local cw = math.floor(index * segment) - cx
                 local lit = owned.finish == shown
-                Kit.text(caption, cx, 0, cw, 30, Cards.finishes[owned.finish].name .. " x" .. owned.count,
-                    lit and GOLD or DIM)
+                -- (three toggles do not fit the finishes' names in a small card: their short names, "H x1")
+                local info = Cards.finishes[owned.finish]
+                local name = #finishes > 2 and info.short or info.name
+                Kit.text(caption, cx, 0, cw, 30, name .. " x" .. owned.count, lit and GOLD or DIM)
                 local finish = owned.finish
                 captionGrip(cx, cw, function() chooseFinish(entry, finish) end)
             end
@@ -851,13 +849,11 @@ local function buildFilters()
     filterDropdown("region", columnX(1), FILTER_Y[3], COLUMN_W, wordEntries("Any region", Cards.tagWords.regions))
     filterDropdown("skill", columnX(2), FILTER_Y[3], COLUMN_W, wordEntries("Any skill", Cards.tagWords.skills))
     filterDropdown("category", columnX(3), FILTER_Y[3], COLUMN_W, categoryEntries(), nil, true)
-    -- The finish (holo...), in the last place on the row unless the List / grid button needs it (no PrettyUI).
+    -- The finish (foil, holo...), in the last place on the row unless the List / grid button needs it (no PrettyUI).
     if widgets.swap == nil then
-        local finishes = { { label = "Any finish", value = ANY }, { label = "Normal", value = "normal" } }
-        for finish, info in pairs(Cards.finishes) do
-            if finish ~= "normal" then
-                finishes[#finishes + 1] = { label = info.name, value = finish }
-            end
+        local finishes = { { label = "Any finish", value = ANY } }
+        for _, finish in ipairs(Cards.finishOrder) do
+            finishes[#finishes + 1] = { label = Cards.finishes[finish].name, value = finish }
         end
         filterDropdown("finish", columnX(4), FILTER_Y[3], COLUMN_W, finishes)
     end

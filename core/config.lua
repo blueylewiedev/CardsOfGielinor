@@ -223,8 +223,9 @@ local SCHEMA = {
     ["starterCredits"]          = { 8000, wholeNumber(0, 20000) },
     ["packs.price"]             = { 4000, wholeNumber(2000, 8000) },
     ["packs.themedPriceFactor"] = { 1.25, anyNumber(1, 2) },
-    ["odds.finish.normal"]      = { 9, wholeNumber(1, 1000) },
-    ["odds.finish.holo"]        = { 1, wholeNumber(0, 1000) },
+    ["odds.finish.normal"]      = { 17, wholeNumber(1, 1000) },
+    ["odds.finish.foil"]        = { 2, wholeNumber(0, 1000) },       -- (the pastel shine over the card)
+    ["odds.finish.holo"]        = { 1, wholeNumber(0, 1000) },       -- (the rainbow behind the picture)
     ["slayer.enabled"]          = { true, switch },
     ["slayer.creditsPerLevel"]  = { 1, anyNumber(0.5, 2) },
     ["slayer.bonusMultiplier"]  = { 5, anyNumber(0, 10) },
@@ -238,7 +239,8 @@ local SCHEMA = {
         merge = true },
     ["bosses.overrides"]        = { {}, overrides },
     ["bosses.ignore"]           = { {}, ignored },
-    ["shine.enabled"]           = { true, switch },
+    ["shine.enabled"]           = { true, switch },               -- (a foil card's shine)
+    ["holo.enabled"]            = { true, switch },               -- (a holo card's rainbow)
 }
 local RARITY_DEFAULTS = { common = 63, uncommon = 25, rare = 9.4, epic = 2, legendary = 0.6 }
 for _, rarity in ipairs(RARITIES) do

@@ -42,7 +42,8 @@ check(Config.get("starterCredits") == 8000 and Config.get("packs.price") == 4000
     "starter 8,000, pack 4,000, themed packs 1.25 times")
 check(Config.get("odds.rarity.common") == 63 and Config.get("odds.rarity.uncommon") == 25 and Config.get("odds.rarity.rare") == 9.4
     and Config.get("odds.rarity.epic") == 2 and Config.get("odds.rarity.legendary") == 0.6, "the rarity weights 63 / 25 / 9.4 / 2 / 0.6")
-check(Config.get("odds.finish.normal") == 9 and Config.get("odds.finish.holo") == 1, "holo 1 in 10")
+check(Config.get("odds.finish.normal") == 17 and Config.get("odds.finish.foil") == 2 and Config.get("odds.finish.holo") == 1,
+    "foil 1 in 10, holo 1 in 20")
 check(Config.get("slayer.enabled") == true and Config.get("slayer.creditsPerLevel") == 1 and Config.get("slayer.bonusMultiplier") == 5
     and Config.get("slayer.levelCap") == nil, "Slayer pays the level, the bonus is five times it, no cap")
 check(Config.get("slayer.vars.count") == 183 and Config.get("slayer.vars.task") == 185 and Config.get("slayer.vars.streak") == 10077,
@@ -99,7 +100,7 @@ do
         notAKey = 1, packs2 = { price = 1 }, revision = -1 })
     check(Config.get("earning.xpPerCredit") == 10 and Config.get("earning.enabled") == true and Config.get("packs.price") == 4000
         and Config.get("packs.themedPriceFactor") == 1.25 and Config.get("slayer.creditsPerLevel") == 1
-        and Config.get("slayer.vars.count") == 183 and Config.get("starterCredits") == 8000 and Config.get("odds.finish.normal") == 9,
+        and Config.get("slayer.vars.count") == 183 and Config.get("starterCredits") == 8000 and Config.get("odds.finish.normal") == 17,
         "values outside their limits, or of the wrong type, keep the default")
     check(#report.ignored == 11 and #report.applied == 0 and #report.changed == 0, "all eleven bad keys reported, none applied (" .. #report.ignored .. ")")
     check(mentions(report, "notAKey") and mentions(report, "packs2") and mentions(report, "revision"), "unknown keys and a bad revision are named")
@@ -234,16 +235,17 @@ do
     Config.reset()
 
     -- the finish roll
-    local function holoShare(n)
-        local holo = 0
+    local function share(finish, n)
+        local hits = 0
         for _ = 1, n do
-            if Packs.rollCard(pool2).finish == "holo" then holo = holo + 1 end
+            if Packs.rollCard(pool2).finish == finish then hits = hits + 1 end
         end
-        return holo / n
+        return hits / n
     end
-    check(math.abs(holoShare(20000) - 0.1) < 0.01, "1 card in 10 is a holo")
+    check(math.abs(share("foil", 20000) - 0.1) < 0.01, "1 card in 10 is a foil")
+    check(math.abs(share("holo", 20000) - 0.05) < 0.008, "1 card in 20 is a holo")
     Config.apply({ odds = { finish = { holo = 0 } } })
-    check(holoShare(2000) == 0, "holo 0 pulls no holos")
+    check(share("holo", 2000) == 0, "holo 0 pulls no holos")
     Config.reset()
 end
 

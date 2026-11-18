@@ -1,7 +1,7 @@
 # Releasing, versions and card updates
 
 For the project owner. This is how a new version of the plugin goes to Jagex, and how cards reach players
-**between** reviews through the card overlay. Contributors do not need any of it: they submit cards as described in
+**between** reviews through the card overlay, and how its numbers and switches are adjusted the same way (tuning). Contributors do not need any of it: they submit cards as described in
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Contents
@@ -9,15 +9,16 @@ For the project owner. This is how a new version of the plugin goes to Jagex, an
 1. [The idea in one page](#the-idea-in-one-page)
 2. [Words used here](#words-used-here)
 3. [Fixing or adding cards between reviews](#fixing-or-adding-cards-between-reviews)
-4. [Submitting a new version to Jagex](#submitting-a-new-version-to-jagex)
-5. [When Jagex approves a version](#when-jagex-approves-a-version)
-6. [What the overlay can and cannot do](#what-the-overlay-can-and-cannot-do)
-7. [Rules that keep it safe](#rules-that-keep-it-safe)
-8. [What players see](#what-players-see)
-9. [Checking and diagnosing it](#checking-and-diagnosing-it)
-10. [Where everything is](#where-everything-is)
-11. [If Jagex say no, or it has to be removed](#if-jagex-say-no-or-it-has-to-be-removed)
-12. [Limits and things to know](#limits-and-things-to-know)
+4. [Tuning numbers and switches between reviews](#tuning-numbers-and-switches-between-reviews)
+5. [Submitting a new version to Jagex](#submitting-a-new-version-to-jagex)
+6. [When Jagex approves a version](#when-jagex-approves-a-version)
+7. [What the overlay can and cannot do](#what-the-overlay-can-and-cannot-do)
+8. [Rules that keep it safe](#rules-that-keep-it-safe)
+9. [What players see](#what-players-see)
+10. [Checking and diagnosing it](#checking-and-diagnosing-it)
+11. [Where everything is](#where-everything-is)
+12. [If Jagex say no, or it has to be removed](#if-jagex-say-no-or-it-has-to-be-removed)
+13. [Limits and things to know](#limits-and-things-to-know)
 
 ---
 
@@ -58,6 +59,7 @@ Cards stay written in Lua in `deck/`. The overlay is only ever generated from th
 | **Approved version** | The plugin version Jagex last approved and published. It is what players run. |
 | **Tag** | A git tag `v<version>` (for example `v0.2.0`) on the commit that was submitted and approved. |
 | **Overlay** | `docs/overlay.jsonl`: the cards that are new or different since the newest tag. |
+| **Tuning** | `docs/tuning.json`: numbers, lists and switches (`core/config.lua`) that the overlay carries as one line, within limits fixed in the plugin. |
 | **`base`** | In the overlay's header: the plugin version it was built for (the version in `plugin.json` at the tag). The plugin applies the overlay only if its own version is `base`. Changes each time a new version is approved and tagged. |
 | **`format`** | In the header: the layout of the file (header line, card lines, `{"deprecated": id}` lines). It is `1`. It changes only if the layout changes in a way an older plugin could not read. A plugin that does not understand the format ignores the overlay and uses the cards it shipped with. |
 | **`revision`** | In the header: a counter that goes up each time the overlay's content changes, and starts again at 1 for a new `base`. For the log and for spotting a cached copy; the plugin does not need it. |
@@ -87,6 +89,100 @@ Once at least one version has been approved and tagged:
 
 Until the first tag exists there is nothing to compare against, so the overlay is empty (just a header). That is
 correct, and it is what is committed.
+
+## Tuning numbers and switches between reviews
+
+The overlay file can also carry one **tuning line**: numbers, short lists and on/off switches that the plugin reads from
+`core/config.lua`. A number that turns out wrong (a credit amount, a pull rate) or a feature that misbehaves can then be
+fixed without waiting for a review. The line is built from `docs/tuning.json`, a JSON object that is committed as `{}` (no
+line) and holds only what is to be changed. `dev/build_overlay.py` writes it as the overlay's first line:
+
+```
+{"base":"0.1.0","format":1,"revision":4}
+{"tuning":{"packs":{"price":3000},"bosses":{"overrides":{"24":1800}}}}
+{"art":{...},"id":"hans",...}
+```
+
+### What can be set
+
+Only the keys below. Each has a default (what the plugin ships with) and limits that are written in `core/config.lua`, in
+reviewed code: a key outside its limits, of the wrong type or not in this table is **ignored and logged**, and the rest of
+the line still applies. A key left out keeps its default.
+
+| Key | Default | Limits | What it does |
+|---|---|---|---|
+| `earning.enabled` | `true` | `false` turns it off | Switch for all XP credits |
+| `earning.xpPerCredit` | 10 | whole number 5 to 20 | XP that adds up to one credit |
+| `earning.combatSkills` | the 10 combat skills and Slayer | up to 30 `SkillType` names, at least one valid | Skills whose XP earns nothing |
+| `starterCredits` | 8,000 | whole number 0 to 20,000 | Credits a new collection starts with |
+| `packs.price` | 4,000 | whole number 2,000 to 8,000 | Price of a standard pack |
+| `packs.themedPriceFactor` | 1.25 | 1 to 2 | Themed packs cost this times the price (unless a pack sets its own) |
+| `odds.rarity.<rarity>` | 63, 25, 9.4, 2, 0.6 | 0 to 100; `common` above 0 | Relative weight of each rarity in a pack |
+| `odds.finish.normal` / `.foil` / `.holo` | 17 / 2 / 1 | normal 1 to 1,000; foil and holo 0 to 1,000 | Relative weight of each finish, so foil is 1 in 10 and holo 1 in 20 at the defaults (0 means none of that finish are pulled) |
+| `slayer.enabled` | `true` | `false` turns it off | Switch for all Slayer credits |
+| `slayer.creditsPerLevel` | 1 | 0.5 to 2 | Credits for each combat level of a kill |
+| `slayer.bonusMultiplier` | 5 | 0 to 10 | The task bonus, as a multiple of the kill credits at the average level |
+| `slayer.levelCap` | none | whole number 10 to 14,000 | The highest level paid for |
+| `slayer.vars.count` / `.task` / `.streak` | 183 / 185 / 10077 | whole number 1 to 60,000 | The game variables Slayer is read from (a game update can move them) |
+| `bosses.enabled` | `true` | `false` turns it off | Switch for all boss credits |
+| `bosses.tiers` | 5 tiers: 9,000 gives 8,000; 5,000 gives 4,000; 1,000 gives 1,800; 500 gives 800; 0 gives 400 | 1 to 8 pairs `[level, credits]`, levels falling, each 0 to 20,000 | Credits by the boss's combat level; valid only as a whole list |
+| `bosses.activities` | the Barrows chest, 1,800 | up to 20 entries: a `BSLAY_BOSS_KILLS<n>` variable, a rise that is a power of two, a name, credits 0 to 20,000 | Counts that rise for something other than a kill. Added to the shipped ones; credits 0 stops one paying |
+| `bosses.overrides` | none | up to 60: boss id 1 to 200, credits 0 to 20,000 | Credits for one boss, whatever its level |
+| `bosses.ignore` | none | up to 60 boss ids, 1 to 200 | Bosses that pay nothing |
+| `shine.enabled` | `true` | `false` turns it off | Switch for the foil shine (the pastel shine over the whole card) |
+| `holo.enabled` | `true` | `false` turns it off | Switch for the holo rainbow (behind the picture); holo cards then look like normal ones |
+| `revision` | none | whole number | Optional number for your own bookkeeping |
+
+`earning.combatSkills` is a name list, so a wrong name is the same mistake that once let Hitpoints XP earn credits (the game's
+member is `HITPOINTS`): names that are not `SkillType` members are dropped and logged. `slayer.vars` and `bosses.activities`
+are the risky keys: a wrong id points detection at the wrong variable, so try them in the dev copy first.
+
+### Rules
+
+- **Data only.** Numbers, short lists and switches. It never carries code or text shown to players.
+- **Off only.** A switch can turn a feature off. It can never turn on something the build does not already do, and nothing
+  here adds a new way to earn credits.
+- **Limits are in the code.** They cannot be changed from outside. Adding a key, or widening a limit, needs a new version
+  (it goes through `core/config.lua`, `dev/check_config.lua` and Jagex's review).
+- **One bad key never costs the rest.** Each key is checked alone.
+- **Memory only.** Nothing is saved: the tuning is fetched at each start, applied once and forgotten at the end of the session.
+- **For one version.** It rides in the overlay, so it reaches only the version in the overlay's `base`.
+
+### Changing it
+
+1. Edit `docs/tuning.json`: put in only what you want to change.
+2. `lua dev/check_tuning.lua docs/tuning.json` says whether the plugin would ignore any key (it also runs in the Check cards
+   workflow, so a bad file cannot be merged).
+3. Try it in the dev copy: `python dev/build_overlay.py --local` writes `dev/local_overlay.lua` (not committed; it leaves
+   `docs/overlay.jsonl` alone), `prl` reloads the plugin, and **Dev tools > Local overlay** applies it as if it had been
+   fetched. The log says `card updates: tuning differs from the shipped numbers in: ...` and any key it ignored. Check the
+   thing you changed in the game.
+4. Publish: `python dev/build_overlay.py`, then commit `docs/tuning.json` and `docs/overlay.jsonl` in a pull request and merge
+   it, as for cards.
+5. Players get it at their next start (GitHub caches the file for up to 10 minutes). `revision` in the header goes up, and
+   their Settings line says `On - settings updated`.
+
+### Rolling back
+
+Put `{}` back in `docs/tuning.json` (or revert the pull request), run `python dev/build_overlay.py` and merge. Every player is
+back on the shipped numbers at their next start, because nothing is saved. A player who does not restart keeps the old
+numbers until they do (Jagex force a log-out after 6 hours).
+
+### When Jagex approve a version
+
+Tuning rides in the overlay, which is rebuilt against the new tag: `docs/tuning.json` stays and goes into the new overlay.
+If a tuned value should become permanent, change its default in `core/config.lua` in the next version and take the key out of
+the file; otherwise the file keeps overriding the default. Players who have not updated yet stop receiving the overlay, tuning
+included, as for cards.
+
+### Things to know
+
+- **Not everyone gets it.** `httpAccess` is optional, so players without it run the shipped numbers. Bug reports and
+  credits-per-hour figures should say the `revision` (the log line has it).
+- **A typo inside the limits still reaches everyone within a session.** The limits are tight on purpose; `dev/check_tuning.lua`
+  catches the rest.
+- **The listing says so.** The mod.io description says the plugin reads credit amounts, pull odds and switches from the same
+  file, within limits fixed in the reviewed code.
 
 ## Submitting a new version to Jagex
 
@@ -131,7 +227,8 @@ version bump: `git log -S'"version": "0.2.0"' -- plugin.json`.
 ## What the overlay can and cannot do
 
 **It can** add a card, replace any field of an existing card (name, rarity, description, art, camera, tags) and
-retire a card.
+retire a card. Its tuning line can also change the numbers and switches listed under *Tuning numbers and switches between
+reviews*, and nothing else.
 
 **It cannot** change code. It cannot fix a bug in the plugin, and a card that needs something only the newer
 code understands will not work for players on the older version:
@@ -155,10 +252,11 @@ Because `main` moves ahead of the approved version, remember this when a card de
   (`DECK PROBLEM`), and only the dev copy and `dev/check_cards.lua` treat that as an error.
 - **An overlay cannot empty the game.** It may retire at most 5% of the cards, or 50 cards if that is more; later
   retirements are skipped and logged. This guards against a wrongly built overlay.
-- **No effect on saves.** The overlay never touches a player's collection, credits or settings. Cards it removes
-  stay in their save.
+- **No effect on saves.** The overlay never touches what a player has: their collection, credits and settings. Cards it
+  removes stay in their save. (Tuning changes what they earn and pay from then on, not what they already hold.)
 - **Only data.** The plugin never runs anything it downloads; it decodes JSON (`core/json.lua`, written for this
-  and checked against Python's decoder) and validates every card.
+  and checked against Python's decoder), validates every card and keeps every tuning key inside the limits in
+  `core/config.lua`.
 
 ## What players see
 
@@ -173,6 +271,7 @@ Because `main` moves ahead of the approved version, remember this when a card de
   | `Checking...` | Starting, fetching or applying. |
   | `On - up to date` | The overlay was fetched and had no changes for them. |
   | `On - 12 cards updated` | The overlay was applied; this many cards were added, changed or retired. |
+  | `On - settings updated` | The overlay was applied and its tuning line changed some numbers or switches (the tooltip says how many); with card changes too, the line names the cards and the tooltip the settings. |
   | `On - no updates` | The overlay on the site is for a different version (for example this player is behind, or ahead of, the tag). |
   | `Unreachable, will retry` | A fetch failed; it tries again after 1 minute and again after 5. |
   | `Update server unreachable` | All three tries failed. Nothing more this session. |
@@ -196,6 +295,9 @@ commands refresh the plugin list and reload it):
   Each skipped line is logged after it with its line number and why.
 - **Dev tools > Fetch updates** fetches and applies again, or says what the loader is doing if a fetch is under
   way.
+- **Dev tools > Local overlay** applies `dev/local_overlay.lua` instead, so a tuning change or new cards can be tried without
+  publishing: `python dev/build_overlay.py --local`, `prl`, then the button. The log shows `card updates: tuning differs
+  from the shipped numbers in: ...` and `card updates: tuning ignored ...` for each key refused.
 - To check the "wrong version" path, set `core/version.lua` and `plugin.json` to another number: the log says
   `not applied: the overlay is for version 0.1.0, this is version 0.1.1`, and no card changes.
 - Trying a **big** overlay: `python dev/build_overlay.py --base <an older commit> --out <a scratch file>` shows what
@@ -239,7 +341,7 @@ commands refresh the plugin list and reload it):
 | File | What it is |
 |---|---|
 | `docs/overlay.jsonl` | The overlay (generated, committed). |
-| `dev/build_overlay.py` | Builds it: diffs the deck at the newest `v*` tag against the deck now. `--check`, `--base`, `--out`, `--lua`. |
+| `dev/build_overlay.py` | Builds it: diffs the deck at the newest `v*` tag against the deck now, and adds the tuning line. `--check`, `--base`, `--out`, `--lua`, `--tuning`, `--local`. |
 | `dev/export_overlay.lua`, `dev/overlay_lines.lua`, `dev/jsonencode.lua` | Write every card as one canonical JSON line. |
 | `core/overlay.lua` | Applies an overlay text, a few lines at a time. |
 | `core/overlayloader.lua` | Fetches it (from `Event.Logic` ticks only) and reports status. |
@@ -248,6 +350,10 @@ commands refresh the plugin list and reload it):
 | `core/cards.lua` | `Cards.problem`, `register`, `deprecate`, `resort`, `revision`, `loadProblems`. |
 | `plugin.json` | The optional `httpAccess` permission and the `cards` url. |
 | `ui/settingspage.lua` | The "Card updates" line. |
+| `docs/tuning.json` | The numbers and switches to change (committed as `{}`). |
+| `core/config.lua` | Every tunable key with its default and its limits, `Config.get` and `Config.apply`. |
+| `dev/check_tuning.lua`, `dev/check_config.lua` | Check the file and the keys (both in the Check cards workflow). |
+| `dev/local_overlay.lua` | Made by `build_overlay.py --local` for the Local overlay button (not committed). |
 
 ## If Jagex say no, or it has to be removed
 
@@ -255,7 +361,7 @@ The feature is self-contained. Revert, in `plugin.json`, the `httpAccess` entry 
 `cards` entry in `urls`, and remove the `OverlayLoader` lines from `main.lua` and the "Card updates" lines from
 `ui/settingspage.lua`. Nothing else depends on it: the shipped cards, saves and the rest of the plugin are
 unchanged, and everything in `dev/` is left out of the release anyway. The rest (the decoder, the overlay build)
-can stay for later.
+can stay for later. The tuning line goes with it: `core/config.lua` keeps the numbers as plain defaults, so nothing else changes.
 
 ## Limits and things to know
 

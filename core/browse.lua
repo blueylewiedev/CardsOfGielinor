@@ -1,6 +1,6 @@
 -- core/browse.lua
 -- What the collection viewer shows: the cards that match a search and some filters, in an order, each with the
--- finishes (normal, holo) the player has of it. No drawing and no client calls, so it is tested on its own against the real deck (dev/check_viewer.lua).
+-- finishes (normal, foil, holo) the player has of it. No drawing and no client calls, so it is tested on its own against the real deck (dev/check_viewer.lua).
 --
 -- A filter is a table, every field optional (a missing one, or nil, means "any"):
 --   search     text: every word of it must be in the card's name, whatever the case ("abyssal dem" finds Abyssal demon)
@@ -108,9 +108,12 @@ function Browse.ownedByCard(state)
     return owned
 end
 
--- The finish a card is shown in by default: the first of these the player has (a holo before a normal one), or
--- normal if they have none. The Sets window shows cards the same way.
-Browse.FINISH_PREFERENCE = { "holo", "normal" }
+-- The finish a card is shown in by default: the rarest the player has (Cards.finishOrder backwards: a holo, then a foil,
+-- then a normal one), or normal if they have none. The Sets window shows cards the same way.
+Browse.FINISH_PREFERENCE = {}
+for index = #Cards.finishOrder, 1, -1 do
+    Browse.FINISH_PREFERENCE[#Browse.FINISH_PREFERENCE + 1] = Cards.finishOrder[index]
+end
 
 function Browse.preferredFinish(have)
     for _, finish in ipairs(Browse.FINISH_PREFERENCE) do
@@ -239,23 +242,29 @@ end
 --   rarities : { [rarity id] = { cards, owned } }
 --   regions  : { [region word] = { cards, owned } }   (a card with several regions counts in each)
 --   noRegion : { cards, owned } for the cards that have no region at all (the ones every region's count leaves out)
---   holo     : { cards, owned } for every card, owned when the player has it as a holo
+--   finishes : { [finish] = { cards, owned } } for each finish but normal: every card, owned when the player has it
+--              in that finish
 -- A card counts as owned when the player has at least one variant of it. `hidden` (optional, { [variant key] = copies }, as
 -- the pack opening gives it) are copies the player has not seen yet: they do not count, so the numbers do not give away
 -- what is in a pack that is still being opened.
 function Browse.progress(state, hidden)
-    local have, holo = {}, {}
+    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
+        noRegion = { cards = 0, owned = 0 }, finishes = {} }
+    for _, finish in ipairs(Cards.specialFinishes) do
+        result.finishes[finish] = { cards = #Cards.list, owned = 0 }
+    end
+    local have = {}                          -- card id = true
     for key, count in pairs(state.owned) do
         local cardId, finish = Cards.parseKey(key)
         if cardId ~= nil and Cards.byId[cardId] ~= nil and count > ((hidden and hidden[key]) or 0) then
             have[cardId] = true
-            if finish == "holo" then
-                holo[cardId] = true
+            -- (a key is one card in one finish, so each counts once)
+            local bucket = result.finishes[finish]
+            if bucket ~= nil then
+                bucket.owned = bucket.owned + 1
             end
         end
     end
-    local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
-        noRegion = { cards = 0, owned = 0 }, holo = { cards = 0, owned = 0 } }
     local function count(group, name, owned)
         local bucket = group[name]
         if bucket == nil then
@@ -270,10 +279,6 @@ function Browse.progress(state, hidden)
     for _, card in ipairs(Cards.list) do
         local owned = have[card.id] == true
         result.all.cards = result.all.cards + 1
-        result.holo.cards = result.holo.cards + 1
-        if holo[card.id] then
-            result.holo.owned = result.holo.owned + 1
-        end
         if owned then
             result.all.owned = result.all.owned + 1
         end
