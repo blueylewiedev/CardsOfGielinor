@@ -49,6 +49,8 @@ jobs:
         run: lua5.4 dev/check_sets.lua
       - name: Sets window controls against a stand-in client (ui/setsviewer.lua)
         run: lua5.4 dev/check_sets_ui.lua
+      - name: The Shop's sections, titles, divider and tiles (ui/shoplayout.lua)
+        run: lua5.4 dev/check_shop_layout.lua
       - name: The credits text (core/format.lua)
         run: lua5.4 dev/check_format.lua
       - name: The performance probe's frame numbers (dev/framestats.lua)

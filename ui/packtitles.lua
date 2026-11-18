@@ -18,5 +18,7 @@ return {
     { id = "gielinor", text = "Gielinor", w = 207, h = 42 },
     { id = "standard", text = "Standard", w = 226, h = 42 },
     { id = "free_to_play", text = "Free to Play", w = 283, h = 42 },
+    { id = "general", text = "General", w = 196, h = 43 },
+    { id = "regions", text = "Regions", w = 188, h = 43 },
     { id = "packs", text = "Packs", w = 136, h = 43 },
 }
