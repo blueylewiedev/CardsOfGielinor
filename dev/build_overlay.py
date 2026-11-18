@@ -4,6 +4,7 @@
     python dev/build_overlay.py                 write docs/overlay.jsonl against the newest "v*" tag
     python dev/build_overlay.py --base v0.1.0   against another tag or commit (for trying it out)
     python dev/build_overlay.py --check         fail if docs/overlay.jsonl is out of date (writes nothing)
+    python dev/build_overlay.py --local         write dev/local_overlay.lua instead (see below); docs/overlay.jsonl is left alone
     python dev/build_overlay.py --lua PATH      the Lua to use (else `lua`, `lua5.4` or `lua54` on the PATH, or $LUA)
 
 The plugin ships with the whole deck and fetches this file when it starts, so card fixes and new cards reach
@@ -19,6 +20,10 @@ full; a card that was in the tag and is not now is written as a deprecation. The
     {"art":{...},"id":"swamp_frog",...}           a new or changed card, as the game has it
     {"deprecated":"old_card_id"}                  a card to take out
     {"tuning":{"packs":{"price":3000}}}           numbers, lists and switches (docs/tuning.json), if it is not empty
+
+--local is for trying a tuning change or new cards in the development copy without publishing anything: it writes the same
+overlay as a Lua module, dev/local_overlay.lua (not committed), which the Dev tools "Local overlay" button applies as if it
+had been fetched. Reload the plugin (prl) after rebuilding it, so the client reads the new file.
 
 `base` is the version in plugin.json at the tag. The plugin applies the overlay only if its own version is
 `base`. `revision` goes up each time the content changes (and starts again at 1 for a new base). See
@@ -37,6 +42,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OVERLAY = ROOT / "docs" / "overlay.jsonl"
 TUNING = ROOT / "docs" / "tuning.json"
+LOCAL = ROOT / "dev" / "local_overlay.lua"
 EXPORTER = ROOT / "dev" / "export_overlay.lua"
 FORMAT = 1
 
@@ -118,6 +124,18 @@ def tuning_lines(path=TUNING):
     return [json.dumps({"tuning": data}, separators=(",", ":"), sort_keys=True)]
 
 
+def lua_module(text):
+    """The overlay text as a Lua module, `return { text = [==[ ... ]==] }` (the client's require only gives back a table).
+    The long brackets get as many `=` as it takes for the text not to close them."""
+    level = 0
+    while "]" + "=" * level + "]" in text:
+        level += 1
+    equals = "=" * level
+    return ("-- Written by  python dev/build_overlay.py --local : the overlay as Lua text for the Dev tools' Local overlay\n"
+            "-- button. Not committed (.gitignore); rebuild it, then reload the plugin (prl).\n"
+            f"return {{ text = [{equals}[\n{text}]{equals}] }}\n")
+
+
 def body_lines(changed, deprecated):
     return list(changed) + [json.dumps({"deprecated": i}, separators=(",", ":")) for i in deprecated]
 
@@ -149,6 +167,8 @@ def main():
     parser.add_argument("--check", action="store_true", help="only check that docs/overlay.jsonl is up to date")
     parser.add_argument("--out", type=Path, default=OVERLAY, help="where to write it (default docs/overlay.jsonl)")
     parser.add_argument("--tuning", type=Path, default=TUNING, help="the tuning file (default docs/tuning.json)")
+    parser.add_argument("--local", action="store_true",
+                        help="write dev/local_overlay.lua (for the Dev tools' Local overlay button) instead of docs/overlay.jsonl")
     args = parser.parse_args()
 
     lua = find_lua(args.lua)
@@ -164,6 +184,13 @@ def main():
         body = tuning_lines(args.tuning) + body_lines(changed, deprecated)
         print(f"Against {base_ref} (plugin version {base_version}): {len(changed)} cards "
               f"({new} new, {len(changed) - new} changed), {len(deprecated)} deprecated.")
+
+    if args.local:
+        text = overlay_text(base_version, 0, body)          # (revision 0: it is not the published one)
+        LOCAL.write_text(lua_module(text), encoding="utf-8", newline="\n")
+        print(f"{LOCAL}: {len(text.encode('utf-8'))} bytes, {len(body)} lines after the header. "
+              "Reload the plugin (prl), then press Local overlay in the Dev tools.")
+        return 0
 
     existing = args.out.read_text(encoding="utf-8") if args.out.exists() else ""
     text = overlay_text(base_version, next_revision(existing, base_version, body), body)

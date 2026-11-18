@@ -449,6 +449,27 @@ do
     Loader.http = FakeRequest
 end
 
+-- applying text given directly (the dev copy's Local overlay button)
+fresh()
+do
+    check(Loader.applyText(overlayText(header({ base = "9.9.9" }), {})) == false and Loader.status().phase == "ignored",
+        "text for another version is refused and the loader says so")
+    local applied = Loader.applyText(overlayText(header({ revision = 0 }), { { tuning = { packs = { price = 2500 } } },
+        testCard("zz_local_card") }))
+    check(applied == true and Loader.status().phase == "applying", "text for this version starts applying")
+    local again, why = Loader.applyText(overlayText(header(), {}))
+    check(again == false and type(why) == "string", "and a second one is refused while it applies")
+    tick(5)
+    check(Loader.status().phase == "done" and Cards.byId["zz_local_card"] ~= nil and Config.get("packs.price") == 2500,
+        "the cards and the tuning are applied from the text")
+    check(seen() == "On - 1 card updated", "the player line is the same as for a fetched overlay (" .. line() .. ")")
+    check(Loader.applyText(overlayText(header(), {})) == true, "once it is done another can be applied")
+    tick(5)
+    check(Config.get("packs.price") == 4000, "and it replaces the tuning of the one before")
+    Cards.deprecate("zz_local_card")
+    Config.reset()
+end
+
 -- fetching again
 fresh()
 tick(1)

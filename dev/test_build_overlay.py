@@ -108,6 +108,22 @@ class Tuning(unittest.TestCase):
         self.assertEqual((same, changed, removed), (2, 3, 3))
 
 
+class LocalModule(unittest.TestCase):
+    def test_the_text_is_in_a_lua_long_string(self):
+        text = B.overlay_text("0.1.0", 0, ['{"tuning":{"packs":{"price":3000}}}'])
+        source = B.lua_module(text)
+        self.assertIn("return { text = [[\n", source)
+        self.assertTrue(source.endswith("]] }\n"))
+        self.assertIn(text, source)
+
+    def test_the_brackets_grow_until_the_text_cannot_close_them(self):
+        for text, opening in (("a ]] b", "[=["), ("a ]] ]=] b", "[==["), ("]]]=]]==]", "[===[")):
+            source = B.lua_module(text)
+            self.assertIn("return { text = " + opening + "\n", source)
+            closing = "]" + opening[1:-1] + "]"
+            self.assertEqual(source.count(closing), 1, text)           # only the one at the end
+
+
 class Revision(unittest.TestCase):
     def test_first_build(self):
         self.assertEqual(B.next_revision("", "0.1.0", []), 1)
