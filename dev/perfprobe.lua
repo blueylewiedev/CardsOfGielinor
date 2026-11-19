@@ -20,6 +20,7 @@
 -- the plugin does; it reads the clocks, writes one value to PersistentDB when the plugin stops, and writes to the log.
 
 local FrameStats = require("dev/framestats")
+local Quiet = require("dev/quiet")                  -- the automatic PROBE lines are dropped while the console is quiet
 
 -- The memory probe (dev/memprobe.lua) has to wrap the client's component classes before the plugin makes any, and this file is
 -- the first to load, so it starts it here.
@@ -50,7 +51,7 @@ function Probe.mark(name)
     if firstTick ~= nil and lastTick ~= nil then
         ticks = string.format(", %d logic ticks in", lastTick - firstTick)
     end
-    log(string.format("PROBE %s: %.1f s of frames%s", name, clock, ticks))
+    Quiet.line(string.format("PROBE %s: %.1f s of frames%s", name, clock, ticks))
 end
 
 -- Starts measuring a stretch of `seconds` seconds, called `label`.
@@ -63,7 +64,7 @@ local function onDraw(e)
     if not ok or type(dt) ~= "number" then
         if not warnedNoTime then
             warnedNoTime = true
-            log("PROBE: the Draw event has no timeDeltaSecs, so frames cannot be timed")
+            Quiet.line("PROBE: the Draw event has no timeDeltaSecs, so frames cannot be timed")
         end
         return
     end
@@ -71,12 +72,12 @@ local function onDraw(e)
     if dt > FrameStats.FREEZE and slowLogged < MAX_SLOW_LINES then
         slowLogged = slowLogged + 1
         local last = marks[#marks]
-        log(string.format("PROBE slow frame: %.0f ms, ending %.1f s of frames in, after '%s' (%.1f s)", dt * 1000, clock,
+        Quiet.line(string.format("PROBE slow frame: %.0f ms, ending %.1f s of frames in, after '%s' (%.1f s)", dt * 1000, clock,
             last and last.name or "no mark yet", last and last.at or 0))
     end
     for index = #running, 1, -1 do
         if FrameStats.add(running[index], dt) then
-            log(FrameStats.summary(running[index]))
+            Quiet.line(FrameStats.summary(running[index]), running[index].label == "manual")
             table.remove(running, index)
         end
     end
@@ -86,15 +87,15 @@ end
 local function reportReloadGap(tick)
     local ok, saved = pcall(function() return PersistentDB:GetStructuredData(TICK_KEY) end)
     if not ok or type(saved) ~= "table" or type(saved.tick) ~= "number" then
-        log("PROBE reload gap: no earlier run stopped cleanly, so there is nothing to compare")
+        Quiet.line("PROBE reload gap: no earlier run stopped cleanly, so there is nothing to compare")
         return
     end
     pcall(function() PersistentDB:Delete(TICK_KEY) end)       -- so an old value is never compared with a later start
     local gap = tick - saved.tick
     if gap < 0 then
-        log("PROBE reload gap: the tick count went back, so the client was restarted in between")
+        Quiet.line("PROBE reload gap: the tick count went back, so the client was restarted in between")
     else
-        log(string.format("PROBE reload gap: %d logic ticks = %.1f s between the old plugin stopping and the new one's first tick",
+        Quiet.line(string.format("PROBE reload gap: %d logic ticks = %.1f s between the old plugin stopping and the new one's first tick",
             gap, gap / TICKS_PER_SECOND))
     end
 end

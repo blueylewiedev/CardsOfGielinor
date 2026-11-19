@@ -14,6 +14,7 @@
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
 local Probe = require("dev/perfprobe")
 local memLoaded, MemProbe = pcall(require, "dev/memprobe")          -- (loaded first by perfprobe; its buttons are below)
+local Quiet = require("dev/quiet")
 local LeakLab = require("dev/leaklab")
 local Cards = require("core/cards")
 local Storage = require("core/storage")
@@ -51,6 +52,9 @@ end
 
 -- Called when XP is gained, to log how it turned into credits.
 function Dev.onXp(skill, gain, state, earned, ticksSinceLoad)
+    if Quiet.on then
+        return                                  -- (a line for every XP gain buries the console; Dev tools > Quiet console)
+    end
     log("skill", skill, "gained", gain, "xp | pool:", state.xpPool, "| credits earned:", earned,
         "| total:", state.credits, "| ticks since load:", ticksSinceLoad)
 end
@@ -153,6 +157,8 @@ local function toolButtons(api, refresh)
         end },
         { label = "Perf probe", action = Probe.manual,
             tooltip = "Logs the frame times over the next 10 seconds (PROBE line): scroll the collection or open a pack meanwhile" },
+        { label = "Quiet console", action = Quiet.toggle,
+            tooltip = "Flips the dev copy's console between quiet (only failures and what the dev buttons say) and chatty (every routine line). On by default; takes effect at once" },
         { label = "Mem baseline", action = function()
             if memLoaded and MemProbe.baseline ~= nil then MemProbe.baseline() else log("MEM: the memory probe did not load") end
         end, tooltip = "Memory probe: takes the baseline for the MEM lines. Close every plugin window first. See notes in dev/memprobe.lua" },
@@ -206,6 +212,10 @@ end
 -- Reports draft cards in the log, once, when the plugin starts.
 function Dev.start()
     Probe.start()
+    Quiet.apply()
+    if Quiet.on then
+        log("DEV: the quiet console is ON: routine lines, PROBE marks and XP lines are not written (Dev tools > Quiet console turns them back on)")
+    end
     if #Cards.drafts > 0 then
         log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end
