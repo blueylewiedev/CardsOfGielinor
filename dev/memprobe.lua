@@ -7,15 +7,48 @@
 -- outside. Together they say whether growth is in the plugin's Lua (this file shows it), in components that are never
 -- destroyed (this file shows it), or in what the client keeps (only memwatch shows it).
 --
--- Every line it logs starts with "MEM". The Dev tools window has two buttons:
+-- It is OFF until you switch it on, because it touches the client more than most dev tools do (it wraps the component
+-- constructors and can force a garbage collection), and on 2026-11-19 the client crashed (an access violation inside
+-- rs2client.exe) a few seconds after it was first used. Two switches, kept in PersistentDB, each taking effect at the next `prl`:
+--   Mem count   wraps ui.<Class>.new so every component is counted (the live / held numbers). Off: only the Lua heap is logged.
+--   Mem GC      makes a snapshot run a full garbage collection first, so garbage is not counted as live. Off: the numbers
+--               include garbage that has not been collected yet, which is noisier but touches nothing.
+--
+-- Every line it logs starts with "MEM". The Dev tools window has four buttons: Mem count and Mem GC (the switches, they say
+-- what they are now), and
 --   Mem baseline   forgets the numbers so far and takes the baseline (do it with every window closed)
 --   Mem snapshot   logs the numbers now and what changed since the baseline
--- A snapshot is also taken by itself two seconds after each pack-opening screen closes ("reveal closed #3").
+-- With Mem count on, a snapshot is also taken by itself two seconds after each pack-opening screen closes ("reveal closed #3").
 --
 -- Dev copy only (this folder is not in the release). perfprobe.lua loads this first, so it sees every component the plugin
 -- makes; the counting wraps ui.<Class>.new and changes nothing else.
 
 local Mem = {}
+
+local FLAGS_KEY = "dev_mem_flags-dev"           -- ends with the dev profile suffix, like the dev copy's other keys
+
+-- The two switches, from PersistentDB (both off if there is nothing saved).
+local flags = { count = false, gc = false }
+do
+    local ok, saved = pcall(function() return PersistentDB:GetStructuredData(FLAGS_KEY) end)
+    if ok and type(saved) == "table" then
+        flags.count = saved.count == true
+        flags.gc = saved.gc == true
+    end
+end
+Mem.flags = flags
+
+-- Flips a switch ("count" or "gc"), saves it and says so. It takes effect at the next prl.
+function Mem.toggle(name)
+    if flags[name] == nil then
+        return nil
+    end
+    flags[name] = not flags[name]
+    pcall(function() PersistentDB:SetStructuredData(FLAGS_KEY, { count = flags.count, gc = flags.gc }) end)
+    log(string.format("MEM: %s is now %s (saved; it takes effect at the next prl)", name == "count" and "counting components" or "the forced garbage collection",
+        flags[name] and "ON" or "OFF"))
+    return flags[name]
+end
 
 -- The client's component classes (ui.<Class>.new). PrettyUI makes its own parts from these too.
 local CLASSES = { "Layer", "Rectangle", "Sprite", "Model", "ModelGroup", "Text", "Button", "InputField", "GroupBox", "Canvas" }
@@ -119,10 +152,13 @@ local function census()
     return live, held
 end
 
--- A full collection, twice (a first one can free objects that a finalizer then lets go), then the heap in KB.
+-- The heap in KB. With the GC switch on, after a full collection twice (a first one can free objects that a finalizer then
+-- lets go); off, as it is, which includes garbage not collected yet.
 local function heap()
-    collectgarbage("collect")
-    collectgarbage("collect")
+    if flags.gc then
+        collectgarbage("collect")
+        collectgarbage("collect")
+    end
     return collectgarbage("count")
 end
 
@@ -168,8 +204,11 @@ end
 -- Sets the baseline: do this with every plugin window closed.
 function Mem.baseline()
     baseline = takeSnapshot()
-    log(string.format("MEM baseline: Lua heap %.0f KB, %d live components, %d held after Destroy", baseline.kb,
-        total(baseline.live), total(baseline.held)))
+    log(string.format("MEM baseline: Lua heap %.0f KB%s, %d live components, %d held after Destroy", baseline.kb,
+        flags.gc and " (after a full collection)" or " (no collection forced)", total(baseline.live), total(baseline.held)))
+    if not flags.count then
+        log("MEM: counting components is OFF, so only the Lua heap is meaningful (Dev tools > Mem count, then prl)")
+    end
     log("MEM baseline live: " .. describe(baseline.live))
     return baseline
 end
@@ -232,11 +271,13 @@ local function start()
     return ok
 end
 
-if ui ~= nil then
+if flags.count and ui ~= nil then
     local done = Mem.install(ui)
     local subscribed = start()
-    log(string.format("MEM: counting %s%s", #done > 0 and table.concat(done, ", ") or "nothing (the client does not let ui.<Class>.new be wrapped)",
-        subscribed and "" or "; no Logic event, so no automatic snapshots"))
+    log(string.format("MEM: counting %s%s%s", #done > 0 and table.concat(done, ", ") or "nothing (the client does not let ui.<Class>.new be wrapped)",
+        subscribed and "" or "; no Logic event, so no automatic snapshots", flags.gc and "; forced garbage collection ON" or ""))
+else
+    log("MEM: the memory probe is loaded but counting is OFF (Dev tools > Mem count, then prl, to turn it on)")
 end
 
 return Mem

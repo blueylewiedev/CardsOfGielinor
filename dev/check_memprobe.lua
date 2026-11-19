@@ -43,11 +43,39 @@ end
 
 Event = { Logic = { Subscribe = function() end } }
 
+-- A stand-in PersistentDB, for the two switches (Mem count, Mem GC).
+local store = {}
+PersistentDB = {
+    GetStructuredData = function(_, key) return store[key] end,
+    SetStructuredData = function(_, key, value) store[key] = value return true end,
+}
+local function load(flags)
+    store["dev_mem_flags-dev"] = flags
+    lines = {}
+    package.loaded["dev/memprobe"] = nil
+    return require("dev/memprobe")
+end
+
+-- 0. off unless switched on: nothing is wrapped, and it says so
+do
+    ui = { Layer = classWithMethodTable() }
+    local original = ui.Layer.new
+    local Mem = load(nil)
+    check(ui.Layer.new == original, "with the switches off the client's constructors are not touched")
+    check(string.find(lines[1] or "", "counting is OFF", 1, true) ~= nil, "and it says counting is off (" .. tostring(lines[1]) .. ")")
+    check(Mem.flags.count == false and Mem.flags.gc == false, "both switches start off")
+    lines = {}
+    check(Mem.toggle("count") == true and store["dev_mem_flags-dev"].count == true, "toggling Mem count turns it on and saves it")
+    check(Mem.toggle("gc") == true and store["dev_mem_flags-dev"].gc == true, "toggling Mem GC turns it on and saves it")
+    check(Mem.toggle("count") == false and store["dev_mem_flags-dev"].count == false and store["dev_mem_flags-dev"].gc == true,
+        "toggling again turns one off without touching the other")
+    check(Mem.toggle("nonsense") == nil, "an unknown switch does nothing")
+end
+
 -- 1. a client whose components have a method table: Destroy calls are seen
 do
     ui = { Layer = classWithMethodTable(), Sprite = classWithMethodTable() }
-    package.loaded["dev/memprobe"] = nil
-    local Mem = require("dev/memprobe")
+    local Mem = load({ count = true, gc = true })
     check(lines[1] ~= nil and string.find(lines[1], "counting Layer, Sprite", 1, true) ~= nil, "it says what it counts (" .. tostring(lines[1]) .. ")")
     local keep = {}
     for i = 1, 5 do keep[i] = ui.Layer.new() end
@@ -75,9 +103,7 @@ end
 -- 2. a client whose components hide their method table: judged by whether they can still be read
 do
     ui = { Layer = class() }
-    package.loaded["dev/memprobe"] = nil
-    lines = {}
-    local Mem = require("dev/memprobe")
+    local Mem = load({ count = true, gc = true })
     local a, b, c = ui.Layer.new(), ui.Layer.new(), ui.Layer.new()
     a:Destroy()
     Mem.baseline()
@@ -92,9 +118,7 @@ end
 -- 3. no wrappable classes: it says so and does nothing else
 do
     ui = {}
-    package.loaded["dev/memprobe"] = nil
-    lines = {}
-    require("dev/memprobe")
+    load({ count = true, gc = false })
     check(string.find(lines[1] or "", "counting nothing", 1, true) ~= nil, "a client with nothing to wrap is reported")
 end
 

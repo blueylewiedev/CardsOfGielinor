@@ -155,6 +155,12 @@ local function toolButtons(api, refresh)
         { label = "Mem snapshot", action = function()
             if memLoaded and MemProbe.snapshot ~= nil then MemProbe.snapshot("manual") else log("MEM: the memory probe did not load") end
         end, tooltip = "Memory probe: logs the Lua heap and the live components now, and what changed since the baseline (also done by itself after each pack opening closes)" },
+        { label = "Mem count", action = function()
+            if memLoaded and MemProbe.toggle ~= nil then MemProbe.toggle("count") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe switch: counts every component the plugin makes (wraps the client's constructors). Off by default. Takes effect at the next prl" },
+        { label = "Mem GC", action = function()
+            if memLoaded and MemProbe.toggle ~= nil then MemProbe.toggle("gc") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe switch: a snapshot forces a full garbage collection first. Off by default (it touches the client more). Takes effect at the next prl" },
         { label = "Fetch updates", action = function()
             if OverlayLoader.refetch() then
                 log("DEV: fetching the card overlay again")
