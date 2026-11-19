@@ -4,35 +4,31 @@
 
 local DevKit = {}
 
--- A button that stays pressed in (highlighted) once it is clicked, and lets go when it is
--- clicked again: for choosing words from a list. `active` is whether it starts pressed in, and
--- onToggle(active) is called when the player clicks it. Returns { part = the button,
--- setActive = function(active) } where setActive changes it from code without calling onToggle.
+-- A button that stays pressed in once it is clicked, and lets go when it is clicked again: for choosing words from a
+-- list. `active` is whether it starts pressed in, and onToggle(active) is called when the player clicks it. Returns
+-- { part = the button, setActive = function(active) } where setActive changes it from code without calling onToggle.
+-- It is the client's own button, not PrettyUI's: PrettyUI checks every new component against the others, and the tag
+-- picker makes a few hundred of these at once, which ran past the client's one-second limit. A pressed-in button says
+-- so in its label ("[x] word"); `tooltip` is not shown.
 function DevKit.toggleButton(parent, label, left, y, w, h, active, onToggle, tooltip)
-    local muted = false
     local state = active == true
-    local button = prettyui.SimpleButton.new(parent, label, function(_, isActive)
-        if muted then
-            return
-        end
-        if type(isActive) == "boolean" then
-            state = isActive
-        else
-            state = not state
-        end
-        onToggle(state)
-    end, {
-        x = left, y = y, width = w, height = h, absolute = true, toggleable = true, tooltip = tooltip,
-    })
+    local button = ui.Button.new(parent)
+    button:SetPos(left, y)
+    button:SetSize(w, h)
+    button.stylesheetID = id.StyleSheet.BUTTON_DEFAULT
+    local function show()
+        button.label = state and ("[x] " .. label) or label
+    end
     local function setActive(value)
         state = value == true
-        muted = true
-        pcall(function() button:SetActive(state) end)
-        muted = false
+        pcall(show)
     end
-    if state then
-        setActive(true)
-    end
+    button:Subscribe(ui.Hook.ONBUTTONPRESSED, function()
+        state = not state
+        show()
+        onToggle(state)
+    end)
+    show()
     return { part = button, setActive = setActive }
 end
 

@@ -31,8 +31,8 @@ local PLACES = {
     { "Canifis", 49 }, { "Musa Point", 31 }, { "Brimhaven", 59 }, { "Seers' Village", 31 },
     { "Shilo Village", 55 }, { "Menaphos", 351 }, { "Prifddinas", 527 },
 }
--- Races as the wiki's infoboxes write them. The wiki keeps no list of these values, so any other
--- can be typed into the drop-down's box.
+-- Races as the wiki's infoboxes write them. The wiki keeps no list of these values, so one that is missing is added
+-- here (the drop-down only offers what is listed).
 local RACES = {
     "Aviansie", "Bat", "Bear", "Bird", "Cat", "Centaur", "Chicken", "Cow", "Crab", "Cyclops", "Dagannoth",
     "Demon", "Dog", "Dorgeshuun", "Dragon", "Dwarf", "Elemental", "Elf", "Fairy", "Frog", "Ghost", "Ghoul",
@@ -183,10 +183,14 @@ end
 
 -- A label and a drop-down in column `column` (0 or 1) at `y`. `entries` are { label, value };
 -- the first entry is shown at first. onChoose(value) when one is picked.
+-- A list longer than LONG_LIST is PrettyUI's sorted kind: the kind that can be typed in filters every entry as it opens,
+-- and the Race list (over 50) ran past the client's one-second limit doing it.
+local LONG_LIST = 30
 local function labelledDropdown(column, y, label, entries, onChoose)
     local x = 10 + column * (HALF + 10)
     caption(label, x, y + 5, LABEL_W, WHITE)
-    local dropdown = Kit.dropdown(content, x + LABEL_W, y, HALF - LABEL_W, 28, entries, entries[1].value, onChoose)
+    local dropdown = Kit.dropdown(content, x + LABEL_W, y, HALF - LABEL_W, 28, entries, entries[1].value, onChoose,
+        #entries > LONG_LIST)
     dropdowns[#dropdowns + 1] = dropdown
     return dropdown
 end
@@ -195,7 +199,8 @@ end
 -- (`noneLabel`, "None" if not given): set(name or nil) when one is picked, showing `current` at
 -- first. Its text box filters the list as you type.
 local function picker(column, y, label, group, current, set, noneLabel)
-    local entries = { { label = noneLabel or "None", value = false } }
+    -- (a leading space keeps the "none" entry first when a long list is sorted by label)
+    local entries = { { label = " " .. (noneLabel or "None"), value = false } }
     for _, entry in ipairs(group) do
         local name = type(entry) == "table" and entry[1] or entry
         entries[#entries + 1] = { label = name, value = name }
