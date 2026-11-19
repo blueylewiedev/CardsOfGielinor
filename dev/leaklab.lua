@@ -47,6 +47,13 @@ local MODES = {
         free = "the group destroyed (the camera is not deleted first)" },
     { id = "frames", what = "locked cards: frame and text, no model at all",
         free = "the root layer destroyed. Growth here means the frames, text or images leak, not the models" },
+    -- (added after the first results: the reveal leaks about twice as much a card as the first mode did, so what is different?)
+    { id = "cards_foil", what = "full cards, every one a FOIL (the shine sprites)", finish = "foil",
+        free = "the root layer destroyed" },
+    { id = "cards_holo", what = "full cards, every one a HOLO (the rainbow canvas of triangles)", finish = "holo",
+        free = "the root layer destroyed" },
+    { id = "cards_big", what = "full cards at the reveal's size (scale 1.2, 8 across) instead of 0.6", scale = 1.2, columns = 8,
+        free = "the root layer destroyed. If this leaks much more a card than the small ones, it is the picture buffers" },
 }
 
 local modeIndex = 1
@@ -75,8 +82,9 @@ local function pick(wantNpc)
     return chosen
 end
 
-local function place(piece, index, w, h)
-    local column, row = (index - 1) % COLUMNS, (index - 1) // COLUMNS
+local function place(piece, index, w, h, columns)
+    columns = columns or COLUMNS
+    local column, row = (index - 1) % columns, (index - 1) // columns
     piece:SetPos(20 + column * (w + 8), 60 + row * (h + 8))
 end
 
@@ -119,9 +127,11 @@ function Lab.make()
                 made[#made + 1] = { group = group, model = model, cam = state }
             else
                 local locked = mode.id == "frames"
-                local view = CardView.create(holder, card, { animated = true, scale = SCALE, locked = locked })
-                local w, h = 160 * SCALE, 224 * SCALE
-                place(view.root, i, w, h)
+                local scale = mode.scale or SCALE
+                local view = CardView.create(holder, card, { animated = true, scale = scale, locked = locked,
+                    finish = mode.finish })
+                local w, h = 160 * scale, 224 * scale
+                place(view.root, i, w, h, mode.columns)
                 made[#made + 1] = { view = view }
             end
         end)
