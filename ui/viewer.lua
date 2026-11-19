@@ -43,7 +43,7 @@ local CONTENT_W = COLUMNS * COLUMN_W + (COLUMNS - 1) * GAP
 -- The window's content is its width less the frame (8 at each side). What is in it keeps MARGIN from all four edges (the
 -- same at both sides and the same above as below), as in the settings window.
 local MARGIN = 10
-local FRAME = Kit.available() and 16 or 0
+local FRAME = 16
 local LEFT = MARGIN
 local FILTER_Y = { MARGIN, MARGIN + 36, MARGIN + 72 }   -- the three rows of filters
 local FILTER_H = 28
@@ -853,14 +853,12 @@ local function buildFilters()
     filterDropdown("region", columnX(1), FILTER_Y[3], COLUMN_W, wordEntries("Any region", Cards.tagWords.regions))
     filterDropdown("skill", columnX(2), FILTER_Y[3], COLUMN_W, wordEntries("Any skill", Cards.tagWords.skills))
     filterDropdown("category", columnX(3), FILTER_Y[3], COLUMN_W, categoryEntries(), nil, true)
-    -- The finish (foil, holo...), in the last place on the row unless the List / grid button needs it (no PrettyUI).
-    if widgets.swap == nil then
-        local finishes = { { label = "Any finish", value = ANY } }
-        for _, finish in ipairs(Cards.finishOrder) do
-            finishes[#finishes + 1] = { label = Cards.finishes[finish].name, value = finish }
-        end
-        filterDropdown("finish", columnX(4), FILTER_Y[3], COLUMN_W, finishes)
+    -- The finish (foil, holo...), in the last place on the row.
+    local finishes = { { label = "Any finish", value = ANY } }
+    for _, finish in ipairs(Cards.finishOrder) do
+        finishes[#finishes + 1] = { label = Cards.finishes[finish].name, value = finish }
     end
+    filterDropdown("finish", columnX(4), FILTER_Y[3], COLUMN_W, finishes)
 end
 
 -- ----- open and close ---------------------------------------------------------------------------------------
@@ -902,12 +900,8 @@ function Viewer.open(newApi)
         Viewer.close()
     end, 0.3, 0.02)
 
-    -- The swap button goes in the title bar. Without PrettyUI there is no such bar, so it is a button on the bottom
-    -- row of filters instead.
+    -- The swap button goes in the title bar.
     titleButton = Kit.titleButton(window, "SWAP", swapView, "Switch between the list and the grid")
-    if titleButton == nil then
-        widgets.swap = Kit.buttonAt(content, "List / grid", columnX(4), FILTER_Y[3], COLUMN_W, FILTER_H, swapView)
-    end
 
     -- The page buttons and counts first, then the list, then the filters: a drop-down's list is drawn over what is
     -- made before it. The counts are under the first two columns, the page and its buttons under the last two.
@@ -971,7 +965,7 @@ end
 -- The component of the button that swaps the list and the grid, for the tutorial's pointer: "grid". nil if the window is not
 -- open.
 function Viewer.anchor(name)
-    local control = window ~= nil and name == "grid" and (titleButton or widgets.swap) or nil
+    local control = window ~= nil and name == "grid" and titleButton or nil
     if control == nil then
         return nil
     end

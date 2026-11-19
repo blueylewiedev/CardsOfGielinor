@@ -219,6 +219,25 @@ do
     check(cardCount() == startCount, "the deck is back to its size after the test")
 end
 
+-- An overlay cannot be huge, or add more than a set number of cards ------------------------------------------------------------
+do
+    local job, why = Overlay.begin(header() .. "\n" .. string.rep(" ", Overlay.MAX_BYTES))
+    check(job == nil and type(why) == "string" and string.find(why, "too long", 1, true) ~= nil,
+        "an overlay over the size limit is refused (" .. tostring(why) .. ")")
+    local lines = {}
+    for index = 1, Overlay.MAX_ADDED + 10 do
+        lines[index] = testCard("zz_flood_" .. index)
+    end
+    job = Overlay.begin(overlayText(header(), lines))
+    runJob(job, 500)
+    check(job.added == Overlay.MAX_ADDED and job.skipped == 10, "new cards stop at the limit (" .. Overlay.summary(job) .. ")")
+    for index = 1, Overlay.MAX_ADDED + 10 do
+        Cards.deprecate("zz_flood_" .. index)
+    end
+    Cards.resort()
+    check(cardCount() == startCount, "the deck is back to its size after the test")
+end
+
 -- Pack sizes are worked out again after a change -------------------------------------------------------------------------
 do
     local before = Packs.poolSize("standard")

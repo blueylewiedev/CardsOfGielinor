@@ -76,7 +76,7 @@ local window, content = nil, nil
 local widgets = {}
 local tiles = {}                  -- pack type id -> { draw, outline }
 local decor = {}                  -- the section titles and dividers in the grid
-local grid = nil                  -- the scrolling container the tiles are in: a PrettyUI SimpleView, or nil if it could not be made
+local grid = nil                  -- the scrolling container the tiles are in (a PrettyUI SimpleView) while the window is open
 local bigPack = nil               -- the large pack: { root, w, destroy() }
 local selected = "standard"       -- the pack type chosen (kept while the plugin runs)
 local quantity = 1                -- how many packs to buy (kept while the plugin runs)
@@ -324,13 +324,8 @@ end
 local function build()
     local offered = Packs.offered()
     local layout = gridLayout(offered)
-    -- The tiles scroll in a container as tall as the right-hand panel, so the window is as tall as the panel. Without
-    -- PrettyUI's SimpleView they are made in the window itself, which then has to be as tall as they are.
-    local scrolling = Kit.available() and prettyui ~= nil and prettyui.SimpleView ~= nil
+    -- The tiles scroll in a container as tall as the right-hand panel, so the window is as tall as the panel.
     local height = TOP + PANEL_H + BOTTOM
-    if not scrolling then
-        height = math.max(TOP + PANEL_H, GRID_TOP + layout.height) + BOTTOM
-    end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,
         0.3, 0.12)
@@ -344,18 +339,11 @@ local function build()
 
     -- The scrolling grid: from under the heading to the bottom of the panel. `parent` is where the tiles go, and `originY`
     -- where its top is in it.
-    local parent, originY = content, GRID_TOP
-    if scrolling then
-        local ok, view = pcall(prettyui.SimpleView.new, content, {
-            x = 0, y = GRID_TOP, width = CONTAINER_W, height = TOP + PANEL_H - GRID_TOP,
-            contentHeight = layout.height, scrollable = true, scrollStep = WHEEL_STEP,
-        })
-        if ok and view ~= nil and view.content ~= nil then
-            grid, parent, originY = view, view.content, 0
-        else
-            Logger.error("shop: the scrolling grid could not be made:", tostring(view))
-        end
-    end
+    grid = prettyui.SimpleView.new(content, {
+        x = 0, y = GRID_TOP, width = CONTAINER_W, height = TOP + PANEL_H - GRID_TOP,
+        contentHeight = layout.height, scrollable = true, scrollStep = WHEEL_STEP,
+    })
+    local parent, originY = grid.content, 0
     for _, heading in ipairs(layout.headings) do
         decor[#decor + 1] = addTitle(parent, heading.id, SECTION_TITLES[heading.id] or heading.id, SECTION_TITLE_H,
             heading.x, originY + heading.y, false)

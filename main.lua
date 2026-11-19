@@ -59,18 +59,20 @@ if Dev ~= nil and #Cards.loadProblems > 0 then
 end
 
 -- The dev copy and a released copy of the plugin share one PersistentDB, so the dev copy keeps
--- its collections under their own keys.
+-- its collections under their own keys. It also asks for its own permissions (the client forgets grants when it restarts),
+-- before anything below looks for them (dev/grants.lua).
 if Dev ~= nil then
     Storage.setProfileSuffix("-dev")
+    Dev.grantPermissions()
 end
 
 -- Starts looking for the tracking id (see core/identity.lua).
-Identity.start(Dev ~= nil)
+Identity.start()
 
 -- Fetches the card overlay (card fixes and new cards since the approved version) and applies it a few lines at a
 -- time (core/overlayloader.lua). With no httpAccess permission, or if anything goes wrong, the plugin simply has
 -- the cards it shipped with.
-OverlayLoader.start(Dev ~= nil)
+OverlayLoader.start()
 
 -- True while the development tools are in use (see applyDevTools below).
 local function devOn()

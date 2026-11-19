@@ -24,7 +24,6 @@
 -- View (right side):
 --   Model: Head/Body: switches this card between its head and body model (back to the
 --                     card's own setting when you change card)
---   Frames: On/Off  : draws cards with the frame images, or the plain layout, to compare
 --   Use in Builder  : gives this card's camera to the Card Builder's card (only the camera, and
 --                     only item to item or NPC to NPC), to frame a card like this one
 --   Show: Back      : shows the card back image (resources/images/card_back.png) over a
@@ -526,13 +525,6 @@ function Preview.show()
         showCard()
     end)
 
-    local framesButton = nil
-    y = y + STEP
-    framesButton = panelButton("Frames: On", nil, y, function()
-        CardView.USE_FRAMES = not CardView.USE_FRAMES
-        Kit.setLabel(framesButton, CardView.USE_FRAMES and "Frames: On" or "Frames: Off")
-        showCard()
-    end)
     y = y + STEP
     backButton = panelButton("Show: Back", nil, y, function()
         if showingBack then

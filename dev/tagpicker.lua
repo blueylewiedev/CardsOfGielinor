@@ -19,6 +19,7 @@
 -- MAX_VISIBLE_H the page scrolls, and the Filter box narrows the words down.
 
 local Kit = require("ui/kit")
+local DevKit = require("dev/devkit")
 local Cards = require("core/cards")
 
 local TagPicker = {}
@@ -191,7 +192,7 @@ local function currentFilter()
     return type(text) == "string" and text or ""
 end
 
--- Builds the contents of one page (used by Kit.tabs). Returns the components it made and how tall
+-- Builds the contents of one page (used by DevKit.tabs). Returns the components it made and how tall
 -- the page is.
 local function buildPage(index, parent, originX, originY)
     local kind = KINDS[index]
@@ -219,7 +220,7 @@ local function buildPage(index, parent, originX, originY)
                 entry.heading, GOLD, ui.AlignMode.TOPLEFT)
         else
             local word = entry.word
-            local toggle = Kit.toggleButton(parent, word, originX + entry.col * COL_W, originY + entry.row * ROW_H,
+            local toggle = DevKit.toggleButton(parent, word, originX + entry.col * COL_W, originY + entry.row * ROW_H,
                 COL_W - 8, 28, selected[word] == true, function(on)
                     if target ~= nil then
                         target.toggle(kind, word, on)
@@ -379,7 +380,7 @@ function TagPicker.show()
     end)
     extras[#extras + 1] = Kit.text(content, 10, 34, WIDTH - 20, 22,
         "Click a word to add it; click again to remove it.", GREY, ui.AlignMode.TOPLEFT)
-    tabs = Kit.tabs(content, 10, TABS_Y, WIDTH - 30, tabsHeight, TAB_NAMES, buildPage, pageHeight)
+    tabs = DevKit.tabs(content, 10, TABS_Y, WIDTH - 30, tabsHeight, TAB_NAMES, buildPage, pageHeight)
 end
 
 function TagPicker.hide()

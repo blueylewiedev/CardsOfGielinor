@@ -2,8 +2,8 @@
 -- Loads and saves one player's collection using PersistentDB.
 --
 -- PersistentDB is stored per plugin, not per account, so every character gets its own
--- entry, keyed by character name. Without that, two accounts on one computer would
--- share a single collection.
+-- entry, keyed by the character's tracking id (or its name when trackingAccess is not granted: core/identity.lua).
+-- Without that, two accounts on one computer would share a single collection.
 --
 -- The client refuses a single value that is too big. Measured with a throwaway probe (2026-11-12): a table
 -- of 2,000 entries is accepted and 3,000 refused; a string of 100,000 letters is accepted and 131,056
@@ -14,6 +14,7 @@
 local Cards = require("core/cards")
 local Rate = require("core/rate")
 local Config = require("core/config")
+local Logger = require("core/logger")
 
 local Storage = {}
 
@@ -35,6 +36,10 @@ end
 local BUCKETS = 32
 Storage.BUCKETS = BUCKETS
 
+-- The most buckets a save may say it was made with. A damaged or edited count (a billion) must not make the load read a
+-- billion keys; the plugin has only ever used 16 and 32.
+local MAX_SAVED_BUCKETS = 256
+
 -- Added to the end of every key while the development tools are present (main.lua sets it).
 -- The dev copy of the plugin and a released copy on the same computer have the same plugin name,
 -- so they share one PersistentDB; the suffix gives each its own collections.
@@ -42,6 +47,11 @@ local profileSuffix = ""
 
 function Storage.setProfileSuffix(suffix)
     profileSuffix = suffix or ""
+end
+
+-- What setProfileSuffix was last given ("" for a released copy).
+function Storage.profileSuffix()
+    return profileSuffix
 end
 
 -- Lower-cases text and swaps anything but letters and digits for "_", so it is safe in a key.
@@ -146,6 +156,11 @@ end
 function Storage.load(key)
     local state = Storage.newState()
     local saved = PersistentDB:GetStructuredData(key)
+    if saved ~= nil and type(saved) ~= "table" then
+        -- Not what a save looks like (the saves are tables): read it as one with nothing in it, so the buckets are still read.
+        Logger.error("the collection saved under", key, "is a", type(saved), "and not a table: its credits and statistics are not read")
+        saved = {}
+    end
     if saved == nil then
         -- A new collection starts with the starter credits (two packs). It is marked as changed so they are saved with
         -- the first save, and the grant is not made again.
@@ -164,7 +179,7 @@ function Storage.load(key)
     -- The owned cards, from as many buckets as the save was made with.
     local buckets = BUCKETS
     if type(saved.buckets) == "number" and saved.buckets >= 1 then
-        buckets = math.floor(saved.buckets)
+        buckets = math.min(math.floor(saved.buckets), MAX_SAVED_BUCKETS)
     end
     for bucket = 1, buckets do
         loadOwned(state.owned, PersistentDB:GetStructuredData(Storage.bucketKey(key, bucket)))
@@ -244,7 +259,7 @@ function Storage.save(key, state)
             state.dirtyBuckets[bucket] = nil
         else
             allOk = false
-            log("save FAILED for", bucketKey)
+            Logger.error("save FAILED for", bucketKey)
         end
     end
 
@@ -257,7 +272,7 @@ function Storage.save(key, state)
     })
     if not ok then
         allOk = false
-        log("save FAILED for", key)
+        Logger.error("save FAILED for", key)
     end
 
     -- A save made with another bucket count: its extra keys are not read any more.
@@ -268,33 +283,6 @@ function Storage.save(key, state)
         state.staleBuckets = nil
     end
     return allOk
-end
-
--- Deletes every collection saved by this copy of the plugin (the keys that end with the profile suffix,
--- so the dev copy leaves a released copy's collections alone): the main keys and their buckets. Nothing
--- else in the database is touched. Returns how many keys were deleted, or nil and a reason. Only for the
--- development tools; a copy with no suffix refuses.
-function Storage.deleteAllCollections()
-    if profileSuffix == "" then
-        return nil, "no profile suffix: only the dev copy may do this"
-    end
-    local doomed = {}
-    PersistentDB:IterateEntries(function(key)
-        if string.sub(key, -#profileSuffix) == profileSuffix then
-            local name = string.gsub(key, "^bucket%d+_", "")
-            if string.find(name, "^collection_") or string.find(name, "^tracking_") then
-                doomed[#doomed + 1] = key
-            end
-        end
-        return false
-    end)
-    local deleted = 0
-    for _, key in ipairs(doomed) do
-        if PersistentDB:Delete(key) then
-            deleted = deleted + 1
-        end
-    end
-    return deleted
 end
 
 -- Adds credits and marks the collection as needing a save.

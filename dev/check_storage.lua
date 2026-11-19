@@ -80,6 +80,7 @@ end
 -- ---------------------------------------------------------------------------------------------------
 local Cards = require("core/cards")
 local Storage = require("core/storage")
+local DevSaves = require("dev/devsaves")
 
 local failures = 0
 local function check(ok, what)
@@ -267,6 +268,28 @@ for _, old in ipairs({ Storage.BUCKETS // 2, Storage.BUCKETS + 16 }) do
     check(biggest <= maxEntries / 2, "and the rewritten buckets are within the limit (biggest " .. biggest .. ")")
 end
 
+-- 9b. A damaged save cannot make the load read a huge number of keys or fail on a value of the wrong type
+reset()
+do
+    local reads = 0
+    local get = PersistentDB.GetStructuredData
+    function PersistentDB:GetStructuredData(key)
+        reads = reads + 1
+        return get(self, key)
+    end
+    db["collection_a"] = { version = 1, buckets = 1000000000, credits = 7 }
+    db[Storage.bucketKey("collection_a", 2)] = { ["ok|normal"] = 3 }
+    local state = Storage.load("collection_a")
+    check(reads <= 300, "a save that says it has a billion buckets reads at most 256 (" .. reads .. " reads)")
+    check(state.credits == 7 and state.owned["ok|normal"] == 3, "and the rest of it is read as usual")
+    reads = 0
+    db["collection_b"] = 12345
+    db[Storage.bucketKey("collection_b", 1)] = { ["ok|normal"] = 2 }
+    state = Storage.load("collection_b")
+    check(state.owned["ok|normal"] == 2 and state.credits == 0, "a main key that is not a table is read as an empty one, with the cards still read")
+    PersistentDB.GetStructuredData = get
+end
+
 -- 10. Deleting the saves takes only this profile's collections
 reset()
 do
@@ -274,10 +297,10 @@ do
     db["bucket3_collection_a"], db["bucket3_collection_a-dev"] = { ["x|normal"] = 1 }, { ["x|normal"] = 1 }
     db["tracking_7-dev"], db["bucket16_tracking_7-dev"] = { credits = 1 }, { ["x|normal"] = 1 }
     db["dev_wiki_review_3"], db["dev_card_queue_0001-dev"], db["card_settings"] = { a = 1 }, { a = 1 }, { a = 1 }
-    local deleted, why = Storage.deleteAllCollections()
+    local deleted, why = DevSaves.deleteAllCollections()
     check(deleted == nil, "the copy with no suffix refuses to delete saves")
     Storage.setProfileSuffix("-dev")
-    deleted = Storage.deleteAllCollections()
+    deleted = DevSaves.deleteAllCollections()
     check(deleted == 4, "the dev copy deletes its 4 collection keys (" .. tostring(deleted) .. ")")
     check(db["collection_a"] and db["bucket3_collection_a"], "a released copy's collections are left")
     check(db["dev_wiki_review_3"] and db["dev_card_queue_0001-dev"] and db["card_settings"], "everything else is left")

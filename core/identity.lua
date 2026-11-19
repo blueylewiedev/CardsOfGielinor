@@ -7,8 +7,6 @@
 -- (Player.GetTrackingID docs), so it is polled from a ServerLogic handler until it arrives.
 
 local Storage = require("core/storage")
-local Logger = require("core/logger")
-local PluginId = require("core/pluginid")
 
 local Identity = {}
 
@@ -22,11 +20,6 @@ local SUBSCRIBER = "cardcollector_identity"
 -- tracking collection already exists and wins (core/storage.lua), so a late permission should be looked for in the
 -- client before this is made shorter.
 local PERMISSION_GRACE_TICKS = 10
-
--- In the dev copy the plugin asks for the permission itself on every start, since the client
--- forgets grants when it restarts: ppr requests the manifest's permissions, ppe turns one on.
--- A released plugin never does this; the player decides whether to grant it.
-local DEV_GRANTS_PERMISSION = true
 
 local trackingId = nil
 local subscribed = false
@@ -57,17 +50,9 @@ local function subscribe()
     end
 end
 
--- Call once when the plugin loads. devCopy is true while the development tools are present.
-function Identity.start(devCopy)
-    if devCopy and DEV_GRANTS_PERMISSION then
-        local ok, err = pcall(function()
-            PluginId.command("ppr")
-            PluginId.command("ppe", "trackingAccess")
-        end)
-        if not ok then
-            Logger.error("could not ask for the trackingAccess permission:", err)
-        end
-    end
+-- Call once when the plugin loads. (The dev copy asks for the permission itself: dev/grants.lua. The plugin never does:
+-- the player decides whether to grant it.)
+function Identity.start()
     subscribe()
 end
 

@@ -55,7 +55,7 @@ ui = setmetatable({
     Interfaces = { GetComponent = function() return component("parent") end },
 }, { __index = function() return anything end })
 id = anything
-prettyui = nil
+prettyui = require("dev/fakeprettyui")   -- (the plugin needs PrettyUI: a stand-in made from the ui above)
 Vector4 = { new = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end }
 Plugin = { resources = { images = {} } }
 Mouse = { IsAvailable = function() return false end }

@@ -35,8 +35,16 @@ local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
 local DevTools = require("dev/devtools")
 local OverlayLoader = require("core/overlayloader")
+local ArtCheck = require("dev/artcheck")
+local DevSaves = require("dev/devsaves")
+local Grants = require("dev/grants")
 
 local Dev = {}
+
+-- Asks for the permissions the dev copy needs (main.lua calls this before the plugin looks for them).
+function Dev.grantPermissions()
+    Grants.grant()
+end
 
 -- Called when a character's collection has just loaded: adds a credit (so you can see saving
 -- work across restarts) and a Hans card, and checks the card art names.
@@ -48,7 +56,7 @@ function Dev.onLogin(state)
         Storage.addCard(state, hans, 1)
     end
     log("DEV: credits are now", state.credits)
-    Cards.checkArtNames()
+    ArtCheck.run()
 end
 
 -- Called when XP is gained, to log how it turned into credits.
@@ -74,7 +82,7 @@ local function deleteSaves(api, refresh)
         return
     end
     resetArmedUntil = 0
-    local deleted, why = Storage.deleteAllCollections()
+    local deleted, why = DevSaves.deleteAllCollections()
     if deleted == nil then
         log("DEV: saves NOT deleted:", why)
         return

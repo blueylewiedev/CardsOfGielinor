@@ -60,7 +60,7 @@ ui = setmetatable({
     TextContentVisibilityMode = anything, InputFieldFilterMode = anything,
 }, { __index = function() return anything end })
 id = anything
-prettyui = nil
+prettyui = require("dev/fakeprettyui")   -- (the plugin needs PrettyUI: a stand-in made from the ui above)
 Vector4 = { new = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end }
 Plugin = { resources = { images = {} } }
 Mouse = { IsAvailable = function() return false end }
@@ -139,14 +139,14 @@ local function live(kind)
     return list
 end
 local combos, inputs = live("ComboField"), live("InputField")
-check(#combos == 8 and #inputs == 1, "8 drop-downs and the search box (" .. #combos .. ", " .. #inputs .. ")")
+check(#combos == 9 and #inputs == 1, "9 drop-downs and the search box (" .. #combos .. ", " .. #inputs .. ")")
 
 local function choose(combo, label)
     local entryId = combo._entries and combo._entries[label]
     assert(entryId ~= nil, "no entry '" .. label .. "'")
     combo._handlers["ONSELECTIONCHANGED"](combo, entryId)
 end
--- creation order: sort, owned, kind, rarity, membership, region, skill, category
+-- creation order: sort, owned, kind, rarity, membership, region, skill, category, finish
 local SORT, OWNED, KIND, RARITY, MEMBER, REGION, SKILL, CATEGORY = 1, 2, 3, 4, 5, 6, 7, 8
 
 -- the rest of the checks start from the whole deck
@@ -279,8 +279,8 @@ check(Viewer.debugInfo().matches == #Cards.list, "Clear filters before the grid 
 
 -- grid view
 local toggle = nil
-for _, b in ipairs(live("Button")) do if rawget(b, "label") == "List / grid" then toggle = b end end
-check(toggle ~= nil, "found the list / grid button")
+for _, b in ipairs(live("Button")) do if rawget(b, "label") == "SWAP" then toggle = b end end
+check(toggle ~= nil, "found the list / grid button (the SWAP button in the title bar)")
 check(Viewer.isGrid() == false and Viewer.anchor("grid") ~= nil, "the tutorial can see the list showing and find the swap button")
 toggle._handlers["ONBUTTONPRESSED"](toggle)
 check(Viewer.debugInfo().grid == true, "grid view on")
@@ -474,9 +474,10 @@ do
     handle:Destroy()
     check(made.destroyed == true and registered[buttonRoot] == nil, "destroying it unregisters and removes it")
     check(Kit.titleButton({ root = window.root }, "SWAP", function() end) == nil, "no parent layer: no button, so the caller uses its own")
+    local fake = require("dev/fakeprettyui")
     prettyui = {}
     check(Kit.titleButton(window, "SWAP", function() end) == nil, "no SpriteButton: no button")
-    prettyui = nil
+    prettyui = fake
 end
 
 -- a short screen: the window opens with fewer list rows and one row of cards in the grid, and pages by those
@@ -522,7 +523,7 @@ do
     check(Memory.collections() == before + 1, "four quick page turns share one collection (" .. (Memory.collections() - before) .. ")")
     -- the grid (the view that spiked): every page turn destroys its cards
     local toggle
-    for _, b in ipairs(live("Button")) do if rawget(b, "label") == "List / grid" then toggle = b end end
+    for _, b in ipairs(live("Button")) do if rawget(b, "label") == "SWAP" then toggle = b end end
     if toggle ~= nil then
         toggle._handlers["ONBUTTONPRESSED"](toggle)
         Memory.step(2)

@@ -40,14 +40,14 @@ local BAR_FILL = Vector4.new(0.85, 0.68, 0.16, 0.95)
 local COLUMNS, COLUMN_W, GAP = 4, 216, 12
 local CONTENT_W = COLUMNS * COLUMN_W + (COLUMNS - 1) * GAP
 local WINDOW_SLACK = 30                -- the window's frame takes this much of the width it is made with
-local LEFT = Kit.available() and 4 or 10
+local LEFT = 4
 local TOP = 4
 local HEADER_H = 52                    -- the set's name, its progress and the bar over the cards
 local BODY_Y = TOP + HEADER_H
 local GRID_COLS = COLUMNS - 1
 local CAPTION_H = 44                   -- under a card: the gap and the bar with its count
 local FOOTER_GAP, FOOTER_H = 8, 42     -- under the body: the gap, then the counts and the page buttons
-local FRAME = Kit.available() and 16 or 0
+local FRAME = 16
 local ROW_H, ROW_STEP = 46, 50         -- a set's tile, and the distance from one to the next
 local FILTER_H, FILTER_STEP = 28, 34   -- the search box and the drop-down over the list
 local LIST_TOP = TOP + 2 * FILTER_STEP -- the set list runs from under them to the footer
@@ -620,7 +620,7 @@ function SetsViewer.open(newApi)
     applyLayout(SetsViewer.layoutFor(screenHeight))
     logScreen(gameWindow, screenHeight)
     listTop = math.max(0, math.min(listTop, #Sets.list - LIST_ROWS))
-    local width = CONTENT_W + (Kit.available() and WINDOW_SLACK or 0)
+    local width = CONTENT_W + WINDOW_SLACK
     window, content = Kit.window(gameWindow, "Sets", width, HEIGHT + Kit.titleBarHeight(), function()
         SetsViewer.close()
     end, 0.35, 0.04)

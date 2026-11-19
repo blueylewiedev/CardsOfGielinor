@@ -193,7 +193,7 @@ end
 -- A line of text with an info icon at its right, inside a panel at (x, y): returns the text and the icon.
 local function lineWithIcon(content, x, y, w)
     local text = Kit.text(content, x + PAD, y, w - 2 * PAD - ICON_WIDTH - 6, LINE_ROW_H, "", WHITE, ui.AlignMode.TOPLEFT)
-    local icon = Kit.iconButton(content, "INFO", x + w - PAD - ICON_WIDTH, y, function() end, "...", "?", 30)
+    local icon = Kit.iconButton(content, "INFO", x + w - PAD - ICON_WIDTH, y, function() end, "...")
     return text, icon
 end
 
@@ -240,7 +240,7 @@ end
 
 -- Opens the settings window, if it is not open already.
 function SettingsPage.openWindow()
-    if window ~= nil or prettyui == nil then
+    if window ~= nil then
         return
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
@@ -271,8 +271,8 @@ end
 -- Starts listening for the client's settings page to open. `newApi` needs getState and saveNow.
 function SettingsPage.init(newApi)
     api = newApi
-    if prettyui == nil or Event.SettingsLayerReady == nil then
-        Logger.error("settings page: not available (needs PrettyUI and the settings layer)")
+    if Event.SettingsLayerReady == nil then
+        Logger.error("settings page: not available (the client has no settings layer)")
         return
     end
     Event.SettingsLayerReady.Subscribe(SUBSCRIBER, function(event)

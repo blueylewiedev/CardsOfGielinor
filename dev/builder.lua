@@ -24,6 +24,7 @@
 -- reopening the window does not lose it. Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
+local DevKit = require("dev/devkit")
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
@@ -35,6 +36,23 @@ local ItemProbe = require("dev/itemprobe")
 local ItemFacts = require("dev/itemfacts")
 
 local Builder = {}
+
+-- The tag kinds that cards of this kind ("npc" or "item") use, in the order they are written. Items are not tagged with a
+-- location. Both kinds of card may say whether they are free to play or members only.
+local function tagKindsFor(cardKind)
+    if cardKind == "item" then
+        return { "regions", "skills", "category", "membership" }
+    end
+    return { "regions", "location", "skills", "category", "membership" }
+end
+
+-- What kind of cards a deck file holds: "item" for the files in deck/items/, otherwise "npc".
+local function deckFileKind(setName)
+    if string.sub(setName or "", 1, 11) == "deck/items/" then
+        return "item"
+    end
+    return "npc"
+end
 
 -- A new, empty card. (Reset goes back to this.)
 local function freshDraft()
@@ -521,7 +539,7 @@ end
 local function decksFor(cardKind)
     local list = {}
     for i, setName in ipairs(Cards.sets) do
-        if Cards.setKind(setName) == cardKind then
+        if deckFileKind(setName) == cardKind then
             list[#list + 1] = { setName = setName, index = i }
         end
     end
@@ -549,7 +567,7 @@ end
 
 -- The tag kinds the card has, in the order they are written in.
 local function tagKinds()
-    return Cards.tagKindsFor(draft.kind)
+    return tagKindsFor(draft.kind)
 end
 
 -- The tag boxes in the window, and their labels: an NPC's `regions` box is for a second region
@@ -593,7 +611,7 @@ local CAMERA_DB_KEY = "dev_category_cameras"
 function Builder.categoryKey(words)
     local first, gear, needing = nil, nil, nil
     for _, word in ipairs(words or {}) do
-        if Cards.requiredWord("item", "category", word) ~= nil then
+        if Cards.requiredWords("item", "category", word) ~= nil then
             if string.find(word, "_gear$") then
                 gear = gear or word
             else
@@ -939,7 +957,7 @@ function Builder.checks()
     end
 
     -- The deck file is one of this kind's own.
-    if Cards.setKind(Cards.sets[draft.deck] or "") ~= draft.kind then
+    if deckFileKind(Cards.sets[draft.deck] or "") ~= draft.kind then
         add("fix", "Choose a deck file for " .. (isItem() and "item" or "NPC") .. " cards")
     end
 
@@ -2369,7 +2387,7 @@ function Builder.show()
     section("1. Card details", LEFT_X, 4, LEFT_W)
     Kit.iconButton(content, "TRASH", LEFT_X + LEFT_W - 40, 2, function()
         if hasWork() then
-            Kit.confirm(gameLayer, "Clear this card?", "Everything entered for this card will be cleared.", "Clear",
+            DevKit.confirm(gameLayer, "Clear this card?", "Everything entered for this card will be cleared.", "Clear",
                 resetAll)
         else
             resetAll()
@@ -2448,9 +2466,9 @@ function Builder.show()
         showMembership()
         soon()
     end
-    widgets.f2pToggle = Kit.toggleButton(content, "F2P", LEFT_X + 318, 274, 70, 28, draft.membership == "f2p",
+    widgets.f2pToggle = DevKit.toggleButton(content, "F2P", LEFT_X + 318, 274, 70, 28, draft.membership == "f2p",
         function(on) chooseMembership("f2p", on) end, "Free to play: anyone can get this")
-    widgets.p2pToggle = Kit.toggleButton(content, "P2P", LEFT_X + 396, 274, 70, 28, draft.membership == "p2p",
+    widgets.p2pToggle = DevKit.toggleButton(content, "P2P", LEFT_X + 396, 274, 70, 28, draft.membership == "p2p",
         function(on) chooseMembership("p2p", on) end, "Members only (pay to play)")
 
     caption("Tags: words separated by commas", LEFT_X, 316, LEFT_W - 160)
