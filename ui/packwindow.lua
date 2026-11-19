@@ -62,7 +62,8 @@ local HEIGHTS = { nosession = 90 }
 -- Set by PackWindow.show():
 --   api.getState() : the logged-in character's collection, or nil
 --   api.saveNow()  : saves it straight away
---   api.openSettings() : opens the settings window (the Settings button on Home)
+--   api.openSettings() : opens the settings window (the cog on Home)
+--   api.openTutorial() : opens the tutorial (the "i" at the left of the title bar); optional, there is no "i" without it
 --   api.extraButtons : optional list of { label, action } shown as buttons at the bottom of Home
 local api = nil
 local window = nil
@@ -71,6 +72,7 @@ local screens = {}   -- screen name -> Layer
 local widgets = {}   -- named pieces that need updating later
 local current = nil  -- name of the screen being shown
 local settingsButton = nil   -- the cog in the title bar, while Home is showing (see showScreen)
+local helpButton = nil       -- the "i" at the left end of the title bar, which opens the tutorial (api.openTutorial)
 -- Text and buttons come from ui/kit.lua, which uses PrettyUI when it is available.
 local makeText = Kit.text
 local makeButton = Kit.button
@@ -97,8 +99,15 @@ local function showScreen(name)
         pcall(function() settingsButton:Destroy() end)
         settingsButton = nil
     end
+    if helpButton ~= nil then
+        pcall(function() helpButton:Destroy() end)
+        helpButton = nil
+    end
     if name == "home" then
         settingsButton = Kit.titleButton(window, "SETTINGS", function() api.openSettings() end, "Settings")
+        if api.openTutorial ~= nil then
+            helpButton = Kit.titleButton(window, "INFO", function() api.openTutorial() end, "Tutorial", "left")
+        end
         if settingsButton == nil and widgets.settingsFallback == nil then
             widgets.settingsFallback = Kit.iconButton(screens.home, "SETTINGS", HOME_MID - 50, 4,
                 function() api.openSettings() end, "Settings", "Settings", 80)
@@ -215,14 +224,14 @@ local function buildScreens()
     trackBorder.outlineThickness = 1
     trackBorder.colour = PANEL_BORDER
     widgets.collectionText = makeText(screens.home, INNER_X, COLLECTION_Y + 50, HOME_W, 20, "", GREY)
-    Kit.buttonAt(screens.home, "Collection", INNER_X, COLLECTION_Y + 78, HOME_W, 30, function()
+    widgets.collectionButton = Kit.buttonAt(screens.home, "Collection", INNER_X, COLLECTION_Y + 78, HOME_W, 30, function()
         if Viewer.isOpen() then
             Viewer.close()
         else
             Viewer.open(api)
         end
     end)
-    Kit.buttonAt(screens.home, "Sets", INNER_X, COLLECTION_Y + 112, HOME_W, 30, function()
+    widgets.setsButton = Kit.buttonAt(screens.home, "Sets", INNER_X, COLLECTION_Y + 112, HOME_W, 30, function()
         SetsViewer.toggle(api)
     end)
     Kit.buttonAt(screens.home, "Stats", INNER_X, COLLECTION_Y + 146, HOME_W, 30, function()
@@ -230,7 +239,7 @@ local function buildScreens()
     end)
 
     widgets.affordText = makeText(screens.home, INNER_X, PACKS_Y + 28, HOME_W, 20, "", WHITE)
-    Kit.buttonAt(screens.home, "Open the Shop", INNER_X, PACKS_Y + 54, HOME_W, 34, function()
+    widgets.shopButton = Kit.buttonAt(screens.home, "Open the Shop", INNER_X, PACKS_Y + 54, HOME_W, 34, function()
         Shop.toggle({
             getState = function() return api.getState() end,
             saveNow = function() api.saveNow() end,
@@ -323,11 +332,29 @@ function PackWindow.currentScreen()
     return current
 end
 
+-- The component of one of the Home screen's controls, for the tutorial's pointer: "shop", "collection", "sets" or
+-- "settings" (the cog). nil while the Home screen is not showing.
+function PackWindow.anchor(name)
+    if window == nil or current ~= "home" then
+        return nil
+    end
+    local control = ({ shop = widgets.shopButton, collection = widgets.collectionButton, sets = widgets.setsButton,
+        settings = settingsButton or widgets.settingsFallback })[name]
+    if control == nil then
+        return nil
+    end
+    return control.root or control
+end
+
 -- Closes the window and everything that belongs to it (collection, statistics, any reveal).
 function PackWindow.hide()
     if settingsButton ~= nil then
         pcall(function() settingsButton:Destroy() end)
         settingsButton = nil
+    end
+    if helpButton ~= nil then
+        pcall(function() helpButton:Destroy() end)
+        helpButton = nil
     end
     Viewer.close()
     SetsViewer.close()

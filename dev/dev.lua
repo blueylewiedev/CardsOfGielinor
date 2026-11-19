@@ -15,6 +15,7 @@
 local Probe = require("dev/perfprobe")
 local memLoaded, MemProbe = pcall(require, "dev/memprobe")          -- (loaded first by perfprobe; its buttons are below)
 local Quiet = require("dev/quiet")
+local PointerProbe = require("dev/pointerprobe")
 local LeakLab = require("dev/leaklab")
 local Cards = require("core/cards")
 local Storage = require("core/storage")
@@ -147,6 +148,8 @@ local function toolButtons(api, refresh)
         { label = "Anim check", action = Builder.checkAnims },
         { label = "Wiki Review", action = WikiReview.toggle },
         { label = "Pack Maker", action = PackMaker.toggle },
+        { label = "Pointer probe", action = PointerProbe.toggle,
+            tooltip = "Temporary (tutorial): a test window with a gold pointer from the game's own sprites over one of its buttons; drag the window and press Next target, then press Output" },
         { label = "NPC Viewer", action = NpcBrowser.toggle },
         { label = "Nearby NPCs", action = Nearby.toggle },
         { label = "Uncarded", action = Uncarded.toggle },

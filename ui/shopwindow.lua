@@ -270,6 +270,15 @@ function Shop.isOpen()
     return window ~= nil
 end
 
+-- The component of one of the Shop's controls, for the tutorial's pointer: "buy". nil if the Shop is not open.
+function Shop.anchor(name)
+    local control = window ~= nil and name == "buy" and widgets.buy or nil
+    if control == nil then
+        return nil
+    end
+    return control.root or control
+end
+
 function Shop.hide()
     if bigPack ~= nil then
         bigPack.destroy()
