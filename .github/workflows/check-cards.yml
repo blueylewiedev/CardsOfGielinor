@@ -15,6 +15,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y lua5.4
       - name: Every card loads (its tags are in core/cards.lua)
         run: lua5.4 dev/check_cards.lua
+      - name: The memory probe counts components as it should (dev/memprobe.lua)
+        run: lua5.4 dev/check_memprobe.lua
       - name: Parked cards are still sound and not in the deck (dev/parked_cards/)
         run: lua5.4 dev/check_parked.lua
       - name: Collections save and load (core/storage.lua)

@@ -13,6 +13,7 @@
 
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
 local Probe = require("dev/perfprobe")
+local memLoaded, MemProbe = pcall(require, "dev/memprobe")          -- (loaded first by perfprobe; its buttons are below)
 local Cards = require("core/cards")
 local Storage = require("core/storage")
 local CardView = require("ui/cardview")
@@ -148,6 +149,12 @@ local function toolButtons(api, refresh)
         { label = "Output", action = OutputWindow.toggle },
         { label = "Perf probe", action = Probe.manual,
             tooltip = "Logs the frame times over the next 10 seconds (PROBE line): scroll the collection or open a pack meanwhile" },
+        { label = "Mem baseline", action = function()
+            if memLoaded and MemProbe.baseline ~= nil then MemProbe.baseline() else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe: takes the baseline for the MEM lines. Close every plugin window first. See notes in dev/memprobe.lua" },
+        { label = "Mem snapshot", action = function()
+            if memLoaded and MemProbe.snapshot ~= nil then MemProbe.snapshot("manual") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe: logs the Lua heap and the live components now, and what changed since the baseline (also done by itself after each pack opening closes)" },
         { label = "Fetch updates", action = function()
             if OverlayLoader.refetch() then
                 log("DEV: fetching the card overlay again")

@@ -21,6 +21,13 @@
 
 local FrameStats = require("dev/framestats")
 
+-- The memory probe (dev/memprobe.lua) has to wrap the client's component classes before the plugin makes any, and this file is
+-- the first to load, so it starts it here.
+local memLoaded, memError = pcall(require, "dev/memprobe")
+if not memLoaded then
+    log("MEM: the memory probe did not load: " .. tostring(memError))
+end
+
 local Probe = {}
 
 local FRAME_SUBSCRIBER, LOGIC_SUBSCRIBER = "cardcollector_dev_perf", "cardcollector_dev_perf_logic"
