@@ -1,8 +1,8 @@
 -- ui/hub.lua
 -- The plugin's page behind its ribbon icon (it needs the "hasRibbonIcon" flag in plugin.json).
 -- It appears inside the client's Plugins window and is the way to get the main window back
--- after closing it. It has buttons for the main window, the collection, the sets, the statistics and the credits
--- overlay.
+-- after closing it. It has buttons for the main window, the collection, the sets, the statistics, the credits
+-- overlay and the tutorial.
 
 local PluginId = require("core/pluginid")
 local Logger = require("core/logger")
@@ -12,7 +12,8 @@ local Hub = {}
 local SUBSCRIBER = "cardcollector_hub"
 local BUTTON_WIDTH = 200
 
-local api = nil      -- api.getState(), api.openMain(), api.openCollection(), api.openSets(), api.toggleStats(), api.toggleCredits()
+local api = nil      -- api.getState(), api.openMain(), api.openCollection(), api.openSets(), api.toggleStats(), api.toggleCredits(),
+                    -- api.openTutorial()
 local view = nil
 local widgets = {}
 
@@ -25,19 +26,20 @@ local function destroyView()
     widgets = {}
 end
 
--- Builds the page: a title, the credits line and the five buttons. `parent` is the component
+-- Builds the page: a title, the credits line and the six buttons. `parent` is the component
 -- the client gives for the plugin's page.
 local function build(parent)
     destroyView()
     view = prettyui.SimpleView.new(parent, { width = parent.width, height = parent.height })
     view:AddTitle(PluginId.TITLE)
     widgets.credits = view:AddText("")
-    -- The same width for all five, so the buttons line up whatever their labels are.
+    -- The same width for all six, so the buttons line up whatever their labels are.
     view:AddFancyButton("Open", function() api.openMain() end, { variant = "positive", width = BUTTON_WIDTH })
     view:AddFancyButton("Collection", function() api.openCollection() end, { width = BUTTON_WIDTH })
     view:AddFancyButton("Sets", function() api.openSets() end, { width = BUTTON_WIDTH })
     view:AddFancyButton("Statistics", function() api.toggleStats() end, { width = BUTTON_WIDTH })
     view:AddFancyButton("Credits overlay", function() api.toggleCredits() end, { width = BUTTON_WIDTH })
+    view:AddFancyButton("Tutorial", function() api.openTutorial() end, { width = BUTTON_WIDTH })
     Hub.refresh()
 end
 

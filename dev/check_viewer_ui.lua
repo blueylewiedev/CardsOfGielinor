@@ -281,8 +281,10 @@ check(Viewer.debugInfo().matches == #Cards.list, "Clear filters before the grid 
 local toggle = nil
 for _, b in ipairs(live("Button")) do if rawget(b, "label") == "List / grid" then toggle = b end end
 check(toggle ~= nil, "found the list / grid button")
+check(Viewer.isGrid() == false and Viewer.anchor("grid") ~= nil, "the tutorial can see the list showing and find the swap button")
 toggle._handlers["ONBUTTONPRESSED"](toggle)
 check(Viewer.debugInfo().grid == true, "grid view on")
+check(Viewer.isGrid() == true, "the tutorial can see the grid showing")
 -- a click on a card in the grid opens it in the list, picked, on its page
 local gridGrips = {}
 for _, c in ipairs(live("Layer")) do

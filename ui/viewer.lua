@@ -963,6 +963,21 @@ function Viewer.isOpen()
     return window ~= nil
 end
 
+-- True while the window is open and showing the grid (not the list).
+function Viewer.isGrid()
+    return window ~= nil and gridView
+end
+
+-- The component of the button that swaps the list and the grid, for the tutorial's pointer: "grid". nil if the window is not
+-- open.
+function Viewer.anchor(name)
+    local control = window ~= nil and name == "grid" and (titleButton or widgets.swap) or nil
+    if control == nil then
+        return nil
+    end
+    return control.root or control
+end
+
 -- What is showing, for tests.
 function Viewer.debugInfo()
     return { open = window ~= nil, page = page, pages = pageCount(), matches = #entries, grid = gridView, filter = filter,

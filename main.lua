@@ -28,6 +28,7 @@ local Earning = require("core/earning")
 local SlayerEvents = require("core/slayerevents")
 local BossEvents = require("core/bossevents")
 local PackWindow = require("ui/packwindow")
+local Tutorial = require("ui/tutorial")
 local Viewer = require("ui/viewer")
 local SetsViewer = require("ui/setsviewer")
 local Stats = require("ui/stats")
@@ -161,6 +162,7 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
     CreditsWindow.refresh()
     Viewer.refresh()
     SetsViewer.refresh()
+    Tutorial.offerFirstRun()
     if session == nil then
         local profile = Identity.profile(currentCharacterName())
         if profile ~= nil then
@@ -215,6 +217,7 @@ function PluginShutdown()
     SettingsPage.shutdown()
     Hub.shutdown()
     CreditsWindow.hide()
+    Tutorial.close(false)
     PackWindow.hide()
     if Dev ~= nil then
         Dev.shutdown()
@@ -248,6 +251,13 @@ local function openMain()
     if Probe ~= nil then
         Probe.mark("main window shown")
     end
+end
+
+-- Opens the tutorial (the "i" in the main window's title bar and the ribbon page's Tutorial button). The tutorial points at
+-- the main window's buttons, so the window is opened first if it was closed.
+api.openTutorial = function()
+    api.openMain()
+    Tutorial.open()
 end
 
 -- Opens the main window (the ribbon page's Open button and a click on the credits overlay) and remembers that it is
@@ -314,6 +324,7 @@ Hub.init({
     openCollection = function() Viewer.open(api) end,
     openSets = function() SetsViewer.open(api) end,
     toggleStats = function() Stats.toggle(api) end,
+    openTutorial = function() api.openTutorial() end,
 })
 
 -- Listens for Slayer kills and completions (core/slayerevents.lua); it pays credits once a character is loaded.

@@ -367,16 +367,19 @@ end
 -- How far a title-bar button sits from the window's right edge: the close button (20 wide, 8 in) and a gap, then
 -- the button's own width.
 local TITLE_BUTTON_RIGHT = 62
+local TITLE_BUTTON_STEP = 28       -- the next button along (a second one sits this far further left)
+local TITLE_BUTTON_LEFT = 12       -- from the window's left edge, for a button at the left end of the title bar
 
 -- A small icon button in a PrettyUI window's title bar, to the left of the close button. `spriteName` is one of
 -- PrettyUI's sprite buttons (such as "SWAP"). Returns a handle whose Destroy() removes it, or nil if there is no
--- PrettyUI or it failed, so the caller can put a button somewhere else.
+-- PrettyUI or it failed, so the caller can put a button somewhere else. `slot` (optional, 0) is which place along the title bar:
+-- 0 is next to the close button, 1 the one to its left, "left" the far left end (clear of a centred title). The handle's `root` is the button's component (the tutorial points at it).
 --
 -- The title bar is covered by a layer PrettyUI uses to drag the window, which sits on the game's layer above the
 -- window itself, so a button made inside the window never gets the click. This button is made on the game's layer
 -- too and registered with the window as one of its overlays: the window then keeps it on top and calls `place` to put
 -- it back over the title bar whenever the window moves (PrettyUI's own scroll bar does the same).
-function Kit.titleButton(window, spriteName, onPress, tooltip)
+function Kit.titleButton(window, spriteName, onPress, tooltip, slot)
     if not (Kit.available() and prettyui.SpriteButton ~= nil and window ~= nil and window.parent ~= nil) then
         return nil
     end
@@ -385,12 +388,18 @@ function Kit.titleButton(window, spriteName, onPress, tooltip)
             x = 0, y = 0, tooltip = tooltip,
         })
         local function place()
-            button.root:SetPos(window.root.x + window.root.width - TITLE_BUTTON_RIGHT, window.root.y + 4)
+            if slot == "left" then
+                button.root:SetPos(window.root.x + TITLE_BUTTON_LEFT, window.root.y + 4)
+            else
+                button.root:SetPos(window.root.x + window.root.width - TITLE_BUTTON_RIGHT - (slot or 0) * TITLE_BUTTON_STEP,
+                    window.root.y + 4)
+            end
         end
         place()
         window:_RegisterOverlay(button.root, nil, place)
         button.root:MoveToFront()
         return {
+            root = button.root,
             Destroy = function()
                 pcall(function() window:_UnregisterOverlay(button.root) end)
                 pcall(function() button:Destroy() end)
@@ -783,12 +792,14 @@ end
 -- contents keep their positions, so it only gives more or less room.
 -- `limits` (optional, { minWidth, minHeight }) is how small a resizable window can be made.
 -- PrettyUI windows can be dragged by their title bar.
-function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits)
+-- `offsetX` and `offsetY` (optional, 0) move the window from its anchor point by that many pixels: with the anchors
+-- 0 and 1 a negative offsetY puts it that far above the bottom of the screen.
+function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits, offsetX, offsetY)
     xAnchor, yAnchor = xAnchor or 0.2, yAnchor or 0.15
     if Kit.available() and prettyui.Window ~= nil then
         local ok, win = pcall(prettyui.Window.new, parent, {
             title = title, width = width, height = height,
-            x = 0, y = 0, xAnchor = xAnchor, yAnchor = yAnchor,
+            x = offsetX or 0, y = offsetY or 0, xAnchor = xAnchor, yAnchor = yAnchor,
             scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
             minWidth = limits and limits.minWidth or nil, minHeight = limits and limits.minHeight or nil,
         })
@@ -801,7 +812,7 @@ function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scr
     box.stylesheetID = id.StyleSheet.DEFAULT
     box:SetHeaderLayout(0, 0, 0, 0, 0)
     box:SetSize(width, height)
-    box:SetPos(0, 0, xAnchor, yAnchor)
+    box:SetPos(offsetX or 0, offsetY or 0, xAnchor, yAnchor)
     return box, box
 end
 
