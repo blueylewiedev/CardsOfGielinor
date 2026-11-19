@@ -57,6 +57,13 @@ local MODES = {
     { id = "pool", what = "REUSED models: the first make builds 20 model groups, every later make only gives them a new model (SetModel)",
         pool = true,
         free = "nothing destroyed, the holder is only hidden. If memory stays flat from cycle 2 on, reusing components fixes the growth" },
+    -- (the reveal puts click handlers on its cards, and the client may keep a handler's closure after the component is destroyed)
+    { id = "cards_hooked", what = "full cards, each with a click handler whose closure holds the card's record (as the reveal's back-of-card handler does)",
+        hook = true,
+        free = "the root layer destroyed, nothing cleared. If the lines say the cards are STILL referenced, the client keeps the closure" },
+    { id = "cards_hooked_fixed", what = "the same, but the card's record is emptied (record.view = nil) before the card is destroyed",
+        hook = true, clear = true,
+        free = "the record emptied, then the root layer destroyed. If this one reports 0 still referenced, emptying the record is the fix" },
 }
 
 local modeIndex = 1
@@ -194,6 +201,11 @@ function Lab.make()
                 local w, h = 160 * scale, 224 * scale
                 place(view.root, i, w, h, mode.columns)
                 made[#made + 1] = { view = view }
+                if mode.hook then
+                    local record = { view = view }
+                    view.root:Subscribe(ui.Hook.ONCLICK, function() return record end)       -- the closure holds the record
+                    made[#made].record = record
+                end
                 remember("roots", view.root)
                 remember("models", view.model)
                 remember("groups", view.cam ~= nil and view.cam.group or nil)
@@ -243,6 +255,9 @@ function Lab.free()
                 end
                 view.root:Destroy()
             elseif item.view ~= nil then
+                if mode.clear and item.record ~= nil then
+                    item.record.view = nil                    -- the fix being tried: the closure no longer reaches the card
+                end
                 item.view.root:Destroy()
             elseif item.group ~= nil then
                 item.group:Destroy()
