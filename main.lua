@@ -88,6 +88,12 @@ local session = nil
 local ticksSinceSave = 0
 local ticksSinceLoad = 0
 
+-- A save that is there but cannot be read is tried again every tick, and nothing is saved meanwhile (core/storage.lua,
+-- Storage.load). After LOAD_TRIES failed tries (about 12 seconds) a save whose main entry is missing is loaded from its
+-- buckets alone; one whose main entry is there but unreadable is never written over, however long it takes.
+local LOAD_TRIES = 20
+local failedLoads = 0
+
 -- Returns the logged-in character's name, or nil if it is not available yet.
 -- The name can arrive a moment after login, so callers must be ready for nil.
 local function currentCharacterName()
@@ -114,11 +120,22 @@ local function saveSession()
     end
 end
 
--- Loads the collection for a newly logged-in character. profile comes from Identity.profile.
+-- Loads the collection for a newly logged-in character. profile comes from Identity.profile. If the save cannot be read
+-- yet, nothing happens (the next tick tries again).
 local function startSession(profile)
     -- With a tracking key and nothing saved under it yet, a collection kept under the character's name is copied
     -- (core/storage.lua), and saved at once so the copy exists before anything else changes.
-    local state, adopted = Storage.loadOrAdopt(profile.key, profile.adoptFrom)
+    local state, adopted, problem = Storage.loadOrAdopt(profile.key, profile.adoptFrom,
+        { acceptMissingMain = failedLoads >= LOAD_TRIES })
+    if state == nil then
+        failedLoads = failedLoads + 1
+        if failedLoads == 1 then
+            Logger.error("the saved collection for", profile.name, "could not be read (" .. tostring(problem)
+                .. "): trying again, and nothing is saved until it is read")
+        end
+        return
+    end
+    failedLoads = 0
     session = { name = profile.name, key = profile.key, kind = profile.kind, state = state }
     ticksSinceSave = 0
     ticksSinceLoad = 0
@@ -152,6 +169,7 @@ local function endSession()
     end
     saveSession()
     session = nil
+    failedLoads = 0
     Rate.reset()
 end
 
