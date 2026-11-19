@@ -159,6 +159,9 @@ local function toolButtons(api, refresh)
             tooltip = "Logs the frame times over the next 10 seconds (PROBE line): scroll the collection or open a pack meanwhile" },
         { label = "Quiet console", action = Quiet.toggle,
             tooltip = "Flips the dev copy's console between quiet (only failures and what the dev buttons say) and chatty (every routine line). On by default; takes effect at once" },
+        { label = "Mem collect", action = function()
+            if memLoaded and MemProbe.collect ~= nil then MemProbe.collect() else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe: one full Lua garbage collection now, and says how much the Lua heap fell. Watch memwatch afterwards: does the client's memory fall too?" },
         { label = "Mem baseline", action = function()
             if memLoaded and MemProbe.baseline ~= nil then MemProbe.baseline() else log("MEM: the memory probe did not load") end
         end, tooltip = "Memory probe: takes the baseline for the MEM lines. Close every plugin window first. See notes in dev/memprobe.lua" },

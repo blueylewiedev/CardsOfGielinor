@@ -242,6 +242,17 @@ function Mem.baseline()
     return baseline
 end
 
+-- One full garbage collection, on request (the Mem collect button): logs the Lua heap before and after. If the client's memory
+-- falls just after it, native memory is only given back when Lua frees the objects that wrap it (so a collection after a pack
+-- opening would be a fix); if it does not, it is not tied to the Lua heap.
+function Mem.collect()
+    local before = collectgarbage("count")
+    collectgarbage("collect")
+    local after = collectgarbage("count")
+    say("MEM", string.format("MEM collect: Lua heap %.0f KB before, %.0f KB after (%.0f KB freed). Watch memwatch for the next 30 seconds.",
+        before, after, before - after))
+end
+
 -- Logs the numbers now, and what changed since the baseline (taking it first if there is none).
 function Mem.snapshot(label)
     local now = takeSnapshot()
