@@ -25,6 +25,35 @@
 
 local Mem = {}
 
+-- Every line goes to the client's console (log) and to the plugin's Output window (dev/outputwindow.lua), where it can be
+-- selected and copied. The window module is only loaded once this file has finished loading (it needs the plugin's UI code),
+-- so lines said while it loads wait in `pending` until the next one, or the Output button, delivers them.
+local Output, pending, ready = nil, {}, false
+
+local function flush(allowRequire)
+    if Output == nil and (ready or allowRequire) then
+        local ok, module = pcall(require, "dev/outputwindow")
+        if ok and type(module) == "table" and module.add ~= nil then
+            Output = module
+        end
+    end
+    if Output ~= nil then
+        for _, line in ipairs(pending) do
+            pcall(Output.add, line.label, line.text)
+        end
+        pending = {}
+    end
+end
+
+local function say(label, text)
+    log(text)
+    pending[#pending + 1] = { label = label, text = text }
+    flush(false)
+end
+
+Mem.say = say
+Mem.flush = flush
+
 local FLAGS_KEY = "dev_mem_flags-dev"           -- ends with the dev profile suffix, like the dev copy's other keys
 
 -- The two switches, from PersistentDB (both off if there is nothing saved).
@@ -45,7 +74,7 @@ function Mem.toggle(name)
     end
     flags[name] = not flags[name]
     pcall(function() PersistentDB:SetStructuredData(FLAGS_KEY, { count = flags.count, gc = flags.gc }) end)
-    log(string.format("MEM: %s is now %s (saved; it takes effect at the next prl)", name == "count" and "counting components" or "the forced garbage collection",
+    say("MEM", string.format("MEM: %s is now %s (saved; it takes effect at the next prl)", name == "count" and "counting components" or "the forced garbage collection",
         flags[name] and "ON" or "OFF"))
     return flags[name]
 end
@@ -204,12 +233,12 @@ end
 -- Sets the baseline: do this with every plugin window closed.
 function Mem.baseline()
     baseline = takeSnapshot()
-    log(string.format("MEM baseline: Lua heap %.0f KB%s, %d live components, %d held after Destroy", baseline.kb,
+    say("MEM", string.format("MEM baseline: Lua heap %.0f KB%s, %d live components, %d held after Destroy", baseline.kb,
         flags.gc and " (after a full collection)" or " (no collection forced)", total(baseline.live), total(baseline.held)))
     if not flags.count then
-        log("MEM: counting components is OFF, so only the Lua heap is meaningful (Dev tools > Mem count, then prl)")
+        say("MEM", "MEM: counting components is OFF, so only the Lua heap is meaningful (Dev tools > Mem count, then prl)")
     end
-    log("MEM baseline live: " .. describe(baseline.live))
+    say("MEM", "MEM baseline live: " .. describe(baseline.live))
     return baseline
 end
 
@@ -218,19 +247,19 @@ function Mem.snapshot(label)
     local now = takeSnapshot()
     if baseline == nil then
         baseline = now
-        log(string.format("MEM %s: no baseline yet, so this one is it: Lua heap %.0f KB, %d live, %d held", label or "snapshot",
+        say("MEM", string.format("MEM %s: no baseline yet, so this one is it: Lua heap %.0f KB, %d live, %d held", label or "snapshot",
             now.kb, total(now.live), total(now.held)))
-        log("MEM live: " .. describe(now.live))
+        say("MEM", "MEM live: " .. describe(now.live))
         return now
     end
-    log(string.format("MEM %s: Lua heap %.0f KB (%+.0f KB), live %d (%+d), held after Destroy %d (%+d)", label or "snapshot",
+    say("MEM", string.format("MEM %s: Lua heap %.0f KB (%+.0f KB), live %d (%+d), held after Destroy %d (%+d)", label or "snapshot",
         now.kb, now.kb - baseline.kb, total(now.live), total(now.live) - total(baseline.live), total(now.held),
         total(now.held) - total(baseline.held)))
-    log("MEM   live changes: " .. describe(now.live, baseline.live))
+    say("MEM", "MEM   live changes: " .. describe(now.live, baseline.live))
     if total(now.held) > 0 or total(baseline.held) > 0 then
-        log("MEM   held after Destroy: " .. describe(now.held, baseline.held))
+        say("MEM", "MEM   held after Destroy: " .. describe(now.held, baseline.held))
     end
-    log(string.format("MEM   made %d, destroyed %d since the probe loaded%s", now.created, now.destroyed,
+    say("MEM", string.format("MEM   made %d, destroyed %d since the probe loaded%s", now.created, now.destroyed,
         countsDestroy and "" or " (Destroy calls cannot be seen in this client, so a component counts as gone when it can no longer be read)"))
     return now
 end
@@ -274,10 +303,12 @@ end
 if flags.count and ui ~= nil then
     local done = Mem.install(ui)
     local subscribed = start()
-    log(string.format("MEM: counting %s%s%s", #done > 0 and table.concat(done, ", ") or "nothing (the client does not let ui.<Class>.new be wrapped)",
+    say("MEM", string.format("MEM: counting %s%s%s", #done > 0 and table.concat(done, ", ") or "nothing (the client does not let ui.<Class>.new be wrapped)",
         subscribed and "" or "; no Logic event, so no automatic snapshots", flags.gc and "; forced garbage collection ON" or ""))
 else
-    log("MEM: the memory probe is loaded but counting is OFF (Dev tools > Mem count, then prl, to turn it on)")
+    say("MEM", "MEM: the memory probe is loaded but counting is OFF (Dev tools > Mem count, then prl, to turn it on)")
 end
+
+ready = true
 
 return Mem

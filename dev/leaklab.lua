@@ -16,6 +16,16 @@
 
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
+local memLoaded, MemProbe = pcall(require, "dev/memprobe")
+
+-- A line to the console and to the Output window (through the memory probe's helper, if it loaded).
+local function say(text)
+    if memLoaded and MemProbe.say ~= nil then
+        MemProbe.say("LAB", text)
+    else
+        log(text)
+    end
+end
 
 local Lab = {}
 
@@ -73,13 +83,13 @@ end
 function Lab.mode()
     modeIndex = modeIndex % #MODES + 1
     local m = MODES[modeIndex]
-    log(string.format("LAB mode %d of %d, %s: makes %s; frees with %s", modeIndex, #MODES, m.id, m.what, m.free))
+    say(string.format("LAB mode %d of %d, %s: makes %s; frees with %s", modeIndex, #MODES, m.id, m.what, m.free))
 end
 
 function Lab.make()
     local mode = MODES[modeIndex]
     if #made > 0 then
-        log("LAB: free the cards first (Lab free)")
+        say("LAB: free the cards first (Lab free)")
         return
     end
     holder = ui.Layer.new(parent())
@@ -118,11 +128,11 @@ function Lab.make()
         if not ok then
             failed = failed + 1
             if failed <= 3 then
-                log("LAB: a card could not be made:", tostring(err))
+                say("LAB: a card could not be made:", tostring(err))
             end
         end
     end
-    log(string.format("LAB: made %d (%s), cards %d to %d of the list%s. Press m in memwatch now.", #made, mode.id, offset + 1,
+    say(string.format("LAB: made %d (%s), cards %d to %d of the list%s. Press m in memwatch now.", #made, mode.id, offset + 1,
         offset + COUNT, failed > 0 and (", " .. failed .. " failed") or ""))
     if mode.id ~= "cards_same" then
         offset = offset + COUNT
@@ -132,7 +142,7 @@ end
 function Lab.free()
     local mode = MODES[modeIndex]
     if #made == 0 and holder == nil then
-        log("LAB: nothing to free")
+        say("LAB: nothing to free")
         return
     end
     for _, item in ipairs(made) do
@@ -162,7 +172,7 @@ function Lab.free()
         pcall(function() holder:Destroy() end)
         holder = nil
     end
-    log(string.format("LAB: freed %d (%s). Wait a few seconds, then press m in memwatch.", count, mode.id))
+    say(string.format("LAB: freed %d (%s). Wait a few seconds, then press m in memwatch.", count, mode.id))
 end
 
 return Lab

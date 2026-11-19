@@ -147,7 +147,10 @@ local function toolButtons(api, refresh)
         { label = "Nearby NPCs", action = Nearby.toggle },
         { label = "Uncarded", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
-        { label = "Output", action = OutputWindow.toggle },
+        { label = "Output", action = function()
+            if memLoaded and MemProbe.flush ~= nil then MemProbe.flush(true) end         -- (MEM and LAB lines said while loading)
+            OutputWindow.toggle()
+        end },
         { label = "Perf probe", action = Probe.manual,
             tooltip = "Logs the frame times over the next 10 seconds (PROBE line): scroll the collection or open a pack meanwhile" },
         { label = "Mem baseline", action = function()
