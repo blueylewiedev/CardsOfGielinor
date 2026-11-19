@@ -30,6 +30,8 @@ local Overlay = {}
 Overlay.FORMAT = 1                  -- the layout of the file this code reads
 Overlay.MAX_RETIRED_SHARE = 0.05    -- an overlay may retire this share of the cards...
 Overlay.MIN_RETIRED_ALLOWED = 50    -- ...or this many, whichever is more
+Overlay.MAX_BYTES = 4 * 1024 * 1024 -- an overlay longer than this (4 MB) is not read: a real one is a few hundred KB at most
+Overlay.MAX_ADDED = 2000            -- an overlay may add this many new cards (it can still change any card the deck has)
 local MAX_PROBLEMS = 20             -- how many skipped lines are described
 
 local find, sub = string.find, string.sub
@@ -54,6 +56,9 @@ function Overlay.begin(text, version)
     version = version or Version.number
     if type(text) ~= "string" then
         return nil, "no overlay text"
+    end
+    if #text > Overlay.MAX_BYTES then
+        return nil, "the overlay is too long (" .. #text .. " bytes; the limit is " .. Overlay.MAX_BYTES .. ")"
     end
     local pos, header = 1, nil
     while pos <= #text do
@@ -121,6 +126,10 @@ local function applyLine(job, line)
         return
     end
     local existed = type(value.id) == "string" and Cards.byId[value.id] ~= nil
+    if not existed and job.added >= Overlay.MAX_ADDED then
+        skip(job, "more new cards than an overlay may add (" .. Overlay.MAX_ADDED .. ")")
+        return
+    end
     local ok, why = Cards.register(value)
     if not ok then
         skip(job, why)

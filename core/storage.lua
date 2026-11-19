@@ -14,6 +14,7 @@
 local Cards = require("core/cards")
 local Rate = require("core/rate")
 local Config = require("core/config")
+local Logger = require("core/logger")
 
 local Storage = {}
 
@@ -34,6 +35,10 @@ end
 -- (about 9,300 cards at three finishes), which is the time to think again.
 local BUCKETS = 32
 Storage.BUCKETS = BUCKETS
+
+-- The most buckets a save may say it was made with. A damaged or edited count (a billion) must not make the load read a
+-- billion keys; the plugin has only ever used 16 and 32.
+local MAX_SAVED_BUCKETS = 256
 
 -- Added to the end of every key while the development tools are present (main.lua sets it).
 -- The dev copy of the plugin and a released copy on the same computer have the same plugin name,
@@ -151,6 +156,11 @@ end
 function Storage.load(key)
     local state = Storage.newState()
     local saved = PersistentDB:GetStructuredData(key)
+    if saved ~= nil and type(saved) ~= "table" then
+        -- Not what a save looks like (the saves are tables): read it as one with nothing in it, so the buckets are still read.
+        Logger.error("the collection saved under", key, "is a", type(saved), "and not a table: its credits and statistics are not read")
+        saved = {}
+    end
     if saved == nil then
         -- A new collection starts with the starter credits (two packs). It is marked as changed so they are saved with
         -- the first save, and the grant is not made again.
@@ -169,7 +179,7 @@ function Storage.load(key)
     -- The owned cards, from as many buckets as the save was made with.
     local buckets = BUCKETS
     if type(saved.buckets) == "number" and saved.buckets >= 1 then
-        buckets = math.floor(saved.buckets)
+        buckets = math.min(math.floor(saved.buckets), MAX_SAVED_BUCKETS)
     end
     for bucket = 1, buckets do
         loadOwned(state.owned, PersistentDB:GetStructuredData(Storage.bucketKey(key, bucket)))
@@ -249,7 +259,7 @@ function Storage.save(key, state)
             state.dirtyBuckets[bucket] = nil
         else
             allOk = false
-            log("save FAILED for", bucketKey)
+            Logger.error("save FAILED for", bucketKey)
         end
     end
 
@@ -262,7 +272,7 @@ function Storage.save(key, state)
     })
     if not ok then
         allOk = false
-        log("save FAILED for", key)
+        Logger.error("save FAILED for", key)
     end
 
     -- A save made with another bucket count: its extra keys are not read any more.
