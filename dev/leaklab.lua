@@ -54,12 +54,16 @@ local MODES = {
         free = "the root layer destroyed" },
     { id = "cards_big", what = "full cards at the reveal's size (scale 1.2, 8 across) instead of 0.6", scale = 1.2, columns = 8,
         free = "the root layer destroyed. If this leaks much more a card than the small ones, it is the picture buffers" },
+    { id = "pool", what = "REUSED models: the first make builds 20 model groups, every later make only gives them a new model (SetModel)",
+        pool = true,
+        free = "nothing destroyed, the holder is only hidden. If memory stays flat from cycle 2 on, reusing components fixes the growth" },
 }
 
 local modeIndex = 1
 local offset = 0                   -- how far into the list of cards the next make starts
 local holder = nil                 -- the layer the cards are in
 local made = {}                    -- what was made: { root, view, group, model, mode }
+local pool = nil                   -- the pool experiment's holder and its 20 groups, kept between makes: { holder, items }
 
 local function parent()
     return ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
@@ -94,8 +98,45 @@ function Lab.mode()
     say(string.format("LAB mode %d of %d, %s: makes %s; frees with %s", modeIndex, #MODES, m.id, m.what, m.free))
 end
 
+-- The pool experiment: the first make builds 20 model groups, later ones only point them at the next 20 models.
+local function makePool(cards)
+    if pool == nil then
+        local holderLayer = ui.Layer.new(parent())
+        holderLayer:SetPos(0, 0)
+        holderLayer:SetSize(0, 0, 1.0, 1.0)
+        holderLayer.clickthrough = true
+        pool = { holder = holderLayer, items = {} }
+        for i = 1, COUNT do
+            local group = ui.ModelGroup.new(holderLayer)
+            group:SetSize(96, 134)
+            place(group, i, 96, 134)
+            local model = ui.Model.new(group)
+            model:SetSize(96, 134)
+            local state = { group = group, kind = nil, yaw = 0, pitch = 0.1, dist = 500, fov = 40, ty = 0, tx = 0, near = 0 }
+            pool.items[i] = { group = group, model = model }
+            pcall(function() CardView.applyCamera(state) end)
+        end
+        say("LAB: built the pool of " .. COUNT .. " model groups (this is the only time it makes any)")
+    end
+    pool.holder.hidden = false
+    local failed = 0
+    for i, card in ipairs(cards) do
+        local ok = pcall(function()
+            pool.items[i].model:SetModel(ui.ModelType.NPC_HEAD, id.NPC[card.art.npc])
+        end)
+        if not ok then failed = failed + 1 end
+    end
+    say(string.format("LAB: pointed the pool at cards %d to %d of the list%s. Press m in memwatch now.", offset + 1,
+        offset + COUNT, failed > 0 and (", " .. failed .. " failed") or ""))
+    offset = offset + COUNT
+end
+
 function Lab.make()
     local mode = MODES[modeIndex]
+    if mode.pool then
+        makePool(pick(true))
+        return
+    end
     if #made > 0 then
         say("LAB: free the cards first (Lab free)")
         return
@@ -151,6 +192,15 @@ end
 
 function Lab.free()
     local mode = MODES[modeIndex]
+    if mode.pool then
+        if pool ~= nil then
+            pool.holder.hidden = true
+            say("LAB: hid the pool (nothing destroyed). Wait a few seconds, then press m in memwatch.")
+        else
+            say("LAB: nothing to free")
+        end
+        return
+    end
     if #made == 0 and holder == nil then
         say("LAB: nothing to free")
         return
