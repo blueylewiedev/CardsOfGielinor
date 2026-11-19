@@ -65,6 +65,24 @@ local holder = nil                 -- the layer the cards are in
 local made = {}                    -- what was made: { root, view, group, model, mode }
 local pool = nil                   -- the pool experiment's holder and its 20 groups, kept between makes: { holder, items }
 
+-- Weak references to what was made. After Lab free the strong ones are dropped and one full collection is run; whatever is still
+-- here then is still referenced from somewhere, so Lua could not collect it (see Lab.free). If nothing is left and the client's
+-- memory has not fallen either, the client is keeping the native memory itself.
+local function weakSet() return setmetatable({}, { __mode = "v" }) end
+local weak = { roots = weakSet(), models = weakSet(), groups = weakSet(), total = 0 }
+
+local function remember(kind, object)
+    if object ~= nil then
+        weak[kind][#weak[kind] + 1] = object
+    end
+end
+
+local function survivors(set)
+    local n = 0
+    for _ in pairs(set) do n = n + 1 end
+    return n
+end
+
 local function parent()
     return ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
 end
@@ -166,6 +184,8 @@ function Lab.make()
                     CardView.applyCamera(state)
                 end
                 made[#made + 1] = { group = group, model = model, cam = state }
+                remember("groups", group)
+                remember("models", model)
             else
                 local locked = mode.id == "frames"
                 local scale = mode.scale or SCALE
@@ -174,6 +194,9 @@ function Lab.make()
                 local w, h = 160 * scale, 224 * scale
                 place(view.root, i, w, h, mode.columns)
                 made[#made + 1] = { view = view }
+                remember("roots", view.root)
+                remember("models", view.model)
+                remember("groups", view.cam ~= nil and view.cam.group or nil)
             end
         end)
         if not ok then
@@ -232,7 +255,14 @@ function Lab.free()
         pcall(function() holder:Destroy() end)
         holder = nil
     end
-    say(string.format("LAB: freed %d (%s). Wait a few seconds, then press m in memwatch.", count, mode.id))
+    -- One full collection with no strong references left: what survives is still referenced from Lua.
+    local before = collectgarbage("count")
+    collectgarbage("collect")
+    local after = collectgarbage("count")
+    say(string.format("LAB: freed %d (%s). After one full collection (Lua heap %.0f to %.0f KB) these are STILL referenced: %d roots, "
+        .. "%d models, %d groups. Wait a few seconds, then press m in memwatch.", count, mode.id, before, after,
+        survivors(weak.roots), survivors(weak.models), survivors(weak.groups)))
+    weak = { roots = weakSet(), models = weakSet(), groups = weakSet() }
 end
 
 return Lab
