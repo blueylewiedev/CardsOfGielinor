@@ -44,6 +44,11 @@ function Storage.setProfileSuffix(suffix)
     profileSuffix = suffix or ""
 end
 
+-- What setProfileSuffix was last given ("" for a released copy).
+function Storage.profileSuffix()
+    return profileSuffix
+end
+
 -- Lower-cases text and swaps anything but letters and digits for "_", so it is safe in a key.
 local function clean(text)
     local key = string.gsub(string.lower(tostring(text)), "[^%w]", "_")
@@ -268,33 +273,6 @@ function Storage.save(key, state)
         state.staleBuckets = nil
     end
     return allOk
-end
-
--- Deletes every collection saved by this copy of the plugin (the keys that end with the profile suffix,
--- so the dev copy leaves a released copy's collections alone): the main keys and their buckets. Nothing
--- else in the database is touched. Returns how many keys were deleted, or nil and a reason. Only for the
--- development tools; a copy with no suffix refuses.
-function Storage.deleteAllCollections()
-    if profileSuffix == "" then
-        return nil, "no profile suffix: only the dev copy may do this"
-    end
-    local doomed = {}
-    PersistentDB:IterateEntries(function(key)
-        if string.sub(key, -#profileSuffix) == profileSuffix then
-            local name = string.gsub(key, "^bucket%d+_", "")
-            if string.find(name, "^collection_") or string.find(name, "^tracking_") then
-                doomed[#doomed + 1] = key
-            end
-        end
-        return false
-    end)
-    local deleted = 0
-    for _, key in ipairs(doomed) do
-        if PersistentDB:Delete(key) then
-            deleted = deleted + 1
-        end
-    end
-    return deleted
 end
 
 -- Adds credits and marks the collection as needing a save.

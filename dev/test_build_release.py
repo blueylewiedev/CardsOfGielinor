@@ -53,6 +53,15 @@ class MadeUpPlugin(unittest.TestCase):
     def test_the_result_has_no_problems(self):
         self.assertEqual(B.problems_in(self.target), [])
 
+    def test_a_forbidden_call_in_the_code_is_a_problem(self):
+        write(self.target, "core/bad.lua", "local x = 1\nExecuteConsoleCommand('ppe x')\n")
+        write(self.target, "core/bad2.lua", "local t = os.time()\n")
+        write(self.target, "core/fine.lua", "-- ExecuteConsoleCommand in a comment is fine\nlocal a = pos.x + dbos.y\n")
+        problems = B.problems_in(self.target)
+        self.assertEqual(len(problems), 2, problems)
+        self.assertTrue(any("core/bad.lua:2" in p for p in problems))
+        self.assertTrue(any("core/bad2.lua:1" in p for p in problems))
+
     def test_it_replaces_an_old_release(self):
         write(self.target, "stale.lua")
         B.copy_release(self.source, self.target)

@@ -18,6 +18,7 @@ The plugin checks for `dev/dev.lua` when it starts, so without that folder it ru
 After copying it checks the result and stops with a message if anything is wrong. Jagex's good practice page
 asks for development files to be left out ("such as .git, .gitignore, .luarc.json or README.md").
 """
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -28,6 +29,9 @@ RELEASE_FOLDERS = {"core", "ui", "deck", "resources"}
 # Never copied from inside those folders.
 LEFT_OUT_SUFFIXES = {".md", ".bak", ".py", ".pyc"}
 KEPT_ANYWAY = {"resources/images/CREDITS.md"}
+# What no released Lua file may use: console commands, loading code from text or files, the os, io and debug libraries.
+# (Looked for in code, not in comments. The plugin has none of them; a reviewer will look, so the build does too.)
+FORBIDDEN_IN_LUA = re.compile(r"(?<![\w.:])(ExecuteConsoleCommand|loadstring|loadfile|dofile|load)\s*\(|(?<![\w.:])(io|os|debug)\s*\.\s*\w")
 
 
 def left_out_inside(relative):
@@ -80,6 +84,12 @@ def problems_in(target):
             problems.append(f"{relative} should not be in the release")
     if (target / "dev").exists():
         problems.append("the dev folder is in the release: the plugin would run with the development tools")
+    for path in sorted(target.rglob("*.lua")):
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            code = line.split("--", 1)[0]
+            found = FORBIDDEN_IN_LUA.search(code)
+            if found:
+                problems.append(f"{path.relative_to(target).as_posix()}:{number} uses {found.group(0).strip()}: not allowed in a release")
     return problems
 
 

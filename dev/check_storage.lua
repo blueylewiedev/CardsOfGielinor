@@ -80,6 +80,7 @@ end
 -- ---------------------------------------------------------------------------------------------------
 local Cards = require("core/cards")
 local Storage = require("core/storage")
+local DevSaves = require("dev/devsaves")
 
 local failures = 0
 local function check(ok, what)
@@ -274,10 +275,10 @@ do
     db["bucket3_collection_a"], db["bucket3_collection_a-dev"] = { ["x|normal"] = 1 }, { ["x|normal"] = 1 }
     db["tracking_7-dev"], db["bucket16_tracking_7-dev"] = { credits = 1 }, { ["x|normal"] = 1 }
     db["dev_wiki_review_3"], db["dev_card_queue_0001-dev"], db["card_settings"] = { a = 1 }, { a = 1 }, { a = 1 }
-    local deleted, why = Storage.deleteAllCollections()
+    local deleted, why = DevSaves.deleteAllCollections()
     check(deleted == nil, "the copy with no suffix refuses to delete saves")
     Storage.setProfileSuffix("-dev")
-    deleted = Storage.deleteAllCollections()
+    deleted = DevSaves.deleteAllCollections()
     check(deleted == 4, "the dev copy deletes its 4 collection keys (" .. tostring(deleted) .. ")")
     check(db["collection_a"] and db["bucket3_collection_a"], "a released copy's collections are left")
     check(db["dev_wiki_review_3"] and db["dev_card_queue_0001-dev"] and db["card_settings"], "everything else is left")

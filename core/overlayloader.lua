@@ -11,11 +11,10 @@
 -- A response counts only if the code is 200 and `successful` is true: on a 404 the data is the host's error page.
 --
 -- It needs the httpAccess permission and the "cards" url in plugin.json. Without the permission it waits (the
--- player may grant it later); the dev copy asks for it on every start, as core/identity.lua does for tracking.
+-- player may grant it later); the dev copy asks for it on every start (dev/grants.lua).
 
 local Overlay = require("core/overlay")
 local Logger = require("core/logger")
-local PluginId = require("core/pluginid")
 
 local Loader = {}
 
@@ -26,8 +25,6 @@ local WARN_AFTER = 500                 -- ticks without the permission before sa
 local LINES_PER_TICK = 50                -- about 5 ms of work a tick (measured: 100 lines take about 10 ms)
 local TIMEOUT = 1500                   -- ticks to wait for a response (30 s)
 local RETRY_AFTER = { 3000, 15000 }    -- ticks before the second and third try (1 and 5 minutes); then give up
-
-local DEV_GRANTS_PERMISSION = true
 
 -- phase: "idle" (not started), "waiting" (for the permission or the next try), "fetching", "applying",
 -- "retrying", "done", "ignored" (an overlay not for this version), "failed", "off" (no url in plugin.json)
@@ -183,19 +180,10 @@ function Loader.begin()
     state.phase = "waiting"
 end
 
--- Starts it for the running plugin: `devCopy` is true while the development tools are present.
-function Loader.start(devCopy)
+-- Starts it for the running plugin.
+function Loader.start()
     if state.phase ~= "idle" then
         return
-    end
-    if devCopy and DEV_GRANTS_PERMISSION then
-        local ok, err = pcall(function()
-            PluginId.command("ppr")
-            PluginId.command("ppe", "httpAccess")
-        end)
-        if not ok then
-            Logger.error("could not ask for the httpAccess permission:", err)
-        end
     end
     Loader.begin()
     if not subscribed then
