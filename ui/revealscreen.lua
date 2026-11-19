@@ -116,6 +116,19 @@ local function setHidden(component, hidden)
     pcall(function() component.hidden = hidden end)
 end
 
+-- The client keeps an event handler after the component it was given to is destroyed. A handler whose closure reaches a card's
+-- view and model, or the pack's parts (through a table it holds), keeps them alive, and with them the memory the client holds
+-- for them (a pack opening grew the client by about 650 MB for every ten packs, until the plugin was reloaded). So a handler holds
+-- only a handle or a table that is emptied here when its parts are destroyed. dev/check_reveal_ui.lua checks that no handler
+-- left behind reaches a model, a model group or a sprite.
+local function emptied(tbl)
+    if tbl ~= nil then
+        for key in pairs(tbl) do
+            tbl[key] = nil
+        end
+    end
+end
+
 local function destroy(component)
     if component ~= nil then
         pcall(function() component:Destroy() end)
@@ -242,7 +255,16 @@ local function makeCard(index)
     local c = { index = index, result = R.results[index], parts = {}, w = R.cw, h = R.ch, flipped = false }
     c.back = makeBack(c)
     pcall(function() c.back.clickthrough = false end)
-    pcall(function() c.back:Subscribe(ui.Hook.ONCLICK, function() onCardClick(c) end) end)
+    -- (the handler holds this handle, not the card; clearCards empties it)
+    local handle = { card = c }
+    c.handle = handle
+    pcall(function()
+        c.back:Subscribe(ui.Hook.ONCLICK, function()
+            if handle.card ~= nil then
+                onCardClick(handle.card)
+            end
+        end)
+    end)
     return c
 end
 
@@ -481,6 +503,9 @@ local function clearCards()
             destroy(part)
         end
         c.parts = {}
+        if c.handle ~= nil then
+            c.handle.card = nil                   -- (the click handler on its back no longer reaches the card)
+        end
     end
     R.cards = {}
 end
@@ -1003,6 +1028,7 @@ startTear = function()
         destroy(R.catcher)
         R.grip, R.catcher = nil, nil
         R.tear = nil
+        emptied(tear)                             -- (the grip's handlers hold `tear`, which held the pack's parts)
         for i, c in ipairs(R.cards) do
             placeBack(c, R.stackX, R.stackY - (i - 1) * STACK_STEP, R.cw, R.ch)
         end
@@ -1229,6 +1255,7 @@ closeReveal = function()
     destroy(r.skip)
     destroy(r.status)
     destroy(r.root)                -- and with it everything made inside it
+    emptied(r.tear)                -- (a pack still sealed: the grip's handlers hold `tear`, which holds the pack's parts)
     R = nil
     failures = 0
     if r.hooks ~= nil and r.hooks.onClose ~= nil then

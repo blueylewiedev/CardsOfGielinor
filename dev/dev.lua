@@ -13,6 +13,9 @@
 
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
 local Probe = require("dev/perfprobe")
+local memLoaded, MemProbe = pcall(require, "dev/memprobe")          -- (loaded first by perfprobe; its buttons are below)
+local Quiet = require("dev/quiet")
+local LeakLab = require("dev/leaklab")
 local Cards = require("core/cards")
 local Storage = require("core/storage")
 local CardView = require("ui/cardview")
@@ -49,6 +52,9 @@ end
 
 -- Called when XP is gained, to log how it turned into credits.
 function Dev.onXp(skill, gain, state, earned, ticksSinceLoad)
+    if Quiet.on then
+        return                                  -- (a line for every XP gain buries the console; Dev tools > Quiet console)
+    end
     log("skill", skill, "gained", gain, "xp | pool:", state.xpPool, "| credits earned:", earned,
         "| total:", state.credits, "| ticks since load:", ticksSinceLoad)
 end
@@ -145,9 +151,36 @@ local function toolButtons(api, refresh)
         { label = "Nearby NPCs", action = Nearby.toggle },
         { label = "Uncarded", action = Uncarded.toggle },
         { label = "Item probe", action = ItemProbe.toggle },
-        { label = "Output", action = OutputWindow.toggle },
+        { label = "Output", action = function()
+            if memLoaded and MemProbe.flush ~= nil then MemProbe.flush(true) end         -- (MEM and LAB lines said while loading)
+            OutputWindow.toggle()
+        end },
         { label = "Perf probe", action = Probe.manual,
             tooltip = "Logs the frame times over the next 10 seconds (PROBE line): scroll the collection or open a pack meanwhile" },
+        { label = "Quiet console", action = Quiet.toggle,
+            tooltip = "Flips the dev copy's console between quiet (only failures and what the dev buttons say) and chatty (every routine line). On by default; takes effect at once" },
+        { label = "Mem auto", action = function()
+            if memLoaded and MemProbe.toggle ~= nil then MemProbe.toggle("auto") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe switch: a full Lua garbage collection every 2 seconds while a pack opening is on screen, and one after it closes. Off by default; works at once. For testing whether collecting stops the client's memory growing" },
+        { label = "Mem collect", action = function()
+            if memLoaded and MemProbe.collect ~= nil then MemProbe.collect() else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe: one full Lua garbage collection now, and says how much the Lua heap fell. Watch memwatch afterwards: does the client's memory fall too?" },
+        { label = "Mem baseline", action = function()
+            if memLoaded and MemProbe.baseline ~= nil then MemProbe.baseline() else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe: takes the baseline for the MEM lines. Close every plugin window first. See notes in dev/memprobe.lua" },
+        { label = "Mem snapshot", action = function()
+            if memLoaded and MemProbe.snapshot ~= nil then MemProbe.snapshot("manual") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe: logs the Lua heap and the live components now, and what changed since the baseline (also done by itself after each pack opening closes)" },
+        { label = "Mem count", action = function()
+            if memLoaded and MemProbe.toggle ~= nil then MemProbe.toggle("count") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe switch: counts every component the plugin makes (wraps the client's constructors). Off by default. Takes effect at the next prl" },
+        { label = "Mem GC", action = function()
+            if memLoaded and MemProbe.toggle ~= nil then MemProbe.toggle("gc") else log("MEM: the memory probe did not load") end
+        end, tooltip = "Memory probe switch: a snapshot forces a full garbage collection first. Off by default (it touches the client more). Takes effect at the next prl" },
+        { label = "Lab mode", action = LeakLab.mode,
+            tooltip = "Leak lab (dev/leaklab.lua): cycles the experiment and logs what it makes and how it frees it. Use with dev/memwatch.ps1" },
+        { label = "Lab make", action = LeakLab.make, tooltip = "Leak lab: makes 20 cards the selected way, on screen. Press m in memwatch now" },
+        { label = "Lab free", action = LeakLab.free, tooltip = "Leak lab: frees them the selected way. Wait a few seconds, then press m in memwatch" },
         { label = "Fetch updates", action = function()
             if OverlayLoader.refetch() then
                 log("DEV: fetching the card overlay again")
@@ -185,6 +218,10 @@ end
 -- Reports draft cards in the log, once, when the plugin starts.
 function Dev.start()
     Probe.start()
+    Quiet.apply()
+    if Quiet.on then
+        log("DEV: the quiet console is ON: routine lines, PROBE marks and XP lines are not written (Dev tools > Quiet console turns them back on)")
+    end
     if #Cards.drafts > 0 then
         log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end

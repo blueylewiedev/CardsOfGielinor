@@ -15,6 +15,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y lua5.4
       - name: Every card loads (its tags are in core/cards.lua)
         run: lua5.4 dev/check_cards.lua
+      - name: The dev copy's quiet console switch (dev/quiet.lua)
+        run: lua5.4 dev/check_quiet.lua
+      - name: The memory probe counts components as it should (dev/memprobe.lua)
+        run: lua5.4 dev/check_memprobe.lua
       - name: Parked cards are still sound and not in the deck (dev/parked_cards/)
         run: lua5.4 dev/check_parked.lua
       - name: Collections save and load (core/storage.lua)
@@ -49,6 +53,8 @@ jobs:
         run: lua5.4 dev/check_viewer_ui.lua
       - name: Sets hold real cards and their rules work (deck/sets.lua, core/sets.lua)
         run: lua5.4 dev/check_sets.lua
+      - name: The pack opening plays through, and leaves no click handler holding its cards or pack (ui/revealscreen.lua)
+        run: lua5.4 dev/check_reveal_ui.lua
       - name: Sets window controls against a stand-in client (ui/setsviewer.lua)
         run: lua5.4 dev/check_sets_ui.lua
       - name: The Shop's sections, titles, divider and tiles (ui/shoplayout.lua)

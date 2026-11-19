@@ -9,3 +9,5 @@ docs/img/
 card-collector-handover.md
 # Made by  python dev/build_overlay.py --local : the overlay as Lua text for the Dev tools' Local overlay button.
 dev/local_overlay.lua
+# Made by dev/memwatch.ps1: the client's memory over time.
+dev/memwatch_*.csv
