@@ -15,6 +15,7 @@ local Settings = require("core/settings")
 local Format = require("core/format")
 local OverlayLoader = require("core/overlayloader")
 local Kit = require("ui/kit")
+local Events = require("core/events")
 
 local SettingsPage = {}
 
@@ -275,7 +276,7 @@ function SettingsPage.init(newApi)
         Logger.error("settings page: not available (the client has no settings layer)")
         return
     end
-    Event.SettingsLayerReady.Subscribe(SUBSCRIBER, function(event)
+    Events.on("SettingsLayerReady", SUBSCRIBER, function(event)
         local parent = event.component
         local ok, err = pcall(build, "client", parent, parent.width, parent.height)
         if not ok then
@@ -289,7 +290,7 @@ end
 -- Stops listening and removes both copies of the page. Called when the plugin is shut down.
 function SettingsPage.shutdown()
     -- Stopping listening must never stop the rest of the shutdown.
-    pcall(function() Event.SettingsLayerReady.Unsubscribe(SUBSCRIBER) end)
+    pcall(function() Events.off("SettingsLayerReady", SUBSCRIBER) end)
     SettingsPage.closeWindow()
     destroyPage("client")
 end

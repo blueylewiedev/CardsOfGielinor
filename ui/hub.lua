@@ -6,6 +6,7 @@
 
 local PluginId = require("core/pluginid")
 local Logger = require("core/logger")
+local Events = require("core/events")
 
 local Hub = {}
 
@@ -62,7 +63,7 @@ function Hub.init(newApi)
         Logger.error("ribbon page: not available (the client has no content layer)")
         return
     end
-    Event.ContentLayerReady.Subscribe(SUBSCRIBER, function(event)
+    Events.on("ContentLayerReady", SUBSCRIBER, function(event)
         local ok, err = pcall(build, event.component)
         if not ok then
             Logger.error("ribbon page failed:", err)
@@ -73,7 +74,7 @@ end
 -- Stops listening and removes the page. Called when the plugin is shut down.
 function Hub.shutdown()
     -- Stopping listening must never stop the rest of the shutdown.
-    pcall(function() Event.ContentLayerReady.Unsubscribe(SUBSCRIBER) end)
+    pcall(function() Events.off("ContentLayerReady", SUBSCRIBER) end)
     destroyView()
 end
 

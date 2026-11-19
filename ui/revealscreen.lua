@@ -30,6 +30,7 @@ local CardView = require("ui/cardview")
 local PackArt = require("ui/packart")
 local Kit = require("ui/kit")
 local Anim = require("ui/anim")
+local Events = require("core/events")
 
 local Reveal = {}
 
@@ -1215,7 +1216,7 @@ local function onDraw(e)
     end
 end
 
-Event.Draw.Subscribe("cardcollector_reveal", onDraw)
+Events.on("Draw", "cardcollector_reveal", onDraw)
 
 -- True while cards that were bought are still being revealed (a new purchase has to wait).
 function Reveal.active()

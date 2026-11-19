@@ -7,6 +7,7 @@
 -- than failing again every frame. Also a few easing curves, and the frame time from a Draw event.
 
 local Logger = require("core/logger")
+local Events = require("core/events")
 
 local Anim = {}
 
@@ -61,7 +62,7 @@ function Anim.smooth(x)              -- slow, fast, slow
     return x * x * (3 - 2 * x)
 end
 
-Event.Draw.Subscribe("cardcollector_anim", function(e)
+Events.on("Draw", "cardcollector_anim", function(e)
     if next(running) == nil then
         return
     end

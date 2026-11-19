@@ -38,6 +38,7 @@ local Hub = require("ui/hub")
 local CreditsWindow = require("ui/creditswindow")
 local Rate = require("core/rate")
 local OverlayLoader = require("core/overlayloader")
+local Events = require("core/events")
 
 -- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
 -- That folder is left out of the released plugin, so there Dev is nil and nothing below runs.
@@ -175,7 +176,7 @@ end
 
 -- Runs about every 0.6 seconds. Waits for the character to be available, then loads
 -- their collection, and afterwards saves pending changes at a steady pace.
-Event.ServerLogic.Subscribe("cardcollector_tick", function()
+Events.on("ServerLogic", "cardcollector_tick", function()
     PackWindow.refresh()
     SettingsPage.refresh()
     Hub.refresh()
@@ -204,7 +205,7 @@ Event.ServerLogic.Subscribe("cardcollector_tick", function()
 end)
 
 -- Credits from XP. Ignored until a character's collection has loaded.
-Event.SkillTransmit.Subscribe("cardcollector_xp", function(e)
+Events.on("SkillTransmit", "cardcollector_xp", function(e)
     if session == nil then
         return
     end
@@ -219,7 +220,7 @@ end)
 
 -- Save and unload when the player reaches the login screen or lobby, so switching
 -- accounts never mixes up two collections.
-Event.GameStateChanged.Subscribe("cardcollector_state", function(stateEvent)
+Events.on("GameStateChanged", "cardcollector_state", function(stateEvent)
     if stateEvent.newState == GameState.LOGINSCREEN or stateEvent.newState == GameState.LOBBY then
         endSession()
         Identity.reset()
@@ -243,6 +244,8 @@ function PluginShutdown()
         Dev.shutdown()
     end
     endSession()
+    -- Last, so nothing above is cut off: every event subscription still in place (core/events.lua).
+    Events.shutdown()
 end
 
 -- What the windows and pages need from the plugin: the character's collection, a way to save it,

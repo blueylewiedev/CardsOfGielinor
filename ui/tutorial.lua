@@ -22,6 +22,7 @@ local Shop = require("ui/shopwindow")
 local Reveal = require("ui/revealscreen")
 local Viewer = require("ui/viewer")
 local SetsViewer = require("ui/setsviewer")
+local Events = require("core/events")
 
 local Tutorial = {}
 
@@ -254,7 +255,7 @@ function close(remember)
     if S.window == nil and S.overlay == nil then
         return
     end
-    pcall(function() Event.Logic.Unsubscribe(EVENT) end)
+    pcall(function() Events.off("Logic", EVENT) end)
     local window, overlay = S.window, S.overlay
     for key in pairs(S) do
         S[key] = nil                    -- (before anything is destroyed: nothing a handler reaches keeps a component)
@@ -359,7 +360,7 @@ local function build()
 
     go(1)
     bringToFront()
-    Event.Logic.Subscribe(EVENT, onTick)
+    Events.on("Logic", EVENT, onTick)
 end
 
 -- Moves one step on (+1) or back (-1) by hand.

@@ -8,6 +8,8 @@
 -- burst of page turns gets a collection about once a second, and always one after the last page. The collection runs from the
 -- Draw event, on the frame after the wait. The Lua heap is small (tens of MB), so a collection takes a few milliseconds.
 
+local Events = require("core/events")
+
 local Memory = {}
 
 local DELAY = 1.0              -- seconds between asking and collecting
@@ -39,7 +41,7 @@ function Memory.step(dt)
     end
 end
 
-Event.Draw.Subscribe("cardcollector_memory", function(e)
+Events.on("Draw", "cardcollector_memory", function(e)
     local ok, dt = pcall(function() return e.timeDeltaSecs end)
     Memory.step((ok and type(dt) == "number") and dt or 0.016)
 end)

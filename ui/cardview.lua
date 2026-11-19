@@ -8,6 +8,7 @@ local Cards = require("core/cards")
 local Logger = require("core/logger")
 local Settings = require("core/settings")
 local Config = require("core/config")
+local Events = require("core/events")
 
 local CardView = {}
 
@@ -642,7 +643,7 @@ local function addShine(parent, W, H)
     return sprites
 end
 
-Event.Draw.Subscribe("cardcollector_shine", function(e)
+Events.on("Draw", "cardcollector_shine", function(e)
     local ok, dt = pcall(function() return e.timeDeltaSecs end)
     if not ok or type(dt) ~= "number" then
         dt = 0.016

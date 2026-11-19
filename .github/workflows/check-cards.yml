@@ -61,6 +61,8 @@ jobs:
         run: lua5.4 dev/check_shop_layout.lua
       - name: The tutorial's steps, pointer and first-run offer (core/tutorial.lua, ui/tutorial.lua)
         run: lua5.4 dev/check_tutorial.lua
+      - name: Event subscriptions are undone at shutdown (core/events.lua)
+        run: lua5.4 dev/check_events.lua
       - name: The credits text (core/format.lua)
         run: lua5.4 dev/check_format.lua
       - name: The performance probe's frame numbers (dev/framestats.lua)

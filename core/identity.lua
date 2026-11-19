@@ -7,6 +7,7 @@
 -- (Player.GetTrackingID docs), so it is polled from a ServerLogic handler until it arrives.
 
 local Storage = require("core/storage")
+local Events = require("core/events")
 
 local Identity = {}
 
@@ -39,14 +40,14 @@ local function poll()
     trackingId = Player.GetTrackingID()
     if trackingId ~= nil then
         subscribed = false
-        pcall(function() Event.ServerLogic.Unsubscribe(SUBSCRIBER) end)
+        pcall(function() Events.off("ServerLogic", SUBSCRIBER) end)
     end
 end
 
 local function subscribe()
     if not subscribed then
         subscribed = true
-        Event.ServerLogic.Subscribe(SUBSCRIBER, poll)
+        Events.on("ServerLogic", SUBSCRIBER, poll)
     end
 end
 
