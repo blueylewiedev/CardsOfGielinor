@@ -501,5 +501,50 @@ do
     state = nil
 end
 
+-- Paging frees the cards of the page it leaves: a collection is asked for (core/memory.lua), once a second at most
+do
+    local Memory = require("core/memory")
+    local realGet = ui.Interfaces.GetComponent
+    state = { owned = {}, credits = 0, stats = {}, dirtyBuckets = {} }
+    for i = 1, 200, 3 do state.owned[Cards.variantKey(Cards.list[i].id, "normal")] = 1 end       -- enough for a few pages
+    Viewer.open(api)
+    Memory.step(5)                                     -- (anything asked for while opening has run)
+    local before = Memory.collections()
+    Memory.step(0.2)
+    check(Memory.collections() == before, "nothing is collected when no page was turned")
+    check(press("Next"), "(a page turn)")
+    Memory.step(0.3)
+    check(Memory.collections() == before, "a collection waits about a second after a page turn (not after 0.3 s)")
+    press("Next"); press("Next"); press("Prev")
+    Memory.step(1.2)
+    check(Memory.collections() == before + 1, "four quick page turns share one collection (" .. (Memory.collections() - before) .. ")")
+    -- the grid (the view that spiked): every page turn destroys its cards
+    local toggle
+    for _, b in ipairs(live("Button")) do if rawget(b, "label") == "List / grid" then toggle = b end end
+    if toggle ~= nil then
+        toggle._handlers["ONBUTTONPRESSED"](toggle)
+        Memory.step(2)
+        local gridBefore = Memory.collections()
+        for _ = 1, 6 do press("Next") end
+        Memory.step(0.5)
+        check(Memory.collections() == gridBefore, "grid: six quick page turns, no collection yet at half a second")
+        Memory.step(1)
+        check(Memory.collections() == gridBefore + 1, "grid: six quick page turns share one collection (" .. (Memory.collections() - gridBefore) .. ")")
+        toggle._handlers["ONBUTTONPRESSED"](toggle)           -- back to the list
+        Memory.step(2)
+        before = Memory.collections() - 1                     -- (the rest counts from here; the list switch used one)
+    end
+    Memory.step(5)
+    check(Memory.collections() == before + 1, "and none follows by itself")
+    press("Next")
+    Memory.step(1.2)
+    check(Memory.collections() == before + 2, "a page turn after that gets its own")
+    Viewer.close()
+    Memory.step(1.2)
+    check(Memory.collections() == before + 3, "closing the window frees its cards with a collection too")
+    ui.Interfaces.GetComponent = realGet
+    state = nil
+end
+
 if failures > 0 then os.exit(1) end
 print("OK: the viewer's controls drive the list, the grid and the counts")

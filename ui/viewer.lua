@@ -18,6 +18,7 @@
 local Cards = require("core/cards")
 local Logger = require("core/logger")
 local Browse = require("core/browse")
+local Memory = require("core/memory")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
 
@@ -187,6 +188,9 @@ local function setHidden(component, hidden)
 end
 
 local function destroyAll(list)
+    if #list > 0 then
+        Memory.collectSoon()                 -- (the cards destroyed here are freed by a collection soon, see core/memory.lua)
+    end
     for index = #list, 1, -1 do
         pcall(function() list[index]:Destroy() end)
         list[index] = nil
