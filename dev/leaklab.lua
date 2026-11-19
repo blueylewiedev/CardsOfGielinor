@@ -1,0 +1,168 @@
+-- dev/leaklab.lua
+-- A controlled experiment for the memory leak (see notes/memory_monitoring.md): the client's memory grows about 600 MB for each
+-- round of 10 packs and does not come back when the reveal closes. This makes a screenful of cards in different ways and
+-- frees them in different ways, so dev/memwatch.ps1 shows which part keeps its memory. Nothing here runs unless the Dev tools
+-- buttons are pressed (and this folder is not in the release).
+--
+-- The Dev tools buttons:
+--   Lab mode   cycles through the experiments below and logs which one is selected
+--   Lab make   makes 20 cards in the way the selected experiment says (each press uses the next 20 cards, so repeated
+--              rounds meet new models, as a pack opening does)
+--   Lab free   frees them the way the experiment says
+--
+-- Use it with memwatch: press m in memwatch after "Lab make" (once the cards are on screen), and again a few seconds after
+-- "Lab free". Do three make / free cycles of one experiment, and read the marker table: a step that is near zero after
+-- the first cycle is memory the client reuses; a step that repeats every cycle is memory that is never given back.
+
+local Cards = require("core/cards")
+local CardView = require("ui/cardview")
+
+local Lab = {}
+
+local COUNT = 20
+local COLUMNS = 5
+local SCALE = 0.6
+
+-- name, what it builds, how it frees
+local MODES = {
+    { id = "cards", what = "full cards (frame, text, model, camera), as the pack opening builds them",
+        free = "the card's root layer destroyed, as the reveal does" },
+    { id = "cards_explicit", what = "full cards, as above",
+        free = "the camera deleted, then the model, the model group and the root destroyed, one by one" },
+    { id = "cards_same", what = "the SAME card 20 times (one model asset)",
+        free = "the root layer destroyed. If memory does not grow here after the first cycle, the client caches by model" },
+    { id = "model_only", what = "a model group with a model, no camera set",
+        free = "the group destroyed" },
+    { id = "model_camera", what = "a model group with a model and the card camera",
+        free = "the group destroyed (the camera is not deleted first)" },
+    { id = "frames", what = "locked cards: frame and text, no model at all",
+        free = "the root layer destroyed. Growth here means the frames, text or images leak, not the models" },
+}
+
+local modeIndex = 1
+local offset = 0                   -- how far into the list of cards the next make starts
+local holder = nil                 -- the layer the cards are in
+local made = {}                    -- what was made: { root, view, group, model, mode }
+
+local function parent()
+    return ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
+end
+
+-- The next `COUNT` cards that have a model to show (NPCs, or items for the item experiments), starting after the last make.
+local function pick(wantNpc)
+    local list = {}
+    for _, card in ipairs(Cards.list) do
+        local isNpc = Cards.kindOf(card) == "npc"
+        if card.art ~= nil and ((wantNpc and isNpc and card.art.npc ~= nil and card.art.npc ~= "")
+            or (not wantNpc and not isNpc and card.art.item ~= nil and card.art.item ~= "")) then
+            list[#list + 1] = card
+        end
+    end
+    local chosen = {}
+    for i = 1, COUNT do
+        chosen[i] = list[(offset + i - 1) % #list + 1]
+    end
+    return chosen
+end
+
+local function place(piece, index, w, h)
+    local column, row = (index - 1) % COLUMNS, (index - 1) // COLUMNS
+    piece:SetPos(20 + column * (w + 8), 60 + row * (h + 8))
+end
+
+function Lab.mode()
+    modeIndex = modeIndex % #MODES + 1
+    local m = MODES[modeIndex]
+    log(string.format("LAB mode %d of %d, %s: makes %s; frees with %s", modeIndex, #MODES, m.id, m.what, m.free))
+end
+
+function Lab.make()
+    local mode = MODES[modeIndex]
+    if #made > 0 then
+        log("LAB: free the cards first (Lab free)")
+        return
+    end
+    holder = ui.Layer.new(parent())
+    holder:SetPos(0, 0)
+    holder:SetSize(0, 0, 1.0, 1.0)
+    holder.clickthrough = true
+    local cards = pick(true)
+    if mode.id == "cards_same" then
+        for i = 1, COUNT do cards[i] = pick(true)[1] end
+    end
+    local failed = 0
+    for i, card in ipairs(cards) do
+        local ok, err = pcall(function()
+            if mode.id == "model_only" or mode.id == "model_camera" then
+                local npc = id.NPC[card.art.npc]
+                local group = ui.ModelGroup.new(holder)
+                group:SetSize(96, 134)
+                place(group, i, 96, 134)
+                local model = ui.Model.new(group)
+                model:SetSize(96, 134)
+                model:SetModel(ui.ModelType.NPC_HEAD, npc)
+                local state = nil
+                if mode.id == "model_camera" then
+                    state = { group = group, kind = nil, yaw = 0, pitch = 0.1, dist = 500, fov = 40, ty = 0, tx = 0, near = 0 }
+                    CardView.applyCamera(state)
+                end
+                made[#made + 1] = { group = group, model = model, cam = state }
+            else
+                local locked = mode.id == "frames"
+                local view = CardView.create(holder, card, { animated = true, scale = SCALE, locked = locked })
+                local w, h = 160 * SCALE, 224 * SCALE
+                place(view.root, i, w, h)
+                made[#made + 1] = { view = view }
+            end
+        end)
+        if not ok then
+            failed = failed + 1
+            if failed <= 3 then
+                log("LAB: a card could not be made:", tostring(err))
+            end
+        end
+    end
+    log(string.format("LAB: made %d (%s), cards %d to %d of the list%s. Press m in memwatch now.", #made, mode.id, offset + 1,
+        offset + COUNT, failed > 0 and (", " .. failed .. " failed") or ""))
+    if mode.id ~= "cards_same" then
+        offset = offset + COUNT
+    end
+end
+
+function Lab.free()
+    local mode = MODES[modeIndex]
+    if #made == 0 and holder == nil then
+        log("LAB: nothing to free")
+        return
+    end
+    for _, item in ipairs(made) do
+        pcall(function()
+            if mode.id == "cards_explicit" and item.view ~= nil then
+                local view = item.view
+                if view.cam ~= nil and view.cam.group ~= nil then
+                    if view.cam.cameraIndex ~= nil then
+                        view.cam.group:DeleteCamera(view.cam.cameraIndex)
+                    end
+                    if view.model ~= nil then
+                        view.model:Destroy()
+                    end
+                    view.cam.group:Destroy()
+                end
+                view.root:Destroy()
+            elseif item.view ~= nil then
+                item.view.root:Destroy()
+            elseif item.group ~= nil then
+                item.group:Destroy()
+            end
+        end)
+    end
+    local count = #made
+    made = {}
+    if holder ~= nil then
+        pcall(function() holder:Destroy() end)
+        holder = nil
+    end
+    log(string.format("LAB: freed %d (%s). Wait a few seconds, then press m in memwatch.", count, mode.id))
+end
+
+return Lab

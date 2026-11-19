@@ -14,6 +14,7 @@
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
 local Probe = require("dev/perfprobe")
 local memLoaded, MemProbe = pcall(require, "dev/memprobe")          -- (loaded first by perfprobe; its buttons are below)
+local LeakLab = require("dev/leaklab")
 local Cards = require("core/cards")
 local Storage = require("core/storage")
 local CardView = require("ui/cardview")
@@ -161,6 +162,10 @@ local function toolButtons(api, refresh)
         { label = "Mem GC", action = function()
             if memLoaded and MemProbe.toggle ~= nil then MemProbe.toggle("gc") else log("MEM: the memory probe did not load") end
         end, tooltip = "Memory probe switch: a snapshot forces a full garbage collection first. Off by default (it touches the client more). Takes effect at the next prl" },
+        { label = "Lab mode", action = LeakLab.mode,
+            tooltip = "Leak lab (dev/leaklab.lua): cycles the experiment and logs what it makes and how it frees it. Use with dev/memwatch.ps1" },
+        { label = "Lab make", action = LeakLab.make, tooltip = "Leak lab: makes 20 cards the selected way, on screen. Press m in memwatch now" },
+        { label = "Lab free", action = LeakLab.free, tooltip = "Leak lab: frees them the selected way. Wait a few seconds, then press m in memwatch" },
         { label = "Fetch updates", action = function()
             if OverlayLoader.refetch() then
                 log("DEV: fetching the card overlay again")
