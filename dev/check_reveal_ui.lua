@@ -48,6 +48,7 @@ anything = setmetatable({}, {
 })
 
 local roots = {}              -- the full-screen layers made (the ones whose parent is the plugin layer)
+local made = {}               -- every component made, to look at the click handlers they were given
 local pluginLayer = component("plugin")
 pluginLayer.width, pluginLayer.height = 1920, 1080
 
@@ -55,6 +56,7 @@ local function class(kind)
     return { new = function(parent)
         local obj = component(kind)
         obj._parent = parent
+        made[#made + 1] = obj
         if parent == pluginLayer then
             roots[#roots + 1] = obj
         end
@@ -124,6 +126,61 @@ local function makeResults(count)
             isNewVariant = false, owned = 1 + i % 3, pack = (i - 1) // 5 + 1 }
     end
     return results
+end
+
+-- The client keeps an event handler after its component is destroyed (a pack opening grew its memory by gigabytes because the
+-- handlers reached the cards' models and the pack's parts through the tables they held). So once a reveal is over, no
+-- handler may reach a model, a model group or a sprite other than its own component. This walks everything a handler can
+-- reach (its upvalues, and the tables and functions in them) and returns what it finds of those kinds.
+local HEAVY = { Model = true, ModelGroup = true, Sprite = true }
+
+local function reachedFrom(handler, own)
+    local found, seen, queue, nodes = {}, {}, { handler }, 0
+    while #queue > 0 and nodes < 200000 do
+        local node = table.remove(queue)
+        if type(node) == "function" or type(node) == "table" then
+            if not seen[node] then
+                seen[node] = true
+                nodes = nodes + 1
+                if type(node) == "function" then
+                    local index = 1
+                    while true do
+                        local name, value = debug.getupvalue(node, index)
+                        if name == nil then break end
+                        if name ~= "_ENV" and value ~= nil then
+                            queue[#queue + 1] = value
+                        end
+                        index = index + 1
+                    end
+                elseif rawget(node, "_kind") ~= nil then
+                    if node ~= own and HEAVY[node._kind] then
+                        found[#found + 1] = node._kind
+                    end
+                else
+                    for _, value in pairs(node) do
+                        if type(value) == "function" or type(value) == "table" then
+                            queue[#queue + 1] = value
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return found
+end
+
+-- Every handler of every component made so far: how many reach something heavy that is not their own component.
+local function retainingHandlers()
+    local bad = {}
+    for _, component in ipairs(made) do
+        for hook, handler in pairs(component._handlers) do
+            local found = reachedFrom(handler, component)
+            if #found > 0 then
+                bad[#bad + 1] = string.format("%s %s handler reaches %d (%s...)", component._kind, hook, #found, found[1])
+            end
+        end
+    end
+    return bad
 end
 
 local function liveRoots()
@@ -224,6 +281,9 @@ for _, mode in ipairs({ { false, "no images" }, { true, "images" } }) do
     check(play(5, tag .. " 5 cards") == 1, tag .. ": 5 cards are one page")
     check(play(7, tag .. " 7 cards") == 1, tag .. ": 7 cards are one page")
     check(play(25, tag .. " 25 cards") == 3, tag .. ": 25 cards are three pages")
+    local bad = retainingHandlers()
+    check(#bad == 0, tag .. ": no click handler left behind reaches a model, model group or sprite of its own reveal (" ..
+        #bad .. ", " .. tostring(bad[1]) .. ")")
 
     -- Skip part way: closes at once, nothing left behind
     local closed = 0
@@ -304,6 +364,11 @@ local pages = play(10, "720p 10 cards")
 check(pages >= 1, "720p works")
 pluginLayer.width, pluginLayer.height = 800, 600
 play(10, "600p 10 cards")
+
+-- Everything above, closes and skips included: no handler left behind reaches a model, a model group or a sprite
+local leftBehind = retainingHandlers()
+check(#leftBehind == 0, "after every scenario, no click handler left behind reaches a model, model group or sprite (" ..
+    #leftBehind .. ", " .. tostring(leftBehind[1]) .. ")")
 
 if failures == 0 then
     print("OK: the reveal plays through on a stand-in client (pack, shuffle, deal, turn, pages, skip)")

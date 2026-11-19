@@ -53,6 +53,8 @@ jobs:
         run: lua5.4 dev/check_viewer_ui.lua
       - name: Sets hold real cards and their rules work (deck/sets.lua, core/sets.lua)
         run: lua5.4 dev/check_sets.lua
+      - name: The pack opening plays through, and leaves no click handler holding its cards or pack (ui/revealscreen.lua)
+        run: lua5.4 dev/check_reveal_ui.lua
       - name: Sets window controls against a stand-in client (ui/setsviewer.lua)
         run: lua5.4 dev/check_sets_ui.lua
       - name: The Shop's sections, titles, divider and tiles (ui/shoplayout.lua)
