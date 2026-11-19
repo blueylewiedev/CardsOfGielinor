@@ -70,6 +70,10 @@ do
     check(Mem.toggle("count") == false and store["dev_mem_flags-dev"].count == false and store["dev_mem_flags-dev"].gc == true,
         "toggling again turns one off without touching the other")
     check(Mem.toggle("nonsense") == nil, "an unknown switch does nothing")
+    check(Mem.flags.auto == false, "the automatic collection starts off")
+    lines = {}
+    check(Mem.toggle("auto") == true and store["dev_mem_flags-dev"].auto == true, "toggling Mem auto turns it on and saves it")
+    check(string.find(lines[1] or "", "works at once", 1, true) ~= nil, "and says it works at once (" .. tostring(lines[1]) .. ")")
 end
 
 -- 1. a client whose components have a method table: Destroy calls are seen

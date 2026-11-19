@@ -57,12 +57,13 @@ Mem.flush = flush
 local FLAGS_KEY = "dev_mem_flags-dev"           -- ends with the dev profile suffix, like the dev copy's other keys
 
 -- The two switches, from PersistentDB (both off if there is nothing saved).
-local flags = { count = false, gc = false }
+local flags = { count = false, gc = false, auto = false }
 do
     local ok, saved = pcall(function() return PersistentDB:GetStructuredData(FLAGS_KEY) end)
     if ok and type(saved) == "table" then
         flags.count = saved.count == true
         flags.gc = saved.gc == true
+        flags.auto = saved.auto == true
     end
 end
 Mem.flags = flags
@@ -73,9 +74,14 @@ function Mem.toggle(name)
         return nil
     end
     flags[name] = not flags[name]
-    pcall(function() PersistentDB:SetStructuredData(FLAGS_KEY, { count = flags.count, gc = flags.gc }) end)
-    say("MEM", string.format("MEM: %s is now %s (saved; it takes effect at the next prl)", name == "count" and "counting components" or "the forced garbage collection",
-        flags[name] and "ON" or "OFF"))
+    pcall(function() PersistentDB:SetStructuredData(FLAGS_KEY, { count = flags.count, gc = flags.gc, auto = flags.auto }) end)
+    local what = name == "count" and "counting components" or (name == "gc" and "the forced garbage collection"
+        or "the automatic collection during pack openings")
+    say("MEM", string.format("MEM: %s is now %s (saved; %s)", what, flags[name] and "ON" or "OFF",
+        name == "auto" and "it works at once" or "it takes effect at the next prl"))
+    if name == "auto" and flags.auto and Mem.start ~= nil then
+        Mem.start()
+    end
     return flags[name]
 end
 
@@ -278,6 +284,8 @@ end
 -- ----- the reveal screen: a snapshot after each one closes ---------------------------------------------------------
 
 local Reveal, wasActive, settle = nil, false, nil
+local AUTO_TICKS = 2 * TICKS_PER_SECOND         -- with Mem auto on: a full collection this often while a reveal is open
+local autoTimer, autoCollections = 0, 0
 
 local function onLogic(e)
     if Reveal == nil then
@@ -297,11 +305,28 @@ local function onLogic(e)
         settle = SETTLE_TICKS
     end
     wasActive = active
+    if flags.auto and active then
+        autoTimer = autoTimer + 1
+        if autoTimer >= AUTO_TICKS then
+            autoTimer = 0
+            collectgarbage("collect")
+            autoCollections = autoCollections + 1
+        end
+    end
     if settle ~= nil then
         settle = settle - 1
         if settle <= 0 then
             settle = nil
-            Mem.snapshot("reveal closed #" .. batches)
+            if flags.auto then
+                collectgarbage("collect")
+                autoCollections = autoCollections + 1
+                say("MEM", string.format("MEM auto: %d full collections for pack opening #%d, Lua heap now %.0f KB", autoCollections,
+                    batches, collectgarbage("count")))
+                autoCollections = 0
+            end
+            if flags.count then
+                Mem.snapshot("reveal closed #" .. batches)
+            end
         end
     end
 end
@@ -310,6 +335,7 @@ local function start()
     local ok = pcall(function() Event.Logic.Subscribe(LOGIC_SUBSCRIBER, onLogic) end)
     return ok
 end
+Mem.start = start
 
 if flags.count and ui ~= nil then
     local done = Mem.install(ui)
@@ -318,6 +344,10 @@ if flags.count and ui ~= nil then
         subscribed and "" or "; no Logic event, so no automatic snapshots", flags.gc and "; forced garbage collection ON" or ""))
 else
     say("MEM", "MEM: the memory probe is loaded but counting is OFF (Dev tools > Mem count, then prl, to turn it on)")
+end
+if flags.auto then
+    start()
+    say("MEM", "MEM: automatic garbage collection during pack openings is ON (a full collection every 2 seconds while a reveal is open, and one after it closes)")
 end
 
 ready = true
