@@ -182,6 +182,7 @@ end
 -- key used for saving.
 function Packs.rollCard(pool, kinds)
     if pool == nil then
+        local _
         pool, _, kinds = Packs.poolFor(Cards.packTypes.standard)
     end
     if kinds ~= nil then

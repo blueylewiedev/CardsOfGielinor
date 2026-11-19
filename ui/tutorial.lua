@@ -1,5 +1,5 @@
 -- ui/tutorial.lua
--- The in-game tutorial: a small help panel at the bottom left ("Step 2 of 6", numbered step buttons, arrows, a close X) and a
+-- The in-game tutorial: a small help panel at the bottom left ("Step 2 of 7", numbered step buttons, arrows, a close X) and a
 -- gold pointer over the control to click next. A step is finished when the player does what it asks (a window opens, a pack is
 -- opened), which is seen by looking at the windows each few ticks: nothing in them is hooked. The numbered buttons and arrows
 -- move between steps by hand, so a step that cannot finish (the player has no credits to buy a pack) never traps anyone.
