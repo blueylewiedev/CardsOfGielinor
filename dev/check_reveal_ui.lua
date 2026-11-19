@@ -79,7 +79,7 @@ Event = setmetatable({ Draw = { Subscribe = function(name, fn) drawHandlers[name
     { __index = function() return { Subscribe = function() end } end })
 id = { Sprite = setmetatable({}, { __index = function() return 7 end }), Component = anything,
     NPC = anything, Obj = anything, Font = anything, StyleSheet = anything }
-prettyui = nil
+prettyui = require("dev/fakeprettyui")   -- (the plugin needs PrettyUI: a stand-in made from the ui above)
 Vector4 = { new = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end }
 Mouse = { IsAvailable = function() return false end }
 

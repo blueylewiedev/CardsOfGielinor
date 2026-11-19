@@ -275,16 +275,10 @@ local function smallButton(parent, label, x, onPress, tooltip)
 end
 
 local function addText(parent, x, y, w, h, colour)
-    if Kit.available() and prettyui.Text ~= nil then
-        local ok, text = pcall(prettyui.Text.new, parent, {
-            text = "", x = x, y = y, width = w, height = h, maxLines = 2, absolute = true, font = FONT,
-            colour = colour == WHITE and 0xF0F0F0FF or 0xBFBFBFFF,
-        })
-        if ok and text ~= nil then
-            return text
-        end
-    end
-    return Kit.text(parent, x, y, w, h, "", colour, ui.AlignMode.TOPLEFT)
+    return prettyui.Text.new(parent, {
+        text = "", x = x, y = y, width = w, height = h, maxLines = 2, absolute = true, font = FONT,
+        colour = colour == WHITE and 0xF0F0F0FF or 0xBFBFBFFF,
+    })
 end
 
 -- Builds the panel and the pointer, shows step 1 and starts watching.

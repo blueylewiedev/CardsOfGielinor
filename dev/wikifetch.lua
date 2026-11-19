@@ -9,6 +9,7 @@
 -- Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
+local DevKit = require("dev/devkit")
 
 local WikiFetch = {}
 
@@ -239,11 +240,11 @@ function WikiFetch.show()
     pickFor(1, 26, "Place", PLACES, "place")
     picker(0, 60, "Race", RACES, race, function(name) race = name end, "Any race")
     local toggleW = (HALF - 12) // 2
-    Kit.toggleButton(content, "F2P only", 20 + HALF, 60, toggleW, 28, f2pOnly, function(on)
+    DevKit.toggleButton(content, "F2P only", 20 + HALF, 60, toggleW, 28, f2pOnly, function(on)
         f2pOnly = on
         refresh()
     end, "Only fetch the free to play pages")
-    Kit.toggleButton(content, "NPCs only", 26 + HALF + toggleW, 60, toggleW, 28, npcsOnly, function(on)
+    DevKit.toggleButton(content, "NPCs only", 26 + HALF + toggleW, 60, toggleW, 28, npcsOnly, function(on)
         npcsOnly = on
         refresh()
     end, "Only fetch NPCs, no items (a place's category lists its items too)")

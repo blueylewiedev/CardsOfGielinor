@@ -1,10 +1,8 @@
 -- ui/cardview.lua
 -- Draws a card from its data using live UI components (no image files needed).
 --
--- Layout (all sizes in interface units), 160 x 224. With a frame image (the normal case):
---   frame image on top, its art window showing the NPC through a camera, and the name,
---   rarity and description drawn over the frame's panels. Without one (the image is missing)
---   a plain rectangle layout is used instead.
+-- Layout (all sizes in interface units), 160 x 224 at scale 1: the frame image on top, its art window showing the NPC
+-- through a camera, and the name, rarity and description drawn over the frame's panels.
 
 local Cards = require("core/cards")
 local Logger = require("core/logger")
@@ -14,7 +12,7 @@ local Config = require("core/config")
 local CardView = {}
 
 -- Card size. The layout below was measured on a 160 x 224 card; SCALE enlarges everything to
--- fit (frame zones, the plain layout, the card itself). Change SCALE to resize the cards.
+-- fit (frame zones and the card itself). Change SCALE to resize the cards.
 CardView.SCALE = 1.25
 local S = CardView.SCALE
 CardView.WIDTH = math.floor(160 * S)
@@ -64,7 +62,6 @@ local function titleOf(card)
     return card.title or card.name
 end
 
-local PANEL_COLOUR = Vector4.new(0.08, 0.08, 0.10, 1.0)
 local ART_COLOUR   = Vector4.new(0.16, 0.16, 0.20, 1.0)
 local TEXT_COLOUR  = Vector4.new(1.0, 1.0, 1.0, 1.0)
 local DESC_COLOUR  = Vector4.new(0.80, 0.80, 0.80, 1.0)
@@ -130,7 +127,6 @@ end
 -- Card frame images (resources/images/frame_<rarity>.png, 320 x 448 px = 2 x the card).
 -- The frame is drawn on top of the model; its art window is transparent. The zones below are
 -- in card units (pixels / 2), measured from the frames. Only the art window differs by frame.
-CardView.USE_FRAMES = true
 CardView.FRAME_ZONES = {
     title  = { x = 14, y = 11, w = 132, h = 18 },
     rarity = { x = 14, y = 132, w = 132, h = 16 },
@@ -146,19 +142,16 @@ CardView.FRAME_ZONES = {
 
 local frameCache = {}   -- rarity -> image resource, or false if it is missing
 
--- Returns the frame image for a rarity, or nil if the file is not there (the plain layout is
--- used instead). Looked up once per rarity; a missing file is logged once.
+-- Returns the frame image for a rarity, or nil if the file is not there (the card is then drawn without a frame; the
+-- images ship with the plugin, so only a broken install has none). Looked up once per rarity; a missing file is logged once.
 function CardView.frameResource(rarity)
-    if not CardView.USE_FRAMES then
-        return nil
-    end
     local cached = frameCache[rarity]
     if cached ~= nil then
         return cached or nil
     end
     local ok, resource = pcall(function() return Plugin.resources.images["frame_" .. rarity] end)
     if not ok or resource == nil then
-        Logger.error("card frame: no image for", rarity, "(resources/images/frame_" .. rarity .. ".png) - using the plain layout")
+        Logger.error("card frame: no image for", rarity, "(resources/images/frame_" .. rarity .. ".png) - drawn without a frame")
         frameCache[rarity] = false
         return nil
     end
@@ -695,7 +688,7 @@ local function window(root, W, H)
 end
 
 -- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.)
--- Builds a card that uses a frame image. Order matters: whatever is created later is drawn on
+-- Builds a card. Order matters: whatever is created later is drawn on
 -- top, so the backdrop (and a holo's rainbow) and the model go first, then the frame, then the text, then a foil's
 -- shine.
 -- Returns the view's fields: model, cam, silhouette, and with opts.animated what CardView.squash needs (the
@@ -732,14 +725,16 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
         label(art.inner, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
     end
 
-    local frame = ui.Sprite.new(root)                            -- frame on top of the model
-    frame:SetPos(0, 0)
-    frame:SetSize(W, H)
-    frame.sprite = frameImage
-    if locked then
-        frame.alpha = 0.5
+    if frameImage ~= nil then
+        local frame = ui.Sprite.new(root)                        -- frame on top of the model
+        frame:SetPos(0, 0)
+        frame:SetSize(W, H)
+        frame.sprite = frameImage
+        if locked then
+            frame.alpha = 0.5
+        end
+        part(frame, 0, 0, W, H)
     end
-    part(frame, 0, 0, W, H)
 
     local text = holder()
     label(text.inner, zones.title.x, zones.title.y, zones.title.w - W, zones.title.h, titleOf(card), nameColour, nil, nil,
@@ -766,37 +761,10 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
     return view
 end
 
--- The look of a card of `rarity` before its picture and text: its frame image, with the dark
--- backdrop in its art window. (The pack window's face-up stacks are made of these.) Returns
--- { place(x, y, w, h), destroy() }, or nil if the rarity has no frame image.
-function CardView.shell(parent, rarity)
-    local frameImage = CardView.frameResource(rarity)
-    if frameImage == nil then
-        return nil
-    end
-    local zone = CardView.FRAME_ZONES.window[rarity] or CardView.FRAME_ZONES.window.common
-    local backdrop = solid(parent, 0, 0, 1, 1, 0, 0, ART_COLOUR)
-    local frame = ui.Sprite.new(parent)
-    frame.sprite = frameImage
-    return {
-        place = function(x, y, w, h)
-            local win = scaled(zone, w / 160)                    -- the zones are in 160-wide card units
-            backdrop:SetPos(x + win.x, y + win.y)
-            backdrop:SetSize(win.w, win.h)
-            frame:SetPos(x, y)
-            frame:SetSize(w, h)
-        end,
-        destroy = function()
-            pcall(function() backdrop:Destroy() end)
-            pcall(function() frame:Destroy() end)
-        end,
-    }
-end
-
 -- Squeezes a card sideways to `f` (0 to 1) of its width, about its middle, as if it were turned
 -- away. Only the frame, the backdrop behind the model and a foil's shine narrow: the model and the text cannot
 -- be squeezed, so hide them first with CardView.uncover(view, 0). Only a card made with
--- opts.animated and a frame image can be squeezed; for any other this returns false.
+-- opts.animated can be squeezed; for any other this returns false.
 function CardView.squash(view, f)
     local squash = view.squash
     if squash == nil then
@@ -821,7 +789,7 @@ end
 
 -- Shows a card's model and text within `reach` card units of CardView.uncoverOrigin (a square
 -- round it, cut to the card). 0 hides them; the reach uncoverOrigin gives shows all of them.
--- Only a card made with opts.animated and a frame image can do this; for any other it returns false.
+-- Only a card made with opts.animated can do this; for any other it returns false.
 function CardView.uncover(view, reach)
     local u = view.uncover
     if u == nil then
@@ -853,7 +821,6 @@ end
 -- opts.finish = the card's finish (Cards.finishes): "foil" draws the foil shine over the card (CardView.SHINE), "holo"
 -- the holo rainbow behind its picture (CardView.HOLO); framed cards only, not locked ones.
 -- opts.lockedText = what a locked card says in place of its description (default "Not collected yet").
--- opts.frame = false skips the frame image and uses the plain layout (preview only).
 -- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text
 -- stays the same size; the picture, frame and layout scale.
 -- opts.body = true/false forces the body or head model, whatever the card says (preview only).
@@ -867,53 +834,14 @@ function CardView.create(parent, card, opts)
     local silhouette = locked and opts.silhouette == true
 
     local rarity = Cards.rarities[card.rarity]
-    local rarityColour = toVec4(rarity.colour)
-    local frameColour = locked and toVec4(rarity.colour, 0.35) or rarityColour
-    local nameColour = locked and DIM_TEXT_COLOUR or TEXT_COLOUR
-
     local root = ui.Layer.new(parent)
     root:SetSize(W, H)
-
-    -- With a frame image the card is built from the image alone. (A coloured rectangle behind
-    -- it would show at the edges, and gives the rarity away when something sits on top of
-    -- the card, like the card back in the pack opening.)
-    local frameImage = CardView.frameResource(card.rarity)
-    if frameImage ~= nil and not (opts and opts.frame == false) then
-        local view = buildFramed(root, card, opts, locked, silhouette, frameImage, rarity, rarityColour, S, W, H)
-        view.root, view.card = root, card
-        return view
-    end
-
-    solid(root, 0, 0, 0, 0, 1.0, 1.0, frameColour)           -- frame
-    solid(root, 4, 4, -8, -8, 1.0, 1.0, PANEL_COLOUR)        -- inner panel
-
-    -- Plain layout, used when there is no frame image.
-    label(root, 8, 8, -16, 22, titleOf(card), nameColour, nil, nil, (CardView.nameFont(#titleOf(card), W - 16)))        -- title
-
-    solid(root, 10, 34 * S, -20, 110 * S, 1.0, 0.0, silhouette and SILHOUETTE_BACK or ART_COLOUR)      -- art box
-    local model, cam = nil, nil
-    if not locked or silhouette then
-        model, cam = addArt(root, card, { x = 10, y = 34 * S, w = W - 20, h = 110 * S }, opts and opts.body, silhouette)
-    end
-    if model == nil then
-        label(root, 10, 34 * S, -20, 110 * S, "?", locked and DIM_TEXT_COLOUR or rarityColour)  -- placeholder art
-    end
-    local outline = ui.Rectangle.new(root)                   -- art outline, on top of the model
-    outline:SetPos(10, 34 * S)
-    outline:SetSize(-20, 110 * S, 1.0, 0.0)
-    outline.fill = false
-    outline.outlineThickness = 1
-    outline.colour = frameColour
-
-    label(root, 8, 148 * S, -16, 16, rarity.name, frameColour)   -- rarity
-    if locked then
-        label(root, 10, 168 * S, -20, 48 * S, opts and opts.lockedText or "Not collected yet", DIM_TEXT_COLOUR,
-            ui.AlignMode.TOPLEFT, 3)
-    else
-        label(root, 10, 168 * S, -20, 48 * S, card.desc, DESC_COLOUR, ui.AlignMode.TOPLEFT, 3)
-    end
-
-    return { root = root, model = model, cam = cam, card = card }
+    -- The card's edge is its frame image alone. (A coloured rectangle behind it would show at the edges, and gives
+    -- the rarity away when something sits on top of the card, like the card back in the pack opening.)
+    local view = buildFramed(root, card, opts, locked, silhouette, CardView.frameResource(card.rarity), rarity,
+        toVec4(rarity.colour), S, W, H)
+    view.root, view.card = root, card
+    return view
 end
 
 return CardView

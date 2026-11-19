@@ -58,8 +58,8 @@ end
 -- Starts listening for the client to open the plugin's page. `newApi` is described at the top.
 function Hub.init(newApi)
     api = newApi
-    if prettyui == nil or Event.ContentLayerReady == nil then
-        Logger.error("ribbon page: not available (needs PrettyUI and the content layer)")
+    if Event.ContentLayerReady == nil then
+        Logger.error("ribbon page: not available (the client has no content layer)")
         return
     end
     Event.ContentLayerReady.Subscribe(SUBSCRIBER, function(event)

@@ -52,7 +52,7 @@ ui = setmetatable({
 }, { __index = function() return anything end })
 id = anything
 Event = setmetatable({}, { __index = function() return { Subscribe = function() end, Unsubscribe = function() end } end })
-prettyui = {}                                  -- there, so the window opens; empty, so every widget is a plain one
+prettyui = require("dev/fakeprettyui")   -- (the plugin needs PrettyUI: a stand-in made from the ui above)
 Vector4 = { new = function(x, y, z, w) return { x = x, y = y, z = z, w = w } end }
 Plugin = { resources = { images = {} }, HasPermission = function() return false end }
 PluginPermissions = anything

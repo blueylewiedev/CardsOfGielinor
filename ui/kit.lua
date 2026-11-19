@@ -1,59 +1,19 @@
 -- ui/kit.lua
--- Small wrapper that builds the plugin's plain controls (text, buttons, the window frame)
--- with PrettyUI when it is installed, and with the built-in ui.* components when it is not.
+-- Small wrapper that builds the plugin's plain controls (text, buttons, the window frame, drop-downs, tabs) with
+-- PrettyUI. Everything else in the plugin calls these functions instead of PrettyUI directly, so the look of the whole
+-- plugin can be changed in this one file. The cards themselves are not built here: they are custom (see ui/cardview.lua).
 --
--- Everything else in the plugin calls these functions instead of ui.Text.new / ui.Button.new,
--- so the look of the whole plugin can be changed in this one file. The cards themselves are
--- not built here: they are custom (see ui/cardview.lua).
---
--- PrettyUI is declared as a required dependency in plugin.json, so it should always be there.
--- The fallbacks keep the plugin usable if something goes wrong while it is being set up.
+-- PrettyUI is a required dependency in plugin.json, and the client does not load the plugin without it, so there is no
+-- fallback to the client's own components. (The development tools' extra controls are in dev/devkit.lua.)
 
 local Logger = require("core/logger")
 
 local Kit = {}
 
-local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
 local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 
--- Set to false to ignore PrettyUI and use the plain controls everywhere.
-Kit.ENABLED = true
-
--- True when PrettyUI can be used.
-function Kit.available()
-    return Kit.ENABLED and prettyui ~= nil
-end
-
--- The plain (built-in) versions, also used as the fallback.
-local function plainText(parent, x, y, w, h, content, colour, alignX)
-    local text = ui.Text.new(parent)
-    text:SetPos(x, y)
-    text:SetSize(w, h)
-    text.font = FONT
-    text.content = content
-    text.colour = colour or WHITE
-    text.isShadowed = true
-    text:AlignTo(alignX or ui.AlignMode.CENTRE, ui.AlignMode.CENTRE)
-    return text
-end
-
--- A button built from the client's own components, at a fixed position.
-local function plainButton(parent, label, x, y, w, h, onPress)
-    local button = ui.Button.new(parent)
-    button:SetPos(x, y)
-    button:SetSize(w, h)
-    button.label = label
-    button.stylesheetID = id.StyleSheet.BUTTON_DEFAULT
-    button:Subscribe(ui.Hook.ONBUTTONPRESSED, onPress)
-    return button
-end
-
--- PrettyUI buttons draw wider than the width they are given (they add side padding), so the
--- width is reduced and the button moved in by this much to keep it inside the box it is given.
-local BUTTON_INSET = 12
-
--- Buttons made by PrettyUI (they are enabled and disabled differently to plain ones).
-local prettyButtons = setmetatable({}, { __mode = "k" })
+-- Buttons made by Kit.buttonAt (PrettyUI's FancyButton: they are relabelled and greyed out with its own methods).
+local fancyButtons = setmetatable({}, { __mode = "k" })
 
 -- PrettyUI takes colours as one packed number, 0xRRGGBBAA (each part 0-255), where the rest of
 -- the plugin uses a Vector4 with each part 0-1. This converts one to the other.
@@ -69,129 +29,42 @@ end
 -- A line of text at a fixed position, centred in its box unless `alignX` is another
 -- ui.AlignMode (for example ui.AlignMode.TOPLEFT to start at the left edge).
 function Kit.text(parent, x, y, w, h, content, colour, alignX)
-    if Kit.available() and prettyui.Text ~= nil then
-        local ok, text = pcall(prettyui.Text.new, parent, {
-            text = "", colour = packColour(colour or WHITE),
-            x = x, y = y, width = w, height = h, absolute = true,
-        })
-        if ok and text ~= nil then
-            pcall(function() text:AlignTo(alignX or ui.AlignMode.CENTRE, ui.AlignMode.CENTRE) end)
-            -- Set the words last: giving them at creation drew the text twice.
-            text.content = content
-            return text
-        end
-        Logger.error("Kit.text: PrettyUI text failed, using plain text:", tostring(text))
-    end
-    return plainText(parent, x, y, w, h, content, colour, alignX)
+    local text = prettyui.Text.new(parent, {
+        text = "", colour = packColour(colour or WHITE),
+        x = x, y = y, width = w, height = h, absolute = true,
+    })
+    pcall(function() text:AlignTo(alignX or ui.AlignMode.CENTRE, ui.AlignMode.CENTRE) end)
+    -- Set the words last: giving them at creation drew the text twice.
+    text.content = content
+    return text
 end
 
 -- PrettyUI's spinning loading wheel, `size` across, at a fixed position. It is not turning until its Start() is
 -- called, and keeps a subscription to the logic tick while it turns, so call Stop() when it is hidden or the window
--- goes. Returns nil without PrettyUI (or if it fails), so callers must cope with no spinner.
+-- goes.
 function Kit.spinner(parent, x, y, size)
-    if Kit.available() and prettyui.Spinner ~= nil then
-        local ok, spinner = pcall(prettyui.Spinner.new, parent, { x = x, y = y, size = size, autoPlay = false })
-        if ok and spinner ~= nil then
-            return spinner
-        end
-        Logger.error("Kit.spinner: PrettyUI spinner failed, going without:", tostring(spinner))
-    end
-    return nil
+    return prettyui.Spinner.new(parent, { x = x, y = y, size = size, autoPlay = false })
 end
 
--- A button at a fixed position. `style` is optional: "positive", "neutral" or "negative"
--- (only PrettyUI buttons show it).
-function Kit.button(parent, label, x, y, w, h, onPress, style, tooltip)
-    if Kit.available() and prettyui.FancyButton ~= nil then
-        local ok, button = pcall(prettyui.FancyButton.new, parent, label, function() onPress() end, {
-            variant = style or "neutral", x = x + BUTTON_INSET, y = y, width = w - 2 * BUTTON_INSET,
-            absolute = true, tooltip = tooltip,
-        })
-        if ok and button ~= nil then
-            prettyButtons[button] = true
-            return button
-        end
-        Logger.error("Kit.button: PrettyUI button failed, using plain button:", tostring(button))
-    end
-    return plainButton(parent, label, x, y, w, h, onPress)
-end
-
--- A button whose visible left edge is `left` and whose visible width is `visibleWidth`. Kit.button
--- takes a box that PrettyUI then shrinks by BUTTON_INSET on each side, which is awkward when
--- buttons are lined up; this does that sum. PrettyUI makes a button at least as wide as its label
--- needs (a label such as "ZOOM +" needs about 146), so choose a width that fits the longest label.
--- `tooltip` (optional) is the text shown when the mouse rests on the button (PrettyUI only).
+-- A button whose visible left edge is `left` and whose visible width is `visibleWidth`. `style` is optional:
+-- "positive", "neutral" or "negative". PrettyUI makes a button at least as wide as its label needs (a label such as
+-- "ZOOM +" needs about 146), so choose a width that fits the longest label. `tooltip` (optional) is the text shown when
+-- the mouse rests on the button.
 function Kit.buttonAt(parent, label, left, y, visibleWidth, height, onPress, style, tooltip)
-    if Kit.available() and prettyui.FancyButton ~= nil then
-        return Kit.button(parent, label, left - BUTTON_INSET, y, visibleWidth + 2 * BUTTON_INSET, height, onPress,
-            style, tooltip)
-    end
-    return Kit.button(parent, label, left, y, visibleWidth, height, onPress, style)
+    local button = prettyui.FancyButton.new(parent, label, function() onPress() end, {
+        variant = style or "neutral", x = left, y = y, width = visibleWidth, absolute = true, tooltip = tooltip,
+    })
+    fancyButtons[button] = true
+    return button
 end
 
 -- A plainer, flatter button for small controls such as the +/- nudges (PrettyUI's "simple
 -- button"). Unlike Kit.buttonAt it draws exactly the width it is given, with no side padding.
--- Without PrettyUI (or if it fails) it is an ordinary Kit.buttonAt. It cannot be relabelled or
--- greyed out afterwards; use Kit.buttonAt for a button that changes.
+-- It cannot be relabelled or greyed out afterwards; use Kit.buttonAt for a button that changes.
 function Kit.smallButton(parent, label, left, y, w, h, onPress, tooltip)
-    if Kit.available() and prettyui.SimpleButton ~= nil then
-        local ok, button = pcall(prettyui.SimpleButton.new, parent, label, function() onPress() end, {
-            x = left, y = y, width = w, height = h, absolute = true, tooltip = tooltip,
-        })
-        if ok and button ~= nil then
-            return button
-        end
-        Logger.error("Kit.smallButton: PrettyUI simple button failed, using a normal button:", tostring(button))
-    end
-    return Kit.buttonAt(parent, label, left, y, w, h, onPress)
-end
-
--- A button that stays pressed in (highlighted) once it is clicked, and lets go when it is
--- clicked again: for choosing words from a list. `active` is whether it starts pressed in, and
--- onToggle(active) is called when the player clicks it. Returns { part = the button,
--- setActive = function(active) } where setActive changes it from code without calling onToggle.
-function Kit.toggleButton(parent, label, left, y, w, h, active, onToggle, tooltip)
-    local muted = false
-    local state = active == true
-    if Kit.available() and prettyui.SimpleButton ~= nil then
-        local ok, button = pcall(prettyui.SimpleButton.new, parent, label, function(_, isActive)
-            if muted then
-                return
-            end
-            if type(isActive) == "boolean" then
-                state = isActive
-            else
-                state = not state
-            end
-            onToggle(state)
-        end, {
-            x = left, y = y, width = w, height = h, absolute = true, toggleable = true, tooltip = tooltip,
-        })
-        if ok and button ~= nil then
-            local function setActive(value)
-                state = value == true
-                muted = true
-                pcall(function() button:SetActive(state) end)
-                muted = false
-            end
-            if state then
-                setActive(true)
-            end
-            return { part = button, setActive = setActive }
-        end
-        Logger.error("Kit.toggleButton: PrettyUI simple button failed, using a normal button:", tostring(button))
-    end
-    -- Fallback: a normal button that turns green while it is on.
-    local button = nil
-    local function setActive(value)
-        state = value == true
-        Kit.setStyle(button, state and "positive" or "neutral")
-    end
-    button = Kit.buttonAt(parent, label, left, y, w, h, function()
-        setActive(not state)
-        onToggle(state)
-    end, state and "positive" or "neutral", tooltip)
-    return { part = button, setActive = setActive }
+    return prettyui.SimpleButton.new(parent, label, function() onPress() end, {
+        x = left, y = y, width = w, height = h, absolute = true, tooltip = tooltip,
+    })
 end
 
 -- Calls onWheel(delta) when the mouse wheel is turned over a component (delta above 0 is down).
@@ -219,149 +92,12 @@ function Kit.onWheel(component, onWheel)
     end
 end
 
--- Tabbed pages (PrettyUI's tabs) at x, y, w wide and h tall. `names` is the list of tab titles.
--- `build(index, parent, originX, originY)` makes the contents of one page inside `parent`, with
--- its top-left corner at originX, originY, and returns the list of the components it made (so
--- they can be removed again). Returns { select = function(index),
--- rebuild = function(index), destroy = function() } and calls build for every page at once.
--- If PrettyUI's tabs are not available, a row of buttons does the same job and only the page
--- showing is built.
--- With `pageHeight`, the pages scroll (with the mouse wheel too) when their contents are taller
--- than the tabs. `pageHeight` is the contents' height until `build` says otherwise: it can return
--- the height its page really needs as a second value, so a short page shows no scrollbar. Without
--- `pageHeight` the pages do not scroll. Also returns scrollBy(index, delta), which scrolls a page
--- (delta above 0 scrolls down); see Kit.onWheel.
-function Kit.tabs(parent, x, y, w, h, names, build, pageHeight)
-    local made = {}
-    local pageObjects = {}
-    local function clear(index)
-        for _, part in ipairs(made[index] or {}) do
-            pcall(function() part:Destroy() end)
-        end
-        made[index] = nil
-    end
-    -- Builds a page and tells PrettyUI how tall its contents are.
-    local function buildPage(index, page, parent, originX, originY)
-        local parts, height = build(index, parent, originX, originY)
-        height = height or pageHeight
-        if page ~= nil and height ~= nil then
-            pcall(function() page:SetContentHeight(height) end)
-        end
-        return parts
-    end
-    if Kit.available() and prettyui.Tabs ~= nil then
-        local tabList = {}
-        for i, name in ipairs(names) do
-            tabList[i] = { text = name }
-        end
-        local ok, tabs = pcall(prettyui.Tabs.new, parent, tabList, {
-            x = x, y = y, width = w, height = h, absolute = true, activeIndex = 1,
-            scrollable = pageHeight ~= nil, contentHeight = pageHeight,
-        })
-        if ok and tabs ~= nil then
-            local pages = {}
-            local complete = true
-            for i = 1, #names do
-                local okPage, page = pcall(function() return tabs:GetPage(i) end)
-                pages[i] = okPage and page ~= nil and (page.content or page) or nil
-                pageObjects[i] = okPage and page or nil
-                if pages[i] == nil then
-                    complete = false
-                end
-            end
-            if complete then
-                for i = 1, #names do
-                    made[i] = buildPage(i, pageObjects[i], pages[i], 0, 0)
-                end
-                return {
-                    select = function(index) pcall(function() tabs:SetActive(index, false) end) end,
-                    rebuild = function(index)
-                        clear(index)
-                        made[index] = buildPage(index, pageObjects[index], pages[index], 0, 0)
-                    end,
-                    scrollBy = function(index, delta)
-                        if pageObjects[index] ~= nil and type(delta) == "number" and delta ~= 0 then
-                            pcall(function() pageObjects[index]:ScrollBy(delta > 0 and 64 or -64) end)
-                        end
-                    end,
-                    destroy = function()
-                        for i = 1, #names do clear(i) end
-                        pcall(function() tabs:Destroy() end)
-                    end,
-                }
-            end
-            pcall(function() tabs:Destroy() end)
-        end
-        Logger.error("Kit.tabs: PrettyUI tabs failed, using a row of buttons:", tostring(tabs))
-    end
-    -- Fallback: a row of buttons and one page that is rebuilt when the choice changes.
-    local active = 1
-    local buttons = {}
-    local show = nil
-    local gap = 6
-    local tabW = math.floor((w - gap * (#names - 1)) / #names)
-    for i, name in ipairs(names) do
-        buttons[i] = Kit.buttonAt(parent, name, x + (i - 1) * (tabW + gap), y, tabW, 30, function() show(i) end,
-            i == 1 and "positive" or "neutral")
-    end
-    show = function(index)
-        clear(active)
-        active = index
-        for i, button in ipairs(buttons) do
-            Kit.setStyle(button, i == index and "positive" or "neutral")
-        end
-        made[index] = build(index, parent, x, y + 40)
-    end
-    made[1] = build(1, parent, x, y + 40)
-    return {
-        select = function(index) show(index) end,
-        scrollBy = function() end,
-        rebuild = function(index)
-            if index == active then
-                clear(index)
-                made[index] = build(index, parent, x, y + 40)
-            end
-        end,
-        destroy = function()
-            clear(active)
-            for _, button in ipairs(buttons) do
-                pcall(function() button:Destroy() end)
-            end
-        end,
-    }
-end
-
--- Asks the player to confirm something with a small pop-up (PrettyUI's confirm dialog), then
--- calls onConfirm(). Without PrettyUI it just calls onConfirm() straight away.
-function Kit.confirm(parent, title, body, confirmLabel, onConfirm)
-    if Kit.available() and prettyui.Confirm ~= nil then
-        local ok, err = pcall(prettyui.Confirm.new, parent, {
-            title = title, body = body, confirmLabel = confirmLabel, confirmVariant = "negative",
-            onConfirm = function() onConfirm() end,
-        })
-        if ok then
-            return
-        end
-        Logger.error("Kit.confirm: PrettyUI confirm failed, going ahead without asking:", tostring(err))
-    end
-    onConfirm()
-end
-
 -- A small button with just a picture on it. `sprite` is one of PrettyUI's sprite names, such as
--- "SETTINGS" (a cog), "MENU" or "INFO". Without PrettyUI it becomes a plain button with
--- `fallbackLabel` on it instead.
-function Kit.iconButton(parent, sprite, x, y, onPress, tooltip, fallbackLabel, fallbackWidth)
-    if Kit.available() and prettyui.SpriteButton ~= nil then
-        local ok, button = pcall(prettyui.SpriteButton.new, parent, sprite, function() onPress() end, {
-            x = x, y = y, absolute = true, tooltip = tooltip,
-        })
-        if ok and button ~= nil then
-            return button
-        end
-        Logger.error("Kit.iconButton: PrettyUI sprite button failed, using plain button:", tostring(button))
-    end
-    local w = fallbackWidth or 80
-    return plainButton(parent, fallbackLabel or sprite, x - (w - 24), y, w, 26, onPress)
+-- "SETTINGS" (a cog), "MENU" or "INFO".
+function Kit.iconButton(parent, sprite, x, y, onPress, tooltip)
+    return prettyui.SpriteButton.new(parent, sprite, function() onPress() end, {
+        x = x, y = y, absolute = true, tooltip = tooltip,
+    })
 end
 
 -- How far a title-bar button sits from the window's right edge: the close button (20 wide, 8 in) and a gap, then
@@ -371,16 +107,17 @@ local TITLE_BUTTON_STEP = 28       -- the next button along (a second one sits t
 local TITLE_BUTTON_LEFT = 12       -- from the window's left edge, for a button at the left end of the title bar
 
 -- A small icon button in a PrettyUI window's title bar, to the left of the close button. `spriteName` is one of
--- PrettyUI's sprite buttons (such as "SWAP"). Returns a handle whose Destroy() removes it, or nil if there is no
--- PrettyUI or it failed, so the caller can put a button somewhere else. `slot` (optional, 0) is which place along the title bar:
--- 0 is next to the close button, 1 the one to its left, "left" the far left end (clear of a centred title). The handle's `root` is the button's component (the tutorial points at it).
+-- PrettyUI's sprite buttons (such as "SWAP"). Returns a handle whose Destroy() removes it, or nil if it failed (it uses
+-- PrettyUI's private overlay calls, which a PrettyUI update could change; the failure is logged). `slot` (optional, 0) is
+-- which place along the title bar: 0 is next to the close button, 1 the one to its left, "left" the far left end (clear
+-- of a centred title). The handle's `root` is the button's component (the tutorial points at it).
 --
 -- The title bar is covered by a layer PrettyUI uses to drag the window, which sits on the game's layer above the
 -- window itself, so a button made inside the window never gets the click. This button is made on the game's layer
 -- too and registered with the window as one of its overlays: the window then keeps it on top and calls `place` to put
 -- it back over the title bar whenever the window moves (PrettyUI's own scroll bar does the same).
 function Kit.titleButton(window, spriteName, onPress, tooltip, slot)
-    if not (Kit.available() and prettyui.SpriteButton ~= nil and window ~= nil and window.parent ~= nil) then
+    if window == nil or window.parent == nil then
         return nil
     end
     local ok, handle = pcall(function()
@@ -441,48 +178,27 @@ end
 -- A block of checkboxes, one to a row (Kit.CHECKBOX_ROW_H tall), at (x, y) and `w` wide. `choices` is a list of
 -- { text, value, selected }; onChange(value, selected) is called when one is ticked or cleared. PrettyUI cuts a label off
 -- where it runs out of width (about 28 letters in 280 pixels). `step` (optional, more than Kit.CHECKBOX_ROW_H) spaces the
--- rows further apart: each is then a checkbox of its own. Without PrettyUI each is a toggle button.
+-- rows further apart: each is then a checkbox of its own. Returns a handle with Destroy().
 Kit.CHECKBOX_ROW_H = 22
 function Kit.checkboxes(parent, x, y, w, choices, onChange, step)
-    if step ~= nil and step > Kit.CHECKBOX_ROW_H and Kit.available() and prettyui.CheckboxButton ~= nil then
-        local made = {}
-        for i, choice in ipairs(choices) do
-            local ok, box = pcall(prettyui.CheckboxButton.new, parent, { choice }, {
-                x = x, y = y + (i - 1) * step, width = w,
-                onChange = function(_, _, value, selected) onChange(value, selected) end,
-            })
-            if ok and box ~= nil then
-                made[#made + 1] = box
-            else
-                Logger.error("Kit.checkboxes: PrettyUI checkbox failed:", tostring(box))
-            end
-        end
-        return { Destroy = function() for _, box in ipairs(made) do pcall(function() box:Destroy() end) end end }
+    local function changed(_, _, value, selected)
+        onChange(value, selected)
     end
-    if Kit.available() and prettyui.CheckboxButton ~= nil then
-        local ok, boxes = pcall(prettyui.CheckboxButton.new, parent, choices, {
-            x = x, y = y, width = w,
-            onChange = function(_, _, value, selected) onChange(value, selected) end,
-        })
-        if ok and boxes ~= nil then
-            return boxes
-        end
-        Logger.error("Kit.checkboxes: PrettyUI checkboxes failed, using buttons:", tostring(boxes))
+    if step == nil or step <= Kit.CHECKBOX_ROW_H then
+        return prettyui.CheckboxButton.new(parent, choices, { x = x, y = y, width = w, onChange = changed })
     end
-    local handle = { buttons = {} }
+    local made = {}
     for i, choice in ipairs(choices) do
-        handle.buttons[i] = Kit.toggleButton(parent, choice.text, x, y + (i - 1) * (step or 26), w, 24, choice.selected == true,
-            function(active) onChange(choice.value, active) end)
+        made[i] = prettyui.CheckboxButton.new(parent, { choice }, { x = x, y = y + (i - 1) * step, width = w, onChange = changed })
     end
-    handle.Destroy = function() end
-    return handle
+    return { Destroy = function() for _, box in ipairs(made) do pcall(function() box:Destroy() end) end end }
 end
 
 -- PrettyUI's tab strip height: the pages start this far under the top of the tabs.
 Kit.TABS_HEIGHT = 42
 
--- Tab strip: tabs across the top of a box in `parent`, with a page under each (not Kit.tabs above, which builds every page
--- at once for the tag picker; this one gives each page a layer to build in, and can fill its parent and be resized). Returns a handle:
+-- Tab strip: tabs across the top of a box in `parent`, with a page under each, each page a layer to build in; it can fill
+-- its parent and be resized. Returns a handle:
 --   pages[i]        : the layer to build tab i's contents in, from its top left (it scrolls when the contents are taller
 --                     than the room: see contentHeights)
 --   pageWidth(i)    : how wide that layer is now (less when a scroll bar is showing), or nil if it can't say
@@ -491,78 +207,38 @@ Kit.TABS_HEIGHT = 42
 --   select(i), destroy()
 -- The box is `w` x `h` at (x, y); with opts.fill it is the whole of `parent` instead (and follows it as it changes size,
 -- x and y being the margins). `onChange(i)` is called when the player picks a tab; `selected` is the first one shown.
--- opts.contentHeights = { [i] = h } are the tabs' contents' heights to start with. Without PrettyUI the tabs are a row of
--- plain buttons over plain layers (which do not scroll).
+-- opts.contentHeights = { [i] = h } are the tabs' contents' heights to start with.
 function Kit.tabStrip(parent, labels, x, y, w, h, onChange, selected, opts)
     selected = selected or 1
     opts = opts or {}
-    if Kit.available() and prettyui.Tabs ~= nil then
-        local ok, result = pcall(function()
-            local list = {}
-            for i, label in ipairs(labels) do
-                list[i] = { text = label, value = i, contentHeight = opts.contentHeights and opts.contentHeights[i] or nil }
-            end
-            local options = {
-                x = x, y = y, width = w, height = h, scrollable = true, activeIndex = selected,
-                onChange = function(_, index) onChange(index) end,
-            }
-            if opts.fill then
-                options.width, options.height, options.widthAnchor, options.heightAnchor = 0, 0, 1.0, 1.0
-            end
-            local tabs = prettyui.Tabs.new(parent, list, options)
-            local handle = { pages = {} }
-            for i = 1, #labels do
-                handle.pages[i] = tabs.pages[i].content
-            end
-            function handle.pageWidth(i)
-                local ok2, width = pcall(function() return tabs.pages[i].content.width end)
-                return ok2 and type(width) == "number" and width or nil
-            end
-            function handle.setContentHeight(i, height)
-                pcall(function() tabs.pages[i]:SetContentHeight(height) end)
-            end
-            function handle.refresh()
-                pcall(function() tabs:SetActive(tabs:GetActiveIndex(), false) end)
-            end
-            function handle.select(i) tabs:SetActive(i, false) end
-            function handle.destroy() tabs:Destroy() end
-            return handle
-        end)
-        if ok then
-            return result
-        end
-        Logger.error("Kit.tabStrip: PrettyUI tabs failed, using buttons:", tostring(result))
-    end
-    local handle = { pages = {}, buttons = {} }
-    local each = math.floor(w / math.max(1, #labels))
-    local function show(i)
-        for n, page in ipairs(handle.pages) do
-            page.hidden = (n ~= i)
-        end
-    end
+    local list = {}
     for i, label in ipairs(labels) do
-        local page = ui.Layer.new(parent)
-        page:SetPos(x, y + Kit.TABS_HEIGHT)
-        page:SetSize(w, h - Kit.TABS_HEIGHT)
-        handle.pages[i] = page
-        handle.buttons[i] = Kit.buttonAt(parent, label, x + (i - 1) * each, y, each - 4, 30, function()
-            show(i)
-            onChange(i)
-        end)
+        list[i] = { text = label, value = i, contentHeight = opts.contentHeights and opts.contentHeights[i] or nil }
     end
-    show(selected)
-    handle.select = show
-    handle.pageWidth = function() return w end
-    handle.setContentHeight = function() end
-    handle.refresh = function() end
-    handle.destroy = function()
-        for _, button in ipairs(handle.buttons) do
-            pcall(function() button:Destroy() end)
-        end
-        for _, page in ipairs(handle.pages) do
-            pcall(function() page:Destroy() end)
-        end
+    local options = {
+        x = x, y = y, width = w, height = h, scrollable = true, activeIndex = selected,
+        onChange = function(_, index) onChange(index) end,
+    }
+    if opts.fill then
+        options.width, options.height, options.widthAnchor, options.heightAnchor = 0, 0, 1.0, 1.0
     end
+    local tabs = prettyui.Tabs.new(parent, list, options)
+    local handle = { pages = {} }
+    for i = 1, #labels do
+        handle.pages[i] = tabs.pages[i].content
+    end
+    function handle.pageWidth(i)
+        local ok, width = pcall(function() return tabs.pages[i].content.width end)
+        return ok and type(width) == "number" and width or nil
+    end
+    function handle.setContentHeight(i, height)
+        pcall(function() tabs.pages[i]:SetContentHeight(height) end)
+    end
+    function handle.refresh()
+        pcall(function() tabs:SetActive(tabs:GetActiveIndex(), false) end)
+    end
+    function handle.select(i) tabs:SetActive(i, false) end
+    function handle.destroy() tabs:Destroy() end
     return handle
 end
 
@@ -582,93 +258,14 @@ function Kit.inputField(parent, x, y, w, h, maxLength, numeric)
     return field
 end
 
--- Colours of the drop-down lists, as 0xRRGGBBAA (the ones rsprite-finder uses, which match
--- the game's own fields).
-local DROPDOWN_COLOURS = {
-    text = 0xE9E5DDFF, hover = 0x393530F2, selected = 0x4A4640FF, disabled = 0x8B8882FF, caret = 0xFFFFFFFF,
-}
-
--- The two kinds of drop-down behind Kit.dropdown. Each takes the entries numbered 1, 2, ... as
--- { label, id, order } and gives back fill(entries, index), pick(index) and destroy().
-
--- PrettyUI's ComboBox. It picks its kind when it is made, from the entries it is given then
--- (ordered entries make the ordered kind), so it needs the first entries straight away.
-local function prettyDropdown(parent, x, y, w, h, numbered, index, choose)
-    local ok, combo = pcall(prettyui.ComboBox.new, parent, {
-        x = x, y = y, width = w, height = h, maxVisibleEntries = 12,
-        entries = numbered, selectedID = index,
-        onChange = function(_, entryId) choose(entryId) end,
-    })
-    if not ok or combo == nil then
-        Logger.error("Kit.dropdown: PrettyUI combo box failed, using the plain one:", tostring(combo))
-        return nil
-    end
-    return {
-        fill = function(list, i) combo:SetEntries(list, i) end,
-        pick = function(i) combo:Select(i, false) end,
-        destroy = function() pcall(function() combo:Destroy() end) end,
-    }
-end
-
--- The client's own ComboField (sorted by label, no typing).
-local function plainDropdown(parent, x, y, w, h, choose)
-    local combo = ui.ComboField.new(parent)
-    local quiet = false             -- true while the code changes it, so that isn't a choice
-    pcall(function() combo.stylesheetID = id.StyleSheet.COMBO_DEFAULT end)
-    combo:SetPos(x, y)
-    combo:SetSize(w, h)
-    pcall(function()
-        combo.entryHeight = 20
-        combo.dropdownMaxVisibleEntries = 12
-        combo.contentMargin = ui.Margin.new(8, 0, 8, 0)
-        combo.headerMargin = ui.Margin.new(8, 0, 8, 0)
-        combo.entryText.font = id.Font.MUSEO_SANS_11PT_REGULAR
-        combo.entryText.rgba = DROPDOWN_COLOURS.text
-        combo.entryText.isShadowed = true
-        combo.mouseoverForegroundRGBA = DROPDOWN_COLOURS.text
-        combo.mouseoverBackgroundRGBA = DROPDOWN_COLOURS.hover
-        combo.selectedForegroundRGBA = DROPDOWN_COLOURS.text
-        combo.selectedBackgroundRGBA = DROPDOWN_COLOURS.selected
-        combo.disabledForegroundRGBA = DROPDOWN_COLOURS.disabled
-        combo.selectionHighlightRGBA = DROPDOWN_COLOURS.selected
-        combo.caretRGBA = DROPDOWN_COLOURS.caret
-        combo.errorCaretRGBA = DROPDOWN_COLOURS.caret
-    end)
-    combo:Subscribe(ui.Hook.ONSELECTIONCHANGED, function(_, entryId)
-        if not quiet then
-            local ok, i = pcall(function() return combo.hasSelection and combo.selectedID or entryId end)
-            choose(ok and i or entryId)
-        end
-    end)
-    return {
-        fill = function(list, i)
-            local byLabel = {}
-            for _, entry in ipairs(list) do
-                byLabel[entry.label] = entry.id
-            end
-            quiet = true
-            local ok, err = pcall(function() combo:SetEntries(byLabel, i) end)
-            quiet = false
-            assert(ok, err)
-        end,
-        pick = function(i)
-            quiet = true
-            pcall(function() combo:Select(i, false) end)
-            quiet = false
-        end,
-        destroy = function() pcall(function() combo:Destroy() end) end,
-    }
-end
-
--- A drop-down list. `entries` is a list of { label = "...", value = anything }; the labels must
--- all be different. `selected` is the value shown at first (or nil). `onChoose(value)` is called
--- when the player picks an entry. Returns { set(entries, selected), select(value), destroy() }:
--- set replaces the list, select shows a choice; neither calls onChoose.
--- With PrettyUI it is PrettyUI's ComboBox. By default it is given the entries in order, which
--- makes it PrettyUI's ordered kind: it keeps the order given, but it has a text box, so the
--- player can type in it to filter the list. `sorted` = true gives the plain kind instead: the
--- client's own list, which can't be typed in but shows the entries sorted by label.
--- Without PrettyUI it is the client's ComboField (sorted, no typing).
+-- A drop-down list (PrettyUI's ComboBox). `entries` is a list of { label = "...", value = anything }; the labels must
+-- all be different. `selected` is the value shown at first (or nil). `onChoose(value)` is called when the player picks an
+-- entry. Returns { set(entries, selected), select(value), destroy() }: set replaces the list, select shows a choice;
+-- neither calls onChoose.
+-- By default the ComboBox is given the entries in order, which makes it PrettyUI's ordered kind: it keeps the order
+-- given, and has a text box the player can type in to filter the list. `sorted` = true gives its plain kind, which can't
+-- be typed in but shows the entries sorted by label. (It picks its kind when it is made, from the entries it is given
+-- then, so it needs the first entries straight away.)
 function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
     local dropdown = { values = {} }    -- entry i has the id i and the value values[i]
     local function number(list)
@@ -688,25 +285,24 @@ function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
         end
         return nil
     end
-    local function choose(entryId)
-        local value = dropdown.values[entryId]
-        if value ~= nil then
-            onChoose(value)
-        end
-    end
 
+    -- An empty ordered list starts with a placeholder (which does nothing when picked), so PrettyUI still makes the
+    -- ordered kind.
     entries = entries or {}
-    local backend = nil
-    if Kit.available() and prettyui.ComboBox ~= nil then
-        -- An empty ordered list starts with a placeholder (which does nothing when picked), so
-        -- PrettyUI still makes the ordered kind.
-        local first = (#entries > 0 or sorted) and entries or { { label = "...", value = nil } }
-        local numbered = number(first)
-        backend = prettyDropdown(parent, x, y, w, h, numbered, indexOf(selected), choose)
-    end
+    local first = (#entries > 0 or sorted) and entries or { { label = "...", value = nil } }
+    local combo = prettyui.ComboBox.new(parent, {
+        x = x, y = y, width = w, height = h, maxVisibleEntries = 12,
+        entries = number(first), selectedID = indexOf(selected),
+        onChange = function(_, entryId)
+            local value = dropdown.values[entryId]
+            if value ~= nil then
+                onChoose(value)
+            end
+        end,
+    })
 
     function dropdown.set(list, value)
-        local ok, err = pcall(backend.fill, number(list), indexOf(value))
+        local ok, err = pcall(function() combo:SetEntries(number(list), indexOf(value)) end)
         if not ok then
             Logger.error("Kit.dropdown: could not fill the list:", tostring(err))
         end
@@ -714,42 +310,32 @@ function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
     function dropdown.select(value)
         local i = indexOf(value)
         if i ~= nil then
-            pcall(backend.pick, i)
+            pcall(function() combo:Select(i, false) end)
         end
     end
     function dropdown.destroy()
-        backend.destroy()
-    end
-
-    if backend == nil then
-        backend = plainDropdown(parent, x, y, w, h, choose)
-        dropdown.set(entries, selected)
+        pcall(function() combo:Destroy() end)
     end
     return dropdown
 end
 
--- Enables or greys out a button made by Kit.button.
+-- Enables or greys out a button made by Kit.buttonAt.
 function Kit.setEnabled(button, enabled)
-    if prettyButtons[button] then
+    if fancyButtons[button] then
         button:SetDisabled(not enabled)
-    else
-        button.enabled = enabled
     end
 end
 
--- Changes the label of a button made by Kit.button.
+-- Changes the label of a button made by Kit.buttonAt.
 function Kit.setLabel(button, label)
-    if prettyButtons[button] then
+    if fancyButtons[button] then
         button:SetText(label)
-    else
-        button.label = label
     end
 end
 
--- Changes the colour style of a button made by Kit.button ("positive", "neutral", "negative").
--- Plain buttons have no styles, so nothing happens for them.
+-- Changes the colour style of a button made by Kit.buttonAt ("positive", "neutral", "negative").
 function Kit.setStyle(button, style)
-    if prettyButtons[button] then
+    if fancyButtons[button] then
         button:SetVariant(style)
     end
 end
@@ -774,9 +360,10 @@ function Kit.mousePosition()
     return nil
 end
 
--- Extra window height the PrettyUI title bar takes, to add to a plain window's height.
+-- Window height PrettyUI's title bar takes, to add to the height of a window's contents.
+Kit.TITLE_BAR_H = 40
 function Kit.titleBarHeight()
-    return Kit.available() and 40 or 0
+    return Kit.TITLE_BAR_H
 end
 
 -- The width there is room for inside a window `width` wide (its frame and padding take the rest).
@@ -784,36 +371,21 @@ function Kit.contentWidth(width)
     return width - 44
 end
 
--- Creates the main window frame. Returns window, content: `content` is the component to put
--- things in. `onClose` is called when the player closes the window with its close button.
--- With PrettyUI the frame has a title bar; without, it is the plain header-less group box.
--- `scrollable` (PrettyUI only) lets the content be longer than the window and scroll.
--- `resizable` (PrettyUI only) lets the player drag the window's edge to change its size. The
--- contents keep their positions, so it only gives more or less room.
+-- Creates a window (PrettyUI's, with a title bar it can be dragged by and a close button). Returns window, content:
+-- `content` is the component to put things in. `onClose` is called when the player closes the window with its close
+-- button. `scrollable` lets the content be longer than the window and scroll. `resizable` lets the player drag the
+-- window's edge to change its size; the contents keep their positions, so it only gives more or less room.
 -- `limits` (optional, { minWidth, minHeight }) is how small a resizable window can be made.
--- PrettyUI windows can be dragged by their title bar.
 -- `offsetX` and `offsetY` (optional, 0) move the window from its anchor point by that many pixels: with the anchors
 -- 0 and 1 a negative offsetY puts it that far above the bottom of the screen.
 function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits, offsetX, offsetY)
-    xAnchor, yAnchor = xAnchor or 0.2, yAnchor or 0.15
-    if Kit.available() and prettyui.Window ~= nil then
-        local ok, win = pcall(prettyui.Window.new, parent, {
-            title = title, width = width, height = height,
-            x = offsetX or 0, y = offsetY or 0, xAnchor = xAnchor, yAnchor = yAnchor,
-            scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
-            minWidth = limits and limits.minWidth or nil, minHeight = limits and limits.minHeight or nil,
-        })
-        if ok and win ~= nil and win.content ~= nil then
-            return win, win.content
-        end
-        Logger.error("Kit.window: PrettyUI window failed, using plain window:", tostring(win))
-    end
-    local box = ui.GroupBox.new(parent)
-    box.stylesheetID = id.StyleSheet.DEFAULT
-    box:SetHeaderLayout(0, 0, 0, 0, 0)
-    box:SetSize(width, height)
-    box:SetPos(offsetX or 0, offsetY or 0, xAnchor, yAnchor)
-    return box, box
+    local win = prettyui.Window.new(parent, {
+        title = title, width = width, height = height,
+        x = offsetX or 0, y = offsetY or 0, xAnchor = xAnchor or 0.2, yAnchor = yAnchor or 0.15,
+        scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
+        minWidth = limits and limits.minWidth or nil, minHeight = limits and limits.minHeight or nil,
+    })
+    return win, win.content
 end
 
 return Kit

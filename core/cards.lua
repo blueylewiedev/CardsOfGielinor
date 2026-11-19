@@ -329,20 +329,11 @@ for _, group in ipairs(Cards.itemTagGroups.category) do
     end
 end
 
--- The tag kinds that cards of this kind ("npc" or "item") use, in the order they are written.
--- Items are not tagged with a location. An item's regions are chosen by hand (at most
--- Cards.MAX_ITEM_REGIONS, see "Choosing regions for an item" in CONTRIBUTING.md). An NPC's region
--- comes from its deck file; one found in two regions goes in the first's file and lists the other
--- in `regions` (one found in more is a general card, in deck/npcs/general.lua). Both kinds of card
--- may say whether they are free to play or members only.
+-- How many regions a card may have. An item's regions are chosen by hand (see "Choosing regions for an item" in
+-- CONTRIBUTING.md). An NPC's region comes from its deck file; one found in two regions goes in the first's file and lists
+-- the other in `regions` (one found in more is a general card, in deck/npcs/general.lua).
 Cards.MAX_ITEM_REGIONS = 2
 Cards.MAX_NPC_REGIONS = 2      -- (its deck file's, and one in `regions`)
-function Cards.tagKindsFor(cardKind)
-    if cardKind == "item" then
-        return { "regions", "skills", "category", "membership" }
-    end
-    return { "regions", "location", "skills", "category", "membership" }
-end
 
 -- The groups the words of a tag kind are shown in for this kind of card, or nil if the words
 -- are not in groups.
@@ -395,12 +386,6 @@ function Cards.requiredWords(cardKind, tagKind, word)
     return nil
 end
 
--- The first word a tag word needs, or nil if it needs nothing (see Cards.requiredWords).
-function Cards.requiredWord(cardKind, tagKind, word)
-    local list = Cards.requiredWords(cardKind, tagKind, word)
-    return list and list[1] or nil
-end
-
 -- The words in a list whose required words are not in the list too, as { word = w, needs = n }
 -- (n is the word, or the words with "or" between them when any of several will do).
 -- A chain is checked a link at a time: a word is reported if its own parent is missing, and a
@@ -424,14 +409,6 @@ function Cards.missingRequired(cardKind, tagKind, words)
         end
     end
     return missing
-end
-
--- What kind of cards a deck file holds: "item" for the files in deck/items/, otherwise "npc".
-function Cards.setKind(setName)
-    if string.sub(setName or "", 1, 11) == "deck/items/" then
-        return "item"
-    end
-    return "npc"
 end
 
 -- The cards are written in their own files in the deck folder (the layout is described in
@@ -618,26 +595,6 @@ function Cards.matches(card, filter)
     return true
 end
 
--- The pictures a card can be shown with, as a list of { name, npc, body, anim, cam }. The first
--- is the card's own picture. A card with no `variants` has just that one.
-function Cards.getVariants(card)
-    local list = {}
-    if card.variants ~= nil then
-        for _, entry in ipairs(card.variants) do
-            local copy = { name = entry.name or card.name }
-            for field, value in pairs(entry) do
-                copy[field] = value
-            end
-            list[#list + 1] = copy
-        end
-    else
-        local art = Cards.getArt(card)
-        art.name = card.name
-        list[1] = art
-    end
-    return list
-end
-
 -- Returns a card's art settings: { npc = <config name>, body, cam } for an NPC card, or
 -- { item = <config name>, cam } for an item card. The NPC (or item) is the card's id uppercased
 -- unless the card's `art` entry (or its first variant) names another one, and for an NPC card
@@ -665,10 +622,6 @@ function Cards.getArt(card)
     return result
 end
 
--- Lookup table by id, built once at load. Also checks the data above for mistakes, so a
--- typo shows up immediately as an error when the plugin loads.
--- Stops with an error naming the card if its tags are malformed or use a word that is not on
--- Cards.tagWords.
 -- True if `word` may be used for this tag kind: it is on the kind's list in Cards.tagWords, or
 -- the kind has no list. With a card kind ("npc" or "item"), the category words are the ones for
 -- that kind of card only.
@@ -877,6 +830,7 @@ function Cards.deprecate(cardId)
     end
     return true
 end
+
 -- Why a pack type is not sound, or nil. Filter words from a closed list must be on it, so a typo can't make an
 -- empty pack.
 local function packProblem(packType)

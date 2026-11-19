@@ -34,11 +34,10 @@ local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 local WIDTH = 236
-local TITLE_BAR = 40   -- extra window height taken by PrettyUI's title bar
 -- The Home screen is wider than the loading screen. PrettyUI's content area is inset further from the left of the frame
 -- than from the right, so everything on it is moved left by HOME_SHIFT to look centred.
 local HOME_WIDTH = 256
-local HOME_SHIFT = Kit.available() and -10 or 0
+local HOME_SHIFT = -10
 local HOME_MID = HOME_WIDTH + 2 * HOME_SHIFT   -- the width to centre things in
 -- The Home screen is three sections, each a dark panel with a gold heading: the
 -- credits, the collection (a progress bar, then the Collection, Sets and Stats buttons, one to a row: PrettyUI makes a
@@ -73,9 +72,8 @@ local widgets = {}   -- named pieces that need updating later
 local current = nil  -- name of the screen being shown
 local settingsButton = nil   -- the cog in the title bar, while Home is showing (see showScreen)
 local helpButton = nil       -- the "i" at the left end of the title bar, which opens the tutorial (api.openTutorial)
--- Text and buttons come from ui/kit.lua, which uses PrettyUI when it is available.
+-- Text comes from ui/kit.lua.
 local makeText = Kit.text
-local makeButton = Kit.button
 
 -- Only change text when it differs, so refreshing every tick does no needless work.
 local function setText(widget, content)
@@ -91,10 +89,9 @@ local function showScreen(name)
     for screenName, layer in pairs(screens) do
         layer.hidden = (screenName ~= name)
     end
-    window:SetSize(({ home = HOME_WIDTH })[name] or WIDTH, HEIGHTS[name] + (Kit.available() and TITLE_BAR or 0))
+    window:SetSize(({ home = HOME_WIDTH })[name] or WIDTH, HEIGHTS[name] + Kit.titleBarHeight())
     -- The settings cog sits in the title bar, which is where the window's width puts it, so it is made once the window
-    -- has this screen's size and taken away when another screen shows. Without PrettyUI there is no title bar, so the
-    -- cog is a button on the Home screen instead.
+    -- has this screen's size and taken away when another screen shows.
     if settingsButton ~= nil then
         pcall(function() settingsButton:Destroy() end)
         settingsButton = nil
@@ -107,10 +104,6 @@ local function showScreen(name)
         settingsButton = Kit.titleButton(window, "SETTINGS", function() api.openSettings() end, "Settings")
         if api.openTutorial ~= nil then
             helpButton = Kit.titleButton(window, "INFO", function() api.openTutorial() end, "Tutorial", "left")
-        end
-        if settingsButton == nil and widgets.settingsFallback == nil then
-            widgets.settingsFallback = Kit.iconButton(screens.home, "SETTINGS", HOME_MID - 50, 4,
-                function() api.openSettings() end, "Settings", "Settings", 80)
         end
     end
     -- The spinner only turns while its screen is showing.
@@ -202,7 +195,7 @@ local function buildScreens()
     Kit.iconButton(screens.home, "UNDO", INNER_X + HOME_W - 24, CREDITS_Y + 50, function()
         Rate.reset()
         PackWindow.refresh()
-    end, "Start the credits per hour again", "Reset", 60)
+    end, "Start the credits per hour again")
 
     -- The collection: a bar that fills as the deck is collected, and what it says in words.
     local barY = COLLECTION_Y + 30
@@ -339,7 +332,7 @@ function PackWindow.anchor(name)
         return nil
     end
     local control = ({ shop = widgets.shopButton, collection = widgets.collectionButton, sets = widgets.setsButton,
-        settings = settingsButton or widgets.settingsFallback })[name]
+        settings = settingsButton })[name]
     if control == nil then
         return nil
     end

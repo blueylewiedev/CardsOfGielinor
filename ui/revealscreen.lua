@@ -471,7 +471,7 @@ flipCard = function(c)
         back:SetSize(w, h)
     end
     -- `t` seconds after it was edge-on: the face widens out from the middle (quickly at first, then slowing), then its
-    -- picture and text come in. (A card without a frame image can't be squeezed, so it just appears.)
+    -- picture and text come in.
     local turned = false
     local function drawFace(t)
         local open = math.sin(math.min(1, t / FLIP_OPEN) * math.pi / 2)
@@ -650,7 +650,7 @@ local function setFlipButton(shown)
     if shown then
         local tear = R.tear
         R.flipButton = Kit.iconButton(R.root, "REFRESH", (R.SW - FLIP_ICON) // 2, tear.y0 + tear.h + 10,
-            function() flipSealed() end, "Flip pack", "Flip", 60)
+            function() flipSealed() end, "Flip pack")
     end
 end
 

@@ -2,8 +2,8 @@
 -- Loads and saves one player's collection using PersistentDB.
 --
 -- PersistentDB is stored per plugin, not per account, so every character gets its own
--- entry, keyed by character name. Without that, two accounts on one computer would
--- share a single collection.
+-- entry, keyed by the character's tracking id (or its name when trackingAccess is not granted: core/identity.lua).
+-- Without that, two accounts on one computer would share a single collection.
 --
 -- The client refuses a single value that is too big. Measured with a throwaway probe (2026-11-12): a table
 -- of 2,000 entries is accepted and 3,000 refused; a string of 100,000 letters is accepted and 131,056

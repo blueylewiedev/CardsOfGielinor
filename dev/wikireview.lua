@@ -16,6 +16,7 @@
 -- on this computer only). Only used by the developer tools (the dev folder).
 
 local Kit = require("ui/kit")
+local DevKit = require("dev/devkit")
 local Cards = require("core/cards")
 local Builder = require("dev/builder")
 local WikiFetch = require("dev/wikifetch")
@@ -579,21 +580,21 @@ function WikiReview.show()
     Kit.iconButton(content, "SEARCH", INNER - 54, 6, WikiFetch.toggle, "Fetch more candidates from the wiki",
         "Fetch", 70)
     Kit.iconButton(content, "REFRESH", INNER - 84, 6, function()
-        Kit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done or Later stay off the list.",
+        DevKit.confirm(gameWindow, "Review the skipped again?", "Every candidate marked Skip comes back. Those marked Done or Later stay off the list.",
             "Bring back skipped", function()
                 unmark("skipped")
                 reload()
             end)
     end, "Bring back only the candidates marked Skip", "Skipped", 70)
     Kit.iconButton(content, "EYE", INNER - 114, 6, function()
-        Kit.confirm(gameWindow, "Review the Later ones?", "Every candidate marked Later comes back. Skipped and Done ones stay off the list.",
+        DevKit.confirm(gameWindow, "Review the Later ones?", "Every candidate marked Later comes back. Skipped and Done ones stay off the list.",
             "Bring back later", function()
                 unmark("later")
                 reload()
             end)
     end, "Bring back only the candidates marked Later", "Later", 70)
     Kit.iconButton(content, "UNDO", INNER - 24, 6, function()
-        Kit.confirm(gameWindow, "Review again?", "Every candidate marked Done, Skip or Later comes back.", "Review again", function()
+        DevKit.confirm(gameWindow, "Review again?", "Every candidate marked Done, Skip or Later comes back.", "Review again", function()
             if not saveMarks({}) then
                 queueMessage("Not saved: the database refused it")
             end
