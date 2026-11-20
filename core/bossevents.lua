@@ -22,18 +22,12 @@ local SUBSCRIBERS = {
 local api = nil                 -- api.getState() : the logged-in character's collection, or nil
 local tracker = nil             -- set while a character is logged in
 
--- The BSLAY_ID of an NPC config (the number of its boss), or nil if it is not a boss.
-local function bossIdOf(cfg)
-    return ClientReads.numberParam(cfg, "BSLAY_ID")
-end
-
--- Tells the tracker which bosses are in view.
+-- Tells the tracker which bosses are in view (what makes an NPC a boss is read once per config: core/clientreads.lua).
 local function look()
     for _, entity in ipairs(NPCList.All()) do
-        local cfg, parent = prop(entity, "config"), prop(entity, "parentConfig")
-        local id = bossIdOf(cfg) or bossIdOf(parent)
+        local id, level, name = ClientReads.bossOf(entity)
         if id ~= nil then
-            tracker:seen(id, ClientReads.combatLevel(cfg, parent), prop(entity, "displayName") or prop(cfg, "name"))
+            tracker:seen(id, level, prop(entity, "displayName") or name)
         end
     end
 end
@@ -90,6 +84,7 @@ end
 
 -- A character's collection has loaded: starts looking for their boss kills.
 function BossEvents.begin()
+    ClientReads.forgetBosses()
     tracker = Bosses.new({
         award = award,
         log = function(...) Logger.debug("bosses:", ...) end,

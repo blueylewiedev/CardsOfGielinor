@@ -176,11 +176,8 @@ function Loader.begin()
     state.phase = "waiting"
 end
 
--- Starts it for the running plugin.
-function Loader.start()
-    if state.phase ~= "idle" then
-        return
-    end
+-- Begins a go and listens for the ticks it needs.
+function Loader.restart()
     Loader.begin()
     if not subscribed then
         subscribed = true
@@ -188,11 +185,32 @@ function Loader.start()
     end
 end
 
-function Loader.shutdown()
+-- Starts it for the running plugin.
+function Loader.start()
+    if state.phase == "idle" then
+        Loader.restart()
+    end
+end
+
+local function stopListening()
     if subscribed then
         subscribed = false
         pcall(function() Events.off("Logic", SUBSCRIBER) end)
     end
+end
+
+-- Stops listening once there is nothing left to do (an overlay applied or ignored, no more tries, no url), so it does not run
+-- 50 times a second for the rest of the session. Called from outside the Logic event (main.lua's slower tick), never from
+-- inside its handler. `restart` listens again.
+function Loader.release()
+    local phase = state.phase
+    if phase == "done" or phase == "ignored" or phase == "failed" or phase == "off" then
+        stopListening()
+    end
+end
+
+function Loader.shutdown()
+    stopListening()
 end
 
 -- What it is doing: { phase, message, attempt, revision, changes (cards added, changed or retired by the overlay),

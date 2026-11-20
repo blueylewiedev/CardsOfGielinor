@@ -215,7 +215,7 @@ local function toolButtons(api, refresh)
         { label = "Fetch updates", action = function()
             local phase = OverlayLoader.status().phase
             if phase == "done" or phase == "ignored" or phase == "failed" or phase == "off" then
-                OverlayLoader.begin()
+                OverlayLoader.restart()
                 log("DEV: fetching the card overlay again")
             else
                 local status = OverlayLoader.status()
