@@ -70,7 +70,7 @@ def copy_release(source, target):
 def problems_in(target):
     """What is wrong with a release folder, as a list of messages (empty if it is fine)."""
     problems = []
-    for needed in ("main.lua", "plugin.json", "core/cards.lua", "deck/index.lua"):
+    for needed in ("main.lua", "plugin.json", "core/cards.lua", "core/tagwords.lua", "core/packtypes.lua", "deck/index.lua"):
         if not (target / needed).is_file():
             problems.append(f"{needed} is missing")
     for entry in sorted(target.iterdir()):

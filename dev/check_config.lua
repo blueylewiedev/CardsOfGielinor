@@ -11,6 +11,7 @@ function log() end          -- the client's log function
 
 local Config = require("core/config")
 local Cards = require("core/cards")
+local PackTypes = require("core/packtypes")
 local Packs = require("core/packs")
 local Storage = require("core/storage")
 local Earning = require("core/earning")
@@ -178,7 +179,7 @@ do
     local standard = Packs.priceFor("standard")
     check(standard == 4000, "a standard pack costs 4,000")
     local themed
-    for id, packType in pairs(Cards.packTypes) do
+    for id, packType in pairs(PackTypes.byId) do
         if packType.themed and packType.priceFactor == nil then themed = id break end
     end
     check(themed ~= nil and Packs.priceFor(themed) == 5000, "a themed pack costs 5,000 (" .. tostring(themed) .. ")")

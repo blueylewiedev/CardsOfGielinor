@@ -349,6 +349,7 @@ commands refresh the plugin list and reload it):
 | `core/json.lua` | The JSON decoder. |
 | `core/version.lua` | The plugin version the overlay is matched against. |
 | `core/cards.lua` | `Cards.problem`, `register`, `deprecate`, `resort`, `revision`, `loadProblems`. |
+| `core/tagwords.lua`, `core/packtypes.lua` | The tag word lists and `isKnown`; the pack types (`PackTypes.byId`) and their checks. |
 | `plugin.json` | The optional `httpAccess` permission and the `cards` url. |
 | `ui/settingspage.lua` | The "Card updates" line. |
 | `docs/tuning.json` | The numbers and switches to change (committed as `{}`). |

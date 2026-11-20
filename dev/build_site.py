@@ -12,7 +12,7 @@ main > /docs). Run this script again whenever the deck changes and commit docs/c
 
 The cards are read straight from the Lua files with a small parser here, so this needs nothing but
 Python 3. Drafts (cards whose art is still empty) are left out, as they are in the game. The
-rarity colours and each themed pack's cards come from core/cards.lua and deck/packs.lua.
+rarity colours come from core/cards.lua and each themed pack's cards from core/packtypes.lua and deck/packs.lua.
 
 PICTURES. The site shows the wiki's picture of the item (File:<name> detail.png) or the NPC
 (File:<name>.png, then <name> chathead.png). A card in dev/wiki_pages.json gets the picture its

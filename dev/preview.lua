@@ -58,7 +58,7 @@ end
 
 -- The deck file a card is written in (as listed in deck/index.lua), or nil.
 local function deckFileOf(card)
-    for _, setName in ipairs(Cards.sets) do
+    for _, setName in ipairs(Cards.deckFiles) do
         local ok, set = pcall(require, setName)
         if ok and type(set) == "table" then
             for _, written in ipairs(set.cards or {}) do

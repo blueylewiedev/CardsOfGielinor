@@ -31,7 +31,7 @@ class MadeUpPlugin(unittest.TestCase):
         self.scratch = tempfile.TemporaryDirectory()
         self.source = Path(self.scratch.name) / "plugin"
         self.target = Path(self.scratch.name) / "release"
-        for name in ("main.lua", "plugin.json", "LICENSE", "core/cards.lua", "core/json.lua", "ui/kit.lua",
+        for name in ("main.lua", "plugin.json", "LICENSE", "core/cards.lua", "core/packtypes.lua", "core/tagwords.lua", "core/json.lua", "ui/kit.lua",
                      "deck/index.lua", "deck/npcs/a.lua", "resources/images/frame.png", "resources/images/CREDITS.md"):
             write(self.source, name)
         for name in ("dev/dev.lua", "docs/index.html", "docs/cards.json", ".github/workflows/x.yml", ".github/CODEOWNERS",
@@ -47,7 +47,7 @@ class MadeUpPlugin(unittest.TestCase):
 
     def test_only_the_plugin_is_copied(self):
         self.assertEqual(tree(self.target), [
-            "LICENSE", "core/cards.lua", "core/json.lua", "deck/index.lua", "deck/npcs/a.lua", "main.lua",
+            "LICENSE", "core/cards.lua", "core/json.lua", "core/packtypes.lua", "core/tagwords.lua", "deck/index.lua", "deck/npcs/a.lua", "main.lua",
             "plugin.json", "resources/images/CREDITS.md", "resources/images/frame.png", "ui/kit.lua"])
 
     def test_the_result_has_no_problems(self):

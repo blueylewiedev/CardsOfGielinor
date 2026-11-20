@@ -23,7 +23,7 @@ it with the wiki page it came from: type that page into the Wiki Review's "Reope
 candidate back in the Card Builder, then press Done again. A card in dev/cut_cards.lua (cut from
 the deck by the NPC rules) is never added, though it was queued before it was cut.
 
-A location or NPC category word that an added card uses and core/cards.lua does not list yet is
+A location or NPC category word that an added card uses and core/tagwords.lua does not list yet is
 added there too, as dev/add_tag_words.lua does, so a new word doesn't stop the plugin loading. Any
 other word that isn't listed is only reported (item categories go in their group by hand; regions,
 skills and membership are fixed lists, so there it is a typo). The wiki page an added card came from
@@ -43,7 +43,10 @@ import wiki_pages
 
 ROOT = Path(__file__).resolve().parent.parent
 STATE = ROOT / "dev" / ".card_queue_state.json"
-CARDS = ROOT / "core" / "cards.lua"
+TAGWORDS = ROOT / "core" / "tagwords.lua"       # the tag words cards may use (core/tagwords.lua): read here, and new words are added to it
+WORDS_MARKER = "TagWords.words = "
+GROUPS_MARKER = r"TagWords\.groups\s*="
+ITEM_GROUPS_MARKER = r"TagWords\.itemGroups\s*="
 CUT = ROOT / "dev" / "cut_cards.lua"    # cards cut from the deck by the NPC rules: never added again
 PLUGIN = "Cards of Gielinor"        # the plugin's id in the client's data: the name in plugin.json (was CardCollector)
 # the client's plugin data (or the CARD_DB environment variable's)
@@ -148,14 +151,14 @@ def list_at(text, marker):
     """The start and end of the first balanced { ... } after `marker` (a pattern)."""
     found = re.search(marker, text)
     if found is None:
-        raise ValueError(f"core/cards.lua: no {marker}")
+        raise ValueError(f"core/tagwords.lua: no {marker}")
     first = text.index("{", found.end())
     depth = 0
     for i in range(first, len(text)):
         depth += {"{": 1, "}": -1}.get(text[i], 0)
         if depth == 0:
             return first, i + 1
-    raise ValueError(f"core/cards.lua: {marker} has no end")
+    raise ValueError(f"core/tagwords.lua: {marker} has no end")
 
 
 def words_at(text, marker):
@@ -188,15 +191,15 @@ def word_problem(word, kind, is_item, known, wanted):
 
 
 def add_tag_words(entries, dry_run):
-    """Adds the location and NPC category words these cards use that core/cards.lua does not list
+    """Adds the location and NPC category words these cards use that core/tagwords.lua does not list
     (where dev/add_tag_words.lua puts them), and reports any other word it does not list."""
-    raw = CARDS.read_bytes().decode("utf-8")
+    raw = TAGWORDS.read_bytes().decode("utf-8")
     newline = "\r\n" if "\r\n" in raw else "\n"
     text = raw.replace("\r\n", "\n")
-    start = text.index("Cards.tagWords = ")
+    start = text.index(WORDS_MARKER)
     known = {kind: words_at(text[start:], r"(?<!\w)" + kind + r"\s*=") for kind in ("regions", "location", "skills", "membership")}
-    known["category"] = words_at(text, r"Cards\.tagGroups\s*=")
-    known["item_category"] = words_at(text, r"Cards\.itemTagGroups\s*=")
+    known["category"] = words_at(text, GROUPS_MARKER)
+    known["item_category"] = words_at(text, ITEM_GROUPS_MARKER)
     wanted = {"location": [], "category": []}
     for entry in entries:
         is_item = not entry["deck"].startswith("deck/npcs/")
@@ -208,16 +211,16 @@ def add_tag_words(entries, dry_run):
                     print(f"{entry['id']}: {kind} \"{word}\" is {problem} (not added)")
     verb = "would add" if dry_run else "added"
     for word in wanted["location"]:
-        print(f"{verb} location {word} to core/cards.lua")
+        print(f"{verb} location {word} to core/tagwords.lua")
     for word in wanted["category"]:
-        print(f"{verb} NPC category {word} to core/cards.lua")
+        print(f"{verb} NPC category {word} to core/tagwords.lua")
     if dry_run or not (wanted["location"] or wanted["category"]):
         return
     if wanted["category"]:
         text = add_to_list(text, r'title = "What it is", words\s*=', wanted["category"], " " * 12)
     if wanted["location"]:
         text = text[:start] + add_to_list(text[start:], r"(?<!\w)location\s*=", wanted["location"], " " * 17)
-    CARDS.write_bytes(text.replace("\n", newline).encode("utf-8"))
+    TAGWORDS.write_bytes(text.replace("\n", newline).encode("utf-8"))
 
 
 def entries_with_state(db_path, state):
@@ -263,7 +266,7 @@ def process(db_path, dry_run=False):
             print(f"FAILED {key[len(KEY_PREFIX):]} {entry['id']}: {reason}  (python dev/card_queue.py --db ... --list)")
         if not dry_run:
             keep = {"id": entry["id"], "status": status, "reason": reason, "rename": (state.get(key) or {}).get("rename", "")}
-            # (until its words are in core/cards.lua, so a failure there is tried again)
+            # (until its words are in core/tagwords.lua, so a failure there is tried again)
             if status == "done":
                 keep["words_pending"] = True
             state[key] = keep
@@ -274,7 +277,7 @@ def process(db_path, dry_run=False):
         try:
             add_tag_words(list(to_tag.values()), dry_run)
         except (OSError, ValueError) as error:
-            print(f"Could not add tag words to core/cards.lua, will try again next run: {error}")
+            print(f"Could not add tag words to core/tagwords.lua, will try again next run: {error}")
         else:
             if not dry_run:
                 for key in to_tag:

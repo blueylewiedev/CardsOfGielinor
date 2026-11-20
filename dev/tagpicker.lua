@@ -1,6 +1,6 @@
 -- tagpicker.lua
 -- Developer-only: a window for choosing a card's tags from the words that are allowed (the lists in
--- Cards.tagWords), so nobody has to type them or remember them. There is a page (tab) for each
+-- TagWords.words), so nobody has to type them or remember them. There is a page (tab) for each
 -- kind of tag: region (items only), location, skills and category. Click a word to add it to the card; click it again
 -- to take it off. Words on the card already show as pressed in. The Filter box narrows the words
 -- on every page.
@@ -12,7 +12,7 @@
 -- typing so the buttons agree, and TagPicker.rebuild() when the kind of card changes (an item's
 -- category words are not an NPC's, items have no location and only items pick a region).
 --
--- A group with a `requires` word (see Cards.itemTagGroups) is only shown while that word is on the
+-- A group with a `requires` word (see TagWords.itemGroups) is only shown while that word is on the
 -- card, and its words are taken off the card when the required word is.
 --
 -- The pages are as tall as the longest one needs (with every group open). If that is taller than
@@ -21,6 +21,7 @@
 local Kit = require("ui/kit")
 local DevKit = require("dev/devkit")
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
 
 local TagPicker = {}
 
@@ -69,11 +70,11 @@ end
 -- The words for a kind, as a list of groups { title = text or nil, words = list }. `cardKind` is
 -- the kind of card being tagged ("npc", the default, or "item").
 function TagPicker.groups(kind, cardKind)
-    local grouped = Cards.tagGroupsFor(cardKind, kind)
+    local grouped = TagWords.groupsFor(cardKind, kind)
     if grouped ~= nil then
         return grouped
     end
-    return { { words = Cards.wordsFor(cardKind, kind) or {} } }
+    return { { words = TagWords.wordsFor(cardKind, kind) or {} } }
 end
 
 -- The kind of card the target is tagging.

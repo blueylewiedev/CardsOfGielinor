@@ -1,14 +1,14 @@
 -- dev/add_tag_words.lua
--- Adds the tag words the cards use that core/cards.lua does not list yet, so a new location or
+-- Adds the tag words the cards use that core/tagwords.lua does not list yet, so a new location or
 -- category from the Card Builder or the Wiki Review never stops the plugin loading. Only words a
 -- card actually uses are added (the wiki suggests many that are changed or dropped in the
 -- builder):
---   location      -> the end of Cards.tagWords.location
---   NPC category  -> the "What it is" group of Cards.tagGroups.category (move it to a better
+--   location      -> the end of TagWords.words.location
+--   NPC category  -> the "What it is" group of TagWords.groups.category (move it to a better
 --                    group by hand if it is what the NPC does, or whether it can be fought)
 -- Other words that are not listed are only reported: regions, skills and membership are fixed
 -- lists, so there it is a typo; item categories go in the right group of
--- Cards.itemTagGroups.category by hand. Then every card is loaded (dev/check_cards.lua).
+-- TagWords.itemGroups.category by hand. Then every card is loaded (dev/check_cards.lua).
 --
 -- Run from the plugin's folder (CardsOfGielinor):
 --   lua dev/add_tag_words.lua            add the words, then check the cards
@@ -16,7 +16,7 @@
 
 package.path = "./?.lua;" .. package.path
 
-local CARDS_FILE = "core/cards.lua"
+local CARDS_FILE = "core/tagwords.lua"
 local dryRun = arg[1] == "--dry-run"
 
 local file = assert(io.open(CARDS_FILE, "rb"))
@@ -28,7 +28,7 @@ local newline = text:find("\r\n", 1, true) and "\r\n" or "\n"
 -- `init`; `plain` for a pattern without magic characters).
 local function listAt(pattern, init, plain)
     local _, after = text:find(pattern, init, plain)
-    assert(after, "core/cards.lua no longer has " .. pattern)
+    assert(after, "core/tagwords.lua no longer has " .. pattern)
     return text:find("%b{}", after + 1)
 end
 
@@ -41,7 +41,7 @@ local function wordsAt(first, last)
     return set
 end
 
-local tagWordsAt = listAt("Cards.tagWords = ", 1, true)
+local tagWordsAt = listAt("TagWords.words = ", 1, true)
 local function tagWordsList(kind)
     return listAt(kind .. "%s*=%s*", tagWordsAt)
 end
@@ -50,8 +50,8 @@ local known = {}
 for _, kind in ipairs({ "regions", "location", "skills", "membership" }) do
     known[kind] = wordsAt(tagWordsList(kind))
 end
-known.npcCategory = wordsAt(listAt("Cards%.tagGroups%s*=%s*"))
-known.itemCategory = wordsAt(listAt("Cards%.itemTagGroups%s*=%s*"))
+known.npcCategory = wordsAt(listAt("TagWords%.groups%s*=%s*"))
+known.itemCategory = wordsAt(listAt("TagWords%.itemGroups%s*=%s*"))
 
 -- Every word the cards use that is not listed, by where it goes ("other": only reported). Each
 -- list holds its words in order, and each word the cards that use it.
@@ -117,7 +117,7 @@ end
 report(dryRun and "would add location " or "added location ", "location")
 report(dryRun and "would add NPC category " or "added NPC category ", "npcCategory")
 if #missing.location + #missing.npcCategory == 0 then
-    print("Every location and NPC category the cards use is in core/cards.lua.")
+    print("Every location and NPC category the cards use is in core/tagwords.lua.")
 elseif not dryRun then
     -- (the category list is after the location list, so it is changed first)
     if #missing.npcCategory > 0 then

@@ -161,6 +161,7 @@ end
 -- `files` is { file name = what it returns }; `packs` is what deck/packs.lua returns.
 local function loadDeck(files, packs)
     package.loaded["core/cards"] = nil
+    package.loaded["core/packtypes"] = nil
     local names = {}
     for name, value in pairs(files) do
         names[#names + 1] = name
@@ -175,8 +176,8 @@ local function loadDeck(files, packs)
     table.sort(names)
     package.loaded["deck/index"] = names
     package.loaded["deck/packs"] = packs or {}
-    local ok, result = pcall(require, "core/cards")
-    return ok, result
+    local ok, cards, packTypes = pcall(function() return require("core/cards"), require("core/packtypes") end)
+    return ok, cards, packTypes
 end
 
 local function mentions(loaded, text)
@@ -190,55 +191,55 @@ end
 
 do
     local sound = { id = "a", name = "A", rarity = "common" }
-    local ok, loaded = loadDeck({ fake_a = { cards = { sound } } })
+    local ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } } })
     check(ok and #loaded.list == 1 and #loaded.loadProblems == 0, "a sound one-card deck loads with no problems")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "a", name = "Again", rarity = "common" } } } })
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, { id = "a", name = "Again", rarity = "common" } } } })
     check(ok and #loaded.list == 1 and loaded.byId["a"].name == "A" and mentions(loaded, "used by two cards"),
         "a duplicate id: the first card stays and the second is reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "b", name = "B", rarity = "mythic" } } } })
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, { id = "b", name = "B", rarity = "mythic" } } } })
     check(ok and #loaded.list == 1 and loaded.byId["b"] == nil and mentions(loaded, "Unknown rarity on card b"),
         "an unknown rarity: the card is left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "c", name = "C", rarity = "common",
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, { id = "c", name = "C", rarity = "common",
         tags = { skills = { "no_such_skill" } } } } } })
     check(ok and #loaded.list == 1 and mentions(loaded, "unknown skills tag"), "an unknown tag word: left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "d|e", name = "D", rarity = "common" } } } })
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, { id = "d|e", name = "D", rarity = "common" } } } })
     check(ok and #loaded.list == 1 and mentions(loaded, "cannot contain"), "an id with a bar: left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "f", name = "F", rarity = "common",
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, { id = "f", name = "F", rarity = "common",
         tags = { skills = { false } } } } } })
     check(ok and #loaded.list == 1 and mentions(loaded, "must be text"), "a tag word that is not text: left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, "not a card", { name = "no id" } } } })
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, "not a card", { name = "no id" } } } })
     check(ok and #loaded.list == 1 and #loaded.loadProblems == 2, "a card that is not a table, or has no id: left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound, { id = "g", name = "G", art = { npc = "" },
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound, { id = "g", name = "G", art = { npc = "" },
         tags = { skills = { "no_such_skill" } } } } } })
     check(ok and #loaded.drafts == 0 and mentions(loaded, "unknown skills tag"), "a draft with a bad tag is left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound } }, fake_b = "error", fake_c = { cards = { { id = "h", name = "H",
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } }, fake_b = "error", fake_c = { cards = { { id = "h", name = "H",
         rarity = "common" } } } })
     check(ok and #loaded.list == 2 and mentions(loaded, "fake_b did not load"),
         "a deck file that fails to load is left out and the other files still load")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "mine", name = "Mine", minRarity = "mythic" } })
-    check(ok and loaded.packTypes["mine"] == nil and mentions(loaded, "Unknown minRarity on pack mine"),
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } } }, { { id = "mine", name = "Mine", minRarity = "mythic" } })
+    check(ok and packTypes.byId["mine"] == nil and mentions(loaded, "Unknown minRarity on pack mine"),
         "a pack with an unknown minRarity is left out and reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "mine2", name = "M", filter = { skills = { "nope" } } } })
-    check(ok and loaded.packTypes["mine2"] == nil and mentions(loaded, "filters on unknown"), "a pack filtering on a bad word is left out")
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } } }, { { id = "mine2", name = "M", filter = { skills = { "nope" } } } })
+    check(ok and packTypes.byId["mine2"] == nil and mentions(loaded, "filters on unknown"), "a pack filtering on a bad word is left out")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "dup", name = "1" }, { id = "dup", name = "2" } })
-    check(ok and loaded.packTypes["dup"].name == "1" and mentions(loaded, "Duplicate pack type id dup"), "a duplicate pack id is reported")
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } } }, { { id = "dup", name = "1" }, { id = "dup", name = "2" } })
+    check(ok and packTypes.byId["dup"].name == "1" and mentions(loaded, "Duplicate pack type id dup"), "a duplicate pack id is reported")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { name = "no id" } })
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } } }, { { name = "no id" } })
     check(ok and mentions(loaded, "has no id"), "a pack with no id is left out")
 
-    ok, loaded = loadDeck({ fake_a = { cards = { sound } } }, { { id = "standard", name = "Renamed standard" } })
-    check(ok and loaded.packTypes.standard.name == "Renamed standard", "a line for a pack type that exists still changes it")
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = { sound } } }, { { id = "standard", name = "Renamed standard" } })
+    check(ok and packTypes.byId.standard.name == "Renamed standard", "a line for a pack type that exists still changes it")
 end
 
 -- A deck whose data is the wrong shape must not make loading throw: what cannot be used is left out and reported,
@@ -262,7 +263,7 @@ do
         { "a defaults word that is a table", { defaults = { regions = { {} } }, cards = { fresh() } }, "must be text" },
     }
     for _, case in ipairs(cases) do
-        local ok, loaded = loadDeck({ fake_a = case[2] })
+        local ok, loaded, packTypes = loadDeck({ fake_a = case[2] })
         check(ok, case[1] .. ": loading does not throw (" .. tostring(not ok and loaded or "") .. ")")
         if ok then
             check(mentions(loaded, case[3]), case[1] .. ": reported (" .. case[3] .. ")")
@@ -270,10 +271,10 @@ do
         end
     end
     -- the sound card in the same file as a bad one stays
-    local ok, loaded = loadDeck({ fake_a = { defaults = withDefaults, cards = { fresh(), badCard({ tags = "x" }) } } })
+    local ok, loaded, packTypes = loadDeck({ fake_a = { defaults = withDefaults, cards = { fresh(), badCard({ tags = "x" }) } } })
     check(ok and loaded.byId["a"] ~= nil, "a sound card beside a bad one still loads")
     -- a bad file does not stop the next one
-    ok, loaded = loadDeck({ fake_a = { cards = 5 }, fake_b = { cards = { fresh() } } })
+    ok, loaded, packTypes = loadDeck({ fake_a = { cards = 5 }, fake_b = { cards = { fresh() } } })
     check(ok and loaded.byId["a"] ~= nil, "a file of the wrong shape does not stop the next file")
 
     -- what a card draws must be the kind of value the card view expects

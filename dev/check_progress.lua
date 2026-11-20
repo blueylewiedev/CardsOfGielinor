@@ -8,6 +8,7 @@ package.path = "./?.lua;" .. package.path
 function log() end
 
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
 local Browse = require("core/browse")
 
 local failures = 0
@@ -58,7 +59,7 @@ for id in pairs(Cards.rarities) do
 end
 check(rarityTotal == #Cards.list, "the rarities add up to the deck")
 
-for _, word in ipairs(Cards.tagWords.regions) do
+for _, word in ipairs(TagWords.words.regions) do
     local want = Browse.counts(state, { region = word })
     local got = progress.regions[word] or { cards = 0, owned = 0 }
     check(got.cards == want.cards and got.owned == want.owned, "region " .. word .. " matches Browse.counts")

@@ -19,6 +19,7 @@
 -- skills of recipes differently, and some items (the runes) have no recipe in their config.
 
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
 
 local ItemFacts = {}
 
@@ -302,7 +303,7 @@ end
 -- interpret already adds first). Returns the words that are valid category words for an item.
 function ItemFacts.validCategory(words)
     local allowed = {}
-    for _, word in ipairs(Cards.wordsFor("item", "category") or {}) do
+    for _, word in ipairs(TagWords.wordsFor("item", "category") or {}) do
         allowed[word] = true
     end
     local out = {}
