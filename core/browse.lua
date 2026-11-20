@@ -137,6 +137,27 @@ function Browse.preferredFinish(have)
     return "normal"
 end
 
+-- The finish an entry of the collection viewer is shown in: `chosen` (picked with the card's finish toggles) if the player
+-- still has it, otherwise the entry's own (the filter's finish, or the rarest they have).
+function Browse.shownFinish(entry, chosen)
+    if chosen ~= nil and entry.finishes[chosen] ~= nil then
+        return chosen
+    end
+    return entry.finish
+end
+
+-- The finishes the player has of an entry's card, in the order the toggles show them (FINISH_PREFERENCE), as
+-- { finish, count } pairs.
+function Browse.ownedFinishes(entry)
+    local list = {}
+    for _, finish in ipairs(Browse.FINISH_PREFERENCE) do
+        if entry.finishes[finish] ~= nil then
+            list[#list + 1] = { finish = finish, count = entry.finishes[finish] }
+        end
+    end
+    return list
+end
+
 -- What the player has of a card as far as the filter's finish goes: all of `have` with no finish chosen; with one,
 -- only that finish (nil if they have none of it). The list and its counts both go by it.
 local function haveInFinish(have, finish)
