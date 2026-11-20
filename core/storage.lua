@@ -31,36 +31,21 @@ Storage.BUCKETS = BUCKETS
 -- billion keys; the plugin has only ever used 16 and 32.
 local MAX_SAVED_BUCKETS = 256
 
--- Added to the end of every key while the development tools are present (main.lua sets it).
--- The dev copy of the plugin and a released copy on the same computer have the same plugin name,
--- so they share one PersistentDB; the suffix gives each its own collections.
-local profileSuffix = ""
-
-function Storage.setProfileSuffix(suffix)
-    profileSuffix = suffix or ""
-end
-
--- What setProfileSuffix was last given ("" for a released copy).
-function Storage.profileSuffix()
-    return profileSuffix
-end
-
 -- Lower-cases text and swaps anything but letters and digits for "_", so it is safe in a key.
 local function clean(text)
     local key = string.gsub(string.lower(tostring(text)), "[^%w]", "_")
     return key
 end
 
--- PersistentDB key for a collection kept under a character's name, e.g. "Some Name" -> "collection_some_name" (plus
--- the profile suffix, see above).
+-- PersistentDB key for a collection kept under a character's name, e.g. "Some Name" -> "collection_some_name".
 function Storage.keyForName(characterName)
-    return "collection_" .. clean(characterName) .. profileSuffix
+    return "collection_" .. clean(characterName)
 end
 
 -- PersistentDB key for a collection kept under a character's tracking id. The different
 -- prefix means no character name can ever produce the same key.
 function Storage.keyForTracking(trackingId)
-    return "tracking_" .. clean(trackingId) .. profileSuffix
+    return "tracking_" .. clean(trackingId)
 end
 
 -- The key of one bucket of a collection (`key` is the main key). It starts with "bucket", which no main
@@ -89,7 +74,7 @@ function Storage.newState()
         stats = Storage.newStats(), dirty = false, dirtyBuckets = {} }
 end
 
--- Lifetime statistics: packsOpened, cardsPulled, creditsEarned (from play, not the dev tools), creditsSpent,
+-- Lifetime statistics: packsOpened, cardsPulled, creditsEarned (from play), creditsSpent,
 -- playTicks (about 0.6 s each, for the credits per hour) and finishes and rarities ({ name = cards pulled }).
 function Storage.newStats()
     return { packsOpened = 0, cardsPulled = 0, creditsEarned = 0, creditsSpent = 0, playTicks = 0,

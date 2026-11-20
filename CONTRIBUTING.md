@@ -41,13 +41,14 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
    Syntax errors are printed to the console with the file and line number.
 
 The `dev/` folder holds the developer tools. They load automatically when the folder is present
-(it is left out of the released plugin), and their buttons appear on the plugin's **Home window**.
+(it is left out of the released plugin). A **Dev tools** window with a button for each tool appears in the game; it scrolls, can
+be dragged and resized, and has no close button.
 
 ---
 
 ## Adding a card
 
-The **Card Builder** (the *Card Builder* button on the Home window) makes a new card for you and
+The **Card Builder** (the *Card Builder* button in the Dev tools window) makes a new card for you and
 checks it as you go. You do not need to know how the code works to be able to contribute :).
 It makes NPC cards. For an item card, press **Item** at the top of the window: the NPC search is
 replaced by an item search (and a list of your Grand Exchange offers), and the animation and
@@ -66,7 +67,7 @@ those up. Choose the normal item, not its noted version.
 **Starting from the wiki (optional).** Instead of filling every box in by hand, you can have
 candidates made from the [RuneScape Wiki](https://runescape.wiki) and review them:
 
-1. Open **Wiki Review** from the Home window and press its search button: **Wiki Fetch** lets you
+1. Open **Wiki Review** from the Dev tools window and press its search button: **Wiki Fetch** lets you
    pick wiki categories (places, for NPC cards, and kinds of item, for item cards) or type pages,
    and gives you the command, for example
    `python dev/wiki_cards.py --category "Lumbridge" --category "Logs"`. Copy it and run it in the
@@ -143,7 +144,7 @@ a contact so the wiki's admins can reach you if anything goes wrong (see
 `dev/wiki_contact.txt` (for example `@yourname on Discord`). The cache, the candidates and your
 contact file are not committed.
 
-To find NPCs that still need a card, open **Uncarded NPCs** on the Home window. While the developer tools
+To find NPCs that still need a card, open **Uncarded NPCs** in the Dev tools window. While the developer tools
 are in use, NPCs near you that have no card get a yellow box round them in the game world (the window
 switches the boxes off and sets how many tiles to look). Use **Ignore** in that window for NPCs that will
 not get a card, or that have one with a different model (it ignores every version of that name, and is

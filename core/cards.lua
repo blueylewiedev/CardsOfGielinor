@@ -386,8 +386,8 @@ function Cards.isDraft(card)
 end
 
 -- A card, file or pack that cannot be used is left out, not allowed to stop the plugin loading, and described in
--- Cards.loadProblems. The dev copy of the plugin (main.lua) and dev/check_cards.lua, which the pull request
--- check runs, treat any problem as an error, so one is found before release.
+-- Cards.loadProblems. dev/check_cards.lua, which the pull request check runs, treats any problem as an error, so one is
+-- found before release.
 Cards.loadProblems = {}
 local function leaveOut(message)
     Cards.loadProblems[#Cards.loadProblems + 1] = message
@@ -572,7 +572,6 @@ local function isKnownWord(tagKind, word, cardKind)
     end
     return false
 end
-Cards.isKnownWord = isKnownWord
 
 -- Why a card's tags are not sound, as a message that names the card, or nil if they are.
 local function tagsProblem(card)

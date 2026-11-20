@@ -13,9 +13,6 @@ local Browse = {}
 -- The filter fields that are words of a tag, and the tag each is a word of.
 local TAG_FIELDS = { region = "regions", skill = "skills", category = "category", membership = "membership" }
 
-Browse.OWNED = { "all", "owned", "unowned" }
-Browse.SORTS = { "rarity", "rarity_desc", "name", "owned" }
-
 -- "kharidian_desert" -> "Kharidian desert": a tag word as the viewer's lists show it.
 function Browse.label(word)
     local text = string.gsub(tostring(word), "_", " ")

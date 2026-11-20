@@ -7,14 +7,12 @@ local Settings = {}
 
 local KEY = "card_settings"
 
--- Every option, with its default, in the order of the settings page. A `dev` option shows only in the development
--- copy; a `hidden` one is remembered but not listed (a button changes it). PrettyUI cuts a checkbox label off at
--- about 35 characters, so keep labels shorter.
+-- Every option, with its default, in the order of the settings page. A `hidden` one is remembered but not listed (a
+-- button changes it). PrettyUI cuts a checkbox label off at about 35 characters, so keep labels shorter.
 Settings.options = {
     { id = "glow", label = "Glow behind rare cards", default = true },
     { id = "burst", label = "Colour burst on card reveal", default = true },
     { id = "shine", label = "Shine on foil cards", default = true },
-    { id = "releasePreview", label = "Preview as released", default = false, dev = true },
     { id = "creditsWindow", label = "Show the credits overlay", default = true },
     { id = "debugLogging", label = "Detailed logging for bug reports", default = false },
     { id = "mainOpen", label = "Open the main window at start", default = true, hidden = true },

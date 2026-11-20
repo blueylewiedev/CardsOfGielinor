@@ -75,7 +75,7 @@ function Overlay.begin(text, version)
     if head.base ~= version then
         return nil, "the overlay is for version " .. tostring(head.base) .. ", this is version " .. version
     end
-    Config.reset()          -- (a second overlay in one session, from the dev button, replaces the tuning of the first)
+    Config.reset()          -- (a second overlay in one session replaces the tuning of the first)
     return {
         text = text, pos = pos, finished = false, base = head.base,
         revision = type(head.revision) == "number" and head.revision or nil,

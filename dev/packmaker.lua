@@ -1,6 +1,5 @@
 -- dev/packmaker.lua
--- The Pack Maker: a window for designing a themed pack, opened from the Home window's developer
--- buttons.
+-- The Pack Maker: a window for designing a themed pack, opened from the Dev tools window.
 --
 --   1. Login screen : the game's login screen pictures and cutscenes, found by search and a drop-down
 --                     (or stepped through); a second drop-down shows only login screens or only
@@ -209,10 +208,20 @@ for _, choice in ipairs(OTHER_CARDS) do
     choiceForTitle[choice.title] = choice.value
 end
 
+-- True if `word` is one of the regions (Cards.tagWords.regions).
+local function isRegion(word)
+    for _, region in ipairs(Cards.tagWords.regions) do
+        if region == word then
+            return true
+        end
+    end
+    return false
+end
+
 -- The region a title gives: its own (the region titles are named after the regions), the choice a title is made for
 -- (Gielinor: the cards from no one region; Free to Play: the free-to-play cards), or all cards for any other title.
 local function regionForTitle(titleId)
-    return choiceForTitle[titleId] or (Cards.isKnownWord("regions", titleId) and titleId) or ALL_CARDS
+    return choiceForTitle[titleId] or (isRegion(titleId) and titleId) or ALL_CARDS
 end
 
 -- The pack's id: its name in lower case with underscores ("Misthalin pack" -> misthalin_pack), or

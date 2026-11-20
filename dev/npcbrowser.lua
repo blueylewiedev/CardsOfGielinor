@@ -10,7 +10,7 @@
 --   Probe              : logs every member name it can find on the NPC's config and on the
 --                        head model, looking for anything that tells a real head from a
 --                        missing one (the id read back from the model does not)
--- Only created when DEBUG is on in main.lua, and opened from the Home window.
+-- Only created when DEBUG is on in main.lua, and opened from the Dev tools window.
 
 local Kit = require("ui/kit")
 local OutputWindow = require("dev/outputwindow")

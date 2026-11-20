@@ -54,12 +54,6 @@ clear()
 Logger.debug("again")
 check(#written == 0, "and stops when it is switched off")
 
--- the development copy always writes the detail
-Logger.setDevCopy(true)
-Logger.debug("dev")
-check(#written == 1, "the development copy writes the detail")
-Logger.setDevCopy(false)
-
 -- a failure is written once
 Logger.reset()
 clear()

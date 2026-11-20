@@ -46,7 +46,7 @@ function Rate.tick()
     end
 end
 
--- Credits have been earned (by playing, not added by the dev tools).
+-- Credits have been earned (by playing: Storage.earnCredits).
 function Rate.add(amount)
     if type(amount) ~= "number" or amount <= 0 then
         return

@@ -45,8 +45,7 @@ local function subscribe()
     end
 end
 
--- Call once when the plugin loads. (The dev copy asks for the permission itself: dev/grants.lua. The plugin never does:
--- the player decides whether to grant it.)
+-- Call once when the plugin loads. The plugin never asks for the permission itself: the player decides whether to grant it.
 function Identity.start()
     subscribe()
 end

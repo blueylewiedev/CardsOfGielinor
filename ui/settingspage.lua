@@ -3,9 +3,8 @@
 -- kept up to date:
 --   "client" the plugin's page in the client's settings (needs "hasSettingsIcon" in
 --     plugin.json), one column in PrettyUI's SimpleView
---   "window" a window opened by the cog in the main window's title bar: General (and
---     Developer, in the development copy) on the left, Your
---             collection and Card updates on the right
+--   "window" a window opened by the cog in the main window's title bar: General on the left, Your collection and
+--     Card updates on the right
 
 local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
@@ -37,11 +36,21 @@ local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 
 -- api.getState() and api.saveNow(), as for the pack window; api.keyKind() (how the collection is saved: "tracking",
--- "name" or nil); api.devTools (true when the development tools are there) and api.onSettingChanged(id, on), called
--- after an option changes.
+-- "name" or nil) and api.onSettingChanged(id, on), called after an option changes.
 local api = nil
 local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, widgets = {...} }
 local window = nil       -- the settings window's frame, while it is open
+
+-- The options the player can change, as the checkboxes' choices.
+local function choices()
+    local list = {}
+    for _, option in ipairs(Settings.options) do
+        if not option.hidden then
+            list[#list + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
+        end
+    end
+    return list
+end
 
 -- Removes one of the two copies of the page ("client" or "window") from the screen.
 local function destroyPage(key)
@@ -67,25 +76,16 @@ local function build(key, parent, width, height)
         view:AddDivider({ height = DIVIDER_HEIGHT, marginTop = DIVIDER_ABOVE, marginBottom = DIVIDER_BELOW })
     end
 
-    -- The options, as checkboxes: the effects, then (only with the development tools) theirs.
-    local function checkboxes(heading, dev)
-        local list = {}
-        for _, option in ipairs(Settings.options) do
-            if (option.dev == true) == dev and not option.hidden then
-                list[#list + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
+    -- The options, as checkboxes.
+    view:AddText("General")
+    page.widgets.effects = view:AddCheckboxButton(choices(), {
+        onChange = function(_, _, changedValue, selected)
+            Settings.set(changedValue, selected)
+            if api.onSettingChanged ~= nil then
+                api.onSettingChanged(changedValue, selected)
             end
-        end
-        view:AddText(heading)
-        return view:AddCheckboxButton(list, {
-            onChange = function(_, _, changedValue, selected)
-                Settings.set(changedValue, selected)
-                if api.onSettingChanged ~= nil then
-                    api.onSettingChanged(changedValue, selected)
-                end
-            end,
-        })
-    end
-    page.widgets.effects = checkboxes("General", false)
+        end,
+    })
     divider()
     -- A line of text with an info icon beside it; the icon's tooltip is set by refreshPage.
     local textWidth = math.max(120, width - MARGINS - ICON_WIDTH - 6)
@@ -99,10 +99,6 @@ local function build(key, parent, width, height)
     divider()
     view:AddText("Card updates")
     page.widgets.updates, page.widgets.updatesIcon = lineWithIcon()
-    if api.devTools then
-        divider()
-        page.widgets.dev = checkboxes("Developer (hides the dev tools)", true)
-    end
 end
 
 -- Shows a line and the explanation for its icon's tooltip, changing each only when it is different.
@@ -151,39 +147,24 @@ function SettingsPage.closeWindow()
     window = nil
 end
 
--- The options of one kind (the effects, or the developer ones), as the checkboxes' choices.
-local function choicesFor(dev)
-    local list = {}
-    for _, option in ipairs(Settings.options) do
-        if (option.dev == true) == dev and not option.hidden then
-            list[#list + 1] = { text = option.label, value = option.id, selected = Settings.get(option.id) }
-        end
-    end
-    return list
-end
 
 -- The heights of the panels (a heading, then the rows, then PAD).
 local function checkboxPanelHeight(rows, extra)
     return HEADING_H + rows * Kit.CHECKBOX_ROW_H + (extra or 0) + PAD
 end
 local LINE_PANEL_MIN_H = HEADING_H + LINE_ROW_H + PAD
--- General is as tall as Your collection and Card updates together, so the two columns end level (with the development tools
--- off); its rows are spaced out to fill it. With more options than that has room for it is taller, and the two panels on the
--- right grow to match.
+-- General is as tall as Your collection and Card updates together, so the two columns end level; its rows are spaced out to
+-- fill it. With more options than that has room for it is taller, and the two panels on the right grow to match.
 local function generalHeight()
-    return math.max(2 * LINE_PANEL_MIN_H + MARGIN, checkboxPanelHeight(#choicesFor(false)))
+    return math.max(2 * LINE_PANEL_MIN_H + MARGIN, checkboxPanelHeight(#choices()))
 end
 local function linePanelHeight()
     return (generalHeight() - MARGIN) // 2
 end
 
--- How tall the window's content is: the taller of the two columns, with the margin round it.
-local function windowHeight(dev)
-    local height = generalHeight()
-    if dev then
-        height = height + MARGIN + checkboxPanelHeight(#choicesFor(true), 20)
-    end
-    return height + 2 * MARGIN
+-- How tall the window's content is: the column's height, with the margin round it.
+local function windowHeight()
+    return generalHeight() + 2 * MARGIN
 end
 
 -- A line of text with an info icon at its right, inside a panel at (x, y): returns the text and the icon.
@@ -200,30 +181,20 @@ local function buildWindow(content)
     local x1, x2 = MARGIN, MARGIN + COLUMN_W + MARGIN
     local inner = COLUMN_W - 2 * PAD
 
-    -- A panel of checkboxes. With `height` it is that tall and the rows are spaced evenly down it.
-    local function checkboxPanel(x, y, heading, dev, extra, height)
-        local choices = choicesFor(dev)
-        height = height or checkboxPanelHeight(#choices, extra)
-        local step = nil
-        if #choices > 1 then
-            step = (height - HEADING_H - PAD - Kit.CHECKBOX_ROW_H) // (#choices - 1)
+    -- Left: the options as checkboxes, spaced evenly down a panel as tall as the two on the right together.
+    local options = choices()
+    local height = generalHeight()
+    local step = nil
+    if #options > 1 then
+        step = (height - HEADING_H - PAD - Kit.CHECKBOX_ROW_H) // (#options - 1)
+    end
+    Kit.panel(content, x1, MARGIN, COLUMN_W, height, "GENERAL")
+    page.widgets.effects = Kit.checkboxes(content, x1 + PAD, MARGIN + HEADING_H, inner, options, function(value, selected)
+        Settings.set(value, selected)
+        if api.onSettingChanged ~= nil then
+            api.onSettingChanged(value, selected)
         end
-        Kit.panel(content, x, y, COLUMN_W, height, heading)
-        return Kit.checkboxes(content, x + PAD, y + HEADING_H, inner, choices, function(value, selected)
-            Settings.set(value, selected)
-            if api.onSettingChanged ~= nil then
-                api.onSettingChanged(value, selected)
-            end
-        end, height ~= checkboxPanelHeight(#choices, extra) and step or nil), y + height
-    end
-
-    -- Left: the effects, then (only with the development tools) the developer options.
-    local nextY
-    page.widgets.effects, nextY = checkboxPanel(x1, MARGIN, "GENERAL", false, nil, generalHeight())
-    if api.devTools then
-        page.widgets.dev, nextY = checkboxPanel(x1, nextY + MARGIN, "DEVELOPER", true, 20)
-        Kit.text(content, x1 + PAD, nextY - PAD - 20, inner, 18, "Hides the development tools", GREY, ui.AlignMode.TOPLEFT)
-    end
+    end, height ~= checkboxPanelHeight(#options) and step or nil)
 
     -- Right: how the collection is saved, and the card updates. Each line has an icon with the explanation as its tooltip.
     local linePanelH = linePanelHeight()
@@ -241,7 +212,7 @@ function SettingsPage.openWindow()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     local content
-    local height = windowHeight(api.devTools)
+    local height = windowHeight()
     window, content = Kit.window(gameWindow, "Settings", WINDOW_WIDTH, height + Kit.titleBarHeight(),
         function() SettingsPage.closeWindow() end, 0.3, 0.2)
     local ok, err = pcall(buildWindow, content)

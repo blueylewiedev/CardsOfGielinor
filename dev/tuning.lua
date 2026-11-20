@@ -3,16 +3,12 @@
 -- reload and does not have to be typed into core/cards.lua straight away.
 --
 -- Saved settings are stored in PersistentDB and applied on top of a card's own `art` entry
--- (see addArt in ui/cardview.lua). They only apply while `Tuning.enabled` is true, which
--- Dev.setActive (dev/dev.lua) sets while the tools are in use, so a released plugin (and the
--- "Preview as released" setting) ignores anything saved here.
+-- (dev/artoverride.lua).
 -- Once a card's values are in core/cards.lua, use Reset in the preview to remove its saved entry.
 
 local Tuning = {}
 
 local DB_KEY = "dev_card_tuning"
-
-Tuning.enabled = false
 
 -- { [card id] = { body = true/false, cam = { yaw, pitch, dist, fov, ty, tx, near }, anim = number or nil,
 --   line = the card's art line, for dev/apply_tuning.py } }
@@ -53,11 +49,8 @@ local function save()
     return ok
 end
 
--- The saved settings for a card, or nil (also nil whenever tuning is not enabled).
+-- The saved settings for a card, or nil.
 function Tuning.get(cardId)
-    if not Tuning.enabled then
-        return nil
-    end
     load()
     return data[cardId]
 end

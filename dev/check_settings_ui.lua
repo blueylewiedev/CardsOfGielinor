@@ -79,32 +79,29 @@ local function has(pattern)
 end
 
 local changed = {}
-for _, dev in ipairs({ false, true }) do
-    created = {}
-    SettingsPage.init({
-        getState = function() return {} end, saveNow = function() end,
-        keyKind = function() return "tracking" end, devTools = dev,
-        onSettingChanged = function(optionId, on) changed[#changed + 1] = optionId end,
-    })
-    SettingsPage.openWindow()
-    local tag = dev and "with the dev tools" or "without the dev tools"
-    check(has("^GENERAL$") and has("^YOUR COLLECTION$") and has("^CARD UPDATES$"), tag .. ": the three panels have headings")
-    check(has("^DEVELOPER$") == dev, tag .. ": the Developer panel is there only for the development copy")
-    for _, option in ipairs(Settings.options) do
-        if not option.hidden and ((option.dev == true) == false or dev) then
-            check(has(option.label), tag .. ": a checkbox for '" .. option.label .. "'")
-        end
+created = {}
+SettingsPage.init({
+    getState = function() return {} end, saveNow = function() end,
+    keyKind = function() return "tracking" end,
+    onSettingChanged = function(optionId, on) changed[#changed + 1] = optionId end,
+})
+SettingsPage.openWindow()
+check(has("^GENERAL$") and has("^YOUR COLLECTION$") and has("^CARD UPDATES$"), "the three panels have headings")
+check(not has("^DEVELOPER$"), "there is no Developer panel (the development tools have their own window)")
+for _, option in ipairs(Settings.options) do
+    if not option.hidden then
+        check(has(option.label), "a checkbox for '" .. option.label .. "'")
     end
-    SettingsPage.refresh()
-    check(has("Saved by tracking id") or has("Changes at next login") or has("Saved by character name"),
-        tag .. ": the line about how the collection is saved is filled in")
-    SettingsPage.closeWindow()
-    local left = 0
-    for _, obj in ipairs(created) do
-        if obj._kind == "GroupBox" and not obj._destroyed then left = left + 1 end
-    end
-    check(left == 0, tag .. ": the window is gone after closing")
 end
+SettingsPage.refresh()
+check(has("Saved by tracking id") or has("Changes at next login") or has("Saved by character name"),
+    "the line about how the collection is saved is filled in")
+SettingsPage.closeWindow()
+local left = 0
+for _, obj in ipairs(created) do
+    if obj._kind == "GroupBox" and not obj._destroyed then left = left + 1 end
+end
+check(left == 0, "the window is gone after closing")
 
 if failures == 0 then
     print("OK: the settings window opens, shows its panels and lines, and closes on a stand-in client")
