@@ -15,6 +15,7 @@ local Browse = require("core/browse")
 local Packs = require("core/packs")
 local Logger = require("core/logger")
 local CardView = require("ui/cardview")
+local CardArt = require("ui/cardart")
 local Kit = require("ui/kit")
 local Theme = require("ui/theme")
 local WHITE, GREY, GOLD, DIM, PANEL_BACK, PANEL_BORDER, SELECTED_BORDER = Theme.WHITE, Theme.GREY, Theme.GOLD, Theme.DIM, Theme.PANEL_BACK, Theme.PANEL_BORDER, Theme.SELECTED_BORDER
@@ -183,10 +184,10 @@ function SetsViewer.lockedText(card)
 end
 local lockedText = SetsViewer.lockedText
 
--- Destroys the grid's cards, and forgets the turns their silhouettes were to be sent again (CardView.applyPending).
+-- Destroys the grid's cards, and forgets the turns their silhouettes were to be sent again (CardArt.applyPending).
 local function clearGrid()
     destroyAll(gridParts)
-    CardView.clearPending()
+    CardArt.clearPending()
 end
 
 local function selectedSet()
@@ -522,7 +523,7 @@ function SetsViewer.refresh()
     if window == nil then
         return
     end
-    CardView.applyPending()
+    CardArt.applyPending()
     -- (a drag of the scroll bar whose holds have stopped coming for a few ticks lost its release)
     local drag = scrollBar.drag
     if drag ~= nil then

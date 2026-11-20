@@ -22,6 +22,7 @@
 local Kit = require("ui/kit")
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
+local CardArt = require("ui/cardart")
 local OutputWindow = require("dev/outputwindow")
 
 local ItemProbe = {}
@@ -492,9 +493,9 @@ local cardWindow, cardContent, cardView = nil, nil, nil
 local cardItem = nil           -- { id, configName, name } of the item shown on the card
 
 local function camText(cam)
-    local defaults = CardView.defaultsFor(cam)
+    local defaults = CardArt.defaultsFor(cam)
     local parts = {}
-    for _, field in ipairs(CardView.CAMERA_FIELDS) do
+    for _, field in ipairs(CardArt.CAMERA_FIELDS) do
         local value, default = cam[field] or defaults[field], defaults[field]
         if math.abs(value - default) >= 0.005 then
             parts[#parts + 1] = (field == "yaw" or field == "pitch" or field == "near") and string.format("%s = %.2f", field, value)
@@ -532,7 +533,7 @@ local function moveCamera(change)
         return
     end
     change(cardView.cam)
-    CardView.applyCamera(cardView.cam)
+    CardArt.applyCamera(cardView.cam)
     local text = camText(cardView.cam)
     say("camera", cardItem.configName .. " " .. text)
 end
@@ -565,7 +566,7 @@ function ItemProbe.showCard(objId)
         button("Tilt -", function(c) c.pitch = c.pitch - 0.15 end)
         button("Tilt +", function(c) c.pitch = c.pitch + 0.15 end)
         button("Reset", function(c)
-            local defaults = CardView.defaultsFor(c)
+            local defaults = CardArt.defaultsFor(c)
             for field, value in pairs(defaults) do c[field] = value end
         end)
     end

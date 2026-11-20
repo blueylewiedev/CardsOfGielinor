@@ -16,6 +16,7 @@
 
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
+local CardArt = require("ui/cardart")
 local memLoaded, MemProbe = pcall(require, "dev/memprobe")
 
 -- A line to the console and to the Output window (through the memory probe's helper, if it loaded).
@@ -139,7 +140,7 @@ local function makePool(cards)
             model:SetSize(96, 134)
             local state = { group = group, kind = nil, yaw = 0, pitch = 0.1, dist = 500, fov = 40, ty = 0, tx = 0, near = 0 }
             pool.items[i] = { group = group, model = model }
-            pcall(function() CardView.applyCamera(state) end)
+            pcall(function() CardArt.applyCamera(state) end)
         end
         say("LAB: built the pool of " .. COUNT .. " model groups (this is the only time it makes any)")
     end
@@ -188,7 +189,7 @@ function Lab.make()
                 local state = nil
                 if mode.id == "model_camera" then
                     state = { group = group, kind = nil, yaw = 0, pitch = 0.1, dist = 500, fov = 40, ty = 0, tx = 0, near = 0 }
-                    CardView.applyCamera(state)
+                    CardArt.applyCamera(state)
                 end
                 made[#made + 1] = { group = group, model = model, cam = state }
                 remember("groups", group)

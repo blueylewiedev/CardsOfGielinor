@@ -69,6 +69,8 @@ jobs:
         run: lua5.4 dev/check_artoverride.lua
       - name: The helpers several files share (core/clientreads.lua, ui/util.lua, core/browse.lua)
         run: lua5.4 dev/check_helpers.lua
+      - name: Cards build every way on a stand-in client (ui/cardview.lua, ui/cardart.lua, ui/cardfinish.lua)
+        run: lua5.4 dev/check_cardview.lua
       - name: The tag words (core/tagwords.lua)
         run: lua5.4 dev/check_tagwords.lua
       - name: The card tools read and edit the tag words (dev/card_queue.py, dev/wiki_cards.py)

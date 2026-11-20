@@ -28,6 +28,7 @@ local DevKit = require("dev/devkit")
 local Cards = require("core/cards")
 local TagWords = require("core/tagwords")
 local CardView = require("ui/cardview")
+local CardArt = require("ui/cardart")
 local OutputWindow = require("dev/outputwindow")
 local Nearby = require("dev/nearby")
 local NpcSearch = require("dev/npcsearch")
@@ -644,7 +645,7 @@ end
 
 local function copyCamera(cam)
     local copy = {}
-    for _, field in ipairs(CardView.CAMERA_FIELDS) do
+    for _, field in ipairs(CardArt.CAMERA_FIELDS) do
         copy[field] = cam[field]
     end
     return copy
@@ -692,7 +693,7 @@ end
 
 -- A card's camera with the item defaults filled in for whatever it leaves out.
 local function withItemDefaults(cam)
-    local defaults = CardView.CAMERA_DEFAULTS.item
+    local defaults = CardArt.CAMERA_DEFAULTS.item
     local full = {}
     for field, default in pairs(defaults) do
         full[field] = cam[field] or default
@@ -817,7 +818,7 @@ function Builder.artText(itemArt, subjectName, body, anim, cam, defaults, model)
     end
     if cam ~= nil then
         local camParts = {}
-        for _, field in ipairs(CardView.CAMERA_FIELDS) do
+        for _, field in ipairs(CardArt.CAMERA_FIELDS) do
             local value, default = cam[field], defaults[field]
             if value ~= nil and math.abs(value - default) >= 0.005 then
                 if field == "yaw" or field == "pitch" or field == "near" then
@@ -837,7 +838,7 @@ end
 -- The draft's `art = { ... }` text.
 local function artLine()
     return Builder.artText(isItem(), subject(), draft.body, draft.anim, currentCam(),
-        CardView.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil }), draft.model)
+        CardArt.defaultsFor({ body = draft.body, kind = isItem() and "item" or nil }), draft.model)
 end
 
 -- The card block on ONE line (the text boxes in the client cannot hold line breaks, and Lua does
@@ -1379,7 +1380,7 @@ local function withCamera(change, quiet)
         return
     end
     change(cam)
-    CardView.applyCamera(cam)
+    CardArt.applyCamera(cam)
     draft.cam = copyCamera(cam)
     if quiet then
         checksIn = CHECKS_DELAY
@@ -1557,7 +1558,7 @@ end
 local function setAnim(animId)
     draft.anim = animId
     if view ~= nil and view.model ~= nil then
-        CardView.playAnimation(view.model, animId)
+        CardArt.playAnimation(view.model, animId)
     end
     refreshChecks()
 end
@@ -2016,13 +2017,13 @@ end
 -- group has none is framed like the nearest size of any group, as the deck's framing follows tiles
 -- closely.
 function Builder.typicalCamera(group, name, tiles, race)
-    local defaults = CardView.defaultsFor({ body = true })
+    local defaults = CardArt.defaultsFor({ body = true })
     local members, everyone = {}, {}
     for _, card in ipairs(Cards.list) do
         local art = card.art or {}
         if Cards.kindOf(card) ~= "item" and art.body ~= false then
             local cam = {}
-            for _, field in ipairs(CardView.CAMERA_FIELDS) do
+            for _, field in ipairs(CardArt.CAMERA_FIELDS) do
                 cam[field] = (art.cam or {})[field] or defaults[field]
             end
             local short = Builder.isShort(card.name, card.desc, art.npc)
@@ -2039,7 +2040,7 @@ function Builder.typicalCamera(group, name, tiles, race)
     end
     local function apart(a, b)
         local total = 0
-        for _, field in ipairs(CardView.CAMERA_FIELDS) do
+        for _, field in ipairs(CardArt.CAMERA_FIELDS) do
             total = total + math.abs(a[field] - b[field]) / CAMERA_SCALE[field]
         end
         return total
