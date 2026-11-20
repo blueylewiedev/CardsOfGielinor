@@ -30,6 +30,17 @@ function Util.destroyAll(list)
     end
 end
 
+-- Empties a table of its fields (nil is ignored). The client keeps an event handler after the component it was given is
+-- destroyed, so a handler whose closure reaches a table of parts keeps the parts, and the client's memory for them, alive;
+-- emptying the table when its parts are destroyed means the handler reaches nothing.
+function Util.emptied(tbl)
+    if tbl ~= nil then
+        for key in pairs(tbl) do
+            tbl[key] = nil
+        end
+    end
+end
+
 -- 0xRRGGBBAA as the Vector4 the components take; `alpha` (0 to 1) replaces the colour's own.
 function Util.toVec4(hex, alpha)
     return Vector4.new(((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255,
