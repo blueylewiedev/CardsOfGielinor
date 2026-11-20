@@ -39,6 +39,31 @@ check(ClientReads.combatLevel(npcConfig({}, 50), npcConfig({}, 70)) == 50, "the 
 check(ClientReads.combatLevel(npcConfig({}, 0), npcConfig({}, 70)) == 70, "or the parent's when the config's is not a level")
 check(ClientReads.combatLevel(npcConfig({}, nil), nil) == nil, "or nil")
 
+-- what makes an NPC a boss, read once per config
+local function npc(configID, parentID, values, level, name)
+    return { configID = configID, parentConfigID = parentID, config = npcConfig(values, level), displayName = name }
+end
+calls = 0
+local jad = npc(2745, -1, { idparam = 19 }, 702)
+local id, level = ClientReads.bossOf(jad)
+check(id == 19 and level == 702, "bossOf gives a boss's id and combat level")
+ClientReads.bossOf(jad)
+ClientReads.bossOf(npc(2745, -1, { idparam = 19 }, 702))
+check(calls == 1, "and reads the config once for all NPCs of it (" .. calls .. " reads)")
+local rat = npc(100, -1, {}, 3)
+check(ClientReads.bossOf(rat) == nil and ClientReads.bossOf(rat) == nil, "an NPC that is not a boss gives nil")
+local parentBoss = { configID = 7, parentConfigID = 8, config = npcConfig({}, 0), parentConfig = npcConfig({ idparam = 5 }, 90) }
+check(ClientReads.bossOf(parentBoss) == 5 and select(2, ClientReads.bossOf(parentBoss)) == 90, "the parent's id and level count when the config has none")
+check(ClientReads.bossOf({ configID = 1 }) == nil and ClientReads.bossOf(nil) == nil, "an entity the client cannot read gives nil")
+local unreadable = { configID = 300 }
+check(ClientReads.bossOf(unreadable) == nil, "an unreadable config is not a boss")
+unreadable.config = npcConfig({ idparam = 9 }, 50)
+check(ClientReads.bossOf(unreadable) == 9, "and is not remembered as one: a later look reads it")
+ClientReads.forgetBosses()
+calls = 0
+ClientReads.bossOf(jad)
+check(calls == 1, "forgetBosses makes it read again")
+
 -- ui/util.lua ---------------------------------------------------------------------------------------------------------------------
 local Util = require("ui/util")
 local text = { content = "a" }

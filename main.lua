@@ -4,12 +4,16 @@
 
 -- The development tools are in dev/, which the release does not contain (there `Dev` is nil). They load first so the
 -- performance probe sees the deck load, and attach last (Dev.start below).
+local Logger = require("core/logger")
 local hasDev, Dev = pcall(require, "dev/dev")
 if not hasDev then
+    -- Only a missing file is expected (the release has none); any other error is a fault in the dev tools, so it is logged.
+    if not string.find(tostring(Dev), "not found", 1, true) then
+        Logger.error("the development tools failed to load:", tostring(Dev))
+    end
     Dev = nil
 end
 
-local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
 local Version = require("core/version")
 local Identity = require("core/identity")
@@ -54,6 +58,7 @@ Events.on("ServerLogic", "cardcollector_tick", function()
     Viewer.refresh()
     SetsViewer.refresh()
     Tutorial.offerFirstRun()
+    OverlayLoader.release()
     Session.tick()
 end)
 

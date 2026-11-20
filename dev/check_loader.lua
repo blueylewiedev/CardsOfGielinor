@@ -575,6 +575,40 @@ for text in pairs(linesSeen) do
 end
 check(seenCount >= 6, "the check saw the different lines (" .. seenCount .. ")")
 
+-- it stops listening to the Logic ticks once there is nothing left to do ---------------------------------------------------------
+do
+    local listening = {}
+    Event = setmetatable({}, { __index = function(_, event)
+        return {
+            Subscribe = function(name) listening[event .. "|" .. name] = true end,
+            Unsubscribe = function(name) listening[event .. "|" .. name] = nil end,
+        }
+    end })
+    local function count()
+        local n = 0
+        for _ in pairs(listening) do n = n + 1 end
+        return n
+    end
+    requests, granted = {}, true
+    Plugin.urls = { cards = "https://example.test" }
+    Loader.restart()
+    check(count() == 1, "restart listens to the Logic ticks")
+    Loader.release()
+    check(count() == 1, "while it is waiting or fetching, release keeps listening")
+    tick(1)
+    complete(requests[1], 200, good, true)
+    tick(5)
+    check(Loader.status().phase == "done", "the overlay is applied")
+    Loader.release()
+    check(count() == 0, "once it is done, release stops listening")
+    Loader.release()
+    Loader.restart()
+    check(count() == 1 and Loader.status().phase == "waiting", "restart goes again and listens again")
+    Loader.shutdown()
+    check(count() == 0, "shutdown stops listening")
+    Cards.deprecate("zz_loaded")
+end
+
 if failures > 0 then
     io.stderr:write(failures .. " loader check(s) failed\n")
     os.exit(1)
