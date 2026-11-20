@@ -72,7 +72,9 @@ jobs:
       - name: The tag words (core/tagwords.lua)
         run: lua5.4 dev/check_tagwords.lua
       - name: The card tools read and edit the tag words (dev/card_queue.py, dev/wiki_cards.py)
-        run: python3 dev/test_card_queue.py
+        run: |
+          python3 -m pip install --quiet pillow
+          python3 dev/test_card_queue.py
       - name: Code style, warnings only and never fails (dev/check_style.lua)
         run: lua5.4 dev/check_style.lua --quiet
       - name: The credits text (core/format.lua)

@@ -15,8 +15,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import card_queue
-import make_pack_art
 import wiki_cards
+
+try:
+    import make_pack_art                      # needs Pillow (the workflow installs it); without it that one test is skipped
+except ModuleNotFoundError:
+    make_pack_art = None
 
 ROOT = Path(__file__).resolve().parent.parent
 LUA = shutil.which("lua5.4") or shutil.which("lua")
@@ -43,6 +47,7 @@ class ReadingTheWords(unittest.TestCase):
         self.assertEqual(words["item_requires"].get("scimitar"), ["weapon"])
         self.assertEqual(len(set(words["regions"])), len(words["regions"]))
 
+    @unittest.skipIf(make_pack_art is None, "Pillow is not installed")
     def test_the_pack_art_tool_reads_the_regions(self):
         self.assertEqual(make_pack_art.regions(), wiki_cards.allowed_words()["regions"])
 
