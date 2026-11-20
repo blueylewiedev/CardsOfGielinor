@@ -33,7 +33,6 @@ end
 
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
-local Tuning = require("dev/tuning")
 local ArtOverride = require("dev/artoverride")
 ArtOverride.install()
 ArtOverride.install()                                        -- (once only)
@@ -42,17 +41,10 @@ local npc = { id = "hans", name = "Hans", kind = nil, rarity = "common", art = {
 local item = { id = "abyssal_whip", name = "Abyssal whip", kind = "item", rarity = "rare", art = { cam = { yaw = 0.1 } } }
 
 -- nothing saved and no choice: the real card is drawn
-Tuning.enabled = true
 local view = CardView.create({}, { id = "nobody", name = "Nobody", rarity = "common" }, {})
 check(#drawn == 1 and drawn[1].card.id == "nobody" and drawn[1].card.art == nil, "a card with nothing saved is drawn as it is")
 
--- tuning off: saved settings are ignored
-Tuning.enabled = false
-view = CardView.create({}, npc, {})
-check(drawn[#drawn].card == npc, "with the tools off the saved settings are ignored")
-
--- tuning on: the saved camera, body and animation replace the card's own
-Tuning.enabled = true
+-- the saved camera, body and animation replace the card's own
 view = CardView.create({}, npc, {})
 local art = drawn[#drawn].card.art
 check(art.cam.yaw == 1 and art.cam.tx == 6 and art.body == false and art.anim == 5, "saved camera, body and animation replace the card's")
@@ -65,7 +57,6 @@ art = drawn[#drawn].card.art
 check(art.cam.yaw == 7 and art.body == nil and art.anim == nil, "an item takes only the saved camera, and ignores a Head/Body choice")
 
 -- the Head/Body choice: the card's camera is dropped when the other model type is shown
-Tuning.enabled = false
 local plain = { id = "guard", name = "Guard", rarity = "common", art = { cam = { yaw = 0.3 } } }
 CardView.create({}, plain, { body = false })
 art = drawn[#drawn].card.art

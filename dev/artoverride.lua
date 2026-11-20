@@ -1,7 +1,6 @@
 -- dev/artoverride.lua
 -- Two things the development tools do to how cards are drawn, done by wrapping CardView.create so the plugin has no hook for them:
---   * the camera (and body, and animation) settings saved from the Card Preview (dev/tuning.lua) replace the card's own art, while
---     Tuning.enabled is true (the "Preview as released" switch turns it off);
+--   * the camera (and body, and animation) settings saved from the Card Preview (dev/tuning.lua) replace the card's own art;
 --   * opts.body (true or false, from the preview's Head/Body button) draws an NPC card with its body or its head model whatever the card says.
 -- Both make a copy of the card with a changed `art` and draw that. Not in the release.
 

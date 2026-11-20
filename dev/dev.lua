@@ -69,7 +69,7 @@ local function watchLogin(api)
         local state = api.getState()
         if state ~= watched then
             watched = state
-            if state ~= nil and Dev.active then
+            if state ~= nil then
                 onLogin(api, state)
             end
         end
@@ -80,7 +80,7 @@ end
 local function watchXp(api)
     Events.on("SkillTransmit", "cardcollector_dev_xp", function(e)
         local state = api.getState()
-        if state == nil or Quiet.on or not Dev.active or type(e.oldXP) ~= "number" or type(e.newXP) ~= "number" then
+        if state == nil or Quiet.on or type(e.oldXP) ~= "number" or type(e.newXP) ~= "number" then
             return
         end
         log("DEV: skill", e.skill, "xp", e.oldXP, "->", e.newXP, "| pool:", state.xpPool, "| credits:", state.credits)
@@ -257,10 +257,8 @@ function Dev.start(api)
     DevTools.setButtons(toolButtons(api, PackWindow.refresh))
     watchLogin(api)
     watchXp(api)
-    Dev.setActive(not Launcher.previewing())
-    Launcher.show(DevTools.toggle, function(previewing)
-        Dev.setActive(not previewing)
-    end)
+    Uncarded.start()
+    Launcher.show(DevTools.toggle)
     -- the plugin's own shutdown is wrapped, so it does not know about the tools
     local pluginShutdown = PluginShutdown
     function PluginShutdown()
@@ -277,20 +275,8 @@ function Dev.start(api)
     log("DEV: " .. PluginId.TITLE .. " development copy started")
 end
 
--- Switches the tools on or off. Off (the launcher's "Preview as released") makes the plugin look and behave as players will have it: the
--- camera settings saved from the preview stop applying to the cards, the logins and XP extras stop, and the tools' windows close.
-function Dev.setActive(active)
-    Dev.active = active
-    Tuning.enabled = active
-    if active then
-        Uncarded.start()
-    else
-        Dev.closeTools()
-    end
-end
-
--- Closes every tool window.
-function Dev.closeTools()
+-- The plugin is shutting down: closes every tool window and the launcher.
+function Dev.shutdown()
     DevTools.hide()
     Preview.hide()
     Builder.hide()
@@ -305,11 +291,6 @@ function Dev.closeTools()
     TagPicker.hide()
     ItemProbe.hide()
     OutputWindow.hide()
-end
-
--- The plugin is shutting down.
-function Dev.shutdown()
-    Dev.closeTools()
     Launcher.hide()
     Probe.shutdown()
 end

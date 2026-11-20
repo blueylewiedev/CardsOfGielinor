@@ -111,8 +111,7 @@ local function onLogic(e)
     end
 end
 
--- Subscribes as soon as the file loads. Like the other dev modules it never unsubscribes: "Preview as released" turns
--- the tools off and on again, and the plugin's reload clears its subscriptions.
+-- Subscribes as soon as the file loads, and never unsubscribes: the plugin's reload clears its subscriptions.
 Event.Draw.Subscribe(FRAME_SUBSCRIBER, onDraw)
 Event.Logic.Subscribe(LOGIC_SUBSCRIBER, onLogic)
 Probe.measure("start-up", 10)
