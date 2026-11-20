@@ -6,7 +6,7 @@
 --
 -- It provides the card preview, the NPC browser, the nearby NPC lister, the labels over NPCs that have no card (dev/uncarded.lua), the
 -- Output window, the Pack Maker, the Wiki Review and Wiki Fetch windows, the saved camera tuning for card art, the Dev tools window
--- (dev/devtools.lua: the tool buttons and save tools) opened from a small window of its own (dev/launcher.lua), and a few debug extras
+-- (dev/devtools.lua: the tool buttons and save tools, always on screen), and a few debug extras
 -- at login and when XP is gained.
 
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
@@ -42,7 +42,6 @@ local DevSaves = require("dev/devsaves")
 local Grants = require("dev/grants")
 local DevCopy = require("dev/devcopy")
 local ArtOverride = require("dev/artoverride")
-local Launcher = require("dev/launcher")
 local SaveProbe = require("dev/saveprobe")
 
 local Dev = {}
@@ -258,7 +257,7 @@ function Dev.start(api)
     watchLogin(api)
     watchXp(api)
     Uncarded.start()
-    Launcher.show(DevTools.toggle)
+    DevTools.show()
     -- the plugin's own shutdown is wrapped, so it does not know about the tools
     local pluginShutdown = PluginShutdown
     function PluginShutdown()
@@ -275,7 +274,7 @@ function Dev.start(api)
     log("DEV: " .. PluginId.TITLE .. " development copy started")
 end
 
--- The plugin is shutting down: closes every tool window and the launcher.
+-- The plugin is shutting down: closes every tool window.
 function Dev.shutdown()
     DevTools.hide()
     Preview.hide()
@@ -291,7 +290,6 @@ function Dev.shutdown()
     TagPicker.hide()
     ItemProbe.hide()
     OutputWindow.hide()
-    Launcher.hide()
     Probe.shutdown()
 end
 

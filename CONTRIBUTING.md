@@ -41,8 +41,8 @@ outside `deck/` and `resources/`, please open an issue and talk about it first (
    Syntax errors are printed to the console with the file and line number.
 
 The `dev/` folder holds the developer tools. They load automatically when the folder is present
-(it is left out of the released plugin). A small **Dev copy** window appears in the game with a **Dev tools** button, which opens the window
-of tool buttons.
+(it is left out of the released plugin). A **Dev tools** window with a button for each tool appears in the game; it scrolls, can
+be dragged and resized, and has no close button.
 
 ---
 
