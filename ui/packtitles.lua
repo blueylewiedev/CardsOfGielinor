@@ -1,6 +1,6 @@
 -- ui/packtitles.lua
--- Made by dev/make_pack_art.py. Do not edit; run it again. Pack titles: resources/images/title_<id>.png, with each
--- image's size in pixels.
+-- Made by dev/make_pack_art.py. Do not edit; run it again.
+-- Pack titles: resources/images/title_<id>.png, with each image's size in pixels.
 return {
     { id = "misthalin", text = "Misthalin", w = 233, h = 42 },
     { id = "asgarnia", text = "Asgarnia", w = 216, h = 42 },
