@@ -13,7 +13,8 @@ local Logger = require("core/logger")
 
 local Storage = {}
 
--- The layout of a save. Stays at 1 until there is a release candidate.
+-- The layout of a save, written into every save. It is 1 for release and the layout is fixed: a later change must raise it, and
+-- the load must then read it and convert older saves (nothing reads it yet, as there is only one layout).
 local DATA_VERSION = 1
 
 -- The credits a brand new collection starts with (Config "starterCredits", 8,000: two standard packs, so a new player can

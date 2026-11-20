@@ -14,8 +14,8 @@ local Config = require("core/config")
 
 local Bosses = {}
 
--- The credits by the boss's combat level (Config "bosses.tiers": { lowest level, credits }, highest first):
--- placeholders until play-testing gives real credits per hour. Also Config "bosses.activities", "bosses.overrides"
+-- The credits by the boss's combat level (Config "bosses.tiers": { lowest level, credits }, highest first). These are the
+-- shipped bands; they can be adjusted through the card overlay's tuning line. Also Config "bosses.activities", "bosses.overrides"
 -- (credits for one boss by BSLAY_ID, 0 stops it paying) and "bosses.enabled" (the switch for all boss credits).
 Bosses.DEFAULT_LEVEL = 1        -- the level of a kill when the boss's level is not known
 
