@@ -1,8 +1,8 @@
 -- core/slayerevents.lua
 -- Connects the Slayer credits (core/slayer.lua) to the game: it listens for the Slayer variables, Slayer XP and NPCs
 -- leaving the world, reads what the tracker needs from the game's data and pays the credits into the logged-in
--- character's collection. No permission is needed. main.lua calls start() once, begin() when a collection loads,
--- finish() when it unloads and shutdown() when the plugin stops.
+-- character's collection. No permission is needed. main.lua calls start() once and shutdown() when the plugin stops;
+-- core/session.lua calls begin() when a collection loads and finish() when it unloads.
 
 local Slayer = require("core/slayer")
 local Logger = require("core/logger")

@@ -140,7 +140,7 @@ end
 -- Reads the collection under a key, or a fresh one if nothing is saved. Values are checked so a damaged entry cannot
 -- crash the plugin. Returns nil and why if a save is there but its main entry cannot be read (Storage.absentKind):
 -- the caller retries and saves nothing meanwhile. opts.acceptMissingMain loads a "noMain" save from its buckets
--- alone, with no credits or statistics (main.lua does this after a few tries).
+-- alone, with no credits or statistics (core/session.lua does this after a few tries).
 function Storage.load(key, opts)
     local state = Storage.newState()
     local saved = PersistentDB:GetStructuredData(key)
@@ -308,7 +308,7 @@ function Storage.earnCredits(state, amount)
     Rate.add(amount)
 end
 
--- Adds ticks of play to the stats and marks the collection as needing a save (main.lua calls it once a minute of play,
+-- Adds ticks of play to the stats and marks the collection as needing a save (core/session.lua calls it once a minute of play,
 -- and with what is left over at logout).
 function Storage.addPlayTicks(state, ticks)
     if ticks > 0 then

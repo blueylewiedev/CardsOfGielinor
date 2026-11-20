@@ -23,6 +23,8 @@ jobs:
         run: lua5.4 dev/check_parked.lua
       - name: Collections save and load (core/storage.lua)
         run: lua5.4 dev/check_storage.lua
+      - name: The session loads, saves, credits XP and unloads (core/session.lua)
+        run: lua5.4 dev/check_session.lua
       - name: JSON decoder (core/json.lua)
         run: lua5.4 dev/check_json.lua
       - name: Cards can be added, replaced and retired (core/cards.lua)
