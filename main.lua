@@ -30,7 +30,7 @@ local Rate = require("core/rate")
 local OverlayLoader = require("core/overlayloader")
 local Events = require("core/events")
 
--- A card, deck file or pack that is not sound is left out and the plugin loads without it (core/cards.lua); each is logged.
+-- A card, deck file or pack that is not sound is left out and the plugin loads without it (core/cards.lua, core/packtypes.lua); each is logged.
 local Cards = require("core/cards")
 for _, problem in ipairs(Cards.loadProblems) do
     Logger.error("DECK PROBLEM (left out):", problem)

@@ -9,6 +9,7 @@
 -- A tab is built to its page's width and built again a moment after the window stops being resized.
 
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
 local Browse = require("core/browse")
 local Rate = require("core/rate")
 local Format = require("core/format")
@@ -167,7 +168,7 @@ end
 local function viewRegions(page, width)
     local left, _, column, second = columns(width)
     local bars = {}
-    local words = Cards.tagWords.regions or {}
+    local words = TagWords.words.regions or {}
     -- The regions, then the cards with no region at all, two to a row.
     local function place(index, key, label, fill, labelColour)
         local x = ((index - 1) % 2 == 0) and left or second

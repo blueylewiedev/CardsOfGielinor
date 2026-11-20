@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Lua
         run: sudo apt-get update && sudo apt-get install -y lua5.4
-      - name: Every card loads (its tags are in core/cards.lua)
+      - name: Every card loads (its tags are in core/tagwords.lua)
         run: lua5.4 dev/check_cards.lua
       - name: The dev copy's quiet console switch (dev/quiet.lua)
         run: lua5.4 dev/check_quiet.lua
@@ -69,6 +69,10 @@ jobs:
         run: lua5.4 dev/check_artoverride.lua
       - name: The helpers several files share (core/clientreads.lua, ui/util.lua, core/browse.lua)
         run: lua5.4 dev/check_helpers.lua
+      - name: The tag words (core/tagwords.lua)
+        run: lua5.4 dev/check_tagwords.lua
+      - name: The card tools read and edit the tag words (dev/card_queue.py, dev/wiki_cards.py)
+        run: python3 dev/test_card_queue.py
       - name: Code style, warnings only and never fails (dev/check_style.lua)
         run: lua5.4 dev/check_style.lua --quiet
       - name: The credits text (core/format.lua)

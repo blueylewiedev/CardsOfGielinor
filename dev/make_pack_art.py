@@ -16,7 +16,7 @@ From resources/images/pack.png it makes:
                                         shadow and a thin outline, without the pack's lettering
   resources/images/pack_shading_back.png the same mirrored, with a seal seam down the middle
 
-And for every region in Cards.tagWords.regions (core/cards.lua), and each of EXTRA_TITLES below:
+And for every region in TagWords.words.regions (core/tagwords.lua), and each of EXTRA_TITLES below:
   resources/images/title_<region>.png    the region's name in Cinzel Bold, gold with a dark outline
                                         and a shadow, cropped to the text. The client can't scale
                                         text (and Cinzel Bold only comes at 18pt in game), so titles
@@ -163,9 +163,9 @@ def make_shading(pack):
 
 
 def regions():
-    """The region words from Cards.tagWords.regions in core/cards.lua, in order."""
-    text = (ROOT / "core" / "cards.lua").read_text(encoding="utf-8")
-    match = re.search(r"Cards\.tagWords\s*=\s*\{.*?regions\s*=\s*\{([^}]*)\}", text, re.DOTALL)
+    """The region words from TagWords.words.regions in core/tagwords.lua, in order."""
+    text = (ROOT / "core" / "tagwords.lua").read_text(encoding="utf-8")
+    match = re.search(r"TagWords\.words\s*=\s*\{.*?regions\s*=\s*\{([^}]*)\}", text, re.DOTALL)
     return re.findall(r'"([a-z0-9_]+)"', match.group(1))
 
 

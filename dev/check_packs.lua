@@ -11,6 +11,7 @@ function log() end          -- the client's log function
 
 local Json = require("core/json")
 local Cards = require("core/cards")
+local PackTypes = require("core/packtypes")
 local Packs = require("core/packs")
 local Config = require("core/config")
 local Encode = require("jsonencode")
@@ -115,7 +116,7 @@ end
 
 -- The deck: every card passes, and the pool still builds ------------------------------------------------------------
 do
-    local pool = Packs.poolFor(Cards.packTypes.standard)
+    local pool = Packs.poolFor(PackTypes.byId.standard)
     check(pool.count == #Cards.list, "the standard pack holds every card")
     check(Packs.rollCard(pool).card ~= nil, "a roll from the real deck gives a card")
     for _, listed in ipairs(Cards.list) do
@@ -140,7 +141,7 @@ do
     check(Storage.starterCredits() == 2 * Packs.price(), "the starter credits are two standard packs")
     check(Packs.priceFor("standard") == Packs.price(), "the standard pack costs the price")
     check(Packs.priceFor("no_such_pack") == nil, "an unknown pack has no price")
-    for id, packType in pairs(Cards.packTypes) do
+    for id, packType in pairs(PackTypes.byId) do
         local factor = packType.priceFactor or (packType.themed and Config.get("packs.themedPriceFactor") or 1)
         check(Packs.priceFor(id) == math.ceil(Packs.price() * factor), "pack " .. id .. " costs the price times its factor")
     end

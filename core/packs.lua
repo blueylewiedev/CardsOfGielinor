@@ -3,6 +3,7 @@
 -- This file has no UI. The window that shows packs is in ui/packwindow.lua.
 
 local Cards = require("core/cards")
+local PackTypes = require("core/packtypes")
 local Storage = require("core/storage")
 local Config = require("core/config")
 
@@ -22,14 +23,14 @@ Packs.QUANTITIES = { 1, 2, 3, 5, 10 }
 
 -- The pack type with this id (default "standard"), or nil if there is none.
 function Packs.typeById(packTypeId)
-    return Cards.packTypes[packTypeId or "standard"]
+    return PackTypes.byId[packTypeId or "standard"]
 end
 
--- The pack types on offer, in the order to show them: the featured packs (a pack type's `featured`, see Cards.packTypes)
+-- The pack types on offer, in the order to show them: the featured packs (a pack type's `featured`, see PackTypes.byId)
 -- first, in that order, then the rest by name.
 function Packs.offered()
     local list = {}
-    for _, packType in pairs(Cards.packTypes) do
+    for _, packType in pairs(PackTypes.byId) do
         list[#list + 1] = packType
     end
     table.sort(list, function(a, b)
@@ -172,7 +173,7 @@ end
 -- stack. `pool` is from Packs.poolFor (default: the standard pack); without `pool.kinds` the kind is not rolled.
 -- Returns { card, finish, key } where key is the variant key used for saving.
 function Packs.rollCard(pool)
-    pool = pool or Packs.poolFor(Cards.packTypes.standard)
+    pool = pool or Packs.poolFor(PackTypes.byId.standard)
     local groups = pool.groups
     if pool.kinds ~= nil then
         local weights = {}

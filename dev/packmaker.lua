@@ -8,7 +8,7 @@
 --   2. Pack name    : the title on the banner (one per region, from ui/packtitles.lua), moved and
 --                     resized with the buttons.
 --   3. Logo         : which RuneScape logo (or none), moved and resized with the buttons.
---   4. Cards        : which cards the pack gives (the pack's filter, see Cards.packTypes): a
+--   4. Cards        : which cards the pack gives (the pack's filter, see PackTypes.byId): a
 --                     region, Global only (no one region), Free to play, or All cards, which makes
 --                     the design the standard pack's look instead of a new pack. It follows the
 --                     pack name until it is picked here (Gielinor gives Global only, Free to Play
@@ -33,6 +33,8 @@
 
 local Kit = require("ui/kit")
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
+local PackTypes = require("core/packtypes")
 local Packs = require("core/packs")
 local PackArt = require("ui/packart")
 
@@ -208,9 +210,9 @@ for _, choice in ipairs(OTHER_CARDS) do
     choiceForTitle[choice.title] = choice.value
 end
 
--- True if `word` is one of the regions (Cards.tagWords.regions).
+-- True if `word` is one of the regions (TagWords.words.regions).
 local function isRegion(word)
-    for _, region in ipairs(Cards.tagWords.regions) do
+    for _, region in ipairs(TagWords.words.regions) do
         if region == word then
             return true
         end
@@ -267,7 +269,7 @@ local function packLine()
     if key ~= nil then
         fields = string.format("filter = { %s = %q }, ", key, word)
     end
-    local existing = Cards.packTypes[packId()] or {}
+    local existing = PackTypes.byId[packId()] or {}
     for _, field in ipairs(KEPT_FIELDS) do
         if existing[field] ~= nil then
             fields = fields .. string.format("%s = %s, ", field,
@@ -910,7 +912,7 @@ function PackMaker.show()
     for _, choice in ipairs(OTHER_CARDS) do
         regionEntries[#regionEntries + 1] = { label = choice.label, value = choice.value }
     end
-    for _, word in ipairs(Cards.tagWords.regions) do
+    for _, word in ipairs(TagWords.words.regions) do
         regionEntries[#regionEntries + 1] = { label = titleText(word), value = word }
     end
     widgets.titleDropdown = Kit.dropdown(content, LEFT_X, nameY + 24, DROPDOWN_W, 28, titleEntries,

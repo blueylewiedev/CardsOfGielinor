@@ -90,7 +90,7 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    queued card to the end of its deck file. If the card can't be queued, a line under the buttons
    says why and the candidate stays on the list. The script only reads the database; what it has
    done is kept in `dev/.card_queue_state.json`. A new location or NPC category word on an added
-   card goes into `core/cards.lua` too; any other unlisted word is only reported. The wiki page
+   card goes into `core/tagwords.lua` too; any other unlisted word is only reported. The wiki page
    each added card came from goes into `dev/wiki_pages.json`, which the card site uses to pick the
    picture of the card's own NPC version (see `dev/wiki_pages.py`; give an entry an `"image"` to
    override it). Check the result with `lua dev/check_cards.lua`. Commands (`DB` is the client's
@@ -112,7 +112,7 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    A card whose id is already in the deck, or whose deck file is missing, is reported as failed
    and kept; `--list` shows it with the wiki page it came from. To change it in the builder, type
    that page into the Wiki Review's **Reopen** box, load it, fix it and press **Done** again. Reload
-   the plugin afterwards, and add any new tag words the script lists to `core/cards.lua`.
+   the plugin afterwards, and add any new tag words the script lists to `core/tagwords.lua`.
 
 For **weapons**, `--weapons melee` (or `ranged`, `magic`, `necromancy`, `hybrid`) lists every weapon
 of that combat style from the wiki's structured data (Bucket:Infobox_bonuses): main-hand,
@@ -287,13 +287,13 @@ the plugin cannot look inside folders. A file that is not listed is never loaded
 `python dev/check_deck_index.py` to check that the files and the list agree. It also runs on every
 pull request, and the pull request cannot be merged while it fails.
 
-**Every card has to load.** A tag word that is not in `core/cards.lua` (a new location, a typo), a
+**Every card has to load.** A tag word that is not in `core/tagwords.lua` (a new location, a typo), a
 duplicate id or a bad rarity gets the card left out of the game (the released plugin logs it and
 carries on without it; the development copy stops). Run `lua dev/check_cards.lua` (from the plugin's
 folder) to load every card the way the plugin does: it names each card that would be left out and
 fails. It also runs on every
 pull request. After adding cards with new locations or categories, `lua dev/add_tag_words.lua`
-adds the words your cards use to `core/cards.lua` for you (a new category goes in the "What it is"
+adds the words your cards use to `core/tagwords.lua` for you (a new category goes in the "What it is"
 group: move it if another fits better), then runs the same check. Add `--dry-run` to only see what
 it would add. It does not add item categories, or fix typos in regions, skills or membership; it
 lists those for you to fix.
@@ -592,8 +592,8 @@ buttons beside the rarity. Pressing the one that is on turns it off. A card with
 - **Every word must be on the lists below.** The plugin refuses to load a card with a word that
   is not on its list, so a typo cannot slip through. Choose a word from the list when one fits.
 
-**Adding a new word.** A new word is allowed. Add it to the right list in `Cards.tagWords` in
-`core/cards.lua` (for `category`, to the group that fits it in `Cards.tagGroups.category`), in the
+**Adding a new word.** A new word is allowed. Add it to the right list in `TagWords.words` in
+`core/tagwords.lua` (for `category`, to the group that fits it in `TagWords.groups.category`), in the
 same pull request as the card that uses it. The Card Builder shows a note saying exactly where.
 Keep the list tidy: do not add a word that means the same as one already there. Please also add
 it to the lists in this guide. The **Pick tags** window shows the new word as soon as the plugin
@@ -666,7 +666,7 @@ Some words have more to say about the kind, and open their own choice once the w
   or 6 for a flask, or the most there are if it has no such version; the tool uses that version's id and examine text, names the card
   without the dose, and leaves out the 2-dose mixes (Barbarian mixes) and the unfinished potions (add one by hand if it has a use of its own).
 - `fish` and `meat` open under either `raw_material` or `food`, so raw and cooked fish both use `fish`.
-  (A group in `core/cards.lua` can need one word, `requires = "food"`, or any one of a list,
+  (A group in `core/tagwords.lua` can need one word, `requires = "food"`, or any one of a list,
   `requires = { "raw_material", "food" }`.)
 
 **Choosing regions for an item.** A region tag says that an item belongs to a region's story or
@@ -734,8 +734,8 @@ NPC.
    - [ ] each card appears correctly in the Card Builder preview,
    - [ ] the checks in the Card Builder show no **Fix** lines,
    - [ ] you used the Card Builder's block as it is (and added any new tag words to
-         `Cards.tagWords` (or `Cards.tagGroups`) and to the lists in this guide),
-   - [ ] you only changed files in `deck/` (and `core/cards.lua` for new tag words).
+         `TagWords.words` (or `TagWords.groups`) and to the lists in this guide),
+   - [ ] you only changed files in `deck/` (and `core/tagwords.lua` for new tag words).
 4. Open the pull request and **include a screenshot of each card**. A screenshot of the Card
    Builder window with the finished card is ideal.
 5. Be ready for feedback. The maintainer may change a rarity, or ask for the camera or the

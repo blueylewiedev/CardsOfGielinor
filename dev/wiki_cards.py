@@ -142,7 +142,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CACHE = ROOT / "dev" / "wiki_cache"
 OUTPUT = ROOT / "dev" / "wiki_candidates.lua"
 CONTACT_FILE = ROOT / "dev" / "wiki_contact.txt"
-CARDS = ROOT / "core" / "cards.lua"
+CARDS = ROOT / "core" / "cards.lua"              # the limits (MAX_DESC and so on)
+TAGWORDS = ROOT / "core" / "tagwords.lua"        # the words cards may use as tags
 
 API = "https://runescape.wiki/api.php"
 USER_AGENT = "CardsOfGielinor-card-candidates/1.0 (dev tool for a RuneScape plugin; https://github.com/blueylewiedev/CardsOfGielinor)"
@@ -768,22 +769,22 @@ def npc_names():
 
 
 def allowed_words():
-    """The words cards may use, from core/cards.lua: regions, location, skills, the NPC category
+    """The words cards may use, from core/tagwords.lua: regions, location, skills, the NPC category
     words (category), the item category words (item_category) and, for the item words that need
     another, a list of the words one of which it needs (item_requires: scimitar -> [weapon])."""
-    text = CARDS.read_text(encoding="utf-8")
+    text = TAGWORDS.read_text(encoding="utf-8")
 
     def quoted(block):
         return re.findall(r'"([a-z0-9_]+)"', block)
 
     words = {}
     for kind in ("regions", "location", "skills"):
-        match = re.search(r"Cards\.tagWords\s*=\s*\{.*?" + kind + r"\s*=\s*\{([^}]*)\}", text, re.S)
+        match = re.search(r"TagWords\.words\s*=\s*\{.*?" + kind + r"\s*=\s*\{([^}]*)\}", text, re.S)
         words[kind] = quoted(match.group(1)) if match else []
-    groups = re.search(r"Cards\.tagGroups\s*=\s*\{(.*?)\n\}", text, re.S)
+    groups = re.search(r"TagWords\.groups\s*=\s*\{(.*?)\n\}", text, re.S)
     words["category"] = quoted(groups.group(1)) if groups else []
     words["item_category"], words["item_requires"] = [], {}
-    item_groups = re.search(r"Cards\.itemTagGroups\s*=\s*\{(.*?)\n\}", text, re.S)
+    item_groups = re.search(r"TagWords\.itemGroups\s*=\s*\{(.*?)\n\}", text, re.S)
     # (`requires` is one word, or a list of words of which any one will do)
     for single, several, block in re.findall(
             r'\{\s*title\s*=\s*"[^"]*",\s*(?:requires\s*=\s*(?:"(\w+)"|\{([^}]*)\}),\s*)?'
@@ -3337,7 +3338,7 @@ def npc_candidate(page, kind, fields, names, words):
     if skills:
         tags["skills"] = skills
     if new_words:
-        notes.append("new tag words (add them to core/cards.lua, or change them): " + ", ".join(new_words))
+        notes.append("new tag words (add them to core/tagwords.lua, or change them): " + ", ".join(new_words))
 
     membership = membership_tag(fields, notes)
     if membership:

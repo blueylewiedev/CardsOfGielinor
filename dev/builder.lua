@@ -26,6 +26,7 @@
 local Kit = require("ui/kit")
 local DevKit = require("dev/devkit")
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
 local CardView = require("ui/cardview")
 local OutputWindow = require("dev/outputwindow")
 local Nearby = require("dev/nearby")
@@ -68,7 +69,7 @@ local function freshDraft()
         rarity = "common",
         regions = "", skills = "", location = "", category = "",     -- tags, as typed (words separated by commas)
         membership = "",       -- "f2p", "p2p" or "" (chosen with the two buttons beside the rarity)
-        deck = 1,              -- which deck file (index into Cards.sets); one of the kind's own files
+        deck = 1,              -- which deck file (index into Cards.deckFiles); one of the kind's own files
         body = true,           -- body model (true) or head model (false)
         cam = nil,             -- camera values chosen with the buttons, or nil for the defaults
         anim = nil,            -- animation (sequence) id, or nil
@@ -535,10 +536,10 @@ local function lookupSubject(configName)
     return Builder.lookupNpc(configName)
 end
 
--- The deck files for this kind of card, as { setName, index into Cards.sets }.
+-- The deck files for this kind of card, as { setName, index into Cards.deckFiles }.
 local function decksFor(cardKind)
     local list = {}
-    for i, setName in ipairs(Cards.sets) do
+    for i, setName in ipairs(Cards.deckFiles) do
         if deckFileKind(setName) == cardKind then
             list[#list + 1] = { setName = setName, index = i }
         end
@@ -611,7 +612,7 @@ local CAMERA_DB_KEY = "dev_category_cameras"
 function Builder.categoryKey(words)
     local first, gear, needing = nil, nil, nil
     for _, word in ipairs(words or {}) do
-        if Cards.requiredWords("item", "category", word) ~= nil then
+        if TagWords.requiredWords("item", "category", word) ~= nil then
             if string.find(word, "_gear$") then
                 gear = gear or word
             else
@@ -871,21 +872,21 @@ end
 
 -- Where in core/cards.lua a new word goes (the category words are in groups).
 local function wordHome(tagKind)
-    local groupTable = isItem() and "Cards.itemTagGroups." or "Cards.tagGroups."
-    if Cards.tagGroupsFor(draft.kind, tagKind) ~= nil then
+    local groupTable = isItem() and "TagWords.itemGroups." or "TagWords.groups."
+    if TagWords.groupsFor(draft.kind, tagKind) ~= nil then
         return "a group in " .. groupTable .. tagKind
     end
-    return "Cards.tagWords." .. tagKind
+    return "TagWords.words." .. tagKind
 end
 
--- The block (one line) followed by a note line for each tag word that is not on Cards.tagWords
+-- The block (one line) followed by a note line for each tag word that is not on TagWords.words
 -- yet, since those words must be added there too.
 function Builder.blockLines()
     local lines = { Builder.blockLine() }
 
     -- New words for tag kinds that have a fixed list.
     for _, tagKind in ipairs(tagKinds()) do
-        local allowed = Cards.wordsFor(draft.kind, tagKind)
+        local allowed = TagWords.wordsFor(draft.kind, tagKind)
         if allowed ~= nil then
             local known = {}
             for _, word in ipairs(allowed) do known[word] = true end
@@ -908,7 +909,7 @@ function Builder.queueEntry(page)
     if not ready then
         return nil, "the card still has something to fix"
     end
-    local deck = Cards.sets[draft.deck]
+    local deck = Cards.deckFiles[draft.deck]
     if deck == nil then
         return nil, "no deck file chosen"
     end
@@ -957,7 +958,7 @@ function Builder.checks()
     end
 
     -- The deck file is one of this kind's own.
-    if deckFileKind(Cards.sets[draft.deck] or "") ~= draft.kind then
+    if deckFileKind(Cards.deckFiles[draft.deck] or "") ~= draft.kind then
         add("fix", "Choose a deck file for " .. (isItem() and "item" or "NPC") .. " cards")
     end
 
@@ -987,7 +988,7 @@ function Builder.checks()
     -- Tags.
     local tagProblem, tagNotes = nil, {}
     for _, tagKind in ipairs(tagKinds()) do
-        local allowed = Cards.wordsFor(draft.kind, tagKind)
+        local allowed = TagWords.wordsFor(draft.kind, tagKind)
         local known = {}
         for _, word in ipairs(allowed or {}) do known[word] = true end
         local used = existingWords(tagKind)
@@ -1004,7 +1005,7 @@ function Builder.checks()
     -- A word that needs a parent word (a scimitar needs a weapon) must have it on the card too.
     local parentProblem = nil
     for _, tagKind in ipairs(tagKinds()) do
-        local missing = Cards.missingRequired(draft.kind, tagKind, tagWords(tagKind))[1]
+        local missing = TagWords.missingRequired(draft.kind, tagKind, tagWords(tagKind))[1]
         if missing ~= nil then
             parentProblem = missing.word .. " needs " .. missing.needs .. " (add " .. missing.needs .. " to " .. tagKind .. ")"
             break
@@ -1169,7 +1170,7 @@ local function refreshChecks()
     local box = Kit.inputField(content, MID_X, BOTTOM_Y + 28, WIN_W - MID_X - 10, 28, 1000, false)
     box.content = lines[1]
     checkParts[#checkParts + 1] = box
-    -- Notes about tag words that must be added to Cards.tagWords (up to two are shown).
+    -- Notes about tag words that must be added to TagWords.words (up to two are shown).
     for i = 2, math.min(#lines, 3) do
         checkParts[#checkParts + 1] = Kit.text(content, MID_X, BOTTOM_Y + 62 + (i - 2) * 18, WIN_W - MID_X - 10, 18,
             lines[i], AMBER, ui.AlignMode.TOPLEFT)
@@ -1177,7 +1178,7 @@ local function refreshChecks()
     -- What to do with the block.
     local steps = {
         "Click the box above, press Ctrl+A, then Ctrl+C to copy it.",
-        "Paste it into " .. tostring(Cards.sets[draft.deck] or "a deck file") .. ".lua, inside the Set.cards list.",
+        "Paste it into " .. tostring(Cards.deckFiles[draft.deck] or "a deck file") .. ".lua, inside the Set.cards list.",
         "Reload the plugin once to check that it loads.",
         "Then commit and open a pull request with a screenshot of the card.",
     }
@@ -2262,10 +2263,10 @@ function Builder.itemDeckNames(category, sources)
     return names
 end
 
--- The index in Cards.sets of the first of these deck files that exists, or nil.
+-- The index in Cards.deckFiles of the first of these deck files that exists, or nil.
 local function firstDeck(setNames)
     for _, setName in ipairs(setNames) do
-        for i, name in ipairs(Cards.sets) do
+        for i, name in ipairs(Cards.deckFiles) do
             if name == setName then
                 return i
             end

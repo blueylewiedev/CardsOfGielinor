@@ -3,7 +3,7 @@
 -- (ui/setsviewer.lua) lists them with how many of each the player has, and shows a set's cards with the
 -- missing ones as dark silhouettes.
 --
--- (Not to be confused with Cards.sets in core/cards.lua, which is the list of deck files.)
+-- (Not to be confused with Cards.deckFiles in core/cards.lua, which is the list of deck files.)
 --
 -- A set is written as its own block:
 --   {
@@ -17,7 +17,7 @@
 --   names  : optional. Card names the set takes in, with every variant of each: "Musician" takes the card called
 --            "Musician" and every "Musician (...)", such as "Musician (Lumbridge)", but not "Musicianship".
 --            New variants join the set by themselves when they are added to the deck.
---   filter : optional. Only cards that also match this are taken in, written as a pack filter (see Cards.packTypes
+--   filter : optional. Only cards that also match this are taken in, written as a pack filter (see core/packtypes.lua
 --            in core/cards.lua), e.g. { kind = "npc" } or { category = "shopkeeper" }. On its own (no `names`)
 --            it takes in every card that matches.
 --   add    : optional. Card ids to put in the set although the rules above leave them out.

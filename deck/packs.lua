@@ -1,12 +1,12 @@
 -- deck/packs.lua
--- Themed pack types, added to Cards.packTypes (core/cards.lua) beside the standard pack. Each
+-- Themed pack types, added to PackTypes.byId (core/packtypes.lua) beside the standard pack. Each
 -- one is made in the Pack Maker (Dev tools window): design it, choose its cards,
 -- press Save, then copy its line from the window and paste it into this list.
 --
 -- A pack type here holds:
 --   id, name : id is for code and saving (never change it once the pack is in the game), name is
 --              what the player sees
---   filter   : which cards it can give, as in Cards.packTypes, e.g. { regions = "misthalin" } (or
+--   filter   : which cards it can give, as in the pack types (core/packtypes.lua), e.g. { regions = "misthalin" } (or
 --              { regions = "none" } for the cards from no one region)
 --   art      : how the pack looks (see ui/packart.lua)
 --   and any of the other pack type fields (size, minRarity, featured, and priceFactor: themed packs cost

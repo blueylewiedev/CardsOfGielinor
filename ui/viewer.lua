@@ -9,6 +9,7 @@
 -- to a column). A card the player does not have shows no picture and no description (the "?" card), only its name, rarity and tags.
 
 local Cards = require("core/cards")
+local TagWords = require("core/tagwords")
 local Logger = require("core/logger")
 local Browse = require("core/browse")
 local Memory = require("core/memory")
@@ -245,7 +246,7 @@ local function categoryEntries()
     local state = api ~= nil and api.getState() or nil
     local present = state ~= nil and Browse.words(viewState(state), filter, "category") or nil
     local words = {}
-    for _, word in ipairs(Cards.wordsFor(filter.kind, "category") or {}) do
+    for _, word in ipairs(TagWords.wordsFor(filter.kind, "category") or {}) do
         if present == nil or present[word] or word == filter.category then
             words[#words + 1] = word
         end
@@ -292,7 +293,7 @@ end
 -- A category chosen with the kind of card that does not have it is dropped.
 local function dropInvalidCategory()
     local valid = false
-    for _, word in ipairs(Cards.wordsFor(filter.kind, "category") or {}) do
+    for _, word in ipairs(TagWords.wordsFor(filter.kind, "category") or {}) do
         valid = valid or word == filter.category
     end
     if not valid then
@@ -794,8 +795,8 @@ local function buildFilters()
         { label = "Members", value = "p2p" } })
 
     -- Row 3: where, which skill, what it is.
-    filterDropdown("region", columnX(1), FILTER_Y[3], COLUMN_W, wordEntries("Any region", Cards.tagWords.regions))
-    filterDropdown("skill", columnX(2), FILTER_Y[3], COLUMN_W, wordEntries("Any skill", Cards.tagWords.skills))
+    filterDropdown("region", columnX(1), FILTER_Y[3], COLUMN_W, wordEntries("Any region", TagWords.words.regions))
+    filterDropdown("skill", columnX(2), FILTER_Y[3], COLUMN_W, wordEntries("Any skill", TagWords.words.skills))
     filterDropdown("category", columnX(3), FILTER_Y[3], COLUMN_W, categoryEntries(), nil, true)
     -- The finish (foil, holo...), in the last place on the row.
     local finishes = { { label = "Any finish", value = ANY } }
