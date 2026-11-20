@@ -188,37 +188,6 @@ function Loader.start()
     end
 end
 
--- Applies overlay text given directly, as if it had just been fetched (the Dev tools window's Local overlay button:
--- dev/local_overlay.lua, made by dev/build_overlay.py --local), so a tuning change can be tried without publishing it.
--- Only once the last go has ended. Returns true, or false and why.
-function Loader.applyText(text)
-    local phase = state.phase
-    if phase == "fetching" or phase == "applying" then
-        return false, "an overlay is being fetched or applied: try again in a moment"
-    end
-    local job, why = Overlay.begin(text)
-    if job == nil then
-        settle("ignored", why)
-        say("not applied:", why)
-        return false, why
-    end
-    state.job = job
-    state.phase, state.message, state.request, state.finished = "applying", "applying (from disk)", nil, nil
-    return true
-end
-
--- Fetches and applies it again (the Dev tools window's button): only once the last go has ended.
-function Loader.refetch()
-    local phase = state.phase
-    if phase == "done" or phase == "ignored" or phase == "failed" or phase == "off" then
-        local ticks = state.ticks
-        Loader.begin()
-        state.ticks = ticks
-        return true
-    end
-    return false
-end
-
 function Loader.shutdown()
     if subscribed then
         subscribed = false

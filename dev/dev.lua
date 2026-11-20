@@ -35,6 +35,7 @@ local PackMaker = require("dev/packmaker")
 local WikiReview = require("dev/wikireview")
 local DevTools = require("dev/devtools")
 local OverlayLoader = require("core/overlayloader")
+local Overlay = require("core/overlay")
 local ArtCheck = require("dev/artcheck")
 local DevSaves = require("dev/devsaves")
 local Grants = require("dev/grants")
@@ -197,7 +198,9 @@ local function toolButtons(api, refresh)
         { label = "Lab make", action = LeakLab.make, tooltip = "Leak lab: makes 20 cards the selected way, on screen. Press m in memwatch now" },
         { label = "Lab free", action = LeakLab.free, tooltip = "Leak lab: frees them the selected way. Wait a few seconds, then press m in memwatch" },
         { label = "Fetch updates", action = function()
-            if OverlayLoader.refetch() then
+            local phase = OverlayLoader.status().phase
+            if phase == "done" or phase == "ignored" or phase == "failed" or phase == "off" then
+                OverlayLoader.begin()
                 log("DEV: fetching the card overlay again")
             else
                 local status = OverlayLoader.status()
@@ -210,12 +213,14 @@ local function toolButtons(api, refresh)
                 log("DEV: no dev/local_overlay.lua: run  python dev/build_overlay.py --local  then reload the plugin (prl)")
                 return
             end
-            local applied, why = OverlayLoader.applyText(module.text)
-            if applied then
-                log("DEV: applying the overlay in dev/local_overlay.lua (not fetched)")
-            else
+            -- (applied all at once, here, not through the loader: it is small, and only for trying a change)
+            local job, why = Overlay.begin(module.text)
+            if job == nil then
                 log("DEV: the local overlay was not applied:", why)
+                return
             end
+            while not Overlay.step(job, 100) do end
+            log("DEV: applied the overlay in dev/local_overlay.lua (not fetched):", Overlay.summary(job))
         end, tooltip = "Applies dev/local_overlay.lua as if it had been fetched (python dev/build_overlay.py --local writes it from docs/tuning.json and the deck). After rebuilding it, reload the plugin (prl)" },
         { label = "Delete saves", action = function() deleteSaves(api, refresh) end, style = "negative",
             tooltip = "Deletes every collection of this dev copy. Click twice within 10 seconds" },
