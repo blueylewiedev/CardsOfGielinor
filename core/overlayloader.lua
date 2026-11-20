@@ -15,6 +15,7 @@
 
 local Overlay = require("core/overlay")
 local Logger = require("core/logger")
+local Events = require("core/events")
 
 local Loader = {}
 
@@ -188,7 +189,7 @@ function Loader.start()
     Loader.begin()
     if not subscribed then
         subscribed = true
-        Event.Logic.Subscribe(SUBSCRIBER, function() Loader.safeTick() end)
+        Events.on("Logic", SUBSCRIBER, function() Loader.safeTick() end)
     end
 end
 
@@ -226,7 +227,7 @@ end
 function Loader.shutdown()
     if subscribed then
         subscribed = false
-        pcall(function() Event.Logic.Unsubscribe(SUBSCRIBER) end)
+        pcall(function() Events.off("Logic", SUBSCRIBER) end)
     end
 end
 

@@ -393,6 +393,68 @@ do
     check(db[Storage.bucketKey(nameKey, 20)] ~= nil, "the name collection's own buckets are not deleted")
 end
 
+-- 13. A save that is there but cannot be read is never taken for a new one (it would be written over)
+reset()
+do
+    local get = PersistentDB.GetStructuredData
+    local unreadable = {}
+    function PersistentDB:GetStructuredData(key)
+        if unreadable[key] then
+            return nil
+        end
+        return get(self, key)
+    end
+    local nameKey, trackingKey = Storage.keyForName("Some Name"), Storage.keyForTracking("777")
+    local card = Cards.variantKey(Cards.list[1].id, "normal")
+
+    -- The main entry is there but reads as nothing.
+    Storage.save(nameKey, fullState())
+    unreadable[nameKey] = true
+    local state, problem = Storage.load(nameKey)
+    check(state == nil and problem == "unreadable", "an unreadable main entry is not a new collection (" .. tostring(problem) .. ")")
+    state, problem = Storage.load(nameKey, { acceptMissingMain = true })
+    check(state == nil and problem == "unreadable", "and it is never loaded as one, even after many tries")
+    local adopted
+    state, adopted, problem = Storage.loadOrAdopt(nameKey, nil)
+    check(state == nil and adopted == false and problem == "unreadable", "loadOrAdopt says so too")
+    unreadable[nameKey] = nil
+    check(Storage.load(nameKey).credits == fullState().credits, "once it reads again, it loads as saved")
+
+    -- No main entry, but buckets: not loaded at first; loaded from the buckets when asked, with no credits.
+    reset()
+    db[Storage.bucketKey(nameKey, Storage.bucketOf(card))] = { [card] = 3 }
+    state, problem = Storage.load(nameKey)
+    check(state == nil and problem == "noMain", "buckets with no main entry are not a new collection (" .. tostring(problem) .. ")")
+    state = Storage.load(nameKey, { acceptMissingMain = true })
+    check(state ~= nil and state.owned[card] == 3 and state.credits == 0 and state.dirty,
+        "after the tries, the cards are read from the buckets, with no starter credits, and saved soon")
+    check(Storage.save(nameKey, state) and db[nameKey] ~= nil, "and the save writes the main entry again")
+
+    -- An unreadable tracking save is not replaced by a copy of the name collection.
+    reset()
+    Storage.save(nameKey, fullState())
+    Storage.save(trackingKey, fullState())
+    unreadable[trackingKey] = true
+    state, adopted, problem = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(state == nil and adopted == false and problem == "unreadable", "an unreadable tracking save is not replaced by the name collection")
+    -- And an unreadable name collection is not skipped, as if there were none to copy.
+    reset()
+    Storage.save(nameKey, fullState())
+    unreadable = { [nameKey] = true }
+    state, adopted, problem = Storage.loadOrAdopt(trackingKey, nameKey)
+    check(state == nil and problem == "unreadable", "an unreadable name collection is waited for, not passed over")
+
+    -- A database that cannot answer CheckExists at all: the plugin behaves as before (a missing entry is a new collection).
+    reset()
+    unreadable = {}
+    local checkExists = PersistentDB.CheckExists
+    PersistentDB.CheckExists = function() error("no such call") end
+    state = Storage.load("collection_nobody")
+    check(state ~= nil and state.credits == Storage.starterCredits(), "with no CheckExists, nothing saved is still a new collection")
+    PersistentDB.CheckExists = checkExists
+    PersistentDB.GetStructuredData = get
+end
+
 if failures > 0 then
     io.stderr:write(failures .. " storage check(s) failed\n")
     os.exit(1)

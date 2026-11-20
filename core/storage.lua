@@ -150,10 +150,41 @@ local function loadOwned(owned, saved)
     end
 end
 
--- Reads the collection stored under a key (see keyForName / keyForTracking), or returns a
--- fresh one if nothing was saved yet.
--- Values are checked and rounded so a damaged or hand-edited entry cannot crash the plugin.
-function Storage.load(key)
+-- True if the database says `key` is there. (Never raises: a failed question is a no.)
+local function exists(key)
+    local ok, there = pcall(function() return PersistentDB:CheckExists(key) end)
+    return ok and there == true
+end
+
+-- What is under `key` when its main entry reads as nothing. A read that fails must not look like a player who has never
+-- saved: that would give them a new collection, and its first save would write over their real one. So:
+--   "none"       nothing at all: a new collection
+--   "unreadable" the database says the main entry is there, but it could not be read
+--   "noMain"     no main entry, but some of its buckets are there (a main entry that was lost, or a read that failed)
+function Storage.absentKind(key)
+    if exists(key) then
+        return "unreadable"
+    end
+    for bucket = 1, BUCKETS do
+        if exists(Storage.bucketKey(key, bucket)) then
+            return "noMain"
+        end
+    end
+    return "none"
+end
+
+-- True if anything is saved under `key` (its main entry, or any of its buckets).
+function Storage.hasSave(key)
+    return PersistentDB:GetStructuredData(key) ~= nil or Storage.absentKind(key) ~= "none"
+end
+
+-- Reads the collection stored under a key (see keyForName / keyForTracking), or returns a fresh one if nothing was saved
+-- yet. Values are checked and rounded so a damaged or hand-edited entry cannot crash the plugin.
+-- Returns nil and why if the save is there but its main entry cannot be read (see Storage.absentKind): the caller tries
+-- again later and saves nothing meanwhile. With opts.acceptMissingMain a save whose main entry is missing ("noMain") is
+-- loaded from its buckets anyway, with no credits or statistics (main.lua does that once a few tries have failed, so a
+-- main entry that is really gone does not keep the player out of their cards for ever).
+function Storage.load(key, opts)
     local state = Storage.newState()
     local saved = PersistentDB:GetStructuredData(key)
     if saved ~= nil and type(saved) ~= "table" then
@@ -162,11 +193,21 @@ function Storage.load(key)
         saved = {}
     end
     if saved == nil then
-        -- A new collection starts with the starter credits (two packs). It is marked as changed so they are saved with
-        -- the first save, and the grant is not made again.
-        state.credits = Storage.starterCredits()
+        local kind = Storage.absentKind(key)
+        if kind == "none" then
+            -- A new collection starts with the starter credits (two packs). It is marked as changed so they are saved with
+            -- the first save, and the grant is not made again.
+            state.credits = Storage.starterCredits()
+            state.dirty = true
+            return state
+        end
+        if kind == "unreadable" or not (opts ~= nil and opts.acceptMissingMain) then
+            return nil, kind
+        end
+        -- The cards in the buckets, with no credits or statistics; saved soon, so the main entry is there again.
+        Logger.error("the collection saved under", key, "had no main entry: its cards were read from its buckets, its credits and statistics are lost")
+        saved = {}
         state.dirty = true
-        return state
     end
 
     if type(saved.credits) == "number" and saved.credits > 0 then
@@ -211,14 +252,17 @@ end
 -- (the collection kept under the character's name before trackingAccess was granted), the old one is copied:
 -- the returned collection holds everything in it and is marked as changed, so the next save writes it all
 -- under `key`. The old keys are left as they are, so nothing can be lost by the copy. Once `key` has a save it
--- always wins; the two are never merged. Returns the collection and true if it was copied from `oldKey`.
-function Storage.loadOrAdopt(key, oldKey)
-    if oldKey == nil or oldKey == key
-        or PersistentDB:GetStructuredData(key) ~= nil
-        or PersistentDB:GetStructuredData(oldKey) == nil then
-        return Storage.load(key), false
+-- always wins; the two are never merged. Returns the collection and true if it was copied from `oldKey`, or nil, false
+-- and why if a save that is there could not be read (see Storage.load; `opts` is passed on to it).
+function Storage.loadOrAdopt(key, oldKey, opts)
+    if oldKey == nil or oldKey == key or Storage.hasSave(key) or not Storage.hasSave(oldKey) then
+        local state, problem = Storage.load(key, opts)
+        return state, false, problem
     end
-    local state = Storage.load(oldKey)
+    local state, problem = Storage.load(oldKey, opts)
+    if state == nil then
+        return nil, false, problem
+    end
     state.staleBuckets = nil     -- that is about the old keys, which this save never deletes
     state.dirty = true
     for bucket = 1, BUCKETS do

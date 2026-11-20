@@ -23,6 +23,7 @@ local Logger = require("core/logger")
 local Anim = require("ui/anim")
 local Kit = require("ui/kit")
 local Bars = require("ui/bars")
+local Events = require("core/events")
 
 local Stats = {}
 
@@ -366,7 +367,7 @@ local function onDraw(e)
     end
 end
 
-Event.Draw.Subscribe("cardcollector_stats_layout", onDraw)
+Events.on("Draw", "cardcollector_stats_layout", onDraw)
 
 -- Opens the window. `newApi` needs getState() (and may have hiddenCards()).
 function Stats.show(newApi)

@@ -10,6 +10,7 @@ local Slayer = require("core/slayer")
 local Logger = require("core/logger")
 local Config = require("core/config")
 local Storage = require("core/storage")
+local Events = require("core/events")
 
 local SlayerEvents = {}
 
@@ -223,10 +224,10 @@ function SlayerEvents.start(newApi)
     api = newApi
     loadNames()
     startExamples()
-    Event.VarTransmit.Subscribe(SUBSCRIBERS.var, onVariable)
-    Event.SkillTransmit.Subscribe(SUBSCRIBERS.skill, onSkill)
-    Event.NPCEntityRemoved.Subscribe(SUBSCRIBERS.removed, onRemoved)
-    Event.ServerLogic.Subscribe(SUBSCRIBERS.tick, onTick)
+    Events.on("VarTransmit", SUBSCRIBERS.var, onVariable)
+    Events.on("SkillTransmit", SUBSCRIBERS.skill, onSkill)
+    Events.on("NPCEntityRemoved", SUBSCRIBERS.removed, onRemoved)
+    Events.on("ServerLogic", SUBSCRIBERS.tick, onTick)
 end
 
 -- A character's collection has loaded: starts following their task from where it stands now.
@@ -252,19 +253,10 @@ end
 -- Stops listening. Called when the plugin is shut down.
 function SlayerEvents.shutdown()
     tracker = nil
-    for _, name in pairs(SUBSCRIBERS) do
-        pcall(function()
-            if name == SUBSCRIBERS.var then
-                Event.VarTransmit.Unsubscribe(name)
-            elseif name == SUBSCRIBERS.skill then
-                Event.SkillTransmit.Unsubscribe(name)
-            elseif name == SUBSCRIBERS.removed then
-                Event.NPCEntityRemoved.Unsubscribe(name)
-            else
-                Event.ServerLogic.Unsubscribe(name)
-            end
-        end)
-    end
+    Events.off("VarTransmit", SUBSCRIBERS.var)
+    Events.off("SkillTransmit", SUBSCRIBERS.skill)
+    Events.off("NPCEntityRemoved", SUBSCRIBERS.removed)
+    Events.off("ServerLogic", SUBSCRIBERS.tick)
 end
 
 return SlayerEvents

@@ -38,6 +38,7 @@ local OverlayLoader = require("core/overlayloader")
 local ArtCheck = require("dev/artcheck")
 local DevSaves = require("dev/devsaves")
 local Grants = require("dev/grants")
+local SaveProbe = require("dev/saveprobe")
 
 local Dev = {}
 
@@ -57,6 +58,7 @@ function Dev.onLogin(state)
     end
     log("DEV: credits are now", state.credits)
     ArtCheck.run()
+    SaveProbe.run()
 end
 
 -- Called when XP is gained, to log how it turned into credits.
@@ -156,6 +158,8 @@ local function toolButtons(api, refresh)
         { label = "Anim check", action = Builder.checkAnims },
         { label = "Wiki Review", action = WikiReview.toggle },
         { label = "Pack Maker", action = PackMaker.toggle },
+        { label = "Save probe", action = SaveProbe.run,
+            tooltip = "Vetting V2: logs whether CheckExists agrees with GetStructuredData for this character's save keys" },
         { label = "Pointer probe", action = PointerProbe.toggle,
             tooltip = "Temporary (tutorial): a test window with a gold pointer from the game's own sprites over one of its buttons; drag the window and press Next target, then press Output" },
         { label = "NPC Viewer", action = NpcBrowser.toggle },

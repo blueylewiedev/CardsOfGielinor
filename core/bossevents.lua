@@ -9,6 +9,7 @@ local Bosses = require("core/bosses")
 local Logger = require("core/logger")
 local Config = require("core/config")
 local Storage = require("core/storage")
+local Events = require("core/events")
 
 local BossEvents = {}
 
@@ -121,8 +122,8 @@ end
 -- Starts listening. `newApi` needs getState(). What the tracker sees is written with Logger.debug.
 function BossEvents.start(newApi)
     api = newApi
-    Event.VarTransmit.Subscribe(SUBSCRIBERS.var, onVariable)
-    Event.ServerLogic.Subscribe(SUBSCRIBERS.tick, onTick)
+    Events.on("VarTransmit", SUBSCRIBERS.var, onVariable)
+    Events.on("ServerLogic", SUBSCRIBERS.tick, onTick)
 end
 
 -- A character's collection has loaded: starts looking for their boss kills.
@@ -141,8 +142,8 @@ end
 -- Stops listening. Called when the plugin is shut down.
 function BossEvents.shutdown()
     tracker = nil
-    pcall(function() Event.VarTransmit.Unsubscribe(SUBSCRIBERS.var) end)
-    pcall(function() Event.ServerLogic.Unsubscribe(SUBSCRIBERS.tick) end)
+    pcall(function() Events.off("VarTransmit", SUBSCRIBERS.var) end)
+    pcall(function() Events.off("ServerLogic", SUBSCRIBERS.tick) end)
 end
 
 return BossEvents
