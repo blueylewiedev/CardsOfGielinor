@@ -233,7 +233,7 @@ function WikiFetch.show()
     widgets, dropdowns = {}, {}
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Wiki Fetch", WIDTH, 600 + Kit.titleBarHeight(),
-        function() WikiFetch.hide() end, 0.5, 0.05)
+        function() WikiFetch.hide() end, { xAnchor = 0.5, yAnchor = 0.05 })
 
     caption("NPCs", 10, 4, FULL, GOLD)
     Kit.buttonAt(content, "Clear", 10 + FULL - 100, 0, 100, 24, function()

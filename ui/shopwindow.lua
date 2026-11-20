@@ -315,7 +315,7 @@ local function build()
     local height = TOP + PANEL_H + BOTTOM
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Shop", WIDTH, height + Kit.titleBarHeight(), function() Shop.hide() end,
-        0.3, 0.12)
+        { xAnchor = 0.3, yAnchor = 0.12 })
 
     if Packs.typeById(selected) == nil then
         selected = "standard"

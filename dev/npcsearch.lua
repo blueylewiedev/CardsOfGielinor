@@ -217,7 +217,7 @@ function NpcSearch.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Search NPCs", WIDTH, LIST_TOP + MAX_ROWS * ROW_H + 10 + Kit.titleBarHeight(),
-        function() NpcSearch.hide() end, 0.35, 0.3)
+        function() NpcSearch.hide() end, { xAnchor = 0.35, yAnchor = 0.3 })
     Kit.text(content, 10, 4, 100, 26, "Name:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 70, 4, 295, 26, 40, false)
     Kit.buttonAt(content, "Search", WIDTH - 130, 2, 120, 30, function() NpcSearch.start(filterField.content) end, "positive")

@@ -214,7 +214,7 @@ function SettingsPage.openWindow()
     local content
     local height = windowHeight()
     window, content = Kit.window(gameWindow, "Settings", WINDOW_WIDTH, height + Kit.titleBarHeight(),
-        function() SettingsPage.closeWindow() end, 0.3, 0.2)
+        function() SettingsPage.closeWindow() end, { xAnchor = 0.3, yAnchor = 0.2 })
     local ok, err = pcall(buildWindow, content)
     if not ok then
         Logger.error("settings window failed:", err)

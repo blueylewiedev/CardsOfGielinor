@@ -208,7 +208,7 @@ function PackWindow.show(newApi)
         if api ~= nil and api.onMainClosed ~= nil then
             api.onMainClosed()
         end
-    end, 0, 0.2)
+    end, { xAnchor = 0, yAnchor = 0.2 })
     buildScreens()
     PackWindow.refresh()
 end
@@ -269,7 +269,7 @@ function PackWindow.refresh()
     end
 end
 
--- The name of the screen being shown, or nil if the window is not created. For tests.
+-- The name of the screen being shown, or nil if the window is not created (the tutorial waits for "home").
 function PackWindow.currentScreen()
     return current
 end

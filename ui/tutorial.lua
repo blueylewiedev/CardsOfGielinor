@@ -58,7 +58,7 @@ local S = {}
 local offered = false          -- the first-run offer has been made this session
 
 -- The tutorial's own controls and the first-run offer are looked at by the tests.
-function Tutorial.debugState()
+function Tutorial.state()
     return S
 end
 
@@ -282,7 +282,7 @@ local function build()
     local stepCount = Steps.count()
     local startX = WIDTH - 66 - stepCount * 31
     local window, content = Kit.window(parent, "Cards of Gielinor Help", WIDTH, HEIGHT, function() close(true) end,
-        0, 0, false, false, nil, MARGIN, parent.height - HEIGHT - MARGIN)
+        { xAnchor = 0, yAnchor = 0, offsetX = MARGIN, offsetY = parent.height - HEIGHT - MARGIN })
     S.window = window
     S.content = content
     -- The "i" over the title bar's left corner.

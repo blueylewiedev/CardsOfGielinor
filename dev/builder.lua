@@ -2376,7 +2376,7 @@ function Builder.show()
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     gameLayer = gameWindow
     window, content = Kit.window(gameWindow, "Card Builder", WIN_W, WIN_H + Kit.titleBarHeight(),
-        function() Builder.hide() end, 0.15, 0.04, false, true)
+        function() Builder.hide() end, { xAnchor = 0.15, yAnchor = 0.04, resizable = true })
 
     -- A slightly lighter band behind sections 4 and 5, to set them apart from the rest.
     local band = ui.Rectangle.new(content)

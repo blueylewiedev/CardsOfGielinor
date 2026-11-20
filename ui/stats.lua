@@ -306,15 +306,6 @@ local function showTab(index, state)
     refreshView(state, true)
 end
 
--- Switches the open window to a tab (1 Collection, 2 Regions, 3 Packs and credits). For tests; the player uses the tabs.
-function Stats.setTab(index)
-    local state = api ~= nil and api.getState() or nil
-    if window ~= nil and state ~= nil and views[index] ~= nil then
-        tabs.select(index)
-        showTab(index, state)
-    end
-end
-
 -- Brings the window up to date. Does nothing if the window is closed.
 function Stats.refresh()
     if window == nil then
@@ -372,7 +363,7 @@ function Stats.show(newApi)
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Statistics", WIDTH, HEIGHT + Kit.titleBarHeight(), function()
         Stats.hide()
-    end, 0.45, 0.15, false, true, { minWidth = MIN_WIDTH, minHeight = MIN_HEIGHT })
+    end, { xAnchor = 0.45, yAnchor = 0.15, resizable = true, minWidth = MIN_WIDTH, minHeight = MIN_HEIGHT })
     local ok, err = pcall(function()
         local labels = {}
         for i, spec in ipairs(TABS) do

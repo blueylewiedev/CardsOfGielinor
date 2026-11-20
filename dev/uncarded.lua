@@ -392,7 +392,7 @@ function Uncarded.show()
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     local height = ROWS_TOP + ROWS * ROW_H + 10 + Kit.titleBarHeight()
     window, content = Kit.window(gameWindow, "Uncarded NPCs", WIDTH, height,
-        function() Uncarded.hide() end, 0.2, 0.10)
+        function() Uncarded.hide() end, { xAnchor = 0.2, yAnchor = 0.10 })
 
     -- Top row: the switch, and which list is shown.
     boxButton = Kit.buttonAt(content, "Boxes", 10, 2, 150, BUTTON_H, function()

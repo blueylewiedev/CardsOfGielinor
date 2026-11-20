@@ -98,8 +98,10 @@ Fake.CheckboxButton = { new = function(parent, choices, opts)
     return group
 end }
 
+-- A tab strip: the check clicks a tab with `Fake.lastTabs:Click(index)`, which calls the plugin's onChange as the player's click does.
 Fake.Tabs = { new = function(parent, list, opts)
     local tabs = { pages = {}, active = opts.activeIndex or 1 }
+    Fake.lastTabs = tabs
     local root = ui.Layer.new(parent)
     for i = 1, #list do
         local content = ui.Layer.new(root)
@@ -111,6 +113,12 @@ Fake.Tabs = { new = function(parent, list, opts)
         tabs.active = i
         for n, page in ipairs(tabs.pages) do
             page.content.hidden = (n ~= i)
+        end
+    end
+    function tabs.Click(_, i)
+        tabs:SetActive(i)
+        if opts.onChange ~= nil then
+            opts.onChange(tabs, i)
         end
     end
     function tabs.Destroy() pcall(function() root:Destroy() end) end

@@ -94,6 +94,14 @@ end }) } }
 local Cards = require("core/cards")
 local Reveal = require("ui/revealscreen")
 
+-- Presses the reveal's main button (Tear open, Reveal all, Next page, Done), as the player does.
+local function pressMain()
+    local R = Reveal.state()
+    if R ~= nil then
+        R.main._handlers.ONBUTTONPRESSED(R.main)
+    end
+end
+
 local failures = 0
 local function check(ok, what)
     if not ok then failures = failures + 1; print("FAIL: " .. what) end
@@ -209,7 +217,7 @@ local function play(count, label)
     local R = Reveal.state()
     check(R ~= nil and R.stage == "sealed", label .. ": sealed first, was " .. tostring(R and R.stage))
     check(R.tear ~= nil, label .. ": the standard pack is drawn as a designed pack that tears")
-    Reveal.pressMain()
+    pressMain()
     check(until_(function() return R.stage == "cards" end), label .. ": reaches the cards (stuck at " .. tostring(R.stage) .. ")")
     check(#R.cards == math.min(count, R.pageSize), label .. ": first page has " .. #R.cards .. " cards")
 
@@ -250,7 +258,7 @@ local function play(count, label)
         end
         check(seen >= 1, label .. ": a turned card counts as seen")
         -- the rest by Reveal all
-        Reveal.pressMain()
+        pressMain()
         local function allTurned()
             for _, c in ipairs(R.cards) do
                 if not c.flipped then return false end
@@ -260,7 +268,7 @@ local function play(count, label)
         check(until_(allTurned), label .. ": Reveal all turns every card on page " .. pages)
         turned = turned + #R.cards
         frames(10)
-        Reveal.pressMain()                -- Next page, or Done
+        pressMain()                -- Next page, or Done
         if Reveal.active() then
             check(R.stage == "dealing" or R.stage == "cards", label .. ": the next page starts dealing")
         end
@@ -290,7 +298,7 @@ for _, mode in ipairs({ { false, "no images" }, { true, "images" } }) do
     local before = liveRoots()
     Reveal.start(makeResults(10), "standard", { onClose = function() closed = closed + 1 end })
     frames(20)
-    Reveal.pressMain()
+    pressMain()
     until_(function() return Reveal.state().stage == "dealing" end)
     Reveal.close()
     check(not Reveal.active() and closed == 1 and liveRoots() == before, tag .. ": close while dealing")
@@ -309,7 +317,7 @@ for _, mode in ipairs({ { false, "no images" }, { true, "images" } }) do
         local R = Reveal.state()
         check(R.skip ~= nil, label .. ": there is a Skip button")
         if when ~= "sealed" then
-            Reveal.pressMain()
+            pressMain()
         end
         if when == "tearing" then
             frames(5)
@@ -321,7 +329,7 @@ for _, mode in ipairs({ { false, "no images" }, { true, "images" } }) do
                 R.cards[1].back._handlers.ONCLICK()
                 frames(3)
             elseif when == "reveal all" then
-                Reveal.pressMain()
+                pressMain()
                 frames(3)
             end
         end
@@ -342,12 +350,12 @@ for _, mode in ipairs({ { false, "no images" }, { true, "images" } }) do
         end
         check(shown == #R.cards, label .. ": the page's cards count as seen (" .. shown .. ")")
         for page = 2, 3 do
-            Reveal.pressMain()
+            pressMain()
             check(until_(function() return R.page == page and R.stage == "cards" and allTurned() end, 120),
                 label .. ": page " .. page .. " is dealt and turned over by itself")
         end
         check(R.mainLabel == "Done", label .. ": the last page ends with Done, was " .. tostring(R.mainLabel))
-        Reveal.pressMain()
+        pressMain()
         local all = 0
         for _, result in ipairs(results) do
             if result.seen then all = all + 1 end
