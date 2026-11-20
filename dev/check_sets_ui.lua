@@ -67,6 +67,17 @@ local Packs = require("core/packs")
 local CardView = require("ui/cardview")
 local SetsViewer = require("ui/setsviewer")
 
+-- What the window is showing, from its state (SetsViewer.state(): `kept` is what the player chose, `open` the window and nil while
+-- it is closed): the picked set and page, how many pages it has, the list's place, the cards drawn and the sets listed.
+local function infoOf()
+    local S = SetsViewer.state()
+    local o, kept = S.open, S.kept
+    local set = kept.selectedId ~= nil and Sets.byId[kept.selectedId] or nil
+    local pages = (set ~= nil and o ~= nil) and math.max(1, math.ceil(#Sets.cardsOf(set) / o.layout.gridPerPage)) or 0
+    return { open = o ~= nil, selected = kept.selectedId, page = kept.page, pages = pages, listTop = kept.listTop,
+        cards = o ~= nil and #o.gridParts or 0, shown = o ~= nil and #o.shownSets or 0 }
+end
+
 local failures = 0
 local function check(ok, what)
     if not ok then failures = failures + 1; print("FAIL: " .. what) end
@@ -132,7 +143,7 @@ local state = { owned = { [Cards.variantKey(ownedCard.id, "normal")] = 2 }, cred
 local api = { getState = function() return state end }
 
 SetsViewer.open(api)
-local info = SetsViewer.debugInfo()
+local info = infoOf()
 check(info.open and info.selected == Sets.list[1].id, "opens on the first set (" .. tostring(info.selected) .. ")")
 check(string.find(texts(), "1 / " .. #Sets.cardsOf(Sets.list[1]), 1, true) ~= nil, "the first set's tile shows 1 owned")
 check(string.find(texts(), "Owned: 2", 1, true) ~= nil, "the owned card's caption shows its copies")
@@ -150,7 +161,7 @@ local searchBox = live("InputField")[1]
 check(searchBox ~= nil, "there is a search box")
 searchBox.content = string.lower(biggest.name)
 searchBox._handlers["ONCONTENTCHANGED"](searchBox)
-info = SetsViewer.debugInfo()
+info = infoOf()
 check(info.selected == biggest.id and info.page == 1 and info.shown == 1,
     "searching for a set's name lists only it, and shows it from page 1 (" .. tostring(info.shown) .. " listed)")
 tileGrips = {}
@@ -158,16 +169,16 @@ for _, g in ipairs(live("Layer")) do
     if rawget(g, "clickthrough") == false and g._handlers["ONCLICK"] ~= nil then tileGrips[#tileGrips + 1] = g end
 end
 tileGrips[1]._handlers["ONCLICK"](tileGrips[1])
-check(SetsViewer.debugInfo().selected == biggest.id, "clicking its tile keeps it")
+check(infoOf().selected == biggest.id, "clicking its tile keeps it")
 check(info.pages == math.ceil(#Sets.cardsOf(biggest) / 6), "6 cards a page (" .. info.pages .. " pages)")
 check(string.find(texts(), biggest.name, 1, true) ~= nil, "its name is shown")
 
 -- paging: Next, Prev (which wraps round), the wheel
 button("Next")._handlers["ONBUTTONPRESSED"](button("Next"))
-check(SetsViewer.debugInfo().page == 2, "Next goes to page 2")
+check(infoOf().page == 2, "Next goes to page 2")
 button("Prev")._handlers["ONBUTTONPRESSED"](button("Prev"))
 button("Prev")._handlers["ONBUTTONPRESSED"](button("Prev"))
-check(SetsViewer.debugInfo().page == SetsViewer.debugInfo().pages, "Prev from page 1 wraps to the last")
+check(infoOf().page == infoOf().pages, "Prev from page 1 wraps to the last")
 
 -- a card arriving while the window is open shows on the next tick
 local newCard = Sets.cardsOf(biggest)[1]
@@ -185,7 +196,7 @@ api.hiddenCards = nil
 SetsViewer.close()
 check(not SetsViewer.isOpen() and #live("Text") == 0, "closing removes everything")
 SetsViewer.toggle(api)
-check(SetsViewer.isOpen() and SetsViewer.debugInfo().selected == biggest.id, "opening again shows the same set")
+check(SetsViewer.isOpen() and infoOf().selected == biggest.id, "opening again shows the same set")
 SetsViewer.toggle(api)
 check(not SetsViewer.isOpen(), "toggle closes it")
 
@@ -204,7 +215,7 @@ do
     end
     local opened, err = pcall(SetsViewer.open, api)
     check(opened, "opening on a short screen does not error: " .. tostring(err))
-    local info = SetsViewer.debugInfo()
+    local info = infoOf()
     check(info.open and info.selected == biggest.id and info.pages == math.ceil(#Sets.cardsOf(biggest) / 3),
         "it pages by the 3 cards a row holds (" .. tostring(info.pages) .. " pages)")
     SetsViewer.close()

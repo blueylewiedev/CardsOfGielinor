@@ -70,6 +70,17 @@ local Cards = require("core/cards")
 local Browse = require("core/browse")
 local Viewer = require("ui/viewer")
 
+-- What a viewer is showing, from its state (module.state(): `kept` is what the player chose, `open` the window and nil while
+-- it is closed): the page, how many pages and cards the filter found, the view, the filter and the picked card.
+local function infoOf(module)
+    local V = module.state()
+    local o, kept = V.open, V.kept
+    local perPage = o ~= nil and (kept.gridView and o.layout.gridPerPage or o.layout.listRows) or 1
+    local matches = o ~= nil and #o.entries or 0
+    return { open = o ~= nil, page = kept.page, pages = math.max(1, math.ceil(matches / perPage)), matches = matches,
+        grid = kept.gridView, filter = kept.filter, selected = kept.selectedKey }
+end
+
 local failures = 0
 local function check(ok, what)
     if not ok then failures = failures + 1; print("FAIL: " .. what) end
@@ -119,7 +130,7 @@ for i = 1, 40, 3 do state.owned[Cards.variantKey(Cards.list[i].id, "normal")] = 
 local api = { getState = function() return state end }
 
 Viewer.open(api)
-local info = Viewer.debugInfo()
+local info = infoOf(Viewer)
 local ownedNow = #Browse.entries(state, { owned = "owned" })
 check(info.open and info.filter.owned == "owned" and info.matches == ownedNow and ownedNow > 0,
     "opens listing the cards the player owns (" .. tostring(info.matches) .. ")")
@@ -151,14 +162,14 @@ local SORT, OWNED, KIND, RARITY, MEMBER, REGION, SKILL, CATEGORY = 1, 2, 3, 4, 5
 
 -- the rest of the checks start from the whole deck
 choose(combos[OWNED], "All cards")
-info = Viewer.debugInfo()
+info = infoOf(Viewer)
 check(info.matches == #Cards.list, "the owned drop-down can show every card (" .. tostring(info.matches) .. ")")
 check(info.pages == math.ceil(#Cards.list / 13), "13 cards a page in the list")
 
 -- search
 inputs[1].content = "dragon"
 inputs[1]._handlers["ONCONTENTCHANGED"](inputs[1])
-info = Viewer.debugInfo()
+info = infoOf(Viewer)
 check(info.matches == Browse.counts(state, { search = "dragon" }).cards and info.matches > 0, "search 'dragon' narrows the list (" .. info.matches .. ")")
 check(info.page == 1, "and goes to page 1")
 
@@ -184,31 +195,31 @@ local function clickChip(index)
     list[index]._handlers["ONCLICK"](list[index])
 end
 local function selectedStillListed()
-    local d = Viewer.debugInfo()
+    local d = infoOf(Viewer)
     for _, entry in ipairs(Browse.entries(state, d.filter)) do
         if entry.card.id == d.selected then return true end
     end
     return false
 end
 check(#chipGrips() >= 3, "the detail has clickable chips (" .. #chipGrips() .. ")")
-local before = Viewer.debugInfo().matches
+local before = infoOf(Viewer).matches
 clickChip(1)    -- the kind (the owned chip is not clickable)
-local kindSet = Viewer.debugInfo().filter.kind
+local kindSet = infoOf(Viewer).filter.kind
 check(kindSet == "npc" or kindSet == "item", "the type chip sets the kind filter (" .. tostring(kindSet) .. ")")
 check(selectedStillListed(), "the picked card is still listed after a chip filter")
-check(Viewer.debugInfo().matches < before, "and the list narrows (" .. before .. " to " .. Viewer.debugInfo().matches .. ")")
+check(infoOf(Viewer).matches < before, "and the list narrows (" .. before .. " to " .. infoOf(Viewer).matches .. ")")
 clickChip(1)
-check(Viewer.debugInfo().filter.kind == nil and Viewer.debugInfo().matches == before, "clicking it again clears the kind")
+check(infoOf(Viewer).filter.kind == nil and infoOf(Viewer).matches == before, "clicking it again clears the kind")
 clickChip(2)    -- membership
-check(Viewer.debugInfo().filter.membership ~= nil, "the membership chip sets the membership filter")
+check(infoOf(Viewer).filter.membership ~= nil, "the membership chip sets the membership filter")
 clickChip(2)
-check(Viewer.debugInfo().filter.membership == nil, "and clears it")
+check(infoOf(Viewer).filter.membership == nil, "and clears it")
 local lastChip = #chipGrips()
 clickChip(lastChip)    -- a region, skill or category word
-local fs = Viewer.debugInfo().filter
+local fs = infoOf(Viewer).filter
 check(fs.region ~= nil or fs.skill ~= nil or fs.category ~= nil, "a tag chip sets its tag's filter")
 check(selectedStillListed(), "the picked card is still listed after a tag chip")
-local d = Viewer.debugInfo()
+local d = infoOf(Viewer)
 check(d.page == (function()
     for i, entry in ipairs(Browse.entries(state, d.filter)) do
         if entry.card.id == d.selected then return (i - 1) // 13 + 1 end
@@ -220,22 +231,22 @@ end
 
 -- owned filter, kind, rarity
 choose(combos[OWNED], "Owned")
-check(Viewer.debugInfo().filter.owned == "owned", "Owned filter set")
+check(infoOf(Viewer).filter.owned == "owned", "Owned filter set")
 choose(combos[OWNED], "All cards")
 choose(combos[KIND], "Items")
-check(Viewer.debugInfo().filter.kind == "item", "kind set to item")
+check(infoOf(Viewer).filter.kind == "item", "kind set to item")
 choose(combos[RARITY], "Rare")
-check(Viewer.debugInfo().filter.rarity == "rare", "rarity set")
+check(infoOf(Viewer).filter.rarity == "rare", "rarity set")
 choose(combos[KIND], "NPCs and items")
-check(Viewer.debugInfo().filter.kind == nil, "'any' clears a filter")
+check(infoOf(Viewer).filter.kind == nil, "'any' clears a filter")
 choose(combos[REGION], "Asgarnia")
 choose(combos[SKILL], "Thieving")
 choose(combos[MEMBER], "Free to play")
-local f = Viewer.debugInfo().filter
+local f = infoOf(Viewer).filter
 check(f.region == "asgarnia" and f.skill == "thieving" and f.membership == "f2p", "region, skill and membership set")
-check(Viewer.debugInfo().matches == #Browse.entries(state, f), "the list matches Browse for the whole filter")
+check(infoOf(Viewer).matches == #Browse.entries(state, f), "the list matches Browse for the whole filter")
 choose(combos[SORT], "Name A to Z")
-check(Viewer.debugInfo().filter.sort == "name", "sort set")
+check(infoOf(Viewer).filter.sort == "name", "sort set")
 
 -- the category list follows the other filters: only categories that cards matching them have
 local function pressClear()
@@ -246,7 +257,7 @@ end
 -- Clear filters goes back to the start (the owned cards); this then shows every card
 local function clearAll()
     pressClear()
-    check(Viewer.debugInfo().filter.owned == "owned", "Clear filters goes back to the owned cards")
+    check(infoOf(Viewer).filter.owned == "owned", "Clear filters goes back to the owned cards")
     choose(combos[OWNED], "All cards")
 end
 clearAll()
@@ -257,11 +268,11 @@ choose(combos[REGION], "Asgarnia")
 local inAsgarnia = countOf(combos[CATEGORY]._entries)
 check(inAsgarnia > 1 and inAsgarnia < everyCategory, "choosing a region narrows the category list (" .. inAsgarnia .. " of " .. everyCategory .. ")")
 choose(combos[CATEGORY], "Humanoid")
-check(Viewer.debugInfo().filter.category == "humanoid", "a category can be chosen from the narrowed list")
+check(infoOf(Viewer).filter.category == "humanoid", "a category can be chosen from the narrowed list")
 choose(combos[REGION], "Misthalin")
 check(combos[CATEGORY]._entries["Humanoid"] ~= nil, "the chosen category stays in the list when the region changes")
 choose(combos[CATEGORY], " Any category")
-check(Viewer.debugInfo().filter.category == nil, "the any-category entry clears it")
+check(infoOf(Viewer).filter.category == nil, "the any-category entry clears it")
 clearAll()
 check(countOf(combos[CATEGORY]._entries) == everyCategory, "Clear filters brings the whole category list back")
 
@@ -275,7 +286,7 @@ check(count(itemCats) > 1 and count(npcCats) > 1 and count(itemCats) ~= count(np
 
 -- (the grid needs cards to show: clear the filters first)
 clearAll()
-check(Viewer.debugInfo().matches == #Cards.list, "Clear filters before the grid test")
+check(infoOf(Viewer).matches == #Cards.list, "Clear filters before the grid test")
 
 -- grid view
 local toggle = nil
@@ -283,7 +294,7 @@ for _, b in ipairs(live("Button")) do if rawget(b, "label") == "SWAP" then toggl
 check(toggle ~= nil, "found the list / grid button (the SWAP button in the title bar)")
 check(Viewer.isGrid() == false and Viewer.anchor("grid") ~= nil, "the tutorial can see the list showing and find the swap button")
 toggle._handlers["ONBUTTONPRESSED"](toggle)
-check(Viewer.debugInfo().grid == true, "grid view on")
+check(infoOf(Viewer).grid == true, "grid view on")
 check(Viewer.isGrid() == true, "the tutorial can see the grid showing")
 -- a click on a card in the grid opens it in the list, picked, on its page
 local gridGrips = {}
@@ -293,12 +304,12 @@ end
 check(#gridGrips >= 13 + 8, "the grid adds a click area for each of its 8 cards (" .. #gridGrips .. " in all)")
 local lastGrip = gridGrips[#gridGrips]
 lastGrip._handlers["ONCLICK"](lastGrip)
-local opened = Viewer.debugInfo()
+local opened = infoOf(Viewer)
 check(opened.grid == false and opened.selected ~= nil, "clicking a card in the grid switches to the list with it picked (" .. tostring(opened.selected) .. ")")
 toggle._handlers["ONBUTTONPRESSED"](toggle)
-check(Viewer.debugInfo().grid == true, "the button goes back to the grid")
+check(infoOf(Viewer).grid == true, "the button goes back to the grid")
 toggle._handlers["ONBUTTONPRESSED"](toggle)
-check(Viewer.debugInfo().grid == false, "and to the list again")
+check(infoOf(Viewer).grid == false, "and to the list again")
 
 -- paging
 local function press(label)
@@ -309,11 +320,11 @@ end
 choose(combos[REGION], "Any region"); choose(combos[SKILL], "Any skill"); choose(combos[MEMBER], "Any membership")
 choose(combos[KIND], "NPCs and items"); choose(combos[RARITY], "Any rarity")
 inputs[1].content = ""; inputs[1]._handlers["ONCONTENTCHANGED"](inputs[1])
-check(Viewer.debugInfo().matches == #Cards.list, "all filters cleared one by one: the whole deck")
-check(press("Next") and Viewer.debugInfo().page == 2, "Next goes to page 2")
-check(press("Prev") and Viewer.debugInfo().page == 1, "Prev goes back")
-check(press("Prev") and Viewer.debugInfo().page == Viewer.debugInfo().pages, "Prev from page 1 wraps to the last page")
-check(press("Next") and Viewer.debugInfo().page == 1, "Next from the last page wraps to page 1")
+check(infoOf(Viewer).matches == #Cards.list, "all filters cleared one by one: the whole deck")
+check(press("Next") and infoOf(Viewer).page == 2, "Next goes to page 2")
+check(press("Prev") and infoOf(Viewer).page == 1, "Prev goes back")
+check(press("Prev") and infoOf(Viewer).page == infoOf(Viewer).pages, "Prev from page 1 wraps to the last page")
+check(press("Next") and infoOf(Viewer).page == 1, "Next from the last page wraps to page 1")
 
 -- the mouse wheel turns the pages; it stops at the ends
 local function wheel(target, delta)
@@ -323,37 +334,37 @@ local wheelGrips = {}
 for _, c in ipairs(live("Layer")) do if rawget(c, "clickthrough") == false and c._parent == contentLayer then wheelGrips[#wheelGrips + 1] = c end end
 check(wheelGrips[1] ~= nil and wheelGrips[1]._handlers["ONSCROLLWHEEL"] ~= nil, "a row listens for the wheel")
 check(contentLayer._handlers["ONSCROLLWHEEL"] ~= nil, "so does the window behind the rows")
-check(Viewer.debugInfo().page == 1, "(starting from page 1)")
+check(infoOf(Viewer).page == 1, "(starting from page 1)")
 wheel(wheelGrips[1], 1)
-check(Viewer.debugInfo().page == 2, "wheel down on a row goes to the next page")
+check(infoOf(Viewer).page == 2, "wheel down on a row goes to the next page")
 wheel(contentLayer, 1)
-check(Viewer.debugInfo().page == 3, "wheel down on the window goes on")
+check(infoOf(Viewer).page == 3, "wheel down on the window goes on")
 wheel(contentLayer, -1)
 wheel(contentLayer, -1)
-check(Viewer.debugInfo().page == 1, "wheel up goes back")
+check(infoOf(Viewer).page == 1, "wheel up goes back")
 wheel(contentLayer, -1)
-check(Viewer.debugInfo().page == 1, "and stops at the first page (does not wrap)")
-for _ = 1, Viewer.debugInfo().pages + 2 do wheel(contentLayer, 1) end
-check(Viewer.debugInfo().page == Viewer.debugInfo().pages, "wheel down stops at the last page")
+check(infoOf(Viewer).page == 1, "and stops at the first page (does not wrap)")
+for _ = 1, infoOf(Viewer).pages + 2 do wheel(contentLayer, 1) end
+check(infoOf(Viewer).page == infoOf(Viewer).pages, "wheel down stops at the last page")
 wheel(contentLayer, 0)
-check(Viewer.debugInfo().page == Viewer.debugInfo().pages, "a wheel with no movement does nothing")
-while Viewer.debugInfo().page > 1 do wheel(contentLayer, -1) end
+check(infoOf(Viewer).page == infoOf(Viewer).pages, "a wheel with no movement does nothing")
+while infoOf(Viewer).page > 1 do wheel(contentLayer, -1) end
 
 -- the viewer follows the collection while it is open
 choose(combos[OWNED], "Owned")
-local ownedBefore = Viewer.debugInfo().matches
+local ownedBefore = infoOf(Viewer).matches
 local made = #created
 Viewer.refresh()
-check(#created == made and Viewer.debugInfo().matches == ownedBefore, "nothing changed: refresh redraws nothing")
+check(#created == made and infoOf(Viewer).matches == ownedBefore, "nothing changed: refresh redraws nothing")
 local newCard = nil
 for _, card in ipairs(Cards.list) do
     if state.owned[Cards.variantKey(card.id, "normal")] == nil then newCard = card break end
 end
 state.owned[Cards.variantKey(newCard.id, "normal")] = 1
 Viewer.refresh()
-check(Viewer.debugInfo().matches == ownedBefore + 1, "a card added while the viewer is open appears in the list (" .. ownedBefore .. " to " .. Viewer.debugInfo().matches .. ")")
+check(infoOf(Viewer).matches == ownedBefore + 1, "a card added while the viewer is open appears in the list (" .. ownedBefore .. " to " .. infoOf(Viewer).matches .. ")")
 -- a copy more of the picked card: its detail shows the new count
-local selected = Viewer.debugInfo().selected
+local selected = infoOf(Viewer).selected
 local selectedId = selected      -- (the picked card's id)
 local key = Cards.variantKey(selectedId, "normal")
 local function showsCount(n)
@@ -369,7 +380,7 @@ check(showsCount(copies + 5) and not showsCount(copies), "and the new count when
 local hiddenNow = {}
 api.hiddenCards = function() return hiddenNow end
 choose(combos[OWNED], "Owned")
-local beforePack = Viewer.debugInfo().matches
+local beforePack = infoOf(Viewer).matches
 local first, second = nil, nil
 for _, card in ipairs(Cards.list) do
     local k = Cards.variantKey(card.id, "normal")
@@ -380,32 +391,32 @@ end
 state.owned[first], state.owned[second] = 1, 1      -- a pack of two new cards is opened: both are in the collection at once
 hiddenNow = { [first] = 1, [second] = 1 }
 Viewer.refresh()
-check(Viewer.debugInfo().matches == beforePack, "cards not yet turned over do not appear")
+check(infoOf(Viewer).matches == beforePack, "cards not yet turned over do not appear")
 hiddenNow = { [second] = 1 }                          -- the first is turned over
 Viewer.refresh()
-check(Viewer.debugInfo().matches == beforePack + 1, "a card appears once it has been turned over")
+check(infoOf(Viewer).matches == beforePack + 1, "a card appears once it has been turned over")
 hiddenNow = {}                                        -- the pack is finished
 Viewer.refresh()
-check(Viewer.debugInfo().matches == beforePack + 2, "and the rest when the pack is done")
+check(infoOf(Viewer).matches == beforePack + 2, "and the rest when the pack is done")
 -- it stays on the page that was showing
 choose(combos[OWNED], "All cards")
 press("Next")
-local pageNow = Viewer.debugInfo().page
+local pageNow = infoOf(Viewer).page
 state.owned[Cards.variantKey(Cards.list[200].id, "normal")] = 1
 Viewer.refresh()
-check(Viewer.debugInfo().page == pageNow, "a refresh stays on the page that was showing")
+check(infoOf(Viewer).page == pageNow, "a refresh stays on the page that was showing")
 choose(combos[OWNED], "Owned")
 choose(combos[OWNED], "All cards")
 
 -- clear
 choose(combos[RARITY], "Epic"); inputs[1].content = "a"; inputs[1]._handlers["ONCONTENTCHANGED"](inputs[1])
 press("Clear filters")
-local after = Viewer.debugInfo()
+local after = infoOf(Viewer)
 check(after.filter.rarity == nil and after.filter.search == nil and after.filter.owned == "owned" and after.matches == #Browse.entries(state, { owned = "owned" }), "Clear filters resets everything to the start")
 
 -- a search nothing matches
 inputs[1].content = "zzzzqqq"; inputs[1]._handlers["ONCONTENTCHANGED"](inputs[1])
-check(Viewer.debugInfo().matches == 0 and Viewer.debugInfo().pages == 1, "no match: an empty list and one page")
+check(infoOf(Viewer).matches == 0 and infoOf(Viewer).pages == 1, "no match: an empty list and one page")
 
 -- filters survive closing
 choose(combos[RARITY], "Legendary")
@@ -413,7 +424,7 @@ Viewer.close()
 check(not Viewer.isOpen(), "closes")
 created = {}
 Viewer.open(api)
-check(Viewer.debugInfo().filter.rarity == "legendary", "the filter is kept while the plugin runs")
+check(infoOf(Viewer).filter.rarity == "legendary", "the filter is kept while the plugin runs")
 Viewer.close()
 
 -- a player with no cards yet starts from all of them (an empty list would look broken)
@@ -422,7 +433,7 @@ do
     local Fresh = require("ui/viewer")
     local noCards = { owned = {}, credits = 0, stats = {}, dirtyBuckets = {} }
     Fresh.open({ getState = function() return noCards end })
-    local first = Fresh.debugInfo()
+    local first = infoOf(Fresh)
     check(first.filter.owned == "all" and first.matches == #Cards.list, "with no cards the viewer starts from all of them")
     Fresh.close()
 end
@@ -494,10 +505,10 @@ do
     check(opened, "opening on a short screen does not error: " .. tostring(err))
     local short = Viewer.layoutFor(560)
     check(short.listRows == 10 and short.gridRows == 1, "a 560 unit screen gets 10 list rows and one row of cards")
-    local info = Viewer.debugInfo()
+    local info = infoOf(Viewer)
     check(info.open, "it opens on a short screen"); check(info.pages == math.max(1, math.ceil(info.matches / 10)),
         "the list pages by the 10 rows it has (" .. tostring(info.pages) .. " pages for " .. tostring(info.matches) .. ")")
-    Viewer.refilter()
+    Viewer.state().refilter()
     Viewer.close()
     ui.Interfaces.GetComponent = realGet
     check(not Viewer.isOpen(), "it closes again")
