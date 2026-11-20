@@ -29,7 +29,7 @@ end
 function Kit.text(parent, x, y, w, h, content, colour, alignX)
     local text = prettyui.Text.new(parent, {
         text = "", colour = packColour(colour or WHITE),
-        x = x, y = y, width = w, height = h, absolute = true,
+        x = x, y = y, width = w, height = h, absolute = true, categoryID = "auto",
     })
     pcall(function() text:AlignTo(alignX or ui.AlignMode.CENTRE, ui.AlignMode.CENTRE) end)
     -- Set the words last: giving them at creation drew the text twice.
@@ -41,7 +41,7 @@ end
 -- called, and keeps a subscription to the logic tick while it turns, so call Stop() when it is hidden or the window
 -- goes.
 function Kit.spinner(parent, x, y, size)
-    return prettyui.Spinner.new(parent, { x = x, y = y, size = size, autoPlay = false })
+    return prettyui.Spinner.new(parent, { x = x, y = y, size = size, autoPlay = false, categoryID = "auto" })
 end
 
 -- A button whose visible left edge is `left` and whose visible width is `visibleWidth`; `style` is "positive",
@@ -50,6 +50,7 @@ end
 function Kit.buttonAt(parent, label, left, y, visibleWidth, height, onPress, style, tooltip)
     local button = prettyui.FancyButton.new(parent, label, function() onPress() end, {
         variant = style or "neutral", x = left, y = y, width = visibleWidth, absolute = true, tooltip = tooltip,
+        categoryID = "auto",
     })
     fancyButtons[button] = true
     return button
@@ -60,7 +61,7 @@ end
 -- It cannot be relabelled or greyed out afterwards; use Kit.buttonAt for a button that changes.
 function Kit.smallButton(parent, label, left, y, w, h, onPress, tooltip)
     return prettyui.SimpleButton.new(parent, label, function() onPress() end, {
-        x = left, y = y, width = w, height = h, absolute = true, tooltip = tooltip,
+        x = left, y = y, width = w, height = h, absolute = true, tooltip = tooltip, categoryID = "auto",
     })
 end
 
@@ -91,7 +92,7 @@ end
 -- "SETTINGS" (a cog), "MENU" or "INFO".
 function Kit.iconButton(parent, sprite, x, y, onPress, tooltip)
     return prettyui.SpriteButton.new(parent, sprite, function() onPress() end, {
-        x = x, y = y, absolute = true, tooltip = tooltip,
+        x = x, y = y, absolute = true, tooltip = tooltip, categoryID = "auto",
     })
 end
 
@@ -113,7 +114,7 @@ function Kit.titleButton(window, spriteName, onPress, tooltip, slot)
     end
     local ok, handle = pcall(function()
         local button = prettyui.SpriteButton.new(window.parent, spriteName, function() onPress() end, {
-            x = 0, y = 0, tooltip = tooltip,
+            x = 0, y = 0, tooltip = tooltip, categoryID = "auto",
         })
         local function place()
             if slot == "left" then
@@ -176,11 +177,11 @@ function Kit.checkboxes(parent, x, y, w, choices, onChange, step)
         onChange(value, selected)
     end
     if step == nil or step <= Kit.CHECKBOX_ROW_H then
-        return prettyui.CheckboxButton.new(parent, choices, { x = x, y = y, width = w, onChange = changed })
+        return prettyui.CheckboxButton.new(parent, choices, { x = x, y = y, width = w, onChange = changed, categoryID = "auto" })
     end
     local made = {}
     for i, choice in ipairs(choices) do
-        made[i] = prettyui.CheckboxButton.new(parent, { choice }, { x = x, y = y + (i - 1) * step, width = w, onChange = changed })
+        made[i] = prettyui.CheckboxButton.new(parent, { choice }, { x = x, y = y + (i - 1) * step, width = w, onChange = changed, categoryID = "auto" })
     end
     return { Destroy = function() for _, box in ipairs(made) do pcall(function() box:Destroy() end) end end }
 end
@@ -201,7 +202,7 @@ function Kit.tabStrip(parent, labels, x, y, w, h, onChange, selected, opts)
         list[i] = { text = label, value = i, contentHeight = opts.contentHeights and opts.contentHeights[i] or nil }
     end
     local options = {
-        x = x, y = y, width = w, height = h, scrollable = true, activeIndex = selected,
+        x = x, y = y, width = w, height = h, scrollable = true, activeIndex = selected, categoryID = "auto",
         onChange = function(_, index) onChange(index) end,
     }
     if opts.fill then
@@ -274,7 +275,7 @@ function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
     entries = entries or {}
     local first = (#entries > 0 or sorted) and entries or { { label = "...", value = nil } }
     local combo = prettyui.ComboBox.new(parent, {
-        x = x, y = y, width = w, height = h, maxVisibleEntries = 12,
+        x = x, y = y, width = w, height = h, maxVisibleEntries = 12, categoryID = "auto",
         entries = number(first), selectedID = indexOf(selected),
         onChange = function(_, entryId)
             local value = dropdown.values[entryId]
@@ -361,7 +362,7 @@ end
 function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits, offsetX, offsetY)
     local win = prettyui.Window.new(parent, {
         title = title, width = width, height = height,
-        x = offsetX or 0, y = offsetY or 0, xAnchor = xAnchor or 0.2, yAnchor = yAnchor or 0.15,
+        x = offsetX or 0, y = offsetY or 0, xAnchor = xAnchor or 0.2, yAnchor = yAnchor or 0.15, categoryID = "auto",
         scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
         minWidth = limits and limits.minWidth or nil, minHeight = limits and limits.minHeight or nil,
     })

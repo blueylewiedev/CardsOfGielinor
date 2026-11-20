@@ -30,7 +30,7 @@ end
 -- the client gives for the plugin's page.
 local function build(parent)
     destroyView()
-    view = prettyui.SimpleView.new(parent, { width = parent.width, height = parent.height })
+    view = prettyui.SimpleView.new(parent, { width = parent.width, height = parent.height, categoryID = "auto" })
     view:AddTitle(PluginId.TITLE)
     widgets.credits = view:AddText("")
     -- The same width for all six, so the buttons line up whatever their labels are.

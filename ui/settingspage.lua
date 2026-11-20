@@ -57,7 +57,7 @@ end
 -- Fills `parent` with the settings and remembers it under `key`.
 local function build(key, parent, width, height)
     destroyPage(key)
-    local view = prettyui.SimpleView.new(parent, { width = width, height = height })
+    local view = prettyui.SimpleView.new(parent, { width = width, height = height, categoryID = "auto" })
     local page = { view = view, widgets = {} }
     pages[key] = page
     view:AddTitle(PluginId.TITLE)

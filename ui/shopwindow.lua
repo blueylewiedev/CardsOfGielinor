@@ -335,7 +335,7 @@ local function build()
     -- where its top is in it.
     grid = prettyui.SimpleView.new(content, {
         x = 0, y = GRID_TOP, width = CONTAINER_W, height = TOP + PANEL_H - GRID_TOP,
-        contentHeight = layout.height, scrollable = true, scrollStep = WHEEL_STEP,
+        contentHeight = layout.height, scrollable = true, scrollStep = WHEEL_STEP, categoryID = "auto",
     })
     local parent, originY = grid.content, 0
     for _, heading in ipairs(layout.headings) do

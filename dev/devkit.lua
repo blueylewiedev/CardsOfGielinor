@@ -75,7 +75,7 @@ function DevKit.tabs(parent, x, y, w, h, names, build, pageHeight)
         tabList[i] = { text = name, value = i }       -- (onChange is given the value: the index)
     end
     local tabs = prettyui.Tabs.new(parent, tabList, {
-        x = x, y = y, width = w, height = h, absolute = true, activeIndex = 1,
+        x = x, y = y, width = w, height = h, absolute = true, activeIndex = 1, categoryID = "auto",
         scrollable = pageHeight ~= nil, contentHeight = pageHeight,
         onChange = function(_, index) show(index) end,
     })
@@ -111,7 +111,7 @@ end
 -- Asks the player to confirm something with a small pop-up (PrettyUI's confirm dialog), then calls onConfirm().
 function DevKit.confirm(parent, title, body, confirmLabel, onConfirm)
     prettyui.Confirm.new(parent, {
-        title = title, body = body, confirmLabel = confirmLabel, confirmVariant = "negative",
+        title = title, body = body, confirmLabel = confirmLabel, confirmVariant = "negative", categoryID = "auto",
         onConfirm = function() onConfirm() end,
     })
 end

@@ -273,7 +273,7 @@ end
 
 local function addText(parent, x, y, w, h, colour)
     return prettyui.Text.new(parent, {
-        text = "", x = x, y = y, width = w, height = h, maxLines = 2, absolute = true, font = FONT,
+        text = "", x = x, y = y, width = w, height = h, maxLines = 2, absolute = true, font = FONT, categoryID = "auto",
         colour = colour == WHITE and 0xF0F0F0FF or 0xBFBFBFFF,
     })
 end
