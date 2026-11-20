@@ -1,6 +1,6 @@
 -- deck/packs.lua
 -- Themed pack types, added to Cards.packTypes (core/cards.lua) beside the standard pack. Each
--- one is made in the Pack Maker (Home window, developer buttons): design it, choose its cards,
+-- one is made in the Pack Maker (Dev tools window): design it, choose its cards,
 -- press Save, then copy its line from the window and paste it into this list.
 --
 -- A pack type here holds:

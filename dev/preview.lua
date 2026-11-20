@@ -34,7 +34,7 @@
 --
 -- Under everything, a box holds the card's `art = { ... }` line as tuned, to copy (Ctrl+A, Ctrl+C)
 -- over the card's art line in its deck file. Every press also logs the line to the console and to
--- the Output window (toggle it from the Home window). dev/apply_tuning.py writes every saved card's
+-- the Output window (toggle it from the Dev tools window). dev/apply_tuning.py writes every saved card's
 -- line into the deck files, for when there are too many to paste.
 
 local Kit = require("ui/kit")

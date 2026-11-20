@@ -3,7 +3,7 @@
 --   Logger.note(...)   a milestone worth one line each start-up
 --   Logger.error(...) something failed and the plugin carried on. Always written, but each
 --     message once, and at most a fixed number of different ones
---   Logger.debug(...)  routine detail, only with "Detailed logging for bug reports" on in the settings (or in the development copy)
+--   Logger.debug(...)  routine detail, only with "Detailed logging for bug reports" on in the settings
 -- Nothing is stored or sent anywhere: it is the client's own log().
 
 local Settings = require("core/settings")
@@ -11,17 +11,11 @@ local Settings = require("core/settings")
 local Logger = {}
 
 local MAX_DIFFERENT_ERRORS = 100
-local devCopy = false
 local seen, seenCount, saidLimit = {}, 0, false
-
--- The development copy always writes the detail (main.lua calls this once).
-function Logger.setDevCopy(isDev)
-    devCopy = isDev == true
-end
 
 -- True if the detail is being written.
 function Logger.debugOn()
-    return devCopy or Settings.get("debugLogging")
+    return Settings.get("debugLogging")
 end
 
 -- A line, as `log` writes it.
@@ -61,7 +55,6 @@ end
 -- Forgets which errors were written (for the tests).
 function Logger.reset()
     seen, seenCount, saidLimit = {}, 0, false
-    devCopy = false
 end
 
 return Logger

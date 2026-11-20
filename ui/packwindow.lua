@@ -41,19 +41,17 @@ local INNER_X, HOME_W = 16, HOME_MID - 28       -- where the text and buttons in
 local CREDITS_Y, CREDITS_H = 10, 80      -- (10 down from the top, and HEIGHTS.home leaves 10 under the last thing, so the window is even above and below)
 local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 180
 local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
-local EXTRA_TOP = PACKS_Y + PACKS_H + 10          -- where the extra buttons on the Home screen start
 local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)    -- the same dark panel and brown border as the credits overlay
 local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
 local BAR_TRACK = Vector4.new(0.16, 0.14, 0.12, 1.0)
 local BAR_FILL = Vector4.new(0.85, 0.68, 0.16, 1.0)
 local BAR_H = 14
--- Window height for each screen (Home's is set by buildExtras, as it depends on the extra buttons).
 local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
-local HEIGHTS = { nosession = 90 }
+-- Window height for each screen.
+local HEIGHTS = { nosession = 90, home = PACKS_Y + PACKS_H + 10 }
 
 -- Set by PackWindow.show(): api.getState() (the collection, or nil), api.saveNow(), api.openSettings() (the cog),
--- api.openTutorial() (the "i"; optional) and api.extraButtons (optional { label, action } buttons at the bottom of
--- Home).
+-- and api.openTutorial() (the "i"; optional).
 local api = nil
 local window = nil
 local content = nil  -- the component inside the window frame that the screens are built in
@@ -124,34 +122,6 @@ end
 -- The cards of the pack being opened that the player has not seen yet, as { [variant key] = copies } (see ui/revealscreen.lua).
 function PackWindow.hiddenCards()
     return Reveal.hiddenCards()
-end
-
--- Extra buttons under the sections on Home, one per row, and the Home screen's height to fit
--- them. The released plugin has none; the development tools (dev/dev.lua) supply some, while
--- they are in use. Any made before are removed first.
-local function buildExtras()
-    for _, button in ipairs(widgets.extras or {}) do
-        pcall(function() button.hidden = true end)
-        pcall(function() button:Destroy() end)
-    end
-    widgets.extras = {}
-    for i, extra in ipairs(api.extraButtons or {}) do
-        widgets.extras[i] = Kit.buttonAt(screens.home, extra.label, INNER_X, EXTRA_TOP + (i - 1) * 34, HOME_W, 28, extra.action)
-    end
-    local count = #widgets.extras
-    HEIGHTS.home = (count > 0) and (EXTRA_TOP + (count - 1) * 34 + 28 + 10) or (PACKS_Y + PACKS_H + 10)
-end
-
--- Remakes the extra buttons from api.extraButtons (after the development tools are switched on
--- or off), resizing Home to fit. The window stays where it is.
-function PackWindow.rebuildExtras()
-    if window == nil then
-        return
-    end
-    buildExtras()
-    if current == "home" then
-        showScreen("home")
-    end
 end
 
 -- Builds both screens once, when the window is created. Only one is visible at a time.
@@ -230,12 +200,9 @@ local function buildScreens()
             startReveal = PackWindow.startReveal,
         })
     end, "positive")
-
-    buildExtras()
-
 end
 
--- Creates the window. `newApi` supplies getState, saveNow, openSettings and extraButtons (see above).
+-- Creates the window. `newApi` supplies getState, saveNow, openSettings and openTutorial (see above).
 function PackWindow.show(newApi)
     if window ~= nil then
         return

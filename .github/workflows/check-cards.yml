@@ -65,6 +65,8 @@ jobs:
         run: lua5.4 dev/check_events.lua
       - name: PrettyUI components use automatic categories (dev/check_prettyui_auto.lua)
         run: lua5.4 dev/check_prettyui_auto.lua
+      - name: The dev copy's card art changes (dev/artoverride.lua)
+        run: lua5.4 dev/check_artoverride.lua
       - name: Code style (warnings only, never fails: dev/check_style.lua)
         run: lua5.4 dev/check_style.lua --quiet
       - name: The credits text (core/format.lua)

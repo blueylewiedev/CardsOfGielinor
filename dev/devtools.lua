@@ -1,7 +1,6 @@
 -- dev/devtools.lua
--- The Dev tools window: one button for each development tool and debug action. The Home window has a
--- single "Dev tools" button that opens it (dev/dev.lua builds the list and hands it over with setButtons),
--- so the Home window stays the size players will see.
+-- The Dev tools window: one button for each development tool and debug action. The "Dev copy" window (dev/launcher.lua) opens
+-- it; dev/dev.lua builds the list and hands it over with setButtons.
 
 local Kit = require("ui/kit")
 

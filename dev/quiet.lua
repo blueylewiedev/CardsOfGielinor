@@ -22,19 +22,26 @@ do
     end
 end
 
--- Applies the switch to the plugin's own logging: the dev copy always writes the routine detail, unless this is on.
-function Quiet.apply()
-    local ok, Logger = pcall(require, "core/logger")
-    if ok and Logger ~= nil and Logger.setDevCopy ~= nil then
-        Logger.setDevCopy(not Quiet.on)
+local installed = false
+
+-- Makes the plugin's routine detail (Logger.debug) follow this switch: the dev copy writes it unless the console is quiet (the
+-- player's own "Detailed logging" setting still turns it on). Wraps Logger.debugOn, once.
+function Quiet.install()
+    if installed then
+        return
+    end
+    installed = true
+    local Logger = require("core/logger")
+    local original = Logger.debugOn
+    Logger.debugOn = function()
+        return not Quiet.on or original()
     end
 end
 
--- Flips it, saves it, applies it and says so.
+-- Flips it, saves it and says so.
 function Quiet.toggle()
     Quiet.on = not Quiet.on
     pcall(function() PersistentDB:SetStructuredData(KEY, { on = Quiet.on }) end)
-    Quiet.apply()
     log("DEV: the quiet console is now " .. (Quiet.on and "ON (only failures and what the dev buttons say)"
         or "OFF (every routine line is written)"))
     return Quiet.on

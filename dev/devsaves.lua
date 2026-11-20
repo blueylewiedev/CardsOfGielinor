@@ -1,19 +1,15 @@
 -- dev/devsaves.lua
 -- Save tools for the development copy only (this file is not in the release, so the released plugin cannot delete saves).
 
-local Storage = require("core/storage")
+local DevCopy = require("dev/devcopy")
 
 local DevSaves = {}
 
--- Deletes every collection saved by this copy of the plugin (the keys that end with the profile suffix,
--- so the dev copy leaves a released copy's collections alone): the main keys and their buckets. Nothing
--- else in the database is touched. Returns how many keys were deleted, or nil and a reason. Only for the
--- development tools; a copy with no suffix refuses.
+-- Deletes every collection saved by this copy of the plugin (the keys that end with the dev copy's suffix, so a released
+-- copy's collections are left alone): the main keys and their buckets. Nothing else in the database is touched. Returns how many
+-- keys were deleted.
 function DevSaves.deleteAllCollections()
-    local suffix = Storage.profileSuffix()
-    if suffix == "" then
-        return nil, "no profile suffix: only the dev copy may do this"
-    end
+    local suffix = DevCopy.SUFFIX
     local doomed = {}
     PersistentDB:IterateEntries(function(key)
         if string.sub(key, -#suffix) == suffix then

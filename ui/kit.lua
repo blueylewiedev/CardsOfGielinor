@@ -1,8 +1,7 @@
 -- ui/kit.lua
 -- The plugin's controls (text, buttons, the window frame, drop-downs, tabs), built with PrettyUI. Everything else
 -- calls these instead of PrettyUI, so the look of the plugin can be changed here. PrettyUI is a required dependency,
--- so there is no fallback to the client's own components. (The development tools' extra controls are in
--- dev/devkit.lua; the cards are custom: ui/cardview.lua.)
+-- so there is no fallback to the client's own components. The cards are custom: ui/cardview.lua.
 
 local Logger = require("core/logger")
 
@@ -314,13 +313,6 @@ end
 function Kit.setLabel(button, label)
     if fancyButtons[button] then
         button:SetText(label)
-    end
-end
-
--- Changes the colour style of a button made by Kit.buttonAt ("positive", "neutral", "negative").
-function Kit.setStyle(button, style)
-    if fancyButtons[button] then
-        button:SetVariant(style)
     end
 end
 

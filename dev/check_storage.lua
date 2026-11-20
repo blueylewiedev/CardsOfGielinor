@@ -81,6 +81,7 @@ end
 local Cards = require("core/cards")
 local Storage = require("core/storage")
 local DevSaves = require("dev/devsaves")
+local DevCopy = require("dev/devcopy")
 
 local failures = 0
 local function check(ok, what)
@@ -215,18 +216,20 @@ do
     check(names[1]:sub(1, 6) ~= "bucket" and names[2]:sub(1, 6) ~= "bucket", "no character key starts like a bucket key")
 end
 
--- 7. The dev profile suffix keeps its own collections
+-- 7. The dev copy keeps its own collections (dev/devcopy.lua wraps the key functions with a suffix)
 reset()
 do
-    Storage.setProfileSuffix("-dev")
+    check(Storage.keyForName("Some Name") == "collection_some_name", "the plugin's own key has no suffix")
+    DevCopy.install()
+    DevCopy.install()                                       -- (once only)
     local key = Storage.keyForName("Some Name")
     check(key == "collection_some_name-dev", "the dev key ends with the suffix")
+    check(Storage.keyForTracking("12345") == "tracking_12345-dev", "and so does a tracking key")
     local state = Storage.newState()
     Storage.addCard(state, Cards.variantKey(Cards.list[1].id, "normal"), 1)
     Storage.save(key, state)
     check(db[Storage.bucketKey(key, Storage.bucketOf(Cards.variantKey(Cards.list[1].id, "normal")))] ~= nil,
         "its bucket key ends with the suffix too")
-    Storage.setProfileSuffix("")
 end
 
 -- 8. Cards the deck does not have are kept; broken entries are dropped
@@ -297,14 +300,10 @@ do
     db["bucket3_collection_a"], db["bucket3_collection_a-dev"] = { ["x|normal"] = 1 }, { ["x|normal"] = 1 }
     db["tracking_7-dev"], db["bucket16_tracking_7-dev"] = { credits = 1 }, { ["x|normal"] = 1 }
     db["dev_wiki_review_3"], db["dev_card_queue_0001-dev"], db["card_settings"] = { a = 1 }, { a = 1 }, { a = 1 }
-    local deleted, why = DevSaves.deleteAllCollections()
-    check(deleted == nil, "the copy with no suffix refuses to delete saves")
-    Storage.setProfileSuffix("-dev")
-    deleted = DevSaves.deleteAllCollections()
+    local deleted = DevSaves.deleteAllCollections()
     check(deleted == 4, "the dev copy deletes its 4 collection keys (" .. tostring(deleted) .. ")")
     check(db["collection_a"] and db["bucket3_collection_a"], "a released copy's collections are left")
     check(db["dev_wiki_review_3"] and db["dev_card_queue_0001-dev"] and db["card_settings"], "everything else is left")
-    Storage.setProfileSuffix("")
 end
 
 -- 11. The bucket is stable (saves depend on it) and spread over every bucket

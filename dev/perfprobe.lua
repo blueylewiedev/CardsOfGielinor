@@ -3,11 +3,10 @@
 -- frame times the Draw event reports (summed, see dev/framestats.lua) and the Logic event's tick, which is counted
 -- since the client started, 50 a second. One "PROBE" line is written to the log for each thing it measures.
 --
---   PROBE start-up        the first 10 seconds after the probe loads. main.lua loads the probe before anything else.
---   PROBE <mark>          "start", "main.lua finished", "main window shown", "session loaded", "main window usable": the
+--   PROBE start-up        the first 10 seconds after the probe loads. main.lua loads dev/dev, which loads the probe, before anything else.
+--   PROBE <mark>          "start", "main.lua finished", "session loaded", "main window usable": the
 --                         seconds of frames since the probe loaded, and the logic ticks since the first one. "main window
---                         shown" is when the window was created; "main window usable" is when it first shows the home
---                         screen instead of the loading screen.
+--                         usable" is when the main window first shows the home screen instead of the loading screen.
 --   PROBE reload gap      the logic ticks between the old plugin stopping (its last tick is kept in PersistentDB) and
 --                         the first tick of the new one: how long the reload took, as the client counts it. Nothing
 --                         is drawn while the plugin's files load, so the frame clock cannot see it.
@@ -119,7 +118,7 @@ Event.Logic.Subscribe(LOGIC_SUBSCRIBER, onLogic)
 Probe.measure("start-up", 10)
 Probe.mark("start")
 
--- Called when the character's collection has loaded (Dev.onLogin).
+-- Called when the character's collection has loaded (dev/dev.lua, when a collection has loaded).
 function Probe.sessionLoaded()
     Probe.mark("session loaded")
 end

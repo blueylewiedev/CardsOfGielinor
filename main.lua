@@ -1,13 +1,12 @@
 -- main.lua
--- Cards of Gielinor: earn credits from XP, Slayer and boss kills, open packs, collect cards. Wires the parts
--- together: core/ is the logic, ui/ draws, deck/ holds the cards. dev/ is the developer tools and is left out of the
--- released plugin, so there `Dev` is nil and nothing about it runs.
+-- Cards of Gielinor: earn credits from XP, Slayer and boss kills, open packs, collect cards. Wires the parts together: core/ is
+-- the logic, ui/ draws, deck/ holds the cards.
 
--- The performance probe (dev/perfprobe.lua) has to load before anything else so it sees the deck load, which core/storage
--- starts. The release has no dev folder, so there Probe is nil and every use of it below is skipped.
-local probeLoaded, Probe = pcall(require, "dev/perfprobe")
-if not probeLoaded then
-    Probe = nil
+-- The development tools are in dev/, which the release does not contain (there `Dev` is nil). They load first so the
+-- performance probe sees the deck load, and attach last (Dev.start below).
+local hasDev, Dev = pcall(require, "dev/dev")
+if not hasDev then
+    Dev = nil
 end
 
 local Storage = require("core/storage")
@@ -31,31 +30,10 @@ local Rate = require("core/rate")
 local OverlayLoader = require("core/overlayloader")
 local Events = require("core/events")
 
--- The development tools (card preview, NPC browser, debug buttons...) live in the dev folder.
--- That folder is left out of the released plugin, so there Dev is nil and nothing below runs.
-local devLoaded, Dev = pcall(require, "dev/dev")
-if not devLoaded then
-    Dev = nil
-end
-
-Logger.setDevCopy(Dev ~= nil)
-
--- A card, deck file or pack that is not sound is left out and the plugin loads without it (core/cards.lua).
--- Each is logged; the dev copy stops instead, as a problem is to be fixed before release, not carried.
+-- A card, deck file or pack that is not sound is left out and the plugin loads without it (core/cards.lua); each is logged.
 local Cards = require("core/cards")
 for _, problem in ipairs(Cards.loadProblems) do
     Logger.error("DECK PROBLEM (left out):", problem)
-end
-if Dev ~= nil and #Cards.loadProblems > 0 then
-    error("The deck has " .. #Cards.loadProblems .. " problem(s), the first: " .. Cards.loadProblems[1], 0)
-end
-
--- The dev copy and a released copy of the plugin share one PersistentDB, so the dev copy keeps
--- its collections under their own keys. It also asks for its own permissions (the client forgets grants when it restarts),
--- before anything below looks for them (dev/grants.lua).
-if Dev ~= nil then
-    Storage.setProfileSuffix("-dev")
-    Dev.grantPermissions()
 end
 
 -- Starts looking for the tracking id (see core/identity.lua).
@@ -65,11 +43,6 @@ Identity.start()
 -- time (core/overlayloader.lua). With no httpAccess permission, or if anything goes wrong, the plugin simply has
 -- the cards it shipped with.
 OverlayLoader.start()
-
--- True while the development tools are in use (see applyDevTools below).
-local function devOn()
-    return Dev ~= nil and Dev.active
-end
 
 -- Save at most once every this many server ticks (about 0.6 seconds each) while changes are pending, so frequent
 -- changes such as XP gains do not save every tick.
@@ -141,11 +114,6 @@ local function startSession(profile)
         "unique cards:", Storage.countUniqueOwned(session.state),
         "variants:", Storage.countVariantsOwned(session.state))
 
-    if devOn() then
-        Dev.onLogin(session.state)
-        saveSession()
-    end
-
     -- Slayer credits follow this character's task from where it stands now.
     SlayerEvents.begin()
     -- and so do their boss kills.
@@ -202,10 +170,7 @@ Events.on("SkillTransmit", "cardcollector_xp", function(e)
     end
     local gain = Earning.xpGainFromEvent(e)
     if gain > 0 then
-        local earned = Earning.addXP(session.state, gain)
-        if devOn() then
-            Dev.onXp(e.skill, gain, session.state, earned, ticksSinceLoad)
-        end
+        Earning.addXP(session.state, gain)
     end
 end)
 
@@ -220,9 +185,6 @@ end)
 
 -- Called by the client when the plugin is disabled or reloaded.
 function PluginShutdown()
-    if Probe ~= nil then
-        Probe.shutdown()
-    end
     OverlayLoader.shutdown()
     SlayerEvents.shutdown()
     BossEvents.shutdown()
@@ -231,16 +193,12 @@ function PluginShutdown()
     CreditsWindow.hide()
     Tutorial.close(false)
     PackWindow.hide()
-    if Dev ~= nil then
-        Dev.shutdown()
-    end
     endSession()
     -- Last, so nothing above is cut off: every event subscription still in place (core/events.lua).
     Events.shutdown()
 end
 
--- What the windows and pages need from the plugin: the character's collection, a way to save it,
--- whether the development tools are there, and the extra buttons they add while in use.
+-- What the windows and pages need from the plugin: the character's collection, a way to save it, and what to open.
 local api = {
     getState = function() return session and session.state or nil end,
     saveNow = saveSession,
@@ -249,7 +207,6 @@ local api = {
     -- How the logged-in character's collection is saved: "tracking" (the tracking id), "name" or nil (not loaded).
     keyKind = function() return session and session.kind or nil end,
     openSettings = function() SettingsPage.toggleWindow() end,
-    devTools = Dev ~= nil,
 }
 
 -- The main window remembers that the player closed it (the option is saved with the others), so it stays closed the
@@ -261,9 +218,6 @@ local function openMain()
     local ok, err = pcall(PackWindow.show, api)
     if not ok then
         Logger.error("pack window failed:", err)
-    end
-    if Probe ~= nil then
-        Probe.mark("main window shown")
     end
 end
 
@@ -301,31 +255,16 @@ local function toggleCredits()
     end
 end
 
--- Puts the development tools in use unless the "Preview as released" setting is on: their Home
--- buttons and their effects on the cards.
-local function applyDevTools()
-    if Dev == nil then
-        return
-    end
-    Dev.setActive(not Settings.get("releasePreview"))
-    api.extraButtons = Dev.active and Dev.buttons(api, PackWindow.refresh) or nil
-end
-
--- Turning "Preview as released" on or off swaps the main window's developer buttons in place.
+-- Turning the credits overlay's switch on or off on the settings page shows or hides it at once.
 api.onSettingChanged = function(optionId)
-    if optionId == "creditsWindow" then
-        if Settings.get("creditsWindow") then
-            showCredits()
-        else
-            CreditsWindow.hide()
-        end
+    if optionId ~= "creditsWindow" then
         return
     end
-    if optionId ~= "releasePreview" then
-        return
+    if Settings.get("creditsWindow") then
+        showCredits()
+    else
+        CreditsWindow.hide()
     end
-    applyDevTools()
-    PackWindow.rebuildExtras()
 end
 
 -- The saved options, then the pages in the client's settings and behind the ribbon icon.
@@ -347,8 +286,6 @@ SlayerEvents.start(api)
 -- Listens for boss kills (core/bossevents.lua); it pays credits once a character is loaded.
 BossEvents.start(api)
 
--- With the development tools in use, their buttons go on the Home window.
-applyDevTools()
 -- What the player left showing last time. (Closing the main window altogether is fine: the credits overlay
 -- and the saving carry on, and the ribbon page opens it again.)
 if Settings.get("mainOpen") then
@@ -357,13 +294,9 @@ end
 if Settings.get("creditsWindow") then
     showCredits()
 end
-if Dev ~= nil then
-    Dev.start()
-end
-
-if Probe ~= nil then
-    Probe.mark("main.lua finished")
-end
 Logger.note(PluginId.TITLE .. " " .. Version.number .. " started: " .. #Cards.list .. " cards"
-    .. (#Cards.loadProblems > 0 and (", " .. #Cards.loadProblems .. " left out (see above)") or "")
-    .. (Dev ~= nil and " (development copy)" or ""))
+    .. (#Cards.loadProblems > 0 and (", " .. #Cards.loadProblems .. " left out (see above)") or ""))
+
+if Dev ~= nil then
+    Dev.start(api)
+end

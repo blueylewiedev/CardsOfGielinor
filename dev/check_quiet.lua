@@ -32,13 +32,13 @@ local Logger = require("core/logger")
 Settings.load()
 local Quiet = require("dev/quiet")
 
--- on by default; applying it stops the dev copy writing the routine detail
+-- on by default; installing it makes the plugin's routine detail follow it
 check(Quiet.on == true, "quiet is on by default")
-Logger.setDevCopy(true)                        -- what main.lua does for the dev copy
-Quiet.apply()
+Quiet.install()                                -- what Dev.start does for the dev copy
+Quiet.install()                                -- (once only)
 written = {}
 Logger.debug("routine detail")
-check(#written == 0, "quiet: the dev copy no longer writes routine detail")
+check(#written == 0, "quiet: the dev copy does not write routine detail")
 Logger.error("a failure")
 check(#written == 1 and string.find(written[1], "a failure", 1, true) ~= nil, "quiet: a failure is still written")
 

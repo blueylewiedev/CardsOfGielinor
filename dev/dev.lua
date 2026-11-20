@@ -1,15 +1,13 @@
 -- dev/dev.lua
--- Everything that is only for developing the plugin, in one place. main.lua loads this with
--- pcall(require, "dev/dev"). The released plugin does not contain the dev folder, so there the
--- load fails quietly and none of this exists.
+-- Everything that is only for developing the plugin, in one place. main.lua loads this first with pcall(require, "dev/dev") and calls
+-- Dev.start(api) when it has finished; the released plugin does not contain the dev folder, so there the load fails quietly and none
+-- of this exists. The plugin has no other hook for it: what the tools change in the plugin they change by wrapping its functions
+-- (dev/devcopy.lua, dev/artoverride.lua, dev/quiet.lua, dev/perfprobe.lua) or by subscribing to events themselves.
 --
--- It provides: the card preview window, the NPC browser, the nearby NPC lister, the labels over
--- NPCs that have no card (dev/uncarded.lua), the Output window,
--- the Pack Maker (dev/packmaker.lua), the Wiki Review and Wiki Fetch windows (dev/wikireview.lua,
--- dev/wikifetch.lua), the saved camera
--- tuning for card art, a "Dev tools" button on the Home window that opens the Dev tools window
--- (dev/devtools.lua: +10k credits, the tool toggles, the save tools), and a few debug
--- extras at login and when XP is gained.
+-- It provides the card preview, the NPC browser, the nearby NPC lister, the labels over NPCs that have no card (dev/uncarded.lua), the
+-- Output window, the Pack Maker, the Wiki Review and Wiki Fetch windows, the saved camera tuning for card art, the Dev tools window
+-- (dev/devtools.lua: the tool buttons and save tools) opened from a small window of its own (dev/launcher.lua), and a few debug extras
+-- at login and when XP is gained.
 
 -- First, so its frame timing starts before the deck loads (dev/perfprobe.lua).
 local Probe = require("dev/perfprobe")
@@ -19,6 +17,9 @@ local PointerProbe = require("dev/pointerprobe")
 local LeakLab = require("dev/leaklab")
 local Cards = require("core/cards")
 local Storage = require("core/storage")
+local Events = require("core/events")
+local PackWindow = require("ui/packwindow")
+local PluginId = require("core/pluginid")
 local CardView = require("ui/cardview")
 local Preview = require("dev/preview")
 local Builder = require("dev/builder")
@@ -39,18 +40,16 @@ local Overlay = require("core/overlay")
 local ArtCheck = require("dev/artcheck")
 local DevSaves = require("dev/devsaves")
 local Grants = require("dev/grants")
+local DevCopy = require("dev/devcopy")
+local ArtOverride = require("dev/artoverride")
+local Launcher = require("dev/launcher")
 local SaveProbe = require("dev/saveprobe")
 
 local Dev = {}
 
--- Asks for the permissions the dev copy needs (main.lua calls this before the plugin looks for them).
-function Dev.grantPermissions()
-    Grants.grant()
-end
-
--- Called when a character's collection has just loaded: adds a credit (so you can see saving
--- work across restarts) and a Hans card, and checks the card art names.
-function Dev.onLogin(state)
+-- What to do when a character's collection has just loaded: adds a credit (so you can see saving work across restarts) and a Hans
+-- card, and checks the card art names and the save keys.
+local function onLogin(api, state)
     Probe.sessionLoaded()
     Storage.addCredits(state, 1)
     local hans = Cards.variantKey("hans", "normal")
@@ -60,21 +59,38 @@ function Dev.onLogin(state)
     log("DEV: credits are now", state.credits)
     ArtCheck.run()
     SaveProbe.run()
+    api.saveNow()
 end
 
--- Called when XP is gained, to log how it turned into credits.
-function Dev.onXp(skill, gain, state, earned, ticksSinceLoad)
-    if Quiet.on then
-        return                                  -- (a line for every XP gain buries the console; Dev tools > Quiet console)
-    end
-    log("skill", skill, "gained", gain, "xp | pool:", state.xpPool, "| credits earned:", earned,
-        "| total:", state.credits, "| ticks since load:", ticksSinceLoad)
+-- Calls onLogin when a collection has loaded (the plugin has no hook for it: api.getState() is nil until then).
+local function watchLogin(api)
+    local watched = nil
+    Events.on("ServerLogic", "cardcollector_dev_login", function()
+        local state = api.getState()
+        if state ~= watched then
+            watched = state
+            if state ~= nil and Dev.active then
+                onLogin(api, state)
+            end
+        end
+    end)
+end
+
+-- Logs each XP gain and what it did to the credits (the lines are dropped while the console is quiet).
+local function watchXp(api)
+    Events.on("SkillTransmit", "cardcollector_dev_xp", function(e)
+        local state = api.getState()
+        if state == nil or Quiet.on or not Dev.active or type(e.oldXP) ~= "number" or type(e.newXP) ~= "number" then
+            return
+        end
+        log("DEV: skill", e.skill, "xp", e.oldXP, "->", e.newXP, "| pool:", state.xpPool, "| credits:", state.credits)
+    end)
 end
 
 -- "Delete saves" asks twice: the first click arms it for about ten seconds, the second does it.
 local resetArmedUntil = 0
 local logicTicks = 0
-Event.Logic.Subscribe("cardcollector_dev_reset", function()
+Events.on("Logic", "cardcollector_dev_reset", function()
     logicTicks = logicTicks + 1
 end)
 
@@ -142,7 +158,7 @@ local function giveEveryCard(api, refresh)
 end
 
 -- The tools and debug actions, as the buttons of the Dev tools window. `api` is the plugin's api (see
--- main.lua) and `refresh` redraws the Home window.
+-- main.lua) and `refresh` redraws the main window.
 local function toolButtons(api, refresh)
     return {
         { label = "+10k Credits", action = function()
@@ -227,42 +243,54 @@ local function toolButtons(api, refresh)
     }
 end
 
--- The extra buttons for the Home window: one, which opens the Dev tools window.
-function Dev.buttons(api, refresh)
-    DevTools.setButtons(toolButtons(api, refresh))
-    return {
-        { label = "Dev tools", action = DevTools.toggle },
-    }
-end
-
--- Reports draft cards in the log, once, when the plugin starts.
-function Dev.start()
+-- Finishes the plugin's start-up (main.lua calls it last, with what the plugin's windows need) and attaches the tools to it.
+function Dev.start(api)
+    -- the dev copy stops on an unsound card: a problem is to be fixed before release, not carried
+    if #Cards.loadProblems > 0 then
+        error("The deck has " .. #Cards.loadProblems .. " problem(s), the first: " .. Cards.loadProblems[1], 0)
+    end
+    Grants.grant()
+    DevCopy.install()
+    ArtOverride.install()
+    Quiet.install()
     Probe.start()
-    Quiet.apply()
+    DevTools.setButtons(toolButtons(api, PackWindow.refresh))
+    watchLogin(api)
+    watchXp(api)
+    Dev.setActive(not Launcher.previewing())
+    Launcher.show(DevTools.toggle, function(previewing)
+        Dev.setActive(not previewing)
+    end)
+    -- the plugin's own shutdown is wrapped, so it does not know about the tools
+    local pluginShutdown = PluginShutdown
+    function PluginShutdown()
+        Dev.shutdown()
+        pluginShutdown()
+    end
     if Quiet.on then
         log("DEV: the quiet console is ON: routine lines, PROBE marks and XP lines are not written (Dev tools > Quiet console turns them back on)")
     end
     if #Cards.drafts > 0 then
         log("cards:", #Cards.drafts, "draft cards are waiting for an npc name (see the deck folder)")
     end
+    Probe.mark("main.lua finished")
+    log("DEV: " .. PluginId.TITLE .. " development copy started")
 end
 
--- Switches the tools on or off. Off (the "Preview as released" setting) makes the plugin look and
--- behave as players will have it: the camera settings saved from the preview stop applying to the
--- cards, and the tools' windows close. (main.lua also leaves out the Home buttons and the login
--- and XP extras.)
+-- Switches the tools on or off. Off (the launcher's "Preview as released") makes the plugin look and behave as players will have it: the
+-- camera settings saved from the preview stop applying to the cards, the logins and XP extras stop, and the tools' windows close.
 function Dev.setActive(active)
     Dev.active = active
     Tuning.enabled = active
-    CardView.artOverride = active and Tuning.get or nil
     if active then
         Uncarded.start()
     else
-        Dev.shutdown()
+        Dev.closeTools()
     end
 end
 
-function Dev.shutdown()
+-- Closes every tool window.
+function Dev.closeTools()
     DevTools.hide()
     Preview.hide()
     Builder.hide()
@@ -277,6 +305,13 @@ function Dev.shutdown()
     TagPicker.hide()
     ItemProbe.hide()
     OutputWindow.hide()
+end
+
+-- The plugin is shutting down.
+function Dev.shutdown()
+    Dev.closeTools()
+    Launcher.hide()
+    Probe.shutdown()
 end
 
 return Dev

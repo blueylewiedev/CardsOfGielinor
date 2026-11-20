@@ -305,10 +305,6 @@ local function shadowLook(group, child, state, box)
     end
 end
 
--- Hook for the development tools: a function(cardId) returning { body, cam } to use instead of
--- the card's own art settings, or nil.
-CardView.artOverride = nil
-
 -- Plays animation `animId` on a model, or stops its animation if `animId` is nil. Many models
 -- do not move until they are given one. Animation ids are the client's sequence ids; the
 -- preview's Anim buttons are for finding good ones. Returns true if the client accepted it.
@@ -347,25 +343,10 @@ end
 -- Shows the card's NPC (or item) inside the art box { x, y, w, h }. Returns the model and the `cam` table (which
 -- applyCamera can re-apply), or nil. If the camera cannot be set up a plain model is shown (no `cam`); an item whose
 -- model will not load shows its icon.
-local function addArt(parent, card, box, bodyOverride, dark)
+local function addArt(parent, card, box, dark)
     local art = Cards.getArt(card)
     local isItem = Cards.kindOf(card) == "item"
-    -- Developer-saved settings (from the preview's Save button) sit on top of the card's own.
-    -- Only the development tools set CardView.artOverride; it is nil in the released plugin.
-    -- An item has no body/head choice and no animation, so only its camera is overridden.
-    local saved = CardView.artOverride and CardView.artOverride(card.id) or nil
-    if saved ~= nil then
-        if not isItem then
-            art.body = saved.body
-            art.anim = saved.anim
-        end
-        art.cam = saved.cam
-    end
-    -- `bodyOverride` (true/false, from the preview) beats the card's own setting.
     local body = art.body
-    if bodyOverride ~= nil and not isItem then
-        body = bodyOverride
-    end
     local modelId, modelType
     if isItem then
         local ok, objId = pcall(function() return id.Obj[art.item] end)
@@ -693,7 +674,7 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
     end
     local model, cam = nil, nil
     if not locked or silhouette then
-        model, cam = addArt(art.inner, card, win, opts and opts.body, silhouette)
+        model, cam = addArt(art.inner, card, win, silhouette)
     end
     if model == nil then
         label(art.inner, win.x, win.y, win.w - W, win.h, "?", locked and DIM_TEXT_COLOUR or rarityColour)
@@ -792,7 +773,6 @@ end
 --     the picture (CardView.HOLO); not for locked cards
 --   lockedText   what a locked card says (default "Not collected yet")
 --   scale        a size other than CardView.SCALE; the text stays the same size
---   body         forces the body or head model (preview only)
 --   animated     a card that can be flipped and revealed (CardView.squash and CardView.uncover; the pack opening)
 -- Returns { root, model, cam, card, squash, uncover, silhouette }.
 function CardView.create(parent, card, opts)

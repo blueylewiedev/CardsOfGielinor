@@ -4,7 +4,7 @@
 --
 -- It is passive: from the moment the developer tools are in use it looks at the NPCs around the
 -- player every half second or so and keeps a box round each one that has no card. Nothing has to
--- be opened or scanned. The "Uncarded NPCs" window (Home window button) turns the boxes on or off,
+-- be opened or scanned. The "Uncarded NPCs" window (Dev tools window button) turns the boxes on or off,
 -- sets how far to look, and lists the NPCs nearby, each with an Ignore button, for the ones that will
 -- never get a card or that have a card with another model. Ignoring is by NPC name, so every
 -- variant of that NPC goes quiet, and it is remembered between sessions (PersistentDB).
