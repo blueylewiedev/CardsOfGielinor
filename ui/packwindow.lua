@@ -20,12 +20,13 @@ local Stats = require("ui/stats")
 local Shop = require("ui/shopwindow")
 local Reveal = require("ui/revealscreen")
 local Rate = require("core/rate")
+local Theme = require("ui/theme")
+local WHITE, GREY, GOLD, PANEL_BACK, PANEL_BORDER = Theme.WHITE, Theme.GREY, Theme.GOLD, Theme.PANEL_BACK, Theme.PANEL_BORDER
+local Util = require("ui/util")
+local setText = Util.setText
 
 local PackWindow = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 local WIDTH = 236
 -- The Home screen is wider than the loading screen. PrettyUI's content area is inset further from the left of the frame
@@ -41,8 +42,6 @@ local INNER_X, HOME_W = 16, HOME_MID - 28       -- where the text and buttons in
 local CREDITS_Y, CREDITS_H = 10, 80      -- (10 down from the top, and HEIGHTS.home leaves 10 under the last thing, so the window is even above and below)
 local COLLECTION_Y, COLLECTION_H = CREDITS_Y + CREDITS_H + 8, 180
 local PACKS_Y, PACKS_H = COLLECTION_Y + COLLECTION_H + 8, 98
-local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)    -- the same dark panel and brown border as the credits overlay
-local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
 local BAR_TRACK = Vector4.new(0.16, 0.14, 0.12, 1.0)
 local BAR_FILL = Vector4.new(0.85, 0.68, 0.16, 1.0)
 local BAR_H = 14
@@ -62,13 +61,6 @@ local settingsButton = nil   -- the cog in the title bar, while Home is showing 
 local helpButton = nil       -- the "i" at the left end of the title bar, which opens the tutorial (api.openTutorial)
 -- Text comes from ui/kit.lua.
 local makeText = Kit.text
-
--- Only change text when it differs, so refreshing every tick does no needless work.
-local function setText(widget, content)
-    if widget.content ~= content then
-        widget.content = content
-    end
-end
 
 -- Shows one screen (nosession or home), hides the others and resizes the window to fit it.
 local function showScreen(name)

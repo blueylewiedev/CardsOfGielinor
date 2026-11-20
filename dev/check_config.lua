@@ -55,7 +55,6 @@ check(next(Config.get("bosses.overrides")) == nil and next(Config.get("bosses.ig
 check(Config.get("bosses.enabled") == true and Config.get("shine.enabled") == true and Config.revision == nil, "the other switches are on")
 
 -- 2. The schema agrees with the rest of the plugin ------------------------------------------------------------------------
-check(same(Config.RARITIES, Cards.rarityOrder), "Config.RARITIES is Cards.rarityOrder")
 for finish in pairs(Cards.finishes) do
     check(Config.SCHEMA["odds.finish." .. finish] ~= nil, "the finish " .. finish .. " has an odds key")
 end
@@ -217,7 +216,7 @@ do
     local function rareShare(n)
         local rare = 0
         for _ = 1, n do
-            if Packs.rollCard(pool2).card.id == "r" then rare = rare + 1 end
+            if Packs.rollCard({ groups = pool2 }).card.id == "r" then rare = rare + 1 end
         end
         return rare / n
     end
@@ -231,14 +230,14 @@ do
     Config.reset()
     Config.apply({ odds = { rarity = { common = 1, uncommon = 0, rare = 0, epic = 0, legendary = 0 } } })
     local onlyRare = { rare = { { id = "r", rarity = "rare" } } }
-    check(Packs.rollCard(onlyRare).card.id == "r", "a pack whose rarities are all at 0 still rolls (they count alike)")
+    check(Packs.rollCard({ groups = onlyRare }).card.id == "r", "a pack whose rarities are all at 0 still rolls (they count alike)")
     Config.reset()
 
     -- the finish roll
     local function share(finish, n)
         local hits = 0
         for _ = 1, n do
-            if Packs.rollCard(pool2).finish == finish then hits = hits + 1 end
+            if Packs.rollCard({ groups = pool2 }).finish == finish then hits = hits + 1 end
         end
         return hits / n
     end

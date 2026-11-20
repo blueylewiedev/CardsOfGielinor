@@ -14,17 +14,14 @@ local Browse = require("core/browse")
 local Memory = require("core/memory")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
+local Theme = require("ui/theme")
+local WHITE, GREY, GOLD, DIM, PANEL_BACK, PANEL_BORDER, SELECTED_BORDER = Theme.WHITE, Theme.GREY, Theme.GOLD, Theme.DIM, Theme.PANEL_BACK, Theme.PANEL_BORDER, Theme.SELECTED_BORDER
+local Util = require("ui/util")
+local clamp, setHidden, toVec4, readNumber = Util.clamp, Util.setHidden, Util.toVec4, Util.readNumber
 
 local Viewer = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
-local DIM = Vector4.new(0.55, 0.55, 0.60, 1.0)
-local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local DARK = { 0.07, 0.07, 0.09 }                       -- what a tile's rarity colour is mixed into
-local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)  -- the same dark bar and brown border as the credits overlay
-local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
-local SELECTED_BORDER = Vector4.new(1.0, 1.0, 1.0, 0.95)
 local CHIP_BACK = Vector4.new(0.18, 0.16, 0.13, 0.95)
 local CHIP_BORDER = Vector4.new(0.50, 0.40, 0.24, 0.95)
 local CHIP_GOLD_BORDER = Vector4.new(0.85, 0.68, 0.16, 0.95)
@@ -76,10 +73,6 @@ end
 local DETAIL_X = columnX(3)            -- the picked card is over the last two columns
 local DETAIL_W = 2 * COLUMN_W + GAP
 
-local function clamp(value, low, high)
-    return math.max(low, math.min(high, value))
-end
-
 -- The sizes that fit a screen `screenHeight` units tall (nil: the full size). The window takes at most SCREEN_USED of
 -- the height, less its title bar and frame; what is left after the filters and footer is the body's: list rows from
 -- LIST_ROWS_MAX down to LIST_ROWS_MIN, two grid rows shrunk down to GRID_MIN_SCALE (else one row at full size) and
@@ -94,7 +87,7 @@ function Viewer.layoutFor(screenHeight)
         layout.budget = budget
         if budget < math.max(LIST_ROWS_MAX * ROW_STEP, 2 * fullTile) then
             layout.listRows = clamp(budget // ROW_STEP, LIST_ROWS_MIN, LIST_ROWS_MAX)
-            local fit = math.floor((budget // 2 - CAPTION_H) / 224 * 100) / 100     -- the card scale two rows allow
+            local fit = math.floor((budget // 2 - CAPTION_H) / CardView.BASE_H * 100) / 100     -- the card scale two rows allow
             if fit >= GRID_MIN_SCALE then
                 layout.gridScale = math.min(CardView.SCALE, fit)
             else
@@ -102,11 +95,11 @@ function Viewer.layoutFor(screenHeight)
             end
         end
     end
-    layout.cardW, layout.cardH = math.floor(160 * layout.gridScale), math.floor(224 * layout.gridScale)
+    layout.cardW, layout.cardH = CardView.sizeAt(layout.gridScale)
     layout.tileH = layout.cardH + CAPTION_H
     layout.bodyH = math.max(layout.listRows * ROW_STEP, layout.gridRows * layout.tileH,
-        math.floor(224 * DETAIL_MIN) + 10 + INFO_RESERVE)
-    layout.detailScale = clamp(math.floor((layout.bodyH - 10 - INFO_RESERVE) / 224 * 100) / 100, DETAIL_MIN, DETAIL_MAX)
+        select(2, CardView.sizeAt(DETAIL_MIN)) + 10 + INFO_RESERVE)
+    layout.detailScale = clamp(math.floor((layout.bodyH - 10 - INFO_RESERVE) / CardView.BASE_H * 100) / 100, DETAIL_MIN, DETAIL_MAX)
     layout.height = BODY_Y + layout.bodyH + FOOTER_GAP + FOOTER_H
     return layout
 end
@@ -117,7 +110,7 @@ local function applyLayout(layout)
     GRID_PER_PAGE = GRID_COLS * GRID_ROWS
     GRID_SCALE, GRID_CARD_W, GRID_CARD_H, TILE_H = layout.gridScale, layout.cardW, layout.cardH, layout.tileH
     DETAIL_SCALE = layout.detailScale
-    DETAIL_W_CARD, DETAIL_H_CARD = math.floor(160 * DETAIL_SCALE), math.floor(224 * DETAIL_SCALE)
+    DETAIL_W_CARD, DETAIL_H_CARD = CardView.sizeAt(DETAIL_SCALE)
     BODY_H = layout.bodyH
     FOOTER_Y = BODY_Y + BODY_H + FOOTER_GAP
     HEIGHT = layout.height
@@ -152,45 +145,17 @@ local function defaultFilter()
     return { owned = owning and "owned" or "all", sort = "rarity" }
 end
 
--- The collection as the viewer shows it: the cards of a pack that is being opened and have not been turned over yet are
--- already in the collection, but are left out until they have been seen (api.hiddenCards, if the plugin has it, says
--- which). Gives `state` itself when there are none.
+-- The collection as the viewer shows it: the cards of a pack being opened that have not been turned over yet are left out
+-- (api.hiddenCards, if the plugin has it, says which).
 local function viewState(state)
-    local hidden = api ~= nil and api.hiddenCards ~= nil and api.hiddenCards() or nil
-    if hidden == nil or next(hidden) == nil then
-        return state
-    end
-    local view = {}
-    for field, value in pairs(state) do
-        view[field] = value
-    end
-    view.owned = {}
-    for key, count in pairs(state.owned) do
-        local left = count - (hidden[key] or 0)
-        if left > 0 then
-            view.owned[key] = left
-        end
-    end
-    return view
-end
-
-local function setHidden(component, hidden)
-    pcall(function() component.hidden = hidden end)
+    return Browse.visibleState(state, api ~= nil and api.hiddenCards ~= nil and api.hiddenCards() or nil)
 end
 
 local function destroyAll(list)
     if #list > 0 then
         Memory.collectSoon()                 -- (the cards destroyed here are freed by a collection soon, see core/memory.lua)
     end
-    for index = #list, 1, -1 do
-        pcall(function() list[index]:Destroy() end)
-        list[index] = nil
-    end
-end
-
--- 0xRRGGBBAA -> the Vector4 the components take, with an alpha of your own.
-local function toVec4(hex, alpha)
-    return Vector4.new(((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255, alpha or 1.0)
+    Util.destroyAll(list)
 end
 
 -- A rarity's colour mixed into the dark background: `amount` 0 is all dark, 1 is all the rarity colour.
@@ -707,16 +672,7 @@ function Viewer.refreshView()
     widgets.pageText.content = "Page " .. page .. " of " .. pageCount()
 end
 
--- A short fingerprint of what the player owns (and has seen): how many kinds of card and how many copies. It changes when
--- a card is turned over in a pack or added; that is all Viewer.refresh needs to see.
-local function collectionStamp(state)
-    local kinds, copies = 0, 0
-    for _, count in pairs(state.owned) do
-        kinds = kinds + 1
-        copies = copies + (type(count) == "number" and count or 0)
-    end
-    return kinds .. ":" .. copies
-end
+
 
 -- Called about every 0.6 seconds (by the plugin's tick). When the collection has changed while the viewer is open (a pack
 -- was opened, or a card won) the list, counts and picked card are worked out again, on the page that was showing. Closes
@@ -730,7 +686,7 @@ function Viewer.refresh()
         Viewer.close()
         return
     end
-    if state ~= watchedState or collectionStamp(viewState(state)) ~= watchedStamp then
+    if state ~= watchedState or Browse.stamp(viewState(state)) ~= watchedStamp then
         Viewer.refilter("stay")
     end
 end
@@ -748,7 +704,7 @@ function Viewer.refilter(follow)
     end
     updateCategories()
     local view = viewState(state)
-    watchedState, watchedStamp = state, collectionStamp(view)
+    watchedState, watchedStamp = state, Browse.stamp(view)
     entries = Browse.entries(view, filter)
     local counts = Browse.counts(view, filter)
     -- (the whole deck, a card counted when the player has it in any finish)
@@ -850,12 +806,6 @@ local function buildFilters()
 end
 
 -- ----- open and close ---------------------------------------------------------------------------------------
-
--- A number the client gives, or nil if the call fails or gives something else (or 0 or less).
-local function readNumber(read)
-    local ok, value = pcall(read)
-    return (ok and type(value) == "number" and value > 0) and value or nil
-end
 
 -- One line in the log when the viewer opens: the screen's size in units, the interface scale setting and what the viewer
 -- made of them. For a report that the window does not fit.

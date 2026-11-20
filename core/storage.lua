@@ -341,8 +341,8 @@ end
 
 -- True if the player owns at least one variant of the card.
 function Storage.ownsCard(state, cardId)
-    for key in pairs(state.owned) do
-        if Cards.parseKey(key) == cardId then
+    for _, finish in ipairs(Cards.finishOrder) do
+        if state.owned[Cards.variantKey(cardId, finish)] ~= nil then
             return true
         end
     end

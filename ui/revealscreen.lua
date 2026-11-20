@@ -23,12 +23,13 @@ local PackArt = require("ui/packart")
 local Kit = require("ui/kit")
 local Anim = require("ui/anim")
 local Events = require("core/events")
+local Theme = require("ui/theme")
+local WHITE, GREY, GOLD = Theme.WHITE, Theme.GREY, Theme.GOLD
+local Util = require("ui/util")
+local setHidden, destroy, setText = Util.setHidden, Util.destroy, Util.setText
 
 local Reveal = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 -- The screen.
 local DIM_ALPHA = 0.78
@@ -104,10 +105,6 @@ local R = nil
 
 local startTear, flipSealed, updateControls, startDealing, onMain, closeReveal, flipCard
 
-local function setHidden(component, hidden)
-    pcall(function() component.hidden = hidden end)
-end
-
 -- The client keeps an event handler after the component it was given is destroyed, so a handler whose closure reaches
 -- a card's view and model, or the pack's parts, keeps them (and the client's memory for them) alive. A handler
 -- therefore holds only a handle or a table that is emptied here when its parts are destroyed. dev/check_reveal_ui.lua
@@ -120,12 +117,6 @@ local function emptied(tbl)
     end
 end
 
-local function destroy(component)
-    if component ~= nil then
-        pcall(function() component:Destroy() end)
-    end
-end
-
 local function clamp01(x)
     return math.max(0, math.min(1, x))
 end
@@ -134,12 +125,6 @@ end
 local function own(c, part)
     c.parts[#c.parts + 1] = part
     return part
-end
-
-local function setText(widget, text)
-    if widget ~= nil and widget.content ~= text then
-        widget.content = text
-    end
 end
 
 -- The screen's size in pixels (the plugin's layer), or a guess if the client does not say.
@@ -156,9 +141,7 @@ local function screenSize()
     return w, h
 end
 
-local function cardSize(scale)
-    return math.floor(160 * scale), math.floor(224 * scale)
-end
+local cardSize = CardView.sizeAt
 
 -- ---------------------------------------------------------------------------------------
 -- Layout.

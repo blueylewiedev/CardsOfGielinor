@@ -13,12 +13,13 @@ local Packs = require("core/packs")
 local PackArt = require("ui/packart")
 local Kit = require("ui/kit")
 local ShopLayout = require("ui/shoplayout")
+local Theme = require("ui/theme")
+local WHITE, GREY, GOLD, PANEL_BACK, PANEL_BORDER = Theme.WHITE, Theme.GREY, Theme.GOLD, Theme.PANEL_BACK, Theme.PANEL_BORDER
+local Util = require("ui/util")
+local setText = Util.setText
 
 local Shop = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 local COLUMNS = 4
 local TILE_H = 144                                  -- a tile is as wide as the pack's outline, TILE_W
@@ -61,9 +62,7 @@ local PANEL_H = PRICE_Y + 148 + PANEL_PAD - TOP     -- the hint line is the last
 local WIDTH = PANEL_X + PANEL_W + LEFT + 2 * 8
 
 local TILE_SHADOW = Vector4.new(0.0, 0.0, 0.0, 0.55)
-local TILE_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
-local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)  -- the same dark panel and brown border as the credits overlay
-local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
+local TILE_BORDER = PANEL_BORDER
 
 local api = nil
 local window, content = nil, nil
@@ -74,12 +73,6 @@ local grid = nil                  -- the scrolling container the tiles are in (a
 local bigPack = nil               -- the large pack: { root, w, destroy() }
 local selected = "standard"       -- the pack type chosen (kept while the plugin runs)
 local quantity = 1                -- how many packs to buy (kept while the plugin runs)
-
-local function setText(widget, text)
-    if widget.content ~= text then
-        widget.content = text
-    end
-end
 
 -- The name as shown under a tile: "Misthalin pack" -> "Misthalin".
 local function shortName(packType)

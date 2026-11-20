@@ -6,6 +6,8 @@
 
 local Kit = require("ui/kit")
 local Format = require("core/format")
+local Theme = require("ui/theme")
+local WHITE, GREY = Theme.WHITE, Theme.GREY
 
 local Bars = {}
 
@@ -13,8 +15,6 @@ Bars.HEIGHT = 36
 
 local LINE_H = 18
 local BAR_H = 12
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local TRACK = Vector4.new(0.16, 0.14, 0.12, 1.0)
 local BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
 local GOLD_FILL = Vector4.new(0.85, 0.68, 0.16, 1.0)

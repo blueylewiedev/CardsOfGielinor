@@ -26,8 +26,8 @@ Slayer.WAIT_TICKS = 12          -- how long after a drop the monster may take to
 Slayer.MAX_DROP = 25            -- a drop larger than this is a cancel or a reset, not kills
 Slayer.MAX_XP_GAIN = 100000     -- a Slayer XP gain larger than this is the client sending the total at login
 
--- Credits for a kill of a monster of this level.
-function Slayer.creditsForLevel(level)
+-- The level that is paid for: a level that is not known is DEFAULT_LEVEL, and one over "slayer.levelCap" is the cap.
+local function paidLevel(level)
     if type(level) ~= "number" or level < 1 then
         level = Slayer.DEFAULT_LEVEL
     end
@@ -35,19 +35,18 @@ function Slayer.creditsForLevel(level)
     if cap ~= nil and level > cap then
         level = cap
     end
-    return math.max(1, math.floor(level * Config.get("slayer.creditsPerLevel") + 0.5))
+    return level
+end
+
+-- Credits for a kill of a monster of this level.
+function Slayer.creditsForLevel(level)
+    return math.max(1, math.floor(paidLevel(level) * Config.get("slayer.creditsPerLevel") + 0.5))
 end
 
 -- The bonus for completing a task whose kills averaged this level.
 function Slayer.bonusForLevel(level)
-    if type(level) ~= "number" or level < 1 then
-        level = Slayer.DEFAULT_LEVEL
-    end
-    local cap = Config.get("slayer.levelCap")
-    if cap ~= nil and level > cap then
-        level = cap
-    end
-    return math.max(1, math.floor(level * Config.get("slayer.creditsPerLevel") * Config.get("slayer.bonusMultiplier") + 0.5))
+    local credits = paidLevel(level) * Config.get("slayer.creditsPerLevel") * Config.get("slayer.bonusMultiplier")
+    return math.max(1, math.floor(credits + 0.5))
 end
 
 -- Makes isMember(task, category): a monster counts for a task if its category is the task, has the task's name, or is

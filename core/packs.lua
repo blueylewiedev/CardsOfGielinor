@@ -99,9 +99,9 @@ end
 -- pack is left out; 0 keeps a kind out of any pack that also has the other.
 Packs.kindWeights = { npc = 1, item = 1 }
 
--- The cards a pack type can give, grouped by rarity, honouring its filter and minimum rarity (dropped if nothing
--- qualifies). Returns the groups, how many cards there are (0: it cannot be opened) and the same cards grouped by
--- kind first.
+-- The cards a pack type can give, honouring its filter and minimum rarity (dropped if nothing qualifies), as
+-- { groups = { [rarity] = { card... } }, kinds = { [npc or item] = groups, as above }, count = how many cards (0: the
+-- pack cannot be opened) }.
 function Packs.poolFor(packType)
     local function build(minRank)
         local groups, kinds, count = {}, {}, 0
@@ -120,14 +120,14 @@ function Packs.poolFor(packType)
                 count = count + 1
             end
         end
-        return groups, count, kinds
+        return { groups = groups, kinds = kinds, count = count }
     end
     local minRank = packType.minRarity and Cards.rarityRank[packType.minRarity] or 1
-    local groups, count, kinds = build(minRank)
-    if count == 0 and minRank > 1 then
-        groups, count, kinds = build(1)
+    local pool = build(minRank)
+    if pool.count == 0 and minRank > 1 then
+        pool = build(1)
     end
-    return groups, count, kinds
+    return pool
 end
 
 -- How many cards a pack type can give (0 means it cannot be opened). The cards only change when an overlay
@@ -140,7 +140,7 @@ function Packs.poolSize(packTypeId)
     local size = poolSizes[packTypeId]
     if size == nil then
         local packType = Packs.typeById(packTypeId)
-        size = packType and select(2, Packs.poolFor(packType)) or 0
+        size = packType and Packs.poolFor(packType).count or 0
         poolSizes[packTypeId] = size
     end
     return size
@@ -153,8 +153,7 @@ function Packs.namesFor(card)
     if packNamesAt ~= Cards.revision then
         packNames, packNamesAt = {}, Cards.revision
         for _, packType in ipairs(Packs.offered()) do
-            local groups = Packs.poolFor(packType)
-            for _, list in pairs(groups) do
+            for _, list in pairs(Packs.poolFor(packType).groups) do
                 for _, member in ipairs(list) do
                     local names = packNames[member.id]
                     if names == nil then
@@ -170,30 +169,28 @@ function Packs.namesFor(card)
 end
 
 -- Rolls one card: its kind, then rarity, then which card (by weight), then finish; the rolls are separate, so they
--- stack. `pool` and `kinds` come from Packs.poolFor (default: the standard pack). Returns { card, finish, key } where
--- key is the variant key used for saving.
-function Packs.rollCard(pool, kinds)
-    if pool == nil then
-        local _
-        pool, _, kinds = Packs.poolFor(Cards.packTypes.standard)
-    end
-    if kinds ~= nil then
+-- stack. `pool` is from Packs.poolFor (default: the standard pack); without `pool.kinds` the kind is not rolled.
+-- Returns { card, finish, key } where key is the variant key used for saving.
+function Packs.rollCard(pool)
+    pool = pool or Packs.poolFor(Cards.packTypes.standard)
+    local groups = pool.groups
+    if pool.kinds ~= nil then
         local weights = {}
-        for kind, groups in pairs(kinds) do
+        for kind, ofKind in pairs(pool.kinds) do
             local weight = Packs.kindWeights[kind] or 0
-            if next(groups) ~= nil and weight > 0 then
+            if next(ofKind) ~= nil and weight > 0 then
                 weights[kind] = weight
             end
         end
         if next(weights) ~= nil then
-            pool = kinds[pickWeighted(weights)]
+            groups = pool.kinds[pickWeighted(weights)]
         end
     end
     -- Only rarities that actually have cards can be rolled (Config "odds.rarity.<rarity>"). If tuning has left every rarity
     -- this pack has at 0, they are rolled alike rather than not at all.
     local rarityWeights, total = {}, 0
     for rarity in pairs(Cards.rarities) do
-        if pool[rarity] ~= nil then
+        if groups[rarity] ~= nil then
             local weight = Config.get("odds.rarity." .. rarity)
             rarityWeights[rarity] = weight
             total = total + weight
@@ -205,7 +202,7 @@ function Packs.rollCard(pool, kinds)
         end
     end
     local rarity = pickWeighted(rarityWeights)
-    local card = Packs.pickCard(pool[rarity])
+    local card = Packs.pickCard(groups[rarity])
 
     -- (Config "odds.finish.<finish>": normal 17, foil 2, holo 1)
     local finishWeights = {}
@@ -229,8 +226,8 @@ function Packs.open(state, packTypeId, count)
     if type(count) ~= "number" or count < 1 or count ~= math.floor(count) then
         return nil, "bad count"
     end
-    local pool, poolSize, kinds = Packs.poolFor(packType)
-    if poolSize == 0 then
+    local pool = Packs.poolFor(packType)
+    if pool.count == 0 then
         return nil, "no cards"
     end
     if not Storage.spendCredits(state, Packs.priceFor(packTypeId) * count) then
@@ -240,14 +237,10 @@ function Packs.open(state, packTypeId, count)
     local size = packType.size or Packs.PACK_SIZE
     local results = {}
     for pack = 1, count do
-        local rolled = {}
-        for i = 1, size do
-            rolled[i] = Packs.rollCard(pool, kinds)
-            rolled[i].pack = pack
-        end
         local ofPack = {}
         for i = 1, size do
-            local result = rolled[i]
+            local result = Packs.rollCard(pool)
+            result.pack = pack
             result.isNewCard = not Storage.ownsCard(state, result.card.id)
             result.isNewVariant = Storage.countOwned(state, result.key) == 0
             Storage.addCard(state, result.key)

@@ -250,7 +250,7 @@ local cardCounts = {}
 local function cardCount()
     local count = cardCounts[design.region]
     if count == nil then
-        count = select(2, Packs.poolFor({ filter = filter() }))
+        count = Packs.poolFor({ filter = filter() }).count
         cardCounts[design.region] = count
     end
     return count

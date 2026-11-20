@@ -8,6 +8,7 @@
 --   Sets.problems()         what is wrong with the sets against the deck
 
 local Cards = require("core/cards")
+local Browse = require("core/browse")
 
 local Sets = {}
 
@@ -149,12 +150,11 @@ function Sets.cardsOf(set)
     return cards
 end
 
--- The card ids the player has at least one of, from `state.owned` ("<card id>|<finish>" = count).
+-- The card ids the player has at least one of, as { [card id] = true }.
 function Sets.ownedIds(state)
     local owned = {}
-    for key, count in pairs(state and state.owned or {}) do
-        local cardId = Cards.parseKey(key)
-        if cardId ~= nil and type(count) == "number" and count > 0 then
+    if state ~= nil then
+        for cardId in pairs(Browse.ownedByCard(state)) do
             owned[cardId] = true
         end
     end

@@ -19,6 +19,10 @@ local Reveal = require("ui/revealscreen")
 local Viewer = require("ui/viewer")
 local SetsViewer = require("ui/setsviewer")
 local Events = require("core/events")
+local Theme = require("ui/theme")
+local WHITE, GREY = Theme.WHITE, Theme.GREY
+local Util = require("ui/util")
+local setText = Util.setText
 
 local Tutorial = {}
 
@@ -27,8 +31,6 @@ local WIDTH, HEIGHT = 521, 144              -- the panel, title bar included
 local MARGIN = 8                            -- from the left and bottom edges of the screen
 local CHECK_EVERY = 5                       -- logic ticks (50 a second) between looks at the windows
 local ARROW_W, ARROW_H = 41, 54             -- the pointer sprite
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 
 -- The nine pieces of each of the game's two flashing frames (yellow, white), if this client has them. They are cross-faded:
 -- as one fades out the other fades in, so the border seems to flash between gold and white however the control is coloured.
@@ -176,12 +178,6 @@ local function place()
     else
         S.pointer.rotationDegrees = 180        -- no room above: below the control, pointing up
         S.pointer:SetPos(x + width / 2 - ARROW_W / 2, y + height + 4 + bob)
-    end
-end
-
-local function setText(widget, content)
-    if widget ~= nil and widget.content ~= content then
-        widget.content = content
     end
 end
 
