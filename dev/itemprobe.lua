@@ -546,7 +546,7 @@ function ItemProbe.showCard(objId)
         local width = math.floor(160 * CARD_SCALE) + 160
         local height = math.max(math.floor(224 * CARD_SCALE) + 30, 13 * 32 + 20)   -- room for the buttons
         cardWindow, cardContent = Kit.window(layer, "Item card", width, height + Kit.titleBarHeight(),
-            function() ItemProbe.hideCard() end, 0.55, 0.12)
+            function() ItemProbe.hideCard() end, { xAnchor = 0.55, yAnchor = 0.12 })
         local x, y = math.floor(160 * CARD_SCALE) + 24, 10
         local function button(label, change)
             Kit.smallButton(cardContent, label, x, y, 120, 28, function() moveCamera(change) end)
@@ -606,7 +606,7 @@ function ItemProbe.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Item probe", WIDTH, HEIGHT + Kit.titleBarHeight(),
-        function() ItemProbe.hide() end, 0.15, 0.1)
+        function() ItemProbe.hide() end, { xAnchor = 0.15, yAnchor = 0.1 })
     Kit.text(content, 10, 6, 60, 26, "Item:", WHITE, ui.AlignMode.TOPLEFT)
     field = Kit.inputField(content, 70, 6, 520, 26, 40, false)
     pcall(function() field.content = "LOGS" end)

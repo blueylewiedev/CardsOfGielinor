@@ -347,15 +347,17 @@ function Kit.contentWidth(width)
 end
 
 -- Creates a PrettyUI window (a title bar it is dragged by and a close button). Returns window, content (where to put
--- things). `onClose` is called when the player closes it; `scrollable` lets the content be longer; `resizable` lets
--- the player drag its edge (`limits` is { minWidth, minHeight }). `offsetX` and `offsetY` (default 0) move it from
--- its anchor: with the anchors 0 and 1 a negative offsetY puts it that far above the bottom of the screen.
-function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits, offsetX, offsetY)
+-- things). `onClose` is called when the player closes it. `options` (all optional): xAnchor and yAnchor (0 to 1, where on the
+-- screen it opens; 0.2 and 0.15), offsetX and offsetY (default 0, move it from its anchor: with the anchors 0 and 1 a negative
+-- offsetY puts it that far above the bottom of the screen), scrollable (lets the content be longer), resizable (lets the player
+-- drag its edge) with minWidth and minHeight.
+function Kit.window(parent, title, width, height, onClose, options)
+    options = options or {}
     local win = prettyui.Window.new(parent, {
         title = title, width = width, height = height,
-        x = offsetX or 0, y = offsetY or 0, xAnchor = xAnchor or 0.2, yAnchor = yAnchor or 0.15, categoryID = "auto",
-        scrollable = scrollable == true, resizable = resizable == true, onClose = onClose,
-        minWidth = limits and limits.minWidth or nil, minHeight = limits and limits.minHeight or nil,
+        x = options.offsetX or 0, y = options.offsetY or 0, xAnchor = options.xAnchor or 0.2, yAnchor = options.yAnchor or 0.15,
+        categoryID = "auto", scrollable = options.scrollable == true, resizable = options.resizable == true, onClose = onClose,
+        minWidth = options.minWidth, minHeight = options.minHeight,
     })
     return win, win.content
 end

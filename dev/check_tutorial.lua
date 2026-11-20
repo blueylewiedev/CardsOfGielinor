@@ -156,7 +156,7 @@ world.screen = "home"
 world.anchors.shop = control(800, 400, 200, 30)
 Tutorial.offerFirstRun()
 check(Tutorial.isOpen(), "offered on the Home screen of an install that has not seen it")
-local S = Tutorial.debugState()
+local S = Tutorial.state()
 check(S.text ~= nil and S.text.content == Steps.text(1), "opens at step 1")
 check(S.counter ~= nil and S.counter.content == "Step 1 of 7", "the counter says Step 1 of 7")
 
@@ -250,14 +250,14 @@ check(not Tutorial.isOpen(), "not offered again once seen")
 -- ---- the other doors in ----------------------------------------------------------------------------------------------------
 
 Tutorial.open()
-check(Tutorial.isOpen() and Tutorial.debugState().step == 1, "the \"i\" and the ribbon button open it at step 1")
+check(Tutorial.isOpen() and Tutorial.state().step == 1, "the \"i\" and the ribbon button open it at step 1")
 Tutorial.open()
 check(Tutorial.isOpen(), "opening it again while it is open is harmless")
 local before = #created
 Tutorial.open()
 check(#created == before, "and builds nothing more")
 Tutorial.close(false)
-check(not Tutorial.isOpen() and next(Tutorial.debugState()) == nil, "closed without remembering is closed and empty")
+check(not Tutorial.isOpen() and next(Tutorial.state()) == nil, "closed without remembering is closed and empty")
 Tutorial.close(false)
 check(true, "closing twice is harmless")
 

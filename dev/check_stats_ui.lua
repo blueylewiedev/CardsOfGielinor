@@ -130,14 +130,14 @@ Stats.refresh()
 hiddenNow = {}
 
 -- the other views
-Stats.setTab(2)
+prettyui.lastTabs:Click(2)
 check(has("Misthalin") and has("Kharidian desert"), "the Regions tab has a bar for each region")
 check(has("Global %(no region%)"), "the Regions tab has the bar for cards with no region")
-Stats.setTab(3)
+prettyui.lastTabs:Click(3)
 check(has("Packs opened: 12") and has("Credits earned: 123 456"), "the Packs tab has the numbers")
 check(has("PULL RATES") and has("OVERVIEW"), "the Packs tab has its two headings")
 check(has("Common: "), "the Packs tab has the pull rates")
-Stats.setTab(1)
+prettyui.lastTabs:Click(1)
 check(has("All cards"), "back to the Collection tab")
 
 Rate.reset()

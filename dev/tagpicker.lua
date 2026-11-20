@@ -371,7 +371,7 @@ function TagPicker.show()
     local tabsHeight = math.min(TAB_HEADER_H + pageHeight, MAX_VISIBLE_H - TABS_Y - 50)
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Pick tags", WIDTH, TABS_Y + tabsHeight + 50 + Kit.titleBarHeight(),
-        function() TagPicker.hide() end, 0.6, 0.08)
+        function() TagPicker.hide() end, { xAnchor = 0.6, yAnchor = 0.08 })
     extras[#extras + 1] = Kit.text(content, 10, 4, 70, 26, "Filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 80, 4, 300, 26, 30, false)
     extras[#extras + 1] = filterField

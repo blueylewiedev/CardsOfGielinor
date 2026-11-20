@@ -72,7 +72,7 @@ function NpcBrowser.show()
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     local content = nil
     window, content = Kit.window(gameWindow, "NPC Viewer", WIN_W, WIN_H + Kit.titleBarHeight(),
-        function() NpcBrowser.hide() end, 0.72, 0.15)
+        function() NpcBrowser.hide() end, { xAnchor = 0.72, yAnchor = 0.15 })
 
     local npcId = 1
     local parts = {}      -- components that are rebuilt on every change

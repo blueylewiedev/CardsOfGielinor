@@ -227,7 +227,7 @@ function Viewer.open(newApi)
     local width = ViewerLayout.CONTENT_W + 2 * ViewerLayout.MARGIN + CollectionLayout.FRAME
     o.window, o.content = Kit.window(gameWindow, "Collection", width, layout.height + Kit.titleBarHeight(), function()
         Viewer.close()
-    end, 0.3, 0.02)
+    end, { xAnchor = 0.3, yAnchor = 0.02 })
     V.open = o
 
     -- The swap button goes in the title bar.

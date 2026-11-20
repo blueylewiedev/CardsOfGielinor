@@ -98,7 +98,7 @@ function OutputWindow.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Output", WIDTH, TOP + ROWS * ROW_H + 10 + Kit.titleBarHeight(),
-        function() OutputWindow.hide() end, 0.2, 0.55)
+        function() OutputWindow.hide() end, { xAnchor = 0.2, yAnchor = 0.55 })
 
     -- These are not rebuilt on every redraw, so they are not in rowParts.
     Kit.buttonAt(content, "Newer", 10, 4, 120, 30, function()

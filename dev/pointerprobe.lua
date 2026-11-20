@@ -132,7 +132,8 @@ function Probe.toggle()
     local parent = layer()
     if parent == nil then say("no plugin layer"); return end
     local content
-    window, content = Kit.window(parent, "Pointer probe", WIDTH, HEIGHT + Kit.titleBarHeight(), function() close() end, 0.5, 0.4)
+    window, content = Kit.window(parent, "Pointer probe", WIDTH, HEIGHT + Kit.titleBarHeight(), function() close() end,
+        { xAnchor = 0.5, yAnchor = 0.4 })
     buttons = {}
     buttons[1] = Kit.buttonAt(content, "Left", 10, 20, 140, 30, function() end)
     buttons[2] = Kit.buttonAt(content, "Middle", 170, 70, 150, 30, function() end)

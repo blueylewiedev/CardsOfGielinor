@@ -184,7 +184,7 @@ function AnimSearch.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Search animations", WIDTH,
-        LIST_TOP + ROWS * ROW_H + 50 + Kit.titleBarHeight(), function() AnimSearch.hide() end, 0.55, 0.3)
+        LIST_TOP + ROWS * ROW_H + 50 + Kit.titleBarHeight(), function() AnimSearch.hide() end, { xAnchor = 0.55, yAnchor = 0.3 })
     Kit.text(content, 10, 4, 100, 26, "Name:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 70, 4, 295, 26, 40, false)
     Kit.buttonAt(content, "Search", WIDTH - 130, 2, 120, 30, function() AnimSearch.search(filterField.content) end,

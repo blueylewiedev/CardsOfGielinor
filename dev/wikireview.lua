@@ -572,7 +572,7 @@ function WikiReview.show()
     widgets = { notes = {} }
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Wiki Review", WIDTH, HEIGHT + Kit.titleBarHeight(),
-        function() WikiReview.hide() end, 0.75, 0.1)
+        function() WikiReview.hide() end, { xAnchor = 0.75, yAnchor = 0.1 })
 
     Kit.iconButton(content, "ARROW_LEFT", 10, 6, function() step(-1) end, "Previous candidate", "Back", 60)
     Kit.iconButton(content, "ARROW_RIGHT", 40, 6, function() step(1) end, "Next candidate", "Next", 60)

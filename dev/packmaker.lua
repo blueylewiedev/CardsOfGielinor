@@ -813,7 +813,7 @@ function PackMaker.show()
     widgets, marks, packs, artParts = {}, {}, {}, {}
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Pack Maker", WIN_W, WIN_H + Kit.titleBarHeight(),
-        function() PackMaker.hide() end, 0.15, 0.04, false, false)
+        function() PackMaker.hide() end, { xAnchor = 0.15, yAnchor = 0.04 })
 
     -- 1. Login screen: search, drop-down, steps, the picture.
     section("1. Picture: drag the Front and Back boxes along it", LEFT_X, 4, LEFT_W)

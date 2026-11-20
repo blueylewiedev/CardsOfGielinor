@@ -151,7 +151,7 @@ function Nearby.show()
     end
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Nearby NPCs", WIDTH, LIST_TOP + MAX_ROWS * ROW_H + 10 + Kit.titleBarHeight(),
-        function() Nearby.hide() end, 0.2, 0.05)
+        function() Nearby.hide() end, { xAnchor = 0.2, yAnchor = 0.05 })
 
     Kit.text(content, 10, 4, 100, 26, "Name filter:", WHITE, ui.AlignMode.TOPLEFT)
     filterField = Kit.inputField(content, 115, 4, 250, 26, 30, false)

@@ -452,14 +452,6 @@ local function begin(results, packTypeId, hooks)
     showSealed()
 end
 
--- The main button's action, as if it had been pressed (used by dev/check_reveal_ui.lua; the reveal is otherwise driven by
--- its own buttons and clicks).
-function Reveal.pressMain()
-    if R ~= nil then
-        onMain()
-    end
-end
-
 -- The reveal under way (for tests), or nil.
 function Reveal.state()
     return R

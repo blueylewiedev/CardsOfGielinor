@@ -116,7 +116,7 @@ function Preview.show()
 
     local gameWindow = ui.Interfaces:GetComponent(id.Component.TOPLEVEL_V2__PLUGIN_BUILD_LAYER_TOP)
     window, content = Kit.window(gameWindow, "Card Preview", CONTENT_W, contentH + Kit.titleBarHeight(),
-        function() Preview.hide() end, 0.4, 0.05, false, true)
+        function() Preview.hide() end, { xAnchor = 0.4, yAnchor = 0.05, resizable = true })
 
     local index = 1
     local reviewing = nil         -- while in Clip review, the indexes in Cards.list still to review

@@ -289,7 +289,7 @@ function SetsViewer.open(newApi)
     local width = SetsLayout.CONTENT_W + SetsLayout.WINDOW_SLACK
     o.window, o.content = Kit.window(gameWindow, "Sets", width, layout.height + Kit.titleBarHeight(), function()
         SetsViewer.close()
-    end, 0.35, 0.04)
+    end, { xAnchor = 0.35, yAnchor = 0.04 })
     S.open = o
     local content, widgets = o.content, o.widgets
 
