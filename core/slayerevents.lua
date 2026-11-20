@@ -9,6 +9,8 @@ local Logger = require("core/logger")
 local Config = require("core/config")
 local Storage = require("core/storage")
 local Events = require("core/events")
+local ClientReads = require("core/clientreads")
+local prop = ClientReads.prop
 
 local SlayerEvents = {}
 
@@ -27,21 +29,8 @@ local tracker = nil             -- set while a character is logged in
 local names = {}                -- number in the task list -> the task's name in lower case
 local namesLoaded = false       -- true once the list has been read (it is tried again until it has)
 local isMember, unitsOf = nil, nil
-local categoryParam = nil
 local exampleLevel = {}         -- task number -> combat level of the task's example monster
 local exampleQueue, exampleNext = nil, 1
-
--- A property of anything, or nil if it cannot be read.
-local function prop(thing, name)
-    if thing == nil then
-        return nil
-    end
-    local ok, value = pcall(function() return thing[name] end)
-    if ok then
-        return value
-    end
-    return nil
-end
 
 -- The value of a player variable, or nil.
 local function readVar(varId)
@@ -78,23 +67,9 @@ end
 -- The Slayer category of an NPC config (the number of its Slayer task), or nil if it has none or the number is not
 -- a task (a few monsters carry other values).
 local function categoryOf(cfg)
-    if cfg == nil then
-        return nil
-    end
-    if categoryParam == nil then
-        local ok, param = pcall(function() return config.Param.SLAYER_CATEGORY end)
-        if not ok or param == nil then
-            return nil
-        end
-        categoryParam = param
-    end
-    local okHas, has = pcall(function() return cfg:HasParam(categoryParam) end)
-    if not okHas or not has then
-        return nil
-    end
-    local okValue, value = pcall(function() return cfg:GetParamValue(categoryParam) end)
-    if okValue and type(value) == "number" and names[value] ~= nil then
-        return value
+    local category = ClientReads.numberParam(cfg, "SLAYER_CATEGORY")
+    if category ~= nil and names[category] ~= nil then
+        return category
     end
     return nil
 end
@@ -196,11 +171,7 @@ local function onRemoved(e)
     local ok, err = pcall(function()
         local entity = e.npcEntity
         local cfg, parent = prop(entity, "config"), prop(entity, "parentConfig")
-        local level = prop(cfg, "visibleCombatLevel")
-        if type(level) ~= "number" or level < 1 then
-            level = prop(parent, "visibleCombatLevel")
-        end
-        tracker:onRemoved({ category = categoryOf(cfg) or categoryOf(parent), level = level })
+        tracker:onRemoved({ category = categoryOf(cfg) or categoryOf(parent), level = ClientReads.combatLevel(cfg, parent) })
     end)
     if not ok then
         Logger.error("slayer credits: NPC handler failed:", tostring(err))

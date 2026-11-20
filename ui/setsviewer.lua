@@ -16,16 +16,13 @@ local Packs = require("core/packs")
 local Logger = require("core/logger")
 local CardView = require("ui/cardview")
 local Kit = require("ui/kit")
+local Theme = require("ui/theme")
+local WHITE, GREY, GOLD, DIM, PANEL_BACK, PANEL_BORDER, SELECTED_BORDER = Theme.WHITE, Theme.GREY, Theme.GOLD, Theme.DIM, Theme.PANEL_BACK, Theme.PANEL_BORDER, Theme.SELECTED_BORDER
+local Util = require("ui/util")
+local setHidden, destroyAll, toVec4, readNumber = Util.setHidden, Util.destroyAll, Util.toVec4, Util.readNumber
 
 local SetsViewer = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
-local DIM = Vector4.new(0.55, 0.55, 0.60, 1.0)
-local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
-local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)  -- the same dark box and brown border as the collection viewer
-local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
-local SELECTED_BORDER = Vector4.new(1.0, 1.0, 1.0, 0.95)
 local TILE_BACK = Vector4.new(0.13, 0.12, 0.10, 0.92)
 local TILE_DONE_BACK = Vector4.new(0.30, 0.23, 0.07, 0.95)    -- a set the player has every card of
 local TILE_DONE_BORDER = Vector4.new(0.85, 0.68, 0.16, 0.95)
@@ -82,7 +79,7 @@ function SetsViewer.layoutFor(screenHeight)
             - FOOTER_H
         layout.budget = budget
         if budget < 2 * (CardView.HEIGHT + CAPTION_H) then
-            local fit = math.floor((budget // 2 - CAPTION_H) / 224 * 100) / 100     -- the card scale two rows allow
+            local fit = math.floor((budget // 2 - CAPTION_H) / CardView.BASE_H * 100) / 100     -- the card scale two rows allow
             if fit >= GRID_MIN_SCALE then
                 layout.scale = math.min(CardView.SCALE, fit)
             else
@@ -90,7 +87,7 @@ function SetsViewer.layoutFor(screenHeight)
             end
         end
     end
-    layout.cardW, layout.cardH = math.floor(160 * layout.scale), math.floor(224 * layout.scale)
+    layout.cardW, layout.cardH = CardView.sizeAt(layout.scale)
     layout.tileH = layout.cardH + CAPTION_H
     layout.bodyH = layout.gridRows * layout.tileH
     -- the set list runs from under the search box and drop-down to the footer
@@ -129,22 +126,6 @@ local page = 1
 local watchedState, watchedStamp = nil, nil   -- the collection as the window was last drawn from it
 local drawnKey = nil                   -- what the grid shows (so a tick with nothing new does not rebuild the cards)
 
-local function setHidden(component, hidden)
-    pcall(function() component.hidden = hidden end)
-end
-
-local function destroyAll(list)
-    for index = #list, 1, -1 do
-        pcall(function() list[index]:Destroy() end)
-        list[index] = nil
-    end
-end
-
--- 0xRRGGBBAA -> the Vector4 the components take, with an alpha of your own.
-local function toVec4(hex, alpha)
-    return Vector4.new(((hex >> 24) & 0xFF) / 255, ((hex >> 16) & 0xFF) / 255, ((hex >> 8) & 0xFF) / 255, alpha or 1.0)
-end
-
 -- A dark box with a thin border, as a layer to put texts in. Returns the layer, the background and the border.
 local function panel(parent, x, y, w, h)
     local layer = ui.Layer.new(parent)
@@ -164,36 +145,13 @@ local function panel(parent, x, y, w, h)
     return layer, back, border
 end
 
--- The collection as the window shows it: the cards of a pack that is being opened and have not been turned over yet
--- are left out until they have been seen, as in the collection viewer.
+-- The collection as the window shows it: the cards of a pack being opened that have not been turned over yet are left out
+-- (api.hiddenCards, if the plugin has it, says which).
 local function viewState(state)
-    local hidden = api ~= nil and api.hiddenCards ~= nil and api.hiddenCards() or nil
-    if hidden == nil or next(hidden) == nil then
-        return state
-    end
-    local view = {}
-    for field, value in pairs(state) do
-        view[field] = value
-    end
-    view.owned = {}
-    for key, count in pairs(state.owned) do
-        local left = count - (hidden[key] or 0)
-        if left > 0 then
-            view.owned[key] = left
-        end
-    end
-    return view
+    return Browse.visibleState(state, api ~= nil and api.hiddenCards ~= nil and api.hiddenCards() or nil)
 end
 
--- A short fingerprint of what the player owns: it changes when a card is turned over in a pack or added.
-local function collectionStamp(state)
-    local kinds, copies = 0, 0
-    for _, count in pairs(state.owned) do
-        kinds = kinds + 1
-        copies = copies + (type(count) == "number" and count or 0)
-    end
-    return kinds .. ":" .. copies
-end
+
 
 -- How many copies of a card the player has, over every finish, from what they have of it ({ finish = copies },
 -- Browse.ownedByCard).
@@ -539,7 +497,7 @@ function SetsViewer.redraw()
         return
     end
     local view = viewState(state)
-    watchedState, watchedStamp = state, collectionStamp(view)
+    watchedState, watchedStamp = state, Browse.stamp(view)
     local ownedIds = Sets.ownedIds(view)
     findShownSets()
     listTop = math.max(0, math.min(listTop, #shownSets - LIST_ROWS))
@@ -579,15 +537,9 @@ function SetsViewer.refresh()
         SetsViewer.close()
         return
     end
-    if state ~= watchedState or collectionStamp(viewState(state)) ~= watchedStamp then
+    if state ~= watchedState or Browse.stamp(viewState(state)) ~= watchedStamp then
         SetsViewer.redraw()
     end
-end
-
--- A number the client gives, or nil if the call fails or gives something else (or 0 or less).
-local function readNumber(read)
-    local ok, value = pcall(read)
-    return (ok and type(value) == "number" and value > 0) and value or nil
 end
 
 -- One line in the log when the window opens: the screen's size in units and what the window made of it. For a report that

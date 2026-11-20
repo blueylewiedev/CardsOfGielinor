@@ -17,12 +17,11 @@ local Anim = require("ui/anim")
 local Kit = require("ui/kit")
 local Bars = require("ui/bars")
 local Events = require("core/events")
+local Theme = require("ui/theme")
+local WHITE, GREY, GOLD = Theme.WHITE, Theme.GREY, Theme.GOLD
 
 local Stats = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
-local GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
 local GOLD_BAR = Vector4.new(0.85, 0.68, 0.16, 1.0)
 -- The finishes' bars and pull rate lines (every finish but the plain one, Cards.specialFinishes), in their colours.
 local FINISH_COLOURS = {}
@@ -42,9 +41,6 @@ local BAR_STEP = Bars.HEIGHT + 4
 local COLUMN_GAP = 10
 local CACHE_REFRESHES = 10              -- the bars are counted again after this many refreshes (about 6 seconds)
 local RELAYOUT_AFTER = 0.25             -- seconds without the size changing before the tabs are built again
-
--- Display order for the rarity lines and bars.
-local RARITY_ORDER = { "common", "uncommon", "rare", "epic", "legendary" }
 
 -- "3 (10.0%, 1 in 10)", or just "0" when nothing has been pulled yet.
 local function rate(count, total)
@@ -72,7 +68,7 @@ end
 function Stats.pullRates(state)
     local s = state.stats
     local lines = {}
-    for _, rarity in ipairs(RARITY_ORDER) do
+    for _, rarity in ipairs(Cards.rarityOrder) do
         local info = Cards.rarities[rarity]
         if info ~= nil then
             lines[#lines + 1] = { info.name .. ": " .. rate(s.rarities[rarity] or 0, s.cardsPulled), Bars.colour(info.colour) }
@@ -131,7 +127,7 @@ local function viewProgress(page, width)
     local heading = Kit.text(page, left, y, full, 20, "BY RARITY", GOLD, ui.AlignMode.TOPLEFT)
     y = y + 26
     local rarityBars = {}
-    for i, id in ipairs(RARITY_ORDER) do
+    for i, id in ipairs(Cards.rarityOrder) do
         local rarity = Cards.rarities[id]
         if rarity ~= nil then
             local colour = Bars.colour(rarity.colour)
@@ -141,7 +137,7 @@ local function viewProgress(page, width)
             end
         end
     end
-    if #RARITY_ORDER % 2 == 1 then
+    if #Cards.rarityOrder % 2 == 1 then
         y = y + BAR_STEP
     end
     return {
@@ -220,7 +216,7 @@ local function viewPacks(page, width)
         end
     end
     local overview = makeColumn(left, "OVERVIEW", 6)
-    local pulls = makeColumn(second, "PULL RATES", #RARITY_ORDER + #Cards.specialFinishes)
+    local pulls = makeColumn(second, "PULL RATES", #Cards.rarityOrder + #Cards.specialFinishes)
     return {
         height = TOP_PAD + 26 + math.max(#overview.texts, #pulls.texts) * LINE_H,
         refresh = function(_, state)

@@ -91,6 +91,36 @@ function Browse.ownedByCard(state)
     return owned
 end
 
+-- The collection as a window shows it: copies of cards still unseen in a pack being opened (`hidden`, { [variant key] =
+-- copies }, from the reveal) are left out until they have been seen. Gives `state` itself when there are none.
+function Browse.visibleState(state, hidden)
+    if hidden == nil or next(hidden) == nil then
+        return state
+    end
+    local view = {}
+    for field, value in pairs(state) do
+        view[field] = value
+    end
+    view.owned = {}
+    for key, count in pairs(state.owned) do
+        local left = count - (hidden[key] or 0)
+        if left > 0 then
+            view.owned[key] = left
+        end
+    end
+    return view
+end
+
+-- A short fingerprint of what the player owns: it changes when a card is turned over in a pack or added.
+function Browse.stamp(state)
+    local kinds, copies = 0, 0
+    for _, count in pairs(state.owned) do
+        kinds = kinds + 1
+        copies = copies + (type(count) == "number" and count or 0)
+    end
+    return kinds .. ":" .. copies
+end
+
 -- The finish a card is shown in by default: the rarest the player has (Cards.finishOrder backwards: a holo, then a foil,
 -- then a normal one), or normal if they have none. The Sets window shows cards the same way.
 Browse.FINISH_PREFERENCE = {}

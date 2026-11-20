@@ -9,6 +9,8 @@ local Logger = require("core/logger")
 local Config = require("core/config")
 local Storage = require("core/storage")
 local Events = require("core/events")
+local ClientReads = require("core/clientreads")
+local prop = ClientReads.prop
 
 local BossEvents = {}
 
@@ -19,49 +21,10 @@ local SUBSCRIBERS = {
 
 local api = nil                 -- api.getState() : the logged-in character's collection, or nil
 local tracker = nil             -- set while a character is logged in
-local idParam = nil             -- config.Param.BSLAY_ID, once found
-
--- A property of anything, or nil if it cannot be read.
-local function prop(thing, name)
-    if thing == nil then
-        return nil
-    end
-    local ok, value = pcall(function() return thing[name] end)
-    if ok then
-        return value
-    end
-    return nil
-end
 
 -- The BSLAY_ID of an NPC config (the number of its boss), or nil if it is not a boss.
 local function bossIdOf(cfg)
-    if cfg == nil then
-        return nil
-    end
-    if idParam == nil then
-        local ok, param = pcall(function() return config.Param.BSLAY_ID end)
-        if not ok or param == nil then
-            return nil
-        end
-        idParam = param
-    end
-    local okHas, has = pcall(function() return cfg:HasParam(idParam) end)
-    if not okHas or not has then
-        return nil
-    end
-    local okValue, value = pcall(function() return cfg:GetParamValue(idParam) end)
-    if okValue and type(value) == "number" then
-        return value
-    end
-    return nil
-end
-
-local function levelOf(cfg, parent)
-    local level = prop(cfg, "visibleCombatLevel")
-    if type(level) ~= "number" or level < 1 then
-        level = prop(parent, "visibleCombatLevel")
-    end
-    return type(level) == "number" and level or nil
+    return ClientReads.numberParam(cfg, "BSLAY_ID")
 end
 
 -- Tells the tracker which bosses are in view.
@@ -70,7 +33,7 @@ local function look()
         local cfg, parent = prop(entity, "config"), prop(entity, "parentConfig")
         local id = bossIdOf(cfg) or bossIdOf(parent)
         if id ~= nil then
-            tracker:seen(id, levelOf(cfg, parent), prop(entity, "displayName") or prop(cfg, "name"))
+            tracker:seen(id, ClientReads.combatLevel(cfg, parent), prop(entity, "displayName") or prop(cfg, "name"))
         end
     end
 end

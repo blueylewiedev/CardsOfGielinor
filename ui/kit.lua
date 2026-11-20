@@ -4,10 +4,11 @@
 -- so there is no fallback to the client's own components. The cards are custom: ui/cardview.lua.
 
 local Logger = require("core/logger")
+local Theme = require("ui/theme")
 
 local Kit = {}
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
+local WHITE = Theme.WHITE
 
 -- Buttons made by Kit.buttonAt (PrettyUI's FancyButton: they are relabelled and greyed out with its own methods).
 local fancyButtons = setmetatable({}, { __mode = "k" })
@@ -144,9 +145,7 @@ end
 -- A dark panel with a brown border (the same as the credits overlay's) at (x, y), `w` x `h`, in `parent`, with `heading` in
 -- gold across its top if there is one. Made before whatever goes on it. The panel is drawn with rectangles (nothing can be put
 -- inside a rectangle), so the heading and the rest are made in `parent` after it. Returns the heading text, or nil.
-local PANEL_BACK = Vector4.new(0.08, 0.07, 0.06, 0.90)
-local PANEL_BORDER = Vector4.new(0.45, 0.36, 0.22, 0.95)
-local PANEL_GOLD = Vector4.new(1.0, 0.84, 0.2, 1.0)
+local PANEL_BACK, PANEL_BORDER, PANEL_GOLD = Theme.PANEL_BACK, Theme.PANEL_BORDER, Theme.GOLD
 Kit.PANEL_HEADING_H = 26
 function Kit.panel(parent, x, y, w, h, heading)
     local back = ui.Rectangle.new(parent)

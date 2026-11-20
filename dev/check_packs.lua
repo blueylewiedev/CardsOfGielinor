@@ -84,7 +84,7 @@ do
         math.randomseed(20241113)
         local hits = 0
         for _ = 1, rolls do
-            if Packs.rollCard(pool).card.id == wanted then
+            if Packs.rollCard({ groups = pool }).card.id == wanted then
                 hits = hits + 1
             end
         end
@@ -107,7 +107,7 @@ end
 -- The rarity weights are percentages: they add up to 100 (their comment in core/cards.lua says so) ---------------
 do
     local total = 0
-    for _, name in ipairs(Config.RARITIES) do
+    for _, name in ipairs(Cards.rarityOrder) do
         total = total + Config.get("odds.rarity." .. name)
     end
     check(math.abs(total - 100) < 1e-9, "the rarity weights add up to 100 (they add up to " .. total .. ")")
@@ -115,8 +115,8 @@ end
 
 -- The deck: every card passes, and the pool still builds ------------------------------------------------------------
 do
-    local pool, count = Packs.poolFor(Cards.packTypes.standard)
-    check(count == #Cards.list, "the standard pack holds every card")
+    local pool = Packs.poolFor(Cards.packTypes.standard)
+    check(pool.count == #Cards.list, "the standard pack holds every card")
     check(Packs.rollCard(pool).card ~= nil, "a roll from the real deck gives a card")
     for _, listed in ipairs(Cards.list) do
         check(Cards.problem(listed) == nil, "deck card " .. listed.id .. " has no problem")

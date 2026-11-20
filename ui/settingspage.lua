@@ -13,6 +13,8 @@ local Format = require("core/format")
 local OverlayLoader = require("core/overlayloader")
 local Kit = require("ui/kit")
 local Events = require("core/events")
+local Theme = require("ui/theme")
+local WHITE, GREY = Theme.WHITE, Theme.GREY
 
 local SettingsPage = {}
 
@@ -32,8 +34,6 @@ local MARGIN, PAD = 10, 10                 -- round the panels, and inside one
 local COLUMN_W = (WINDOW_WIDTH - 2 * WINDOW_BORDER - 3 * MARGIN) // 2
 local HEADING_H = Kit.PANEL_HEADING_H + 4  -- a panel's heading and the space under it
 local LINE_ROW_H = 24                      -- a line of text with its info icon
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 
 -- api.getState() and api.saveNow(), as for the pack window; api.keyKind() (how the collection is saved: "tracking",
 -- "name" or nil) and api.onSettingChanged(id, on), called after an option changes.

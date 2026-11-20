@@ -9,6 +9,8 @@ local Kit = require("ui/kit")
 local Logger = require("core/logger")
 local Format = require("core/format")
 local Rate = require("core/rate")
+local Theme = require("ui/theme")
+local WHITE, GREY = Theme.WHITE, Theme.GREY
 
 local CreditsWindow = {}
 
@@ -24,8 +26,6 @@ local FIRST_RIGHT, FIRST_TOP = 220, 10  -- where it starts the first time: this 
 local POSITION_KEY = "credits_window_position"
 local COINS_OBJ = 995                   -- the id of Coins, if the game's list of items does not say
 
-local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
-local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local BACKGROUND = Vector4.new(0.08, 0.07, 0.06, 0.75)
 local BORDER = Vector4.new(0.45, 0.36, 0.22, 0.9)
 

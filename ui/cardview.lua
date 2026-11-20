@@ -14,8 +14,13 @@ local CardView = {}
 -- fit (frame zones and the card itself). Change SCALE to resize the cards.
 CardView.SCALE = 1.25
 local S = CardView.SCALE
-CardView.WIDTH = math.floor(160 * S)
-CardView.HEIGHT = math.floor(224 * S)
+
+-- A card at scale 1 is this many units across and down; sizeAt(scale) is its width and height at another scale.
+CardView.BASE_W, CardView.BASE_H = 160, 224
+function CardView.sizeAt(scale)
+    return math.floor(CardView.BASE_W * scale), math.floor(CardView.BASE_H * scale)
+end
+CardView.WIDTH, CardView.HEIGHT = CardView.sizeAt(S)
 
 local FONT = id.Font.MUSEO_SANS_15PT_REGULAR
 
@@ -632,7 +637,8 @@ end
 -- The size of a card drawn at `scale` (the default is CardView.SCALE). Returns scale, width, height.
 local function metrics(scale)
     scale = scale or S
-    return scale, math.floor(160 * scale), math.floor(224 * scale)
+    local width, height = CardView.sizeAt(scale)
+    return scale, width, height
 end
 
 -- A card-sized window that CardView.uncover can shrink to any part of the card: a layer (which

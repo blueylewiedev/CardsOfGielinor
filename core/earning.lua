@@ -11,18 +11,28 @@ local Earning = {}
 -- own XP would pay for the same kills twice. Names are SkillType members (Constitution is HITPOINTS).
 -- "earning.enabled" switches all XP credits.
 
+-- The skills that earn nothing, as a set of SkillType members, made again only when the list in Config changes (tuning).
+local listed, members = nil, {}
+local function combatSkills()
+    local list = Config.get("earning.combatSkills")
+    if list ~= listed then
+        listed, members = list, {}
+        for _, name in ipairs(list) do
+            local ok, member = pcall(function() return SkillType[name] end)
+            if ok and member ~= nil then
+                members[member] = true
+            end
+        end
+    end
+    return members
+end
+
 -- True if `skill` (the skill of a SkillTransmit event) earns nothing: one of the combat skills, or Slayer.
 function Earning.isCombatSkill(skill)
     if skill == nil or SkillType == nil then
         return false
     end
-    for _, name in ipairs(Config.get("earning.combatSkills")) do
-        local ok, member = pcall(function() return SkillType[name] end)
-        if ok and member ~= nil and member == skill then
-            return true
-        end
-    end
-    return false
+    return combatSkills()[skill] == true
 end
 
 -- Works out how much XP a SkillTransmit event is worth, or 0 if it should be ignored. Every real gain counts,

@@ -36,11 +36,11 @@ function Settings.load()
     end
 end
 
--- True if the option is on. An unknown option counts as on.
+-- True if the option is on. An unknown option is a mistake in the code, so it raises (as Config.get does).
 function Settings.get(name)
     local value = values[name]
     if value == nil then
-        return true
+        error("unknown option " .. tostring(name), 2)
     end
     return value
 end

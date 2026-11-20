@@ -7,10 +7,10 @@
 -- (Config.reset() puts the defaults back). Keys are dotted paths such as "packs.price"; a table a key holds belongs to Config: read
 -- it, never change it.
 
+local Cards = require("core/cards")
+
 local Config = {}
 
-local RARITIES = { "common", "uncommon", "rare", "epic", "legendary" }       -- dev/check_config.lua: the same as Cards.rarityOrder
-Config.RARITIES = RARITIES
 
 local MAX_REPORTED = 20          -- how many ignored keys a report lists
 local MAX_NAME = 40              -- the longest name of a boss activity
@@ -237,7 +237,7 @@ local SCHEMA = {
     ["holo.enabled"]            = { true, switch },               -- (a holo card's rainbow)
 }
 local RARITY_DEFAULTS = { common = 63, uncommon = 25, rare = 9.4, epic = 2, legendary = 0.6 }
-for _, rarity in ipairs(RARITIES) do
+for _, rarity in ipairs(Cards.rarityOrder) do
     SCHEMA["odds.rarity." .. rarity] = { RARITY_DEFAULTS[rarity], anyNumber(0, 100) }
 end
 

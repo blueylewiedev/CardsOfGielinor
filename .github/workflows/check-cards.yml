@@ -67,6 +67,8 @@ jobs:
         run: lua5.4 dev/check_prettyui_auto.lua
       - name: The dev copy's card art changes (dev/artoverride.lua)
         run: lua5.4 dev/check_artoverride.lua
+      - name: The helpers several files share (core/clientreads.lua, ui/util.lua, core/browse.lua)
+        run: lua5.4 dev/check_helpers.lua
       - name: Code style, warnings only and never fails (dev/check_style.lua)
         run: lua5.4 dev/check_style.lua --quiet
       - name: The credits text (core/format.lua)
