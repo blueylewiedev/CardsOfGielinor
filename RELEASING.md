@@ -187,7 +187,10 @@ included, as for cards.
 
 ## Submitting a new version to Jagex
 
-Nothing needs its own branch: `main` carries on as normal while a version is in review.
+Make a release branch from the commit you build the package from (`git branch release/<major.minor> <hash>`, for example
+`release/1.0`) and push it. Jagex review the exact files you upload, so anything they ask you to change goes on that
+branch (a pull request into it), the package is rebuilt from it, and the branch is merged back into `main` afterwards.
+`main` carries on as normal (new cards, features) without any of that reaching the version in review.
 
 1. All checks pass (see `CLAUDE.md`), and `docs/overlay.jsonl` is up to date.
 2. **Bump the version in two places, together:** `plugin.json` (`"version"`) and `core/version.lua` (`number`). The
