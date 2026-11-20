@@ -40,6 +40,7 @@
 local Kit = require("ui/kit")
 local Cards = require("core/cards")
 local CardView = require("ui/cardview")
+local CardArt = require("ui/cardart")
 local OutputWindow = require("dev/outputwindow")
 local Tuning = require("dev/tuning")
 local AnimSearch = require("dev/animsearch")
@@ -53,7 +54,7 @@ local function artLine(card, cam)
     local art = (card and card.art) or {}
     local itemArt = cam.kind == "item"
     return Builder.artText(itemArt, itemArt and art.item or art.npc, cam.body, cam.anim, cam,
-        CardView.defaultsFor(cam), art.model) .. ","
+        CardArt.defaultsFor(cam), art.model) .. ","
 end
 
 -- The deck file a card is written in (as listed in deck/index.lua), or nil.
@@ -271,7 +272,7 @@ function Preview.show()
             return
         end
         change(view.cam)
-        CardView.applyCamera(view.cam)
+        CardArt.applyCamera(view.cam)
         report()
     end
 
@@ -573,7 +574,7 @@ function Preview.show()
             return          -- (items have no animation)
         end
         view.cam.anim = animId
-        CardView.playAnimation(view.model, animId)
+        CardArt.playAnimation(view.model, animId)
         report()
     end
 
@@ -641,8 +642,8 @@ function Preview.show()
         for field, value in pairs(entry.cam) do
             cam[field] = value
         end
-        for _, field in ipairs(CardView.CAMERA_FIELDS) do
-            cam[field] = cam[field] or CardView.defaultsFor(cam)[field]
+        for _, field in ipairs(CardArt.CAMERA_FIELDS) do
+            cam[field] = cam[field] or CardArt.defaultsFor(cam)[field]
         end
         OutputWindow.add(cardId .. " (saved)", artLine(saved, cam))
     end

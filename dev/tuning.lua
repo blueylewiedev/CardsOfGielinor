@@ -14,7 +14,7 @@ local DB_KEY = "dev_card_tuning"
 --   line = the card's art line, for dev/apply_tuning.py } }
 local data = nil
 
-local FIELDS = require("ui/cardview").CAMERA_FIELDS
+local FIELDS = require("ui/cardart").CAMERA_FIELDS
 
 -- Reads the saved settings the first time they are needed. Anything damaged is skipped.
 local function load()
