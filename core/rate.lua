@@ -1,6 +1,6 @@
 -- core/rate.lua
 -- Credits per hour: the credits earned over the last WINDOW_MINUTES of play, as an hourly rate. Time is counted in
--- ticks (about 0.6 s, see main.lua) and only while a collection is loaded. Credits go in a bucket for the minute they
+-- ticks (about 0.6 s, see core/session.lua) and only while a collection is loaded. Credits go in a bucket for the minute they
 -- were earned in, and the rate is the credits in the window over the time really passed, so it follows how the player
 -- is doing now. It starts afresh at each login; for the first MIN_MINUTES there is nothing to show (nil) and the
 -- screens say "Calculating..." (Rate.text). No UI and no client calls (dev/check_rate.lua).

@@ -38,7 +38,7 @@ local function build(parent)
     view:AddFancyButton("Collection", function() api.openCollection() end, { width = BUTTON_WIDTH })
     view:AddFancyButton("Sets", function() api.openSets() end, { width = BUTTON_WIDTH })
     view:AddFancyButton("Statistics", function() api.toggleStats() end, { width = BUTTON_WIDTH })
-    view:AddFancyButton("Credits overlay", function() api.toggleCredits() end, { width = BUTTON_WIDTH })
+    view:AddFancyButton("Overlay", function() api.toggleCredits() end, { width = BUTTON_WIDTH })
     view:AddFancyButton("Tutorial", function() api.openTutorial() end, { width = BUTTON_WIDTH })
     Hub.refresh()
 end
