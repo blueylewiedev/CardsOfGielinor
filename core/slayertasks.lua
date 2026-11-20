@@ -1,17 +1,10 @@
 -- core/slayertasks.lua
--- Which monsters count for which Slayer task, as data. Used by core/slayer.lua.
---
--- Every monster in the game carries one Slayer category (its SLAYER_CATEGORY parameter), a number that is a key of
--- the game's Slayer task list (enum 1563, SMKI_CRITTER_NAMES), and the player's task (VarPlayer 185) is another key
--- of the same list. A narrow task (Green dragons) counts the monsters with that category. A broad task (Dragons,
--- Demons, Undead...) also counts the monsters of narrower categories, and the game does not say which in any data
--- the client can read, so they are listed here. Names are the task names in lower case, as the game's list spells
--- them, so an entry works for every number that has that name.
---
--- Where this came from: the RuneScape Wiki's Slayer assignment pages (the monsters each one lists), reduced to the
--- surface versions of the monsters and checked with kills in the game (an Imp, Lesser demons and Black demons count for
--- Demons; Blue and Bronze dragons for Dragons). The owner reviewed it on 2026-11-15: Greater demons are in Demons,
--- Hellhounds are not (only the Zamorakian Undercity ones count) and Rune dragons are in Dragons.
+-- Which monsters count for which Slayer task, as data for core/slayer.lua. Every monster carries one Slayer category
+-- (its SLAYER_CATEGORY parameter), a key of the game's task list (enum 1563), and the player's task (VarPlayer 185)
+-- is another key of it. A narrow task counts the monsters with that category; a broad one (Dragons, Demons,
+-- Undead...) also counts narrower categories, which the client cannot say, so they are listed here by the task names
+-- in lower case. Source: the RuneScape Wiki's Slayer assignment pages, reduced to the surface versions and checked
+-- with kills in the game; reviewed 2026-11-15.
 
 local SlayerTasks = {}
 

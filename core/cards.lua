@@ -1,15 +1,11 @@
 -- core/cards.lua
--- Static card data: rarity tiers, variants, pull odds and the card list.
--- Nothing in this file touches the game or saves anything, so it is safe to edit freely.
+-- The card registry: rarities, finishes, the card format, loading the deck from deck/index.lua, the checks every card must pass, and the
+-- pack types. A card that is not sound is left out and described in Cards.loadProblems; dev/check_cards.lua treats any problem as a failure.
 
 local Cards = {}
 
--- Rarity tiers.
---   (How often each tier is pulled is Config "odds.rarity.<rarity>" in core/config.lua: 63 / 25 / 9.4 / 2 / 0.6, relative
---   weights that add up to 100, so each is also its percentage: an epic about every 50 cards (10 packs of 5), a legendary
---   about every 167 cards (33 packs).)
---   colour : 0xRRGGBBAA colour used for the card frame and the pack opening pips
---   glow   : 0..1, how strongly a flipped card of this rarity glows in the pack opening
+-- Rarity tiers. colour: the card frame and the pack-opening pips (0xRRGGBBAA); glow: 0..1, how strongly a turned card glows.
+-- Pull odds are Config "odds.rarity.<rarity>" (core/config.lua).
 Cards.rarities = {
     common    = { name = "Common",    colour = 0x9AA0A6FF, glow = 0.0 },
     uncommon  = { name = "Uncommon",  colour = 0x4CAF50FF, glow = 0.6 },
@@ -25,17 +21,10 @@ for rank, key in ipairs(Cards.rarityOrder) do
     Cards.rarityRank[key] = rank
 end
 
--- Variants. Every card the player owns is one card + one finish, saved as "<card id>|<finish>".
---   normal : the card as it is
---   foil   : a faint pastel shine over the whole card (ui/cardview.lua, CardView.SHINE)
---   holo   : a rainbow in diagonal bands behind the picture (ui/cardview.lua, CardView.HOLO)
--- (as the trading card games use the words: foil the shine over the card, holo the picture's rainbow)
--- Written once, in order (the commonest first, the plain finish first of all); the tables below are made from it:
---   Cards.finishes[id]      : { id, name, short (a caption too narrow for the name), colour (0xRRGGBBAA, the Stats
---                             window's bar and line; the plain finish has none) }
---   Cards.finishOrder       : the ids in order (how lists of them are shown: the filter, the Stats window, the preview)
---   Cards.specialFinishes   : the same without the plain finish (the ones the Stats window and the filter count)
---   Cards.finishRank[id]    : its place in the order (higher is rarer)
+-- Finishes. A card the player owns is one card + one finish, saved as "<card id>|<finish>": normal (as it is), foil
+-- (a pastel shine over the card) or holo (a rainbow behind the picture). Written once, commonest first; the tables
+-- below are made from it: Cards.finishes[id] ({ id, name, short, colour }), Cards.finishOrder, Cards.specialFinishes
+-- (all but normal), Cards.finishRank[id].
 local FINISHES = {
     { id = "normal", name = "Normal", short = "N" },
     { id = "foil",   name = "Foil",   short = "F", colour = 0x8CCCFFFF },     -- a pale silver-blue
@@ -54,54 +43,22 @@ end
 -- Pull odds are Config keys (core/config.lua): "odds.finish.normal" 17, "odds.finish.foil" 2 and "odds.finish.holo" 1
 -- (out of 20: foil 1 in 10, holo 1 in 20), relative weights rolled separately from rarity, so they stack.
 
--- The card format (the cards are written in the files listed in deck/index.lua).
---   id     : unique, never change it once players own the card (it is what gets saved).
---            NPC and item cards share one set of ids, so an item cannot reuse an NPC's id
---            (give it another id and name the item in `art.item`).
---            For NPC cards it is also the NPC to show: the id uppercased is looked up as
---            id.NPC.<ID>, so "king_dragon" shows id.NPC.KING_DRAGON. Use the NPC's config
---            name, in lower case. Item cards work the same way with id.Obj: the id
---            "abyssal_whip" shows id.Obj.ABYSSAL_WHIP.
---   name   : the card's name: what it is called in the viewer's list and search, and on the card
---   title  : optional, the text printed on the card's face instead of `name`, for a name too long for it (see
---            Cards.MAX_TITLE). The viewer's list, the big card's caption and the search still use `name`.
---   rarity : a key of Cards.rarities
---   desc   : short flavour text, at most Cards.MAX_DESC letters: the frame's text panel
---            shows three lines and cuts off anything longer (dev/check_cards.lua lists them).
---   kind   : optional, what the card shows: "npc" (the default) or "item" (an object in the
---            game's data, called an Obj by the API).
---   weight : optional, how much more (or less) likely this card is than the others of its rarity, in
---            the pack roll that picks a card once its kind and rarity are drawn (see Packs.rollCard).
---            Leave it out for 1, the same as every other card. A card with weight 10 is ten times as
---            likely as an ordinary card of its rarity, so it is for the few cards every player should
---            meet early, such as coins. A number above 0, at most Cards.MAX_WEIGHT.
---   tags   : optional. Groups the card for themed packs. Each key is a kind of tag and holds
---            a list of lower case words, for example
---              tags = { skills = { "thieving" }, regions = { "misthalin" }, category = { "humanoid" } }
---            Any key can be used, a pack's `filter` just has to use the same key and words.
---   variants : optional. The different models a card can be shown with, e.g. the NPC's other
---            config versions. The first one is the card's picture. Each entry holds the same
---            fields as `art` (npc or item, body, anim, cam) plus an optional `name`. Leave it out for
---            a card with one picture, which then just uses `art`.
---   art    : optional. Only needed to override or tune the picture. Each entry holds:
---              npc  : use this NPC instead of the one from the id (NPC cards)
---              item : use this item (an id.Obj config name, upper case) instead of the one from
---                     the id (item cards). Item cards show the item's 3D model; they have no
---                     body/head choice and no animation. Use `cam` to frame the model, as the
---                     items differ a lot in size.
---              model: a raw model id to show instead of the NPC's (NPC cards), for an NPC whose
---                     look in the game is scenery: Aris sits at a card table that is one scenery
---                     model (143915, animated by 33004), and her NPC is an invisible stand-in.
---                     The scenery's model and animation are in its config in the game's cache
---                     (the Card Builder's "Model id" box sets it).
---              body : NPC cards show the NPC's whole body model by default. `body = false`
---                     shows its head (chathead) instead; an NPC with no chathead shows an
---                     empty box (the NPC browser helps find them)
---              cam  : camera settings, any of yaw, pitch (radians), dist, fov (degrees),
---                     ty (height looked at), tx (left/right) and near (see ui/cardview.lua).
---                     Leave out to use the defaults in ui/cardview.lua. Find good values with
---                     the buttons in the preview window, then paste the line it logs.
--- The cards themselves are in the deck folder (see below and deck/index.lua).
+-- The card format (cards are in the files listed in deck/index.lua; CONTRIBUTING.md has the full guide).
+--   id       unique, never changed once players own the card (it is what is saved). NPC and item cards share one set of ids.
+--            It is also what is shown: the id uppercased is id.NPC.<ID> (or id.Obj.<ID> for an item card).
+--   name     what the card is called in the viewer and on the card
+--   title    optional, printed on the card instead of `name` when the name is too long (Cards.MAX_TITLE)
+--   rarity   a key of Cards.rarities
+--   desc     flavour text, at most Cards.MAX_DESC letters (the frame's panel shows three lines)
+--   kind     "npc" (the default) or "item" (an Obj)
+--   weight   optional, how much likelier than other cards of its rarity (1 if left out; at most Cards.MAX_WEIGHT)
+--   tags     optional, { kind = { words } } such as { skills = { "thieving" }, regions = { "misthalin" } }, for themed packs
+--   variants optional, other models a card can be shown with (the first is its picture); entries hold the fields of `art` and a name
+--   art      optional, overrides the picture:
+--              npc / item   the config name to show instead of the id's
+--              model        a raw model id, for an NPC that is scenery in the game
+--              body         false shows the NPC's head (chathead) instead of its body
+--              cam          yaw, pitch (radians), dist, fov (degrees), ty, tx, near; see ui/cardview.lua
 Cards.list = {}
 
 -- The longest description that fits on a card (see desc above).
@@ -112,37 +69,25 @@ Cards.MAX_DESC = 80
 -- (measured in the client); a few more are cut. dev/check_cards.lua lists the titles longer than this.
 Cards.MAX_TITLE = 32
 
--- The largest `weight` a card may have (see weight above). A mistyped weight cannot make one card swallow its
--- whole rarity.
+-- The largest `weight` a card may have (see weight above). A mistyped weight cannot make one card swallow its whole
+-- rarity.
 Cards.MAX_WEIGHT = 1000
 
--- Pack types. The pack the player buys today is "standard". A pack type holds:
---   id, name      : id is for code, name is what the player sees
---   priceFactor   : multiplies the price of a pack, Packs.price() (default 1; a themed pack with none is multiplied by
---                   Config "packs.themedPriceFactor", 1.25)
---   size          : cards in the pack (default Packs.PACK_SIZE)
---   filter        : optional. Only cards matching it can be pulled. Each key is a tag kind
---                   (or "kind"), each value a word or a list of words (any one matches). All
---                   keys must match. Example: { skills = "thieving" } or
---                   { category = { "weapon", "tool" } }. The word Cards.NO_TAG ("none") matches a
---                   card with no words of that kind: { regions = "none" } is every card from no one
---                   region (the Gielinor pack).
---   minRarity     : optional. Only cards of this rarity or better can be pulled.
---   art           : optional. How the pack looks (see ui/packart.lua; made in the Pack Maker).
---   featured      : optional. A number: the pack is in the Shop's General section (the others are under Regions), in this
---                   order, first in the grid (see Packs.offered and ui/shoplayout.lua).
--- Themed packs (made in the Pack Maker) are listed in deck/packs.lua and added below. They cost
--- a little more than the standard pack (Config "packs.themedPriceFactor") unless they set their own priceFactor.
--- Packs that cannot be bought yet are still listed here, so adding a pack to the shop later
--- only needs the window; nothing in this table touches the game.
+-- Pack types: "standard" and the themed ones in deck/packs.lua. A pack type holds:
+--   id, name      id is for code, name is what the player sees
+--   priceFactor   times the price of a pack (default 1; a themed pack with none uses Config "packs.themedPriceFactor")
+--   size          cards in the pack (default Packs.PACK_SIZE)
+--   filter only cards matching it can be pulled: { tag kind or "kind" = word or list of words }; all keys must match. The word
+--                 Cards.NO_TAG ("none") matches a card with no word of that kind
+--   minRarity     only this rarity or better
+--   art           how the pack looks (ui/packart.lua; made in the Pack Maker)
+--   featured      a number: the pack is in the Shop's General section, in this order (Packs.offered)
 Cards.packTypes = {
     standard = { id = "standard", name = "Standard pack", priceFactor = 1, featured = 1 },
 }
 
--- The words allowed for the tag kinds that come from a closed list. A card with any other word
--- under one of these kinds is left out of the game and named in Cards.loadProblems (and the pull request check
--- fails), so a typo is found before it can drop a card out of a themed pack. Add a word here before using it. Tag
--- kinds that are not listed are not checked.
+-- The words allowed for the closed-list tag kinds. A card with any other word is left out and named in Cards.loadProblems (and
+-- the pull request check fails). Add a word here before using it; tag kinds not listed are not checked.
 Cards.tagWords = {
     regions  = { "misthalin", "asgarnia", "kandarin", "karamja", "kharidian_desert", "morytania",
                 "tirannwn", "fremennik_province", "wilderness", "anachronia", "havenhythe", "daemonheim",
@@ -274,11 +219,9 @@ for _, group in ipairs(Cards.tagGroups.category) do
     end
 end
 
--- The category words for item cards, in groups the same way (`requires` is the word a group needs on
--- the card, or a list of words of which any one will do). A card's category tag only takes
--- words for its own kind (an item cannot be a "dragon", an NPC cannot be "food"), but a pack
--- filter can use any of them, so Cards.tagWords.category holds both lists. A new word goes in the
--- group that fits it best, and must not already be an NPC category word.
+-- The category words for item cards, in groups (`requires`: the word, or list of words of which one will do, a group needs on the
+-- card). An NPC cannot be "food", an item cannot be a "dragon", but a pack filter can use any
+-- word. A word must not also be an NPC word.
 Cards.itemTagGroups = {
     category = {
         { title = "What it is", words = { "raw_material", "processed_material", "food", "drink", "potion",
@@ -386,10 +329,7 @@ function Cards.requiredWords(cardKind, tagKind, word)
     return nil
 end
 
--- The words in a list whose required words are not in the list too, as { word = w, needs = n }
--- (n is the word, or the words with "or" between them when any of several will do).
--- A chain is checked a link at a time: a word is reported if its own parent is missing, and a
--- parent that is there but is missing its own parent is reported in the same way.
+-- The words in a list whose required words are not in it too, as { word, needs }. A chain is checked a link at a time.
 function Cards.missingRequired(cardKind, tagKind, words)
     local have = {}
     for _, word in ipairs(words) do
@@ -411,11 +351,8 @@ function Cards.missingRequired(cardKind, tagKind, words)
     return missing
 end
 
--- The cards are written in their own files in the deck folder (the layout is described in
--- deck/index.lua). A card file returns { cards = { ... }, defaults = tags }: the defaults (such
--- as the region) are added to every card in the file. A card whose `art = { npc = "" }` is empty
--- (or, for an item card, `art = { item = "" }`) is a draft: it is kept in Cards.drafts and left
--- out of packs and totals until its NPC or item name is filled in.
+-- A deck file returns { cards = { ... }, defaults = tags }: the defaults (such as the region) are added to every card in it. A card
+-- whose `art.npc` (or `art.item`) is "" is a draft: kept in Cards.drafts and left out of packs and totals.
 Cards.sets = require("deck/index")
 Cards.drafts = {}
 
@@ -535,8 +472,8 @@ function Cards.resort()
 end
 Cards.resort()
 
--- Variant keys. Owned cards are saved under "<card id>|<finish>", for example
--- "hans|normal", "hans|foil" or "hans|holo".
+-- Variant keys. Owned cards are saved under "<card id>|<finish>", for example "hans|normal", "hans|foil" or
+-- "hans|holo".
 function Cards.variantKey(cardId, finish)
     assert(Cards.finishes[finish], "Unknown finish " .. tostring(finish))
     return cardId .. "|" .. finish
@@ -595,10 +532,8 @@ function Cards.matches(card, filter)
     return true
 end
 
--- Returns a card's art settings: { npc = <config name>, body, cam } for an NPC card, or
--- { item = <config name>, cam } for an item card. The NPC (or item) is the card's id uppercased
--- unless the card's `art` entry (or its first variant) names another one, and for an NPC card
--- `body` is true (the body model) unless the card sets `body = false` (the head).
+-- A card's art settings: { npc, body, cam } or { item, cam }. The NPC (or item) is the id uppercased unless `art` (or the first
+-- variant) names another; `body` is true unless the card sets it false.
 function Cards.getArt(card)
     local result = {}
     local first = card.variants and card.variants[1]
@@ -785,10 +720,8 @@ do
     end
 end
 
--- Adds a card that is not in the deck (one from the overlay), or replaces the card with the same id. A replaced
--- card is changed in place, so anything holding it sees the new version. Returns true, or nil and why not: a
--- card that is not sound, or a draft, is refused and nothing changes. Call Cards.resort() after a batch, as
--- a new rarity or a new card changes the order.
+-- Adds a card that is not in the deck (from the overlay), or replaces the card with the same id, in place. Returns true, or nil and
+-- why not (a card that is not sound, or a draft, changes nothing). Call Cards.resort() after a batch.
 function Cards.register(card)
     local problem = Cards.problem(card)
     if problem ~= nil then
@@ -831,8 +764,8 @@ function Cards.deprecate(cardId)
     return true
 end
 
--- Why a pack type is not sound, or nil. Filter words from a closed list must be on it, so a typo can't make an
--- empty pack.
+-- Why a pack type is not sound, or nil. Filter words from a closed list must be on it, so a typo can't make an empty
+-- pack.
 local function packProblem(packType)
     if type(packType) ~= "table" or type(packType.id) ~= "string" or packType.id == "" then
         return "A pack in deck/packs.lua has no id"
@@ -848,8 +781,8 @@ local function packProblem(packType)
     end
     for kind, wanted in pairs(packType.filter or {}) do
         for _, word in ipairs(type(wanted) == "table" and wanted or { wanted }) do
-            -- (NO_TAG only on a tag kind with a word list: on a misspelt kind every card has no words, so it would match
-            -- every card)
+            -- (NO_TAG only on a tag kind with a word list: on a misspelt kind every card has no words, so it would
+            -- match every card)
             if word == Cards.NO_TAG then
                 if Cards.tagWords[kind] == nil then
                     return "Pack " .. packType.id .. " filters on " .. tostring(kind) .. " = \"" .. Cards.NO_TAG

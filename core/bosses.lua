@@ -1,45 +1,22 @@
 -- core/bosses.lua
--- Credits for boss kills: one credit amount for each boss killed, by the boss's combat level. This file is the logic only and
--- calls nothing from the client, so dev/check_bosses.lua can replay what the game sent. core/bossevents.lua feeds it the
--- game's events and pays the credits out.
+-- Credits for boss kills, by the boss's combat level. Logic only, no client calls (dev/check_bosses.lua replays what the game sent);
+-- core/bossevents.lua feeds it the game's events and pays out.
 --
--- How a kill is seen (found with the Boss probe, 2026-11-17, in K'ril Tsutsaroth, Corporeal Beast, Rasial and Zemouregal):
---   * The server counts boss kills in the VarPlayers named BSLAY_BOSS_KILLS<n> (about 45 of them). A kill raises a count
---     inside one of them by exactly 1 at the count's own place: +1, or +65536 for a count in the high 16 bits, or another
---     power of two for a count in a varbit. So a rise by a single power of two is a kill. (Which half is the normal count and
---     which hard mode differs from boss to boss, so no half is treated differently.)
---   * The variable does not say which boss it was. The bosses carry a BSLAY_ID parameter, and a boss in view is
---     seen by checking the NPCs every POLL_EVERY server ticks (core/bossevents.lua). The boss was in view 0 to 2 ticks before the
---     count rose in all four tests and left view in the same tick or one after, so the boss that was last in view at
---     the moment of the rise is the one killed. (NPCEntityRemoved is no use here: the entities cannot be read when it fires.)
+-- How a kill is seen: the server counts boss kills in VarPlayers named BSLAY_BOSS_KILLS<n>, and a kill raises one by a single power
+-- of two (+1, +65536 for the high half, ...). The variable does not say which boss, so the boss that was last in view (an NPC with a
+-- BSLAY_ID, polled every POLL_EVERY ticks) when the count rose is the one killed. Some counts rise for something else (the Barrows
+-- chest): the "bosses.activities" tuning key lists those and they pay a fixed amount.
 --
--- Activities. Some counts are not rises while a boss is in view: the Barrows count rises when the chest is looted, about
--- 90 seconds after the last brother died, and only Verac of the brothers carries a BSLAY_ID. Those are listed in
--- the "bosses.activities" tuning key (core/config.lua) by variable and rise, and pay a fixed amount whatever is in view.
---
--- Safeguards. A rise with no boss seen within SEEN_WINDOW ticks pays nothing (the game sends many variables when a character
--- logs in, and a count can rise for other reasons); everything in the first QUIET_TICKS after the collection loaded is
--- ignored for the same reason; and a boss that has been paid is not paid again until PAID_BLOCK ticks have passed and it has been seen again.
---
--- Time here is the server tick (about 0.6 seconds): `now` counts them, and advance() is called once for each.
+-- Safeguards: no boss seen within SEEN_WINDOW ticks pays nothing; nothing is paid in the first QUIET_TICKS after the collection
+-- loads; a paid boss is not paid again until PAID_BLOCK ticks pass and it is seen again. Time is the server tick (about 0.6 s).
 
 local Config = require("core/config")
 
 local Bosses = {}
 
--- The credits, by the boss's combat level (Config "bosses.tiers": { lowest level, credits }, highest first). Combat levels run
--- from about 150 to 14,000 and say how hard a boss is better than how quickly it dies, so the levels are grouped.
--- Placeholders, to be tuned with the credit system once there are real credits per hour from play-testing. As shipped:
---     9000 -> 8000    Vorago, Seiryu, Zamorak, Amascut, TzKal-Zuk
---     5000 -> 4000    Solak, Rasial, Arch-Glacor, Croesus, Raksha, Nex: Angel of Death, the Ambassador
---     1000 -> 1800    Telos, Araxxi, Kalphite King, Nex, Kezalam, Nakatra, and most others of the last years
---      500 ->  800    the God Wars bosses, Corporeal Beast, Har-Aken, Queen Black Dragon, TzTok-Jad, Zemouregal
---        0 ->  400    King Black Dragon, Giant Mole, Kalphite Queen, Chaos Elemental, the Dagannoth Kings
--- Counts that rise for something other than a boss dying in view (Config "bosses.activities": { [variable name] = { [rise] =
--- { name, credits } } }). Found with the Boss probe; add one only after seeing the count rise in the game. Shipped: the Barrows
--- chest (BSLAY_BOSS_KILLS2 rising by 65,536, 1,800 credits). Also Config "bosses.overrides" (credits for one boss by its
--- BSLAY_ID), "bosses.ignore" (bosses that pay nothing) and "bosses.enabled" (the switch for all boss credits,
--- core/bossevents.lua).
+-- The credits by the boss's combat level (Config "bosses.tiers": { lowest level, credits }, highest first):
+-- placeholders until play-testing gives real credits per hour. Also Config "bosses.activities", "bosses.overrides"
+-- (credits for one boss by BSLAY_ID), "bosses.ignore" and "bosses.enabled" (the switch for all boss credits).
 Bosses.DEFAULT_LEVEL = 1        -- the level of a kill when the boss's level is not known
 
 -- How the game's behaviour is read.

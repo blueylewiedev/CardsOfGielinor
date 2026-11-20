@@ -1,19 +1,12 @@
 -- ui/viewer.lua
--- The collection viewer: every card in the game, searchable and filterable, whether the player has it or not.
+-- The collection viewer: every card in the game, searchable and filterable, owned or not. Which cards show is core/browse.lua; this
+-- file draws and takes the mouse and keyboard. The filters are kept while the plugin runs. Two views of the same cards, switched by
+-- the swap button in the title bar:
+--   list  a tile per card (name, rarity, copies) with the picked card large beside it and what is known about it under that
+--   grid  the cards themselves, 8 a page (4 on a short screen) with their counts; clicking one opens it in the list
 --
--- Two views of the same cards, switched by the swap button in the title bar:
---   list  a tile for each card (name, rarity, how many copies) tinted by its rarity, with the picked card shown large
---         beside it, and what is known about it under that.
---   grid  the cards themselves, 8 a page (4 on a short screen), each with its count underneath. Clicking one opens it in the list.
---
--- Everything sits on four equal columns (COLUMN_W wide): the filters, the list (two columns), the picked card (two
--- columns) and the grid (one card to a column), so the edges line up from the top to the bottom.
---
--- A card the player does not have shows no picture and no description (its card is the "?" placeholder), only its
--- name, rarity and tags, so browsing the deck gives nothing away.
---
--- Which cards show, and in what order, is core/browse.lua (tested on its own). This file only draws and takes the
--- mouse and keyboard. The filters are kept while the plugin runs, so closing and opening the viewer does not lose them.
+-- Everything sits on four equal columns (COLUMN_W): the filters, the list (two columns), the picked card (two) and the grid (one card
+-- to a column). A card the player does not have shows no picture and no description (the "?" card), only its name, rarity and tags.
 
 local Cards = require("core/cards")
 local Logger = require("core/logger")
@@ -87,13 +80,11 @@ local function clamp(value, low, high)
     return math.max(low, math.min(high, value))
 end
 
--- The sizes that fit a screen `screenHeight` units tall (nil if unknown: then the full size). The window takes at most
--- SCREEN_USED of the height, less its title bar and frame; what is left after the filters and the footer is the body's.
---   * list rows: as many as fit, from LIST_ROWS_MAX down to LIST_ROWS_MIN;
---   * grid: two rows of cards, shrunk down to GRID_MIN_SCALE if that is what it takes, else one row at full size;
---   * the picked card: as big as the body leaves room for (with INFO_RESERVE under it), from DETAIL_MAX down to DETAIL_MIN.
--- Below the minimum the window is taller than the screen (the smallest it goes is fixed by what must fit in it).
--- Returns a table of the numbers; `budget` is the body's height the screen allows.
+-- The sizes that fit a screen `screenHeight` units tall (nil: the full size). The window takes at most SCREEN_USED of
+-- the height, less its title bar and frame; what is left after the filters and footer is the body's: list rows from
+-- LIST_ROWS_MAX down to LIST_ROWS_MIN, two grid rows shrunk down to GRID_MIN_SCALE (else one row at full size) and
+-- the picked card as big as fits, DETAIL_MAX down to DETAIL_MIN. Below that the window is taller than the screen.
+-- Returns the numbers; `budget` is the body height the screen allows.
 function Viewer.layoutFor(screenHeight)
     local fullTile = CardView.HEIGHT + CAPTION_H
     local layout = { listRows = LIST_ROWS_MAX, gridRows = 2, gridScale = CardView.SCALE }
@@ -279,10 +270,8 @@ local function wordEntries(anyLabel, words)
     return list
 end
 
--- The categories are the longest list (over 200). PrettyUI's drop-down that can be typed in takes longer for every
--- entry it has (it rebuilds the whole list for each one when it opens, and gave up after a second), so this one is the
--- plain, sorted kind (see Kit.dropdown), which sorts "Any category" in with the rest: the space in front keeps it at
--- the top.
+-- The categories are the longest list (over 200), so this drop-down is the plain sorted kind (see Kit.dropdown): the
+-- typeable kind is too slow to open. The space in front of "Any category" keeps it at the top.
 local ANY_CATEGORY = " Any category"
 
 -- The categories to offer: the ones that cards matching the other filters have (so every one finds something), and the
@@ -517,10 +506,9 @@ local function showDetail()
     view.root:SetPos(x, BODY_Y)
     detailParts[#detailParts + 1] = view.root
 
-    -- What is known about the card, as chips: how many the player has (all finishes together), the type and whether
-    -- it is members only on the first line; then the finishes they have it in, each a toggle that shows the card in
-    -- it (the one shown lit); then a line for each of region, skill and category (a chip for each word, wrapping onto
-    -- more lines when there are too many for one). Clicking a tag chip sets that filter (or clears it if it is on).
+    -- What is known about the card, as chips: copies owned, type and membership; then the finishes they have it in (a
+    -- toggle each, the one shown lit); then a line each for region, skill and category (clicking a tag chip sets that
+    -- filter, or clears it if it is on).
     local card = picked.card
     local kindWord = Cards.kindOf(card) == "item" and "item" or "npc"
     local finishItems = {}
@@ -962,8 +950,8 @@ function Viewer.isGrid()
     return window ~= nil and gridView
 end
 
--- The component of the button that swaps the list and the grid, for the tutorial's pointer: "grid". nil if the window is not
--- open.
+-- The component of the button that swaps the list and the grid, for the tutorial's pointer: "grid". nil if the window
+-- is not open.
 function Viewer.anchor(name)
     local control = window ~= nil and name == "grid" and titleButton or nil
     if control == nil then

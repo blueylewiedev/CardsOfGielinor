@@ -1,17 +1,11 @@
 -- ui/packwindow.lua
---
--- The window for the collection's dashboard (credits, collection, packs).
---
--- It has two screens, and only one is shown at a time:
---   nosession : the character's collection has not loaded yet: a spinner and "Loading your collection..." (the plugin
---               only runs once a character is in the game, so this is the wait for the tracking id, or for the
---               permission to show up, not a prompt to log in)
---   home      : the dashboard, in three sections (panels): CREDITS, COLLECTION (how much of the deck is owned, and the
---               Collection, Sets and Stats buttons) and PACKS (how many packs the credits buy, and the button that opens the
---               Shop, ui/shopwindow.lua, where packs are bought)
---
--- Opening packs is not done here: the Shop buys them and ui/revealscreen.lua shows the cards (PackWindow.startReveal
--- hands them over).
+-- The main window, with two screens of which one shows at a time:
+--   nosession the collection has not loaded yet: a spinner and "Loading your
+--     collection..." (the wait for the tracking id or permission)
+--   home the dashboard: CREDITS, COLLECTION (how much of the deck is owned, and the
+--     Collection, Sets and Stats buttons) and PACKS (how many packs
+--              the credits buy, and the button that opens the Shop)
+-- Packs are bought in the Shop (ui/shopwindow.lua) and shown by ui/revealscreen.lua; PackWindow.startReveal hands the cards over.
 
 local Cards = require("core/cards")
 local Logger = require("core/logger")
@@ -39,10 +33,9 @@ local WIDTH = 236
 local HOME_WIDTH = 256
 local HOME_SHIFT = -10
 local HOME_MID = HOME_WIDTH + 2 * HOME_SHIFT   -- the width to centre things in
--- The Home screen is three sections, each a dark panel with a gold heading: the
--- credits, the collection (a progress bar, then the Collection, Sets and Stats buttons, one to a row: PrettyUI makes a
--- button as wide as its label needs, so two side by side would overlap) and the packs (the Shop button).
--- (the window's content is HOME_WIDTH less its 8 pixel frame at each side, and the panels are 6 in from both sides of it)
+-- The Home screen is three dark panels with a gold heading. The collection's buttons are one to a row (PrettyUI makes
+-- a button as wide as its label needs, so two side by side would overlap). The window's content is HOME_WIDTH less
+-- its 8 pixel frame at each side; panels are 6 in from both.
 local PANEL_X, PANEL_W = 6, HOME_MID - 8
 local INNER_X, HOME_W = 16, HOME_MID - 28       -- where the text and buttons in a panel start, and their width
 local CREDITS_Y, CREDITS_H = 10, 80      -- (10 down from the top, and HEIGHTS.home leaves 10 under the last thing, so the window is even above and below)
@@ -58,12 +51,9 @@ local BAR_H = 14
 local LOADING_SPINNER = 40    -- the spinner on the nosession screen, across
 local HEIGHTS = { nosession = 90 }
 
--- Set by PackWindow.show():
---   api.getState() : the logged-in character's collection, or nil
---   api.saveNow()  : saves it straight away
---   api.openSettings() : opens the settings window (the cog on Home)
---   api.openTutorial() : opens the tutorial (the "i" at the left of the title bar); optional, there is no "i" without it
---   api.extraButtons : optional list of { label, action } shown as buttons at the bottom of Home
+-- Set by PackWindow.show(): api.getState() (the collection, or nil), api.saveNow(), api.openSettings() (the cog),
+-- api.openTutorial() (the "i"; optional) and api.extraButtons (optional { label, action } buttons at the bottom of
+-- Home).
 local api = nil
 local window = nil
 local content = nil  -- the component inside the window frame that the screens are built in
@@ -82,8 +72,7 @@ local function setText(widget, content)
     end
 end
 
--- Shows one screen (nosession or home), hides the others and resizes the window
--- to fit it.
+-- Shows one screen (nosession or home), hides the others and resizes the window to fit it.
 local function showScreen(name)
     current = name
     for screenName, layer in pairs(screens) do
@@ -191,7 +180,8 @@ local function buildScreens()
 
     widgets.creditsText = makeText(screens.home, INNER_X, CREDITS_Y + 28, HOME_W, 22, "", WHITE)
     widgets.rateText = makeText(screens.home, INNER_X, CREDITS_Y + 52, HOME_W, 20, "", GREY)
-    -- A small reset button (PrettyUI's UNDO sprite, the stopwatch reset icon) at the end of that line starts the credits per hour again (it says Calculating... for a minute).
+    -- A small reset button (PrettyUI's UNDO sprite, the stopwatch reset icon) at the end of that line starts the credits per hour
+    -- again (it says Calculating... for a minute).
     Kit.iconButton(screens.home, "UNDO", INNER_X + HOME_W - 24, CREDITS_Y + 50, function()
         Rate.reset()
         PackWindow.refresh()
@@ -264,8 +254,8 @@ function PackWindow.show(newApi)
     PackWindow.refresh()
 end
 
--- Brings the window up to date with the character's collection. Called every tick, and
--- does nothing while a pack is being revealed so the reveal is not interrupted.
+-- Brings the window up to date with the character's collection. Called every tick, and does nothing while a pack is
+-- being revealed so the reveal is not interrupted.
 function PackWindow.refresh()
     if window == nil then
         return

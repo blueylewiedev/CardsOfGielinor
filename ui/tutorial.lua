@@ -1,17 +1,13 @@
 -- ui/tutorial.lua
--- The in-game tutorial: a small help panel at the bottom left ("Step 2 of 7", numbered step buttons, arrows, a close X) and a
--- gold pointer over the control to click next. A step is finished when the player does what it asks (a window opens, a pack is
--- opened), which is seen by looking at the windows each few ticks: nothing in them is hooked. The numbered buttons and arrows
--- move between steps by hand, so a step that cannot finish (the player has no credits to buy a pack) never traps anyone.
--- The pointer and the flashing frame are the game's own sprites (the ones the game's tutorials use), moved onto the live
--- position of the control every tick, so they follow a window that is dragged.
+-- The in-game tutorial: a help panel at the bottom left (numbered step buttons, arrows, a close X) and a gold pointer with a flashing
+-- frame over the control to click next, both the game's own sprites, moved onto the control's live position every tick. The steps
+-- are in core/tutorial.lua.
 --
--- The steps are in core/tutorial.lua. Opened by the "i" in the main window's title bar, the ribbon page's Tutorial button, and
--- once by itself on a character's first look at the main window (the "tutorialSeen" setting; closing the panel counts as seen).
+-- A step finishes when the player does what it asks, seen by looking at the windows every few ticks (nothing is hooked); the buttons
+-- move between steps by hand, so a step that cannot finish never traps anyone. Opened by the "i" in the main window, the ribbon page's
+-- Tutorial button and once on a character's first look at the main window ("tutorialSeen").
 --
--- Handlers here hold only numbers and the module's functions; every live component is kept in `S`, which is emptied when the
--- tutorial closes (the client keeps a handler after its component is destroyed, and what the handler reaches stays in memory:
--- see core/memory.lua). dev/check_tutorial.lua looks at that.
+-- Handlers hold only numbers and functions: every live component is in `S`, emptied on close (core/memory.lua).
 
 local Kit = require("ui/kit")
 local Logger = require("core/logger")

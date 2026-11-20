@@ -1,13 +1,11 @@
 -- ui/settingspage.lua
--- The plugin's settings. They let the player switch the card effects on and off and show how the collection is saved and
--- whether card updates are on.
---
--- The same settings are shown in two places, each kept up to date:
---   "client" : the plugin's page in the client's settings (needs "hasSettingsIcon" in plugin.json), a single column made
---              with PrettyUI's SimpleView
---   "window" : a window of its own, opened by the cog in the main window's title bar: two columns of panels with a gold
---              heading each. General (the effects) and, in the development copy, Developer are on the left; Your
---              collection and Card updates are on the right.
+-- The plugin's settings: the card effects, how the collection is saved and whether card updates are on. Shown in two places, each
+-- kept up to date:
+--   "client" the plugin's page in the client's settings (needs "hasSettingsIcon" in
+--     plugin.json), one column in PrettyUI's SimpleView
+--   "window" a window opened by the cog in the main window's title bar: General (and
+--     Developer, in the development copy) on the left, Your
+--             collection and Card updates on the right
 
 local Logger = require("core/logger")
 local PluginId = require("core/pluginid")
@@ -24,11 +22,8 @@ local SUBSCRIBER = "cardcollector_settings"
 -- the space below keeps the next heading off it. Adjust these to move it.
 local DIVIDER_HEIGHT, DIVIDER_ABOVE, DIVIDER_BELOW = 10, -24, 50
 local DIVIDER_STEP = DIVIDER_HEIGHT + DIVIDER_ABOVE + DIVIDER_BELOW    -- the height one divider adds
--- Dividers separate the page's parts: the options, how the collection is saved, card updates and (with the
--- development tools) the developer options.
--- The "Your collection" part adds a heading, one line of text and a divider. Its text and the card updates text are
--- short, with an info icon beside them that shows the explanation as a tooltip (the tooltip wraps itself, so the
--- rows stay one line). The text is as wide as the page less the margins and the icon.
+-- Dividers separate the page's parts. "Your collection" and the card updates each have one line of text with an info
+-- icon whose tooltip gives the explanation (the tooltip wraps itself, so the rows stay one line).
 local ICON_WIDTH, MARGINS = 24, 44
 
 -- The window: two columns of panels, MARGIN apart and from the edges. A window's content is its width less the frame (8 each side).
@@ -42,8 +37,8 @@ local GREY = Vector4.new(0.75, 0.75, 0.75, 1.0)
 local WHITE = Vector4.new(1.0, 1.0, 1.0, 1.0)
 
 -- api.getState() and api.saveNow(), as for the pack window; api.keyKind() (how the collection is saved: "tracking",
--- "name" or nil); api.devTools (true when the
--- development tools are there) and api.onSettingChanged(id, on), called after an option changes.
+-- "name" or nil); api.devTools (true when the development tools are there) and api.onSettingChanged(id, on), called
+-- after an option changes.
 local api = nil
 local pages = {}         -- "client" / "window" -> { view = <PrettyUI view>, widgets = {...} }
 local window = nil       -- the settings window's frame, while it is open

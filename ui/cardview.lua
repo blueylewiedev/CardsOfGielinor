@@ -1,8 +1,6 @@
 -- ui/cardview.lua
--- Draws a card from its data using live UI components (no image files needed).
---
--- Layout (all sizes in interface units), 160 x 224 at scale 1: the frame image on top, its art window showing the NPC
--- through a camera, and the name, rarity and description drawn over the frame's panels.
+-- Draws a card from its data with live UI components: the frame image on top, its art window showing the NPC or item
+-- through a camera, and the name, rarity and description over the frame's panels (160 x 224 units at scale 1).
 
 local Cards = require("core/cards")
 local Logger = require("core/logger")
@@ -30,10 +28,9 @@ local function fontNamed(name)
     return nil
 end
 
--- The sizes of text a card's title steps down through when it is too long: the normal size first, then smaller ones.
--- `perLetter` is how much room (in card units) a letter takes at that size, on average, measured from cards in the
--- client (about 8.2, 7.0 and 6.2). The client cannot measure text, so how many letters fit is a guess from this. A size
--- the client does not have is left out.
+-- The font sizes a card's title steps down through when it is too long, with `perLetter`, about how much room a
+-- letter takes at that size (measured in the client; it cannot measure text, so how many letters fit is a guess). A
+-- size the client does not have is left out.
 local NAME_FONTS = {}
 for _, size in ipairs({ { FONT, 8.2 }, { fontNamed("MUSEO_SANS_13PT_REGULAR"), 7.0 },
         { fontNamed("MUSEO_SANS_11PT_REGULAR"), 6.2 } }) do
@@ -70,12 +67,9 @@ local DESC_COLOUR  = Vector4.new(0.80, 0.80, 0.80, 1.0)
 local DIM_TEXT_COLOUR = Vector4.new(0.60, 0.60, 0.65, 1.0)
 
 -- A silhouette (opts.silhouette, the Sets window) is a card the player does not have, drawn as the shadow its model
--- casts. Found in the client (Nov 2026): a model in a ModelGroup ignores any lighting, environment or recolour, so it
--- cannot be darkened, but models in one group cast shadows on each other from the client's default sun, and the
--- camera's near clip plane can cut a model out while its shadow stays. So the card's camera is moved to where the sun
--- is, a big flat model (a Varrock single bed, scaled up) stands behind the figure as a screen, and the figure itself is
--- clipped away: only its grey outline on the screen shows (CardView.shadowLook). The numbers were tuned by eye on the
--- shop, guard and musician NPCs and on swords, bars, ores and herbs.
+-- casts: the card's camera is moved to the sun, a large flat model stands behind the figure as a screen, and the
+-- figure itself is clipped away, leaving its grey outline on the screen (shadowLook). A model in a ModelGroup cannot
+-- be darkened, which is why it is done with shadows.
 local SHADOW = {
     sunYaw = -0.75, sunPitch = 0.10,   -- where the camera looks from (the default sun is about (-0.7, 0.14, -0.7))
     size = 1.45,                       -- how big the shadow is drawn, against the figure on its own card
@@ -89,8 +83,8 @@ local SHADOW = {
 }
 local SILHOUETTE_BACK = Vector4.new(0.16, 0.16, 0.20, 1.0)
 
--- Converts a 0xRRGGBBAA number into the 0..1 Vector4 the components expect.
--- `alpha` (0..1) replaces the colour's own alpha if given.
+-- Converts a 0xRRGGBBAA number into the 0..1 Vector4 the components expect. `alpha` (0..1) replaces the colour's own
+-- alpha if given.
 local function toVec4(hex, alpha)
     local r = (hex >> 24) & 0xFF
     local g = (hex >> 16) & 0xFF
@@ -166,23 +160,11 @@ function CardView.frameResource(rarity)
     return resource
 end
 
--- The picture is drawn through a camera: the NPC goes in a ui.ModelGroup, which has a real
--- camera, so angle, distance and framing can be set. A card's `art.cam` entry can hold:
---   yaw, pitch : angle in radians (0, 0 is straight on)
---   dist       : camera distance (smaller is closer, so the NPC looks bigger)
---   fov        : field of view in degrees (smaller zooms in)
---   ty         : height of the point the camera looks at
---   tx         : left/right of centre it looks at (negative moves the NPC right on the card)
---   near       : how far out the camera starts drawing, as a share of dist (0 is right at the
---                camera; more can stop an old model's surfaces poking through each other, but
---                anything nearer than that is cut off)
--- Anything left out uses these defaults. NPC cards show the whole body model unless they set
--- `art.body = false` (the head), so each has its own defaults (the body is much bigger). Item
--- cards show the item's model, which is far smaller than an NPC, so they have their own too.
--- Item models lie flat, as if on the ground, so the item camera looks down on them (pitch 1.5,
--- nearly straight down). The distance is a first guess: items differ a lot in size, so most item
--- cards will set `art.cam`.
--- The camera's fields, in the order the art lines give them (every list of them uses this one).
+-- The picture is drawn through a camera: the NPC goes in a ui.ModelGroup, which has a real camera. A card's `art.cam`
+-- can hold yaw and pitch (radians, 0 is straight on), dist (smaller is closer), fov (degrees), ty (height looked at),
+-- tx (left/right) and near (where the camera starts drawing, as a share of dist). Anything left out uses these
+-- defaults: the body model, the head (`art.body = false`) and items each have their own, and an item looks down on
+-- its model (pitch 1.5) since items lie flat.
 CardView.CAMERA_FIELDS = { "yaw", "pitch", "dist", "fov", "ty", "tx", "near" }
 CardView.CAMERA_DEFAULTS = {
     head = { yaw = 0.0, pitch = 0.0, dist = 2040, fov = 55, ty = 0, tx = 0, near = 0 },
@@ -223,10 +205,8 @@ local function applyCamera(cam)
     local sinYaw, cosYaw = math.sin(cam.yaw), math.cos(cam.yaw)
     local targetX, targetY, targetZ
     if cam.kind == "item" then
-        -- An item is looked at from nearly straight above, where "up" in the world is no longer
-        -- up on the card (it would move the item towards the camera). So tx and ty move the look-at
-        -- point along the camera's own right and up directions, which stay up and sideways on the
-        -- card at any pitch. The pitch is stopped before it passes straight down, which flips the picture.
+        -- An item is seen from nearly straight above, so tx and ty move the look-at point along the camera's own
+        -- right and up directions, and the pitch is stopped short of straight down, which flips the picture.
         cam.pitch = math.max(-ITEM_MAX_PITCH, math.min(ITEM_MAX_PITCH, cam.pitch))
         local sinPitch, cosPitch = math.sin(cam.pitch), math.cos(cam.pitch)
         targetX = cam.tx * cosYaw - cam.ty * sinYaw * sinPitch
@@ -280,10 +260,9 @@ local function transform(model, place, turn, scale)
     pendingCalls[#pendingCalls + 1] = call
 end
 
--- Turns the card's ModelGroup into a shadow silhouette (see SHADOW), applying the camera from `state` (the card's
--- camera, which it changes into the shadow camera). SetTransform's rotation is yaw, pitch, roll in radians;
--- everything grows with `view`, how much of the world the card's camera sees against the full-body card's (dist 859,
--- fov 50), so the screen sits the same on every card.
+-- Turns the card's ModelGroup into a shadow silhouette (see SHADOW), changing the camera in `state` into the shadow
+-- camera. Everything grows with `view`, how much of the world the card's camera sees against the full-body card's
+-- (dist 859, fov 50), so the screen sits the same on every card.
 local function shadowLook(group, child, state, box)
     local isItem = state.kind == "item"
     local cardYaw = state.yaw
@@ -365,10 +344,9 @@ local function addItemIcon(parent, objId, box)
     return nil
 end
 
--- Shows the card's NPC (or, for an item card, its item) inside the art box `box` = { x, y, w, h }.
--- Returns the model and the `cam` table (the camera settings, which applyCamera can re-apply),
--- or nil if it could not be shown. If the camera cannot be set up, a plain model is shown
--- instead (no `cam`). An item whose model will not load shows its icon instead (no `cam`).
+-- Shows the card's NPC (or item) inside the art box { x, y, w, h }. Returns the model and the `cam` table (which
+-- applyCamera can re-apply), or nil. If the camera cannot be set up a plain model is shown (no `cam`); an item whose
+-- model will not load shows its icon.
 local function addArt(parent, card, box, bodyOverride, dark)
     local art = Cards.getArt(card)
     local isItem = Cards.kindOf(card) == "item"
@@ -468,11 +446,10 @@ local function addArt(parent, card, box, bodyOverride, dark)
     return plain
 end
 
--- Holo (a holo card's finish): a ui.Canvas over the art box's backdrop, under the picture (models draw over every 2D
--- component): a see-through rainbow in diagonal bands. A canvas gradient only runs straight across or straight down,
--- so the bands are thin stripes of one colour each (two or three triangles, cut to the box), stepping round the hues
--- a little at a time. Colours are 0xRRGGBBAA. It is drawn once, in the art window, so it is revealed with the
--- picture when a card is turned over (CardView.uncover).
+-- Holo: a ui.Canvas over the art box's backdrop and under the picture (models draw over 2D components), a see-through
+-- rainbow in diagonal bands. A canvas gradient only runs straight across or down, so the bands are thin one-colour
+-- stripes of triangles, stepping round the hues. It is drawn once, in the art window, so it is revealed with the
+-- picture (CardView.uncover).
 CardView.HOLO = {
     -- pastels round the rainbow, back to the first
     hues = { 0xFFB3B3, 0xFFD9A8, 0xFFF2A8, 0xB8F0C4, 0xA8E4FF, 0xB8C2FF, 0xE0B8FF },
@@ -688,14 +665,10 @@ local function window(root, W, H)
     return { clip = clip, inner = inner }
 end
 
--- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.)
--- Builds a card. Order matters: whatever is created later is drawn on
--- top, so the backdrop (and a holo's rainbow) and the model go first, then the frame, then the text, then a foil's
--- shine.
--- Returns the view's fields: model, cam, silhouette, and with opts.animated what CardView.squash needs (the
--- pieces that can be narrowed, with their places and sizes) and what CardView.uncover needs (windows round the
--- model and the text, which cannot be narrowed, and the middle of the art box). `silhouette`: a locked card drawn as
--- its shadow (see CardView.create).
+-- (label() sizes are an offset from the full parent width, hence `w - CardView.WIDTH`.) Builds a card. Whatever is
+-- created later is drawn on top: the backdrop (and a holo's rainbow) and the model go first, then the frame, the text
+-- and a foil's shine. Returns model, cam, silhouette and, with opts.animated, what CardView.squash and
+-- CardView.uncover need.
 local function buildFramed(root, card, opts, locked, silhouette, frameImage, rarity, rarityColour, s, W, H)
     local base = CardView.FRAME_ZONES
     local zones = { title = scaled(base.title, s), rarity = scaled(base.rarity, s), desc = scaled(base.desc, s) }
@@ -762,10 +735,9 @@ local function buildFramed(root, card, opts, locked, silhouette, frameImage, rar
     return view
 end
 
--- Squeezes a card sideways to `f` (0 to 1) of its width, about its middle, as if it were turned
--- away. Only the frame, the backdrop behind the model and a foil's shine narrow: the model and the text cannot
--- be squeezed, so hide them first with CardView.uncover(view, 0). Only a card made with
--- opts.animated can be squeezed; for any other this returns false.
+-- Squeezes a card sideways to `f` (0 to 1) of its width, about its middle. Only the frame, the backdrop and a foil's
+-- shine narrow: the model and the text cannot be squeezed, so hide them first with CardView.uncover(view, 0). Only a
+-- card made with opts.animated can be squeezed.
 function CardView.squash(view, f)
     local squash = view.squash
     if squash == nil then
@@ -813,22 +785,16 @@ function CardView.uncover(view, reach)
     return true
 end
 
--- Builds a card inside `parent` at the top-left (call :SetPos on the result to move it).
--- `opts` is optional.
--- opts.locked = true draws a placeholder for a card the player does not own yet: dimmed,
--- with a "?" instead of the art and no description.
--- opts.silhouette = true (with locked) shows the locked card's picture as a shadow silhouette instead of the "?"
--- (the Sets window), still with no description.
--- opts.finish = the card's finish (Cards.finishes): "foil" draws the foil shine over the card (CardView.SHINE), "holo"
--- the holo rainbow behind its picture (CardView.HOLO); framed cards only, not locked ones.
--- opts.lockedText = what a locked card says in place of its description (default "Not collected yet").
--- opts.scale = a size other than CardView.SCALE (the preview uses it for a bigger card). The text
--- stays the same size; the picture, frame and layout scale.
--- opts.body = true/false forces the body or head model, whatever the card says (preview only).
--- opts.animated = true makes a card that can be flipped and revealed (CardView.squash and
--- CardView.uncover; the pack opening). Other cards are built without the extra layers that needs.
--- Returns { root = <Layer>, model = <Model or nil>, cam = <camera settings or nil>, card = <card data>,
--- squash, uncover = <what CardView.squash and CardView.uncover use, or nil>, silhouette }.
+-- Builds a card inside `parent` at the top-left (SetPos on the result moves it). Optional opts:
+--   locked       a placeholder for a card the player does not own: dimmed, a "?" and no description
+--   silhouette   (with locked) the picture as a shadow instead of the "?"
+--   finish "foil" draws the shine over the card (CardView.SHINE), "holo" the rainbow behind
+--     the picture (CardView.HOLO); not for locked cards
+--   lockedText   what a locked card says (default "Not collected yet")
+--   scale        a size other than CardView.SCALE; the text stays the same size
+--   body         forces the body or head model (preview only)
+--   animated     a card that can be flipped and revealed (CardView.squash and CardView.uncover; the pack opening)
+-- Returns { root, model, cam, card, squash, uncover, silhouette }.
 function CardView.create(parent, card, opts)
     local S, W, H = metrics(opts and opts.scale)
     local locked = opts ~= nil and opts.locked == true

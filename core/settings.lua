@@ -1,19 +1,15 @@
 -- core/settings.lua
--- Plugin-wide options the player can switch on and off (the settings page is in
--- ui/settingspage.lua). They are saved once for the whole plugin, not per character.
---
--- Other files ask with Settings.get("glow"). Per-character things (credits, cards) are not here: they live in that
--- character's collection (see core/storage.lua).
+-- Plugin-wide options the player can switch (ui/settingspage.lua), saved once for the whole plugin, read with
+-- Settings.get("glow"). Per-character things are not here: they live in that character's collection
+-- (core/storage.lua).
 
 local Settings = {}
 
 local KEY = "card_settings"
 
--- Every option, with what it does and whether it starts on, in the order they are listed on the
--- settings page. A `dev` option is only shown while the development tools are there (the dev
--- folder, which the released plugin leaves out). A `hidden` option is remembered but not listed there: it is
--- changed by the button it belongs to (the main window's close button). PrettyUI cuts a
--- checkbox's label off at about 35 characters (it doesn't wrap), so keep labels shorter than that.
+-- Every option, with its default, in the order of the settings page. A `dev` option shows only in the development
+-- copy; a `hidden` one is remembered but not listed (a button changes it). PrettyUI cuts a checkbox label off at
+-- about 35 characters, so keep labels shorter.
 Settings.options = {
     { id = "glow", label = "Glow behind rare cards", default = true },
     { id = "burst", label = "Colour burst on card reveal", default = true },

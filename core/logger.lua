@@ -1,15 +1,10 @@
 -- core/logger.lua
--- What the plugin writes to the Lua console. The console is shared with every other plugin, and Jagex ask that
--- heavy logging be off by default, so there are three kinds of line:
---
---   Logger.note(...)   a milestone worth one line each start-up (the plugin started, a card update arrived).
---   Logger.error(...)  something failed and the plugin carried on without it. Always written, but a message that
---                      has already been written is not written again (a failure in something drawn every frame
---                      would otherwise fill the console), and there is a limit on how many different ones.
---   Logger.debug(...)  routine detail (a collection loaded, a pack opened). Only written while "Detailed logging
---                      for bug reports" is on in the settings, or in the development copy of the plugin.
---
--- Nothing here is stored or sent anywhere: it is the client's own log() and nothing else.
+-- What the plugin writes to the Lua console, which every plugin shares (Jagex ask that heavy logging be off by default):
+--   Logger.note(...)   a milestone worth one line each start-up
+--   Logger.error(...) something failed and the plugin carried on. Always written, but each
+--     message once, and at most a fixed number of different ones
+--   Logger.debug(...)  routine detail, only with "Detailed logging for bug reports" on in the settings (or in the development copy)
+-- Nothing is stored or sent anywhere: it is the client's own log().
 
 local Settings = require("core/settings")
 

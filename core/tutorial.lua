@@ -1,16 +1,12 @@
 -- core/tutorial.lua
--- The in-game tutorial's steps and when each one is finished. Pure logic: it draws nothing and calls no windows (ui/tutorial.lua
--- does the drawing, and looks at the windows).
---
--- A step has
---   text    what the help panel says (friendly sentences, two lines at most: about 150 characters at the panel's small font; dev/check_tutorial.lua enforces it)
---   target  which control the gold pointer is over: the name of an anchor ("shop", "buy", "collection", "grid", "sets", "settings";
---           ui/tutorial.lua turns a name into a component), or nil for no pointer. A function of the observations, so a step
---           can point back at the Shop button if the player closed the Shop
---   done    whether the player has done what the step asks, from the observations; nil means the step is only left with Next
---
--- The observations are what the tutorial can see without hooking any window: { shopOpen, revealActive, collectionOpen, gridView,
--- setsOpen }, all true/false. `mem` is a table the step may keep between looks (it is new for each step, and for each time a step is shown).
+-- The tutorial's steps and when each is finished. Pure logic: it draws nothing and calls no windows (ui/tutorial.lua draws and
+-- looks at the windows). A step has
+--   text    what the help panel says (two lines at most, about 150 characters; dev/check_tutorial.lua enforces it)
+--   target the anchor the gold pointer is over ("shop", "buy", "collection", "grid", "sets",
+--     "settings"), or nil; a function of the observations
+--   done    whether the player has done what the step asks; nil means the step is only left with Next
+-- The observations are { shopOpen, revealActive, collectionOpen, gridView, setsOpen }; `mem`
+-- is a table a step may keep between looks.
 
 local Config = require("core/config")
 

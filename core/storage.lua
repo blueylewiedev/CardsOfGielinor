@@ -1,15 +1,10 @@
 -- core/storage.lua
--- Loads and saves one player's collection using PersistentDB.
+-- Loads and saves one character's collection in PersistentDB, under their tracking id (or their name when trackingAccess is not
+-- granted: core/identity.lua).
 --
--- PersistentDB is stored per plugin, not per account, so every character gets its own
--- entry, keyed by the character's tracking id (or its name when trackingAccess is not granted: core/identity.lua).
--- Without that, two accounts on one computer would share a single collection.
---
--- The client refuses a single value that is too big. Measured with a throwaway probe (2026-11-12): a table
--- of 2,000 entries is accepted and 3,000 refused; a string of 100,000 letters is accepted and 131,056
--- refused. A full collection has thousands of entries. So a character has one main key (credits,
--- XP pool, stats) and the owned cards are spread over BUCKETS more keys, the bucket
--- chosen by a hash of the card's id. A pack only rewrites the buckets it changed.
+-- The client refuses a single value of more than about 2,000 table entries, so a character has one main key (credits, XP pool,
+-- stats) and the owned cards are spread over BUCKETS more keys by a hash of the card id; a save rewrites only the buckets that
+-- changed.
 
 local Cards = require("core/cards")
 local Rate = require("core/rate")
@@ -27,12 +22,8 @@ function Storage.starterCredits()
     return Config.get("starterCredits")
 end
 
--- How many keys the owned cards are spread over. A character's saved count is read back, so changing
--- this loses nothing (the next save rewrites the buckets), but it is a lot of rewriting: leave it.
--- 32, not 16: a card is kept in up to one entry per finish (normal, foil, holo), so a full three-finish collection of
--- today's 5,595 cards is 600 entries in the fullest bucket at 32 (1,131 at 16), against the 2,000 known to be accepted.
--- That is room for about 18,600 cards; dev/check_storage.lua fails when the fullest bucket passes half of the 2,000
--- (about 9,300 cards at three finishes), which is the time to think again.
+-- How many keys the owned cards are spread over. A save records its own count, so changing this loses nothing, but it rewrites
+-- everything: leave it. dev/check_storage.lua fails when the fullest bucket passes half of the 2,000-entry limit.
 local BUCKETS = 32
 Storage.BUCKETS = BUCKETS
 
@@ -60,8 +51,8 @@ local function clean(text)
     return key
 end
 
--- PersistentDB key for a collection kept under a character's name,
--- e.g. "Some Name" -> "collection_some_name" (plus the profile suffix, see above).
+-- PersistentDB key for a collection kept under a character's name, e.g. "Some Name" -> "collection_some_name" (plus
+-- the profile suffix, see above).
 function Storage.keyForName(characterName)
     return "collection_" .. clean(characterName) .. profileSuffix
 end
@@ -90,31 +81,16 @@ function Storage.bucketOf(variantKey, count)
     return hash % (count or BUCKETS) + 1
 end
 
--- A fresh, empty collection.
---   credits : spendable credits
---   xpPool  : XP gained that has not yet added up to a whole credit
---   owned   : { [variantKey] = how many copies the player owns }, where the key is
---             "<card id>|<finish>" (see Cards.variantKey). Each variant is
---             counted separately.
---   stats   : lifetime numbers for the Stats window (see newStats). Only counted from the
---             time they were added, so packs opened before that are not in them.
---   dirty   : true when there are unsaved changes (never written to the database)
---   dirtyBuckets : { [bucket] = true } for the buckets of `owned` that changed since they were saved
---   staleBuckets : how many buckets the loaded save was spread over, if that is not BUCKETS (the keys
---             past the new count are deleted once everything is saved again), else nil
+-- A fresh, empty collection: credits, xpPool (XP not yet a whole credit), owned ({ ["<card id>|<finish>"] = copies
+-- }), stats (newStats), dirty (unsaved changes), dirtyBuckets ({ [bucket] = true }) and staleBuckets (the bucket
+-- count of the loaded save, if it is not BUCKETS).
 function Storage.newState()
     return { version = DATA_VERSION, credits = 0, xpPool = 0, owned = {},
         stats = Storage.newStats(), dirty = false, dirtyBuckets = {} }
 end
 
--- Lifetime statistics.
---   packsOpened, cardsPulled : how many packs were opened and cards pulled from them
---   creditsEarned            : credits earned from XP (not credits added by the dev tools)
---   creditsSpent             : credits spent on packs
---   playTicks                : ticks of play (about 0.6 seconds each, counted while a character's collection is loaded),
---                              for the average credits per hour over all sessions (core/rate.lua)
---   finishes                 : { [finish] = cards pulled with that finish }
---   rarities                 : { [rarity] = cards pulled of that rarity }
+-- Lifetime statistics: packsOpened, cardsPulled, creditsEarned (from play, not the dev tools), creditsSpent,
+-- playTicks (about 0.6 s each, for the credits per hour) and finishes and rarities ({ name = cards pulled }).
 function Storage.newStats()
     return { packsOpened = 0, cardsPulled = 0, creditsEarned = 0, creditsSpent = 0, playTicks = 0,
         finishes = {}, rarities = {} }
@@ -156,11 +132,9 @@ local function exists(key)
     return ok and there == true
 end
 
--- What is under `key` when its main entry reads as nothing. A read that fails must not look like a player who has never
--- saved: that would give them a new collection, and its first save would write over their real one. So:
---   "none"       nothing at all: a new collection
---   "unreadable" the database says the main entry is there, but it could not be read
---   "noMain"     no main entry, but some of its buckets are there (a main entry that was lost, or a read that failed)
+-- What is under `key` when its main entry reads as nothing, so a failed read is never taken for a player who has
+-- never saved (the first save would write over their real collection): "none" (a new collection), "unreadable" (the
+-- main entry is there but could not be read) or "noMain" (buckets but no main entry).
 function Storage.absentKind(key)
     if exists(key) then
         return "unreadable"
@@ -178,12 +152,10 @@ function Storage.hasSave(key)
     return PersistentDB:GetStructuredData(key) ~= nil or Storage.absentKind(key) ~= "none"
 end
 
--- Reads the collection stored under a key (see keyForName / keyForTracking), or returns a fresh one if nothing was saved
--- yet. Values are checked and rounded so a damaged or hand-edited entry cannot crash the plugin.
--- Returns nil and why if the save is there but its main entry cannot be read (see Storage.absentKind): the caller tries
--- again later and saves nothing meanwhile. With opts.acceptMissingMain a save whose main entry is missing ("noMain") is
--- loaded from its buckets anyway, with no credits or statistics (main.lua does that once a few tries have failed, so a
--- main entry that is really gone does not keep the player out of their cards for ever).
+-- Reads the collection under a key, or a fresh one if nothing is saved. Values are checked so a damaged entry cannot
+-- crash the plugin. Returns nil and why if a save is there but its main entry cannot be read (Storage.absentKind):
+-- the caller retries and saves nothing meanwhile. opts.acceptMissingMain loads a "noMain" save from its buckets
+-- alone, with no credits or statistics (main.lua does this after a few tries).
 function Storage.load(key, opts)
     local state = Storage.newState()
     local saved = PersistentDB:GetStructuredData(key)
@@ -248,12 +220,10 @@ function Storage.load(key, opts)
     return state
 end
 
--- Loads the collection for `key`. If nothing has been saved under `key` yet but something has under `oldKey`
--- (the collection kept under the character's name before trackingAccess was granted), the old one is copied:
--- the returned collection holds everything in it and is marked as changed, so the next save writes it all
--- under `key`. The old keys are left as they are, so nothing can be lost by the copy. Once `key` has a save it
--- always wins; the two are never merged. Returns the collection and true if it was copied from `oldKey`, or nil, false
--- and why if a save that is there could not be read (see Storage.load; `opts` is passed on to it).
+-- Loads the collection for `key`. If `key` has no save but `oldKey` (the name collection from before trackingAccess)
+-- does, that one is copied and marked changed, so the next save writes it under `key`; the old keys are left alone,
+-- and once `key` has a save it always wins. Returns the collection and true if copied, or nil, false and why if a
+-- save could not be read (opts is passed to Storage.load).
 function Storage.loadOrAdopt(key, oldKey, opts)
     if oldKey == nil or oldKey == key or Storage.hasSave(key) or not Storage.hasSave(oldKey) then
         local state, problem = Storage.load(key, opts)
@@ -376,8 +346,8 @@ function Storage.recordPack(state, results)
     state.dirty = true
 end
 
--- Adds copies of one variant to the collection (one copy if `count` is omitted).
--- `variantKey` comes from Cards.variantKey(cardId, finish).
+-- Adds copies of one variant to the collection (one copy if `count` is omitted). `variantKey` comes from
+-- Cards.variantKey(cardId, finish).
 function Storage.addCard(state, variantKey, count)
     state.owned[variantKey] = (state.owned[variantKey] or 0) + (count or 1)
     state.dirtyBuckets[Storage.bucketOf(variantKey)] = true
@@ -399,8 +369,7 @@ function Storage.countOwned(state, variantKey)
     return state.owned[variantKey] or 0
 end
 
--- How many different cards the player owns, counting a card once however many
--- variants of it they have.
+-- How many different cards the player owns, counting a card once however many variants of it they have.
 function Storage.countUniqueOwned(state)
     local seen = {}
     local total = 0

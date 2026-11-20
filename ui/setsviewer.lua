@@ -1,16 +1,13 @@
 -- ui/setsviewer.lua
--- The Sets window: the sets in deck/sets.lua (every shopkeeper, every musician...) and how much of each the player has.
---
---   left   a search box and an NPCs / items drop-down over a tile for each set they let through, with how many of
---          its cards the player has ("3 / 4"), gold once it is complete. Clicking one shows it. When there are more
---          sets than fit, a scroll bar beside the tiles shows where the list is; the mouse wheel over the list scrolls
---          it, and the bar can be dragged.
---   right  the picked set's name, its progress and a bar, then its cards, 6 a page (3 on a short screen; Prev and Next under them, or the
---          mouse wheel). A card the player does not have is a shadow silhouette of its picture, with its name and rarity,
---          and the packs it comes in where its description would be (CardView's opts.silhouette and lockedText).
---
--- Which cards a set holds is core/sets.lua (tested on its own). This file only draws and takes the mouse. The picked set
--- is kept while the plugin runs, so closing and opening the window comes back to it.
+-- The Sets window: the sets in deck/sets.lua (every shopkeeper, every musician...) and how much of each the player
+-- has. Which cards a set holds is core/sets.lua; this file draws and takes the mouse. The picked set is kept while
+-- the plugin runs.
+--   left a search box and an NPCs / items drop-down over a tile per set ("3 / 4", gold when complete), with a scroll bar when there
+--     are more than fit
+--   right the picked set's name, progress and bar, then its cards, 6 a page (3 on a short
+--     screen). A card the player does not have is a shadow
+--          silhouette with its name and rarity and the packs it comes in where its description
+--            would be (CardView opts.silhouette and lockedText).
 
 local Cards = require("core/cards")
 local Sets = require("core/sets")
@@ -208,10 +205,9 @@ local function copiesOf(have)
     return total
 end
 
--- What a card the player does not have says in place of its description: the packs it comes in, with " pack" taken off
--- each name. The description box holds 3 lines of about 17 to 19 letters, so this has to be short: the Standard pack is
--- left out (it has every card, so it would only take room) unless it is the only one, and the lead-in is "Packs:".
--- dev/check_sets_ui.lua checks that every card in a set fits in 3 lines of 17 letters, so a new pack cannot clip it.
+-- What a card the player does not have says in place of its description: the packs it comes in, with " pack" taken
+-- off, in the 3 lines of about 17 to 19 letters the description box holds (the Standard pack is left out unless it is
+-- the only one). dev/check_sets_ui.lua checks every card fits.
 function SetsViewer.lockedText(card)
     local standard = Packs.typeById("standard")
     local names, onlyStandard = {}, false

@@ -1,24 +1,10 @@
 -- core/browse.lua
--- What the collection viewer shows: the cards that match a search and some filters, in an order, each with the
--- finishes (normal, foil, holo) the player has of it. No drawing and no client calls, so it is tested on its own against the real deck (dev/check_viewer.lua).
---
--- A filter is a table, every field optional (a missing one, or nil, means "any"):
---   search     text: every word of it must be in the card's name, whatever the case ("abyssal dem" finds Abyssal demon)
---   owned      "all" (the default), "owned" (the cards the player has, in any finish) or "unowned" (the ones they
---              have none of)
---   kind       "npc" or "item"
---   rarity     a rarity id, such as "rare"
---   region     a word of the regions tag, such as "asgarnia"
---   skill      a word of the skills tag, such as "thieving"
---   category   a word of the category tag, such as "food"
---   membership "f2p" or "p2p"
---   finish     a finish, such as "holo": only the cards the player has in that finish, shown in it; with owned =
---              "unowned", the cards they do not have in it
---   sort       "rarity" (lowest first, the default), "rarity_desc", "name" or "owned" (most copies first)
---
--- An entry is { card, finishes, count, locked, finish }: finishes is { finish = copies } of what the player has of the
--- card, count all its copies together, locked true if they have none, and finish the one to show it in (the filter's
--- finish, or Browse.preferredFinish). Anything a filter names that no card has (a mistyped word) simply matches nothing.
+-- What the collection viewer shows: the cards that match a search and filters, in an order, each with the finishes
+-- the player has. No drawing and no client calls (tested by dev/check_viewer.lua). A filter is a table, every field
+-- optional (nil means "any"): search (every word in the name), owned ("all", "owned", "unowned"), kind, rarity,
+-- region, skill, category, membership, finish (only cards the player has in it, shown in it) and sort ("rarity",
+-- "rarity_desc", "name", "owned"). An entry is { card, finishes, count, locked, finish }. A word no card has matches
+-- nothing.
 
 local Cards = require("core/cards")
 
@@ -236,17 +222,10 @@ function Browse.counts(state, filter)
     return counts
 end
 
--- How much of the deck the player has, in one pass over it (the Stats window shows all of these at once):
---   all      : { cards, owned } for every card
---   kinds    : { npc = { cards, owned }, item = { cards, owned } }
---   rarities : { [rarity id] = { cards, owned } }
---   regions  : { [region word] = { cards, owned } }   (a card with several regions counts in each)
---   noRegion : { cards, owned } for the cards that have no region at all (the ones every region's count leaves out)
---   finishes : { [finish] = { cards, owned } } for each finish but normal: every card, owned when the player has it
---              in that finish
--- A card counts as owned when the player has at least one variant of it. `hidden` (optional, { [variant key] = copies }, as
--- the pack opening gives it) are copies the player has not seen yet: they do not count, so the numbers do not give away
--- what is in a pack that is still being opened.
+-- How much of the deck the player has, in one pass (for the Stats window): all, kinds, rarities, regions, noRegion
+-- and finishes, each { cards, owned } (a card is owned when the player has any variant of it). `hidden` ({ [variant
+-- key] = copies }) are copies still unseen in a pack being opened: they do not count, so the numbers do not give the
+-- pack away.
 function Browse.progress(state, hidden)
     local result = { all = { cards = 0, owned = 0 }, kinds = {}, rarities = {}, regions = {},
         noRegion = { cards = 0, owned = 0 }, finishes = {} }

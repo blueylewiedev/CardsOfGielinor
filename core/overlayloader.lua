@@ -1,17 +1,12 @@
 -- core/overlayloader.lua
--- Fetches the card overlay (docs/overlay.jsonl on the project's GitHub Pages site) when the plugin starts and
--- applies it with core/overlay.lua, so card fixes and new cards reach players between Jagex's reviews. If the
--- fetch fails, or the overlay is not for this version, the plugin simply has the cards it shipped with.
+-- Fetches the card overlay (docs/overlay.jsonl on the project's GitHub Pages site) when the plugin starts and applies it with
+-- core/overlay.lua, so card fixes reach players between Jagex's reviews. If the fetch fails or the overlay is not for this version,
+-- the plugin keeps the cards it shipped with. Needs the httpAccess permission and the "cards" url in plugin.json; without the
+-- permission it waits, as the player may grant it later.
 --
--- The client crashes when a request is sent from a coroutine or from inside another request's callback (other
--- plugin developers' findings, checked with dev/httpprobe.lua), so:
---   * everything runs from Event.Logic ticks (50 a second) and nothing uses a coroutine;
---   * a request is only ever started from a tick, and its callback only records that it finished;
---   * the response is read, and the overlay applied (100 lines a tick), on later ticks.
--- A response counts only if the code is 200 and `successful` is true: on a 404 the data is the host's error page.
---
--- It needs the httpAccess permission and the "cards" url in plugin.json. Without the permission it waits (the
--- player may grant it later); the dev copy asks for it on every start (dev/grants.lua).
+-- The client crashes when a request is sent from a coroutine or from inside another request's callback, so everything runs from
+-- Event.Logic ticks: a request is started from a tick, its callback only records that it finished, and the response is read and
+-- applied (100 lines a tick) on later ticks. Only code 200 with `successful` true counts (on a 404 the data is the host's error page).
 
 local Overlay = require("core/overlay")
 local Logger = require("core/logger")
@@ -246,10 +241,9 @@ local function permissionOff()
     return ok and granted == false
 end
 
--- What the settings page shows about card updates: a short line that fits beside an icon (28 letters at most), and
--- a longer explanation for the icon's tooltip. It follows the permission as it is now, not only what the loader did
--- earlier: an overlay already applied this session stays applied, but with the permission off nothing more is
--- fetched. The permission is called HTTP Access, as the client's own permission window calls it.
+-- What the settings page shows about card updates: a short line (28 letters at most) and a longer explanation for its
+-- tooltip. It follows the permission as it is now: with it off nothing more is fetched, though an overlay already
+-- applied stays applied.
 function Loader.playerLine()
     local status = Loader.status()
     local phase = status.phase

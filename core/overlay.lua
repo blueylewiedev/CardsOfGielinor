@@ -1,24 +1,16 @@
 -- core/overlay.lua
--- Applies an overlay: the card changes published since the version Jagex last approved (docs/overlay.jsonl,
--- made by dev/build_overlay.py; see CONTRIBUTING.md). This file does no networking (core/overlayloader.lua
--- fetches the text). The format is JSON lines:
---
+-- Applies an overlay: the card changes published since the version Jagex last approved (docs/overlay.jsonl, made by
+-- dev/build_overlay.py; see CONTRIBUTING.md). No networking (core/overlayloader.lua fetches the text). The format is
+-- JSON lines:
 --     {"base":"0.1.0","format":1,"revision":3}      the header: the version it is for
---     {"id":"swamp_frog","name":...}                 a new card, or a card that replaces the one with that id
+--     {"id":"swamp_frog","name":...}                 a new card, or one that replaces the card with that id
 --     {"deprecated":"old_card_id"}                   a card to take out of the game
---     {"tuning":{"packs":{"price":3000}}}            numbers, lists and switches (core/config.lua): only the first counts
---
--- It is applied a few lines at a time (Overlay.step, from a tick), so a big overlay never stalls a frame, and it
--- never raises an error: a line that is not sound is skipped and described in job.problems, and the rest is still
--- applied. The client crashes on coroutines, so the work is split by hand.
---
+--     {"tuning":{"packs":{"price":3000}}}            numbers and switches (core/config.lua): only the first counts
 --     local job, why = Overlay.begin(text)     nil and why if the overlay is not for this plugin
 --     repeat until Overlay.step(job, 100)     once a tick; true when everything is applied
---
--- Safety: the header's format must be one this plugin reads and its base must be this plugin's version, and an
--- overlay may retire only a few cards (a wrongly built one cannot empty the game). The tuning line goes through
--- Config.apply, which keeps only what is inside the limits written in core/config.lua; a key it does not accept is
--- reported in job.tuning.ignored and the rest still applies.
+-- It is applied a few lines at a time so a big overlay never stalls a frame, and never raises: a line that is not
+-- sound is skipped and described in job.problems. The header's format and base must match this plugin, an overlay may
+-- retire only a few cards, and the tuning line goes through Config.apply, which keeps only what is inside its limits.
 
 local Cards = require("core/cards")
 local Config = require("core/config")

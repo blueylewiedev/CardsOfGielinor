@@ -1,34 +1,16 @@
 -- ui/packart.lua
--- Draws a pack wrapper: a game login screen picture over the whole pack, crimps included, with
--- the pack's name on a banner and a logo. A pack's look is chosen in the Pack Maker
--- (dev/packmaker.lua), which gives a line to paste into deck/packs.lua.
---
--- A pack's look is a table:
+-- Draws a pack wrapper: a game login screen picture over the whole pack, crimps included, with the pack's name on a
+-- banner and a logo. A pack's look is chosen in the Pack Maker (dev/packmaker.lua), which gives a line to paste into
+-- deck/packs.lua, a table:
 --   art = {
 --       screen = "RS3_LOGINSCREEN_POF_NXT",  -- the login screen: its tiles are <screen>_0, _1, ...
---       front = 0.0, back = 0.65,            -- where each side's window starts along the picture
---                                            -- (0 = its left edge, at most 1 - PackArt.WINDOW)
+--       front = 0.0, back = 0.65,            -- where each side's window starts along the picture (0 is its left edge)
 --       name = { title = "misthalin", x = 0, y = 226, w = 150 },  -- banner and title (front only)
 --       logo = { sprite = "RS3_LOGINSCREEN_MOBILE_LOGO", x = 0, y = 40, w = 130 },  -- or nil
 --   }
--- x, y and w are in pack units: the pack is PackArt.W x PackArt.H units whatever size it is drawn
--- (x moves an item from the middle, y is its top, w its width).
---
--- How it is drawn, and why (found in the game with a test plugin):
---   * Login screens come in 9 tiles (3 x 3), together a 16:9 picture; a cutscene picture is one
---     sprite, taken to be 16:9 as well (the client can't say). The picture is fitted to
---     the height of the pack's outline (not its box, which has empty margins), so all of it
---     shows top to bottom, and each side shows an outline-wide window of it, about a third.
---   * There is no masking, but layers clip what is inside them. So the pack's outline is traced
---     by strips (ui/packmask.lua), each a layer showing its part of the picture. The crimps are
---     narrow columns shifted up or down a little, so the art looks pinched there.
---   * The light and shadow (resources/images/pack_shading*.png) go on top; the back is mirrored
---     and has a seal seam.
---   * Text can't be scaled, so the titles are images (resources/images/title_<id>.png), drawn
---     ahead of time by dev/make_pack_art.py and shrunk to fit the banner's inner panel.
---   * The client says 0 x 0 for a sprite's size, so the shapes of the banner and logos (width /
---     height) are written below.
--- The mask, shading and titles are made by dev/make_pack_art.py.
+-- x, y and w are in pack units: the pack is PackArt.W x PackArt.H whatever size it is drawn (x moves from the middle,
+-- y is the top). It is drawn as the pack's outline traced by strips of the picture (ui/packmask.lua) with shading
+-- over it; the titles are images made by dev/make_pack_art.py, as text cannot be scaled.
 
 local Packs = require("core/packs")
 local Logger = require("core/logger")
@@ -204,11 +186,9 @@ function PackArt.destroyAll(list)
 end
 local destroyAll = PackArt.destroyAll
 
--- Tearing a pack open: it tears across the top of the body, just under the top crimp, along a
--- jagged line about TEAR_Y pack units down. PackArt.new draws the two pieces: the cap (above the
--- line) and the body (the rest), which together look like the whole pack. Where the line runs,
--- the strips are cut into columns TEAR_COL wide, each ending at the line, and the shading, banner
--- and logo are shown through matching windows.
+-- Tearing a pack open: along a jagged line about TEAR_Y pack units down, just under the top crimp. PackArt.new draws
+-- the cap (above the line) and the body (the rest), which together look like the whole pack; where the line runs the
+-- strips are cut into columns TEAR_COL wide.
 PackArt.TEAR_Y = 52
 local TEAR_JAG = 3                     -- how far the line wanders above and below TEAR_Y
 local TEAR_COL = 2
@@ -227,10 +207,9 @@ for x = 0, PackArt.W - 1, TEAR_COL do
 end
 PackArt.TEAR_MAX = TEAR_MAX
 
--- The mask's strips for a whole pack (piece nil) or one piece ("cap" or "body"), as
--- { x, y, w, h, dy }. A strip the tear runs through is cut in three: what is above the band the
--- tear can be in (the cap's), what is below it (the body's), and the band itself, cut into
--- columns that end at the line. Only the band is cut up, to keep the parts few.
+-- The mask's strips for a whole pack (piece nil) or one piece ("cap" or "body"), as { x, y, w, h, dy }. A strip the
+-- tear runs through is cut in three: the cap's part, the body's part and the band the tear can be in, which is cut
+-- into columns (only the band, to keep the parts few).
 local function pieceRects(piece)
     if piece == nil then
         return MASK.rects
@@ -532,10 +511,9 @@ local function tileImage(packTypeId)
     return tileImages[packTypeId] or nil
 end
 
--- A small flat picture of a pack type's pack for a list of packs, in a layer `height` tall and as wide as the pack's
--- outline: its shipped tile image if it has one (one sprite, and it loads at once), otherwise the part of the login
--- screen its front shows (one sprite per picture tile, not the hundreds of parts of the full pack, but the client
--- takes about 20 ms to load each). A pack type with no design gets the plain pack image. Returns { root, w, destroy() }.
+-- A small flat picture of a pack type's pack for a list of packs: its shipped tile image if it has one (one sprite,
+-- loads at once), otherwise the part of the login screen its front shows (one sprite per tile, about 20 ms to load
+-- each). A pack with no design gets the plain pack image. Returns { root, w, destroy() }.
 function PackArt.drawTile(parent, packTypeId, height)
     local art = PackArt.designFor(packTypeId)
     local w = math.floor(height * PackArt.OUTLINE.w / PackArt.OUTLINE.h)

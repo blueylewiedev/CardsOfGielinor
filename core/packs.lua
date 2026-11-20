@@ -56,8 +56,8 @@ function Packs.priceFor(packTypeId)
     return math.ceil(Packs.price() * factor)
 end
 
--- Picks a key from a { key = weight } table, in proportion to the weights. Keys are
--- sorted first so the result does not depend on the order `pairs` happens to use.
+-- Picks a key from a { key = weight } table, in proportion to the weights. Keys are sorted first so the result does
+-- not depend on the order `pairs` happens to use.
 local function pickWeighted(weights)
     local keys = {}
     local total = 0
@@ -95,18 +95,13 @@ function Packs.pickCard(list, roll)
     return list[#list]
 end
 
--- How likely each kind of card is to be the one drawn, for every card in a pack: a card is
--- first drawn as an NPC or an item (in proportion to these), then by rarity, then which card.
--- There is no slot kept for either kind, and as items are added they do not crowd the NPCs out.
--- A kind with no cards in a pack is left out of the draw for that pack. Change a weight to tune
--- it (0 keeps that kind out of any pack that also has the other kind).
+-- Weights for which kind of card is drawn first (NPC or item), then rarity, then the card. A kind with no cards in a
+-- pack is left out; 0 keeps a kind out of any pack that also has the other.
 Packs.kindWeights = { npc = 1, item = 1 }
 
--- The cards a pack type can give, grouped by rarity: { rarity = { card, ... } }. Honours the
--- pack's filter and minimum rarity. If nothing is left at or above the minimum rarity, the
--- minimum is dropped rather than leaving the pack empty. Returns the groups, how many cards
--- there are in all (0 means the pack cannot be opened), and the same cards grouped by kind
--- first ({ npc = { rarity = { card, ... } }, item = { ... } }, only the kinds that have cards).
+-- The cards a pack type can give, grouped by rarity, honouring its filter and minimum rarity (dropped if nothing
+-- qualifies). Returns the groups, how many cards there are (0: it cannot be opened) and the same cards grouped by
+-- kind first.
 function Packs.poolFor(packType)
     local function build(minRank)
         local groups, kinds, count = {}, {}, 0
@@ -174,12 +169,9 @@ function Packs.namesFor(card)
     return packNames[card.id] or {}
 end
 
--- Rolls one card: its kind (NPC or item, see Packs.kindWeights), then its rarity, then which
--- card of that rarity (all alike unless a card has a weight, see Packs.pickCard), then its
--- finish. The rolls are separate, so they stack. `pool` and `kinds`
--- come from Packs.poolFor (default: the standard pack). Without `kinds` the kind is not rolled
--- and the card comes from `pool` alone. Returns { card, finish, key } where key is the variant
--- key used for saving.
+-- Rolls one card: its kind, then rarity, then which card (by weight), then finish; the rolls are separate, so they
+-- stack. `pool` and `kinds` come from Packs.poolFor (default: the standard pack). Returns { card, finish, key } where
+-- key is the variant key used for saving.
 function Packs.rollCard(pool, kinds)
     if pool == nil then
         local _
@@ -225,16 +217,9 @@ function Packs.rollCard(pool, kinds)
     return { card = card, finish = finish, key = Cards.variantKey(card.id, finish) }
 end
 
--- Buys and opens `count` packs (default 1) of a type for this character: takes the credits for all of them at once
--- (all or nothing), rolls the cards and adds them to the collection. Returns a list of results, one per card, packs one
--- after the other, each with:
---   card, finish, key       : what was pulled
---   pack                    : which of the packs bought it came from (1 to count)
---   isNewCard               : the player had no variant of this card before (counting the cards pulled before it)
---   isNewVariant            : the player had none of this exact variant before (likewise)
---   owned                   : how many of this variant the player now has
--- If the packs could not be bought, returns nil and a reason ("unknown pack", "bad count", "no cards" or
--- "not enough credits").
+-- Buys and opens `count` packs of a type: takes all the credits at once (or nothing), rolls the cards and adds them
+-- to the collection. Returns one result per card { card, finish, key, pack, isNewCard, isNewVariant, owned }, or nil
+-- and why ("unknown pack", "bad count", "no cards", "not enough credits").
 function Packs.open(state, packTypeId, count)
     count = count or 1
     local packType = Packs.typeById(packTypeId)
