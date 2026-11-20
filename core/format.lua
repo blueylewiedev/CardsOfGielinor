@@ -1,6 +1,6 @@
 -- core/format.lua
--- Turns numbers and states into text for the screen. No UI here, so dev/check_slayer.lua and dev/check_format.lua
--- can test it.
+-- Turns numbers and states into text for the screen. No UI here, so dev/check_slayer.lua and dev/check_format.lua can
+-- test it.
 
 local Format = {}
 
@@ -25,11 +25,10 @@ function Format.duration(seconds)
     return string.format("%dh %02dm", minutes // 60, minutes % 60)
 end
 
--- What the settings page says about how the collection is saved, as a short line that fits beside an icon (28 letters
--- at most) and the longer explanation for the icon's tooltip. `kind` is how this session's collection is saved
--- ("tracking", "name" or nil while the collection is still loading) and `granted` is whether the Tracking permission is on now.
--- How the collection is saved is fixed at login, so when the two disagree the permission was changed since, and
--- takes effect at the next login. The permission is called Tracking, as the client's permission window calls it.
+-- What the settings page says about how the collection is saved: a short line (28 letters at most) and a longer
+-- tooltip. `kind` is how this session's collection is saved ("tracking", "name" or nil while loading) and `granted`
+-- whether the Tracking permission is on now; they disagree when it was changed since login, and it takes effect at
+-- the next login.
 function Format.collectionLine(kind, granted)
     if kind == "tracking" and granted then
         return "Saved by tracking id",

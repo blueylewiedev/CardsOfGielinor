@@ -1,10 +1,7 @@
 -- core/identity.lua
--- Works out whose collection is loaded: the logged-in character's tracking id when the
--- trackingAccess permission has been granted, otherwise their character name.
---
--- The tracking id is better because it does not change when a character is renamed. It
--- is sent to the client at login and "several seconds may pass before it becomes available"
--- (Player.GetTrackingID docs), so it is polled from a ServerLogic handler until it arrives.
+-- Works out whose collection is loaded: the logged-in character's tracking id when trackingAccess is granted (it does not change when
+-- a character is renamed), otherwise their character name. The tracking id arrives some seconds after login (Player.GetTrackingID
+-- docs), so it is polled from a ServerLogic handler until it does.
 
 local Storage = require("core/storage")
 local Events = require("core/events")
@@ -13,13 +10,10 @@ local Identity = {}
 
 local SUBSCRIBER = "cardcollector_identity"
 
--- Ticks (about 0.6 seconds each) to wait for the permission to show up before settling for
--- the character name: 10, about 6 seconds (it was 20, about 12, which is a long wait for a player who has not granted
--- the permission, with the main window showing its loading screen all that time). The dev copy asks for the
--- permission as it loads, and the client may take a moment to apply it. If the permission is ever late for a player
--- who has granted it, they start on the name collection for the session; the next login copies nothing back, as the
--- tracking collection already exists and wins (core/storage.lua), so a late permission should be looked for in the
--- client before this is made shorter.
+-- Ticks (about 0.6 s each) to wait for the permission to show up before settling for the character name: 10, about 6
+-- seconds. If it is ever late for a player who has granted it, they start on the name collection for the session; the
+-- tracking collection already exists and wins next login (core/storage.lua), so look in the client for a late
+-- permission before making this shorter.
 local PERMISSION_GRACE_TICKS = 10
 
 local trackingId = nil

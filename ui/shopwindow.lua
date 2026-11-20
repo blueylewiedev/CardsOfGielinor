@@ -1,16 +1,10 @@
 -- ui/shopwindow.lua
--- The Shop: every pack on offer as a small picture in a grid, the chosen one shown large beside it with what it is, its
--- price, a drop-down for how many to buy, and the Buy button. Buying takes the credits, rolls the cards and saves
--- (core/packs.lua), then hands the cards to the pack window for the reveal (api.startReveal).
---
--- The pictures in the grid are flat (one sprite per picture tile, PackArt.drawTile); only the large pack is drawn in
--- full (hundreds of parts, PackArt.drawFront), and it is drawn again each time another pack is chosen.
---
--- Set by Shop.toggle(newApi):
---   api.getState()    : the logged-in character's collection, or nil
---   api.saveNow()     : saves it straight away
---   api.busy()        : true while cards from an earlier purchase are still being revealed
---   api.startReveal(results, packTypeId) : shows the cards just bought
+-- The Shop: every pack on offer as a small picture in a grid, the chosen one large beside it with its price, a
+-- drop-down for how many to buy and the Buy button. Buying takes the credits, rolls the cards and saves
+-- (core/packs.lua), then hands the cards to the reveal (api.startReveal). The grid pictures are flat
+-- (PackArt.drawTile); only the large pack is drawn in full (hundreds of parts, PackArt.drawFront) and again each time
+-- another is chosen. Set by Shop.toggle(newApi): api.getState(), api.saveNow(), api.busy() (a reveal is still
+-- showing) and api.startReveal(results, packTypeId).
 
 local Cards = require("core/cards")
 local Format = require("core/format")
@@ -232,8 +226,8 @@ local function buy()
     api.startReveal(results, selected)
 end
 
--- Brings the window up to date with the character's credits and the choices. Called every tick; only changes what
--- is different.
+-- Brings the window up to date with the character's credits and the choices. Called every tick; only changes what is
+-- different.
 function Shop.refresh()
     if window == nil or widgets.buy == nil then
         return

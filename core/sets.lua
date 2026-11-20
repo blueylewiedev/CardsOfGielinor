@@ -1,16 +1,11 @@
 -- core/sets.lua
--- The sets in deck/sets.lua: which cards each one holds and how many of them the player has. No drawing and no client
--- calls, so it is tested on its own against the real deck (dev/check_sets.lua).
---
--- A set's cards are worked out from the deck as it is when they are asked for, not when the plugin starts, so cards
--- the overlay adds later (core/overlay.lua) join a set whose `names` or `filter` take them in.
---
---   Sets.list                    the usable sets, in the file's order (a set that is not the right shape is left out
---                                and described in Sets.loadProblems)
---   Sets.byId[id]                one of them
---   Sets.cardsOf(set)            its cards, in the deck's order (lowest rarity first)
---   Sets.progress(state, set)    { cards = how many it holds, owned = how many of those the player has }
---   Sets.problems()              what is wrong with the sets against the deck (unknown ids, empty sets)
+-- The sets in deck/sets.lua: which cards each holds and how many the player has. No drawing and no client calls
+-- (dev/check_sets.lua). A set's cards are worked out when asked for, so cards the overlay adds later join a set whose
+-- `names` or `filter` take them in.
+--   Sets.list / Sets.byId   the usable sets (one of the wrong shape is left out and described in Sets.loadProblems)
+--   Sets.cardsOf(set)       its cards, in the deck's order
+--   Sets.progress(state, set)  { cards, owned }
+--   Sets.problems()         what is wrong with the sets against the deck
 
 local Cards = require("core/cards")
 
@@ -131,9 +126,9 @@ local function ruleTakes(set, card)
     return set.filter == nil or Cards.matches(card, set.filter)
 end
 
--- The set's cards, in the deck's order (Cards.list: lowest rarity first).
--- (worked out once a set, again only when an overlay changes the cards, Cards.revision; the Sets window asks for
--- every set's cards on each redraw. Callers must not change the list.)
+-- The set's cards, in the deck's order (Cards.list: lowest rarity first). (worked out once a set, again only when an
+-- overlay changes the cards, Cards.revision; the Sets window asks for every set's cards on each redraw. Callers must
+-- not change the list.)
 local cardsCache, cardsCacheAt = setmetatable({}, { __mode = "k" }), -1
 function Sets.cardsOf(set)
     if cardsCacheAt ~= Cards.revision then

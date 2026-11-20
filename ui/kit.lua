@@ -1,10 +1,8 @@
 -- ui/kit.lua
--- Small wrapper that builds the plugin's plain controls (text, buttons, the window frame, drop-downs, tabs) with
--- PrettyUI. Everything else in the plugin calls these functions instead of PrettyUI directly, so the look of the whole
--- plugin can be changed in this one file. The cards themselves are not built here: they are custom (see ui/cardview.lua).
---
--- PrettyUI is a required dependency in plugin.json, and the client does not load the plugin without it, so there is no
--- fallback to the client's own components. (The development tools' extra controls are in dev/devkit.lua.)
+-- The plugin's controls (text, buttons, the window frame, drop-downs, tabs), built with PrettyUI. Everything else
+-- calls these instead of PrettyUI, so the look of the plugin can be changed here. PrettyUI is a required dependency,
+-- so there is no fallback to the client's own components. (The development tools' extra controls are in
+-- dev/devkit.lua; the cards are custom: ui/cardview.lua.)
 
 local Logger = require("core/logger")
 
@@ -26,8 +24,8 @@ local function packColour(v)
     return (byte(r) << 24) | (byte(g) << 16) | (byte(b) << 8) | byte(a or 1)
 end
 
--- A line of text at a fixed position, centred in its box unless `alignX` is another
--- ui.AlignMode (for example ui.AlignMode.TOPLEFT to start at the left edge).
+-- A line of text at a fixed position, centred in its box unless `alignX` is another ui.AlignMode (for example
+-- ui.AlignMode.TOPLEFT to start at the left edge).
 function Kit.text(parent, x, y, w, h, content, colour, alignX)
     local text = prettyui.Text.new(parent, {
         text = "", colour = packColour(colour or WHITE),
@@ -46,10 +44,9 @@ function Kit.spinner(parent, x, y, size)
     return prettyui.Spinner.new(parent, { x = x, y = y, size = size, autoPlay = false })
 end
 
--- A button whose visible left edge is `left` and whose visible width is `visibleWidth`. `style` is optional:
--- "positive", "neutral" or "negative". PrettyUI makes a button at least as wide as its label needs (a label such as
--- "ZOOM +" needs about 146), so choose a width that fits the longest label. `tooltip` (optional) is the text shown when
--- the mouse rests on the button.
+-- A button whose visible left edge is `left` and whose visible width is `visibleWidth`; `style` is "positive",
+-- "neutral" or "negative". PrettyUI makes a button at least as wide as its label needs (about 146 for "ZOOM +"), so
+-- choose a width that fits the longest label.
 function Kit.buttonAt(parent, label, left, y, visibleWidth, height, onPress, style, tooltip)
     local button = prettyui.FancyButton.new(parent, label, function() onPress() end, {
         variant = style or "neutral", x = left, y = y, width = visibleWidth, absolute = true, tooltip = tooltip,
@@ -67,10 +64,8 @@ function Kit.smallButton(parent, label, left, y, w, h, onPress, tooltip)
     })
 end
 
--- Calls onWheel(delta) when the mouse wheel is turned over a component (delta above 0 is down).
--- PrettyUI buttons placed by hand do not pass the wheel on to the scrolling page they are in, so
--- a page that scrolls hands the wheel on with this. Does nothing if the component cannot take
--- the hook.
+-- Calls onWheel(delta) when the mouse wheel turns over a component (delta above 0 is down). PrettyUI buttons placed
+-- by hand do not pass the wheel on to the scrolling page they are in, so a page that scrolls hands it on with this.
 function Kit.onWheel(component, onWheel)
     local function handler(first, second)
         local delta = type(second) == "number" and second or (type(first) == "number" and first or 0)
@@ -106,16 +101,12 @@ local TITLE_BUTTON_RIGHT = 62
 local TITLE_BUTTON_STEP = 28       -- the next button along (a second one sits this far further left)
 local TITLE_BUTTON_LEFT = 12       -- from the window's left edge, for a button at the left end of the title bar
 
--- A small icon button in a PrettyUI window's title bar, to the left of the close button. `spriteName` is one of
--- PrettyUI's sprite buttons (such as "SWAP"). Returns a handle whose Destroy() removes it, or nil if it failed (it uses
--- PrettyUI's private overlay calls, which a PrettyUI update could change; the failure is logged). `slot` (optional, 0) is
--- which place along the title bar: 0 is next to the close button, 1 the one to its left, "left" the far left end (clear
--- of a centred title). The handle's `root` is the button's component (the tutorial points at it).
---
--- The title bar is covered by a layer PrettyUI uses to drag the window, which sits on the game's layer above the
--- window itself, so a button made inside the window never gets the click. This button is made on the game's layer
--- too and registered with the window as one of its overlays: the window then keeps it on top and calls `place` to put
--- it back over the title bar whenever the window moves (PrettyUI's own scroll bar does the same).
+-- A small icon button (a PrettyUI sprite such as "SWAP") in a window's title bar. `slot` (default 0) is its place: 0
+-- next to the close button, 1 the one to its left, "left" the far left end. Returns a handle with Destroy() and
+-- `root` (the component the tutorial points at), or nil if it failed (it uses PrettyUI's private overlay calls, which
+-- an update could change; the failure is logged). PrettyUI covers the title bar with a layer for dragging the window,
+-- so a button made inside the window never gets the click. This one is made on the game's layer and registered with
+-- the window as an overlay: the window keeps it on top and puts it back over the title bar when it moves.
 function Kit.titleButton(window, spriteName, onPress, tooltip, slot)
     if window == nil or window.parent == nil then
         return nil
@@ -175,10 +166,10 @@ function Kit.panel(parent, x, y, w, h, heading)
     return nil
 end
 
--- A block of checkboxes, one to a row (Kit.CHECKBOX_ROW_H tall), at (x, y) and `w` wide. `choices` is a list of
--- { text, value, selected }; onChange(value, selected) is called when one is ticked or cleared. PrettyUI cuts a label off
--- where it runs out of width (about 28 letters in 280 pixels). `step` (optional, more than Kit.CHECKBOX_ROW_H) spaces the
--- rows further apart: each is then a checkbox of its own. Returns a handle with Destroy().
+-- A block of checkboxes, one to a row, at (x, y) and `w` wide. `choices` is { text, value, selected };
+-- onChange(value, selected) is called when one is ticked or cleared. PrettyUI cuts a label off where it runs out of
+-- width (about 28 letters in 280 pixels). A `step` over Kit.CHECKBOX_ROW_H spaces the rows further apart, each as a
+-- checkbox of its own. Returns a handle with Destroy().
 Kit.CHECKBOX_ROW_H = 22
 function Kit.checkboxes(parent, x, y, w, choices, onChange, step)
     local function changed(_, _, value, selected)
@@ -197,17 +188,11 @@ end
 -- PrettyUI's tab strip height: the pages start this far under the top of the tabs.
 Kit.TABS_HEIGHT = 42
 
--- Tab strip: tabs across the top of a box in `parent`, with a page under each, each page a layer to build in; it can fill
--- its parent and be resized. Returns a handle:
---   pages[i]        : the layer to build tab i's contents in, from its top left (it scrolls when the contents are taller
---                     than the room: see contentHeights)
---   pageWidth(i)    : how wide that layer is now (less when a scroll bar is showing), or nil if it can't say
---   setContentHeight(i, h) : how tall tab i's contents are (so it scrolls when the window is shorter)
---   refresh()       : lays the pages out again, after the box changed size
---   select(i), destroy()
--- The box is `w` x `h` at (x, y); with opts.fill it is the whole of `parent` instead (and follows it as it changes size,
--- x and y being the margins). `onChange(i)` is called when the player picks a tab; `selected` is the first one shown.
--- opts.contentHeights = { [i] = h } are the tabs' contents' heights to start with.
+-- Tab strip: tabs across the top of a box with a page under each. The box is `w` x `h` at (x, y), or with opts.fill
+-- the whole of `parent` (following its size). `onChange(i)` is called when the player picks a tab. Returns a handle
+-- with pages[i] (the layer to build tab i in; it scrolls when taller than the room), pageWidth(i),
+-- setContentHeight(i, h), refresh() (after the box changed size), select(i) and destroy(). opts.contentHeights = {
+-- [i] = h }.
 function Kit.tabStrip(parent, labels, x, y, w, h, onChange, selected, opts)
     selected = selected or 1
     opts = opts or {}
@@ -258,14 +243,12 @@ function Kit.inputField(parent, x, y, w, h, maxLength, numeric)
     return field
 end
 
--- A drop-down list (PrettyUI's ComboBox). `entries` is a list of { label = "...", value = anything }; the labels must
--- all be different. `selected` is the value shown at first (or nil). `onChoose(value)` is called when the player picks an
--- entry. Returns { set(entries, selected), select(value), destroy() }: set replaces the list, select shows a choice;
--- neither calls onChoose.
--- By default the ComboBox is given the entries in order, which makes it PrettyUI's ordered kind: it keeps the order
--- given, and has a text box the player can type in to filter the list. `sorted` = true gives its plain kind, which can't
--- be typed in but shows the entries sorted by label. (It picks its kind when it is made, from the entries it is given
--- then, so it needs the first entries straight away.)
+-- A drop-down list (PrettyUI's ComboBox). `entries` is { label, value } with different labels; `selected` is the
+-- value shown first; onChoose(value) is called when the player picks one. Returns { set(entries, selected),
+-- select(value), destroy() }; neither set nor select calls onChoose. By default the entries keep the order given and
+-- the player can type in the box to filter them (PrettyUI's ordered kind, picked when the box is made, so it needs
+-- its first entries at once). `sorted` = true gives the plain kind: sorted by label, no typing, and much quicker to
+-- open on a long list.
 function Kit.dropdown(parent, x, y, w, h, entries, selected, onChoose, sorted)
     local dropdown = { values = {} }    -- entry i has the id i and the value values[i]
     local function number(list)
@@ -371,13 +354,10 @@ function Kit.contentWidth(width)
     return width - 44
 end
 
--- Creates a window (PrettyUI's, with a title bar it can be dragged by and a close button). Returns window, content:
--- `content` is the component to put things in. `onClose` is called when the player closes the window with its close
--- button. `scrollable` lets the content be longer than the window and scroll. `resizable` lets the player drag the
--- window's edge to change its size; the contents keep their positions, so it only gives more or less room.
--- `limits` (optional, { minWidth, minHeight }) is how small a resizable window can be made.
--- `offsetX` and `offsetY` (optional, 0) move the window from its anchor point by that many pixels: with the anchors
--- 0 and 1 a negative offsetY puts it that far above the bottom of the screen.
+-- Creates a PrettyUI window (a title bar it is dragged by and a close button). Returns window, content (where to put
+-- things). `onClose` is called when the player closes it; `scrollable` lets the content be longer; `resizable` lets
+-- the player drag its edge (`limits` is { minWidth, minHeight }). `offsetX` and `offsetY` (default 0) move it from
+-- its anchor: with the anchors 0 and 1 a negative offsetY puts it that far above the bottom of the screen.
 function Kit.window(parent, title, width, height, onClose, xAnchor, yAnchor, scrollable, resizable, limits, offsetX, offsetY)
     local win = prettyui.Window.new(parent, {
         title = title, width = width, height = height,

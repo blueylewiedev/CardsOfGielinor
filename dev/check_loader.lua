@@ -468,23 +468,28 @@ do
     Loader.http = FakeRequest
 end
 
--- applying text given directly (the dev copy's Local overlay button)
+-- an overlay for another version, or with tuning, through the fetch path
 fresh()
 do
-    check(Loader.applyText(overlayText(header({ base = "9.9.9" }), {})) == false and Loader.status().phase == "ignored",
-        "text for another version is refused and the loader says so")
-    local applied = Loader.applyText(overlayText(header({ revision = 0 }), { { tuning = { packs = { price = 2500 } } },
-        testCard("zz_local_card") }))
-    check(applied == true and Loader.status().phase == "applying", "text for this version starts applying")
-    local again, why = Loader.applyText(overlayText(header(), {}))
-    check(again == false and type(why) == "string", "and a second one is refused while it applies")
+    tick(1)
+    complete(requests[1], 200, overlayText(header({ base = "9.9.9" }), {}), true)
+    tick(2)
+    check(Loader.status().phase == "ignored", "an overlay for another version is refused and the loader says so")
+    fresh()
+    tick(1)
+    complete(requests[1], 200, overlayText(header({ revision = 0 }), { { tuning = { packs = { price = 2500 } } },
+        testCard("zz_local_card") }), true)
+    tick(1)
+    check(Loader.status().phase == "applying", "an overlay for this version starts applying")
     tick(5)
     check(Loader.status().phase == "done" and Cards.byId["zz_local_card"] ~= nil and Config.get("packs.price") == 2500,
-        "the cards and the tuning are applied from the text")
-    check(seen() == "On - 1 card updated", "the player line is the same as for a fetched overlay (" .. line() .. ")")
-    check(Loader.applyText(overlayText(header(), {})) == true, "once it is done another can be applied")
+        "the cards and the tuning are applied")
+    check(seen() == "On - 1 card updated", "the player line says what it did (" .. line() .. ")")
+    fresh()
+    tick(1)
+    complete(requests[1], 200, overlayText(header(), {}), true)
     tick(5)
-    check(Config.get("packs.price") == 4000, "and it replaces the tuning of the one before")
+    check(Config.get("packs.price") == 4000, "a later overlay replaces the tuning of the one before")
     Cards.deprecate("zz_local_card")
     Config.reset()
 end
@@ -494,8 +499,9 @@ fresh()
 tick(1)
 complete(requests[1], 200, good, true)
 tick(5)
-check(Loader.refetch() == true and Loader.status().phase == "waiting", "after it is done, a fetch can be started again")
-check(Loader.refetch() == false, "but not while one is under way")
+check(Loader.status().phase == "done", "an overlay fetched and applied is done")
+Loader.begin()
+check(Loader.status().phase == "waiting", "begin starts another go (the Dev tools' Fetch updates button does this once one is done)")
 Cards.deprecate("zz_loaded")
 
 -- tuning: the overlay's {"tuning": ...} line (core/config.lua) ---------------------------------------------------------------

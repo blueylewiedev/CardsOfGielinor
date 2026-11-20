@@ -1,14 +1,9 @@
 -- core/rate.lua
--- How many credits per hour the player is earning: the credits earned over the last hour of play, as an hourly rate.
---
--- Time is counted in the plugin's ticks (about every 0.6 seconds, see main.lua), and only while a character's collection
--- is loaded, so time spent logged out does not count against the rate. Credits are added to a bucket for the minute they
--- were earned in, and the rate is the credits in the last WINDOW_MINUTES minutes over the time that has really passed (up
--- to the whole window), so it follows how the player is doing now and not over their whole session. It starts afresh at
--- each login. For the first MIN_MINUTES minute there is nothing to show (nil): the screens say "Calculating..." with a
--- dot more each tick instead (Rate.text), so they do not look as if they were not working.
---
--- No UI and no client calls, so dev/check_rate.lua tests it on its own.
+-- Credits per hour: the credits earned over the last WINDOW_MINUTES of play, as an hourly rate. Time is counted in
+-- ticks (about 0.6 s, see main.lua) and only while a collection is loaded. Credits go in a bucket for the minute they
+-- were earned in, and the rate is the credits in the window over the time really passed, so it follows how the player
+-- is doing now. It starts afresh at each login; for the first MIN_MINUTES there is nothing to show (nil) and the
+-- screens say "Calculating..." (Rate.text). No UI and no client calls (dev/check_rate.lua).
 
 local Format = require("core/format")
 

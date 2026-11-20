@@ -1,16 +1,7 @@
 -- main.lua
--- Cards of Gielinor
--- Earn credits, open packs, collect cards.
---
--- Folders:
---   core/   the logic: cards (format, rarities, pack types), packs, storage, earning, Slayer credits, settings
---   ui/     everything that draws: kit (PrettyUI wrapper), cardview, the pack, collection,
---           statistics, credits and settings windows, and the ribbon page
---   deck/   the cards themselves, by region (see deck/index.lua)
---   dev/    developer tools, left out of the released plugin
---
--- Saves a collection per character, earns credits from XP and from Slayer tasks, and logs its progress to the
--- Lua console through core/logger.lua (quiet unless something fails or detailed logging is on).
+-- Cards of Gielinor: earn credits from XP, Slayer and boss kills, open packs, collect cards. Wires the parts
+-- together: core/ is the logic, ui/ draws, deck/ holds the cards. dev/ is the developer tools and is left out of the
+-- released plugin, so there `Dev` is nil and nothing about it runs.
 
 -- The performance probe (dev/perfprobe.lua) has to load before anything else so it sees the deck load, which core/storage
 -- starts. The release has no dev folder, so there Probe is nil and every use of it below is skipped.
@@ -80,8 +71,8 @@ local function devOn()
     return Dev ~= nil and Dev.active
 end
 
--- Save at most once every this many server ticks (about 0.6 seconds each) while
--- changes are pending, so frequent changes such as XP gains do not save every tick.
+-- Save at most once every this many server ticks (about 0.6 seconds each) while changes are pending, so frequent
+-- changes such as XP gains do not save every tick.
 local SAVE_INTERVAL_TICKS = 10
 
 -- Set while a character is logged in: { name = "...", key = "<storage key>", state = <collection> }
@@ -95,8 +86,8 @@ local ticksSinceLoad = 0
 local LOAD_TRIES = 20
 local failedLoads = 0
 
--- Returns the logged-in character's name, or nil if it is not available yet.
--- The name can arrive a moment after login, so callers must be ready for nil.
+-- Returns the logged-in character's name, or nil if it is not available yet. The name can arrive a moment after
+-- login, so callers must be ready for nil.
 local function currentCharacterName()
     if not Player.IsAvailable() then
         return nil
@@ -174,8 +165,8 @@ local function endSession()
     Rate.reset()
 end
 
--- Runs about every 0.6 seconds. Waits for the character to be available, then loads
--- their collection, and afterwards saves pending changes at a steady pace.
+-- Runs about every 0.6 seconds. Waits for the character to be available, then loads their collection, and afterwards
+-- saves pending changes at a steady pace.
 Events.on("ServerLogic", "cardcollector_tick", function()
     PackWindow.refresh()
     SettingsPage.refresh()
@@ -218,8 +209,8 @@ Events.on("SkillTransmit", "cardcollector_xp", function(e)
     end
 end)
 
--- Save and unload when the player reaches the login screen or lobby, so switching
--- accounts never mixes up two collections.
+-- Save and unload when the player reaches the login screen or lobby, so switching accounts never mixes up two
+-- collections.
 Events.on("GameStateChanged", "cardcollector_state", function(stateEvent)
     if stateEvent.newState == GameState.LOGINSCREEN or stateEvent.newState == GameState.LOBBY then
         endSession()

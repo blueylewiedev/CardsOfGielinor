@@ -1,20 +1,12 @@
 -- core/json.lua
--- A small JSON decoder (decoding only), for the card data the plugin may fetch over HTTP. The client's
--- API has no JSON support. It follows the JSON standard (RFC 8259) strictly, so a damaged or
--- hand-edited file is refused with a message instead of half-read:
---   * objects, arrays, strings, numbers, true, false and null
---   * strings: the escapes \" \\ \/ \b \f \n \r \t and \uXXXX (a pair of surrogates becomes one letter),
---     written out as UTF-8; a raw control character in a string is an error
---   * numbers: -?(0|[1-9][0-9]*)(.[0-9]+)?([eE][+-]?[0-9]+)?
---   * nothing but whitespace after the value; nesting no deeper than MAX_DEPTH; a leading UTF-8 byte order
---     mark is skipped
+-- A small JSON decoder (decoding only; the client has no JSON support) for the card data the plugin fetches. It follows RFC 8259
+-- strictly, so a damaged or hand-edited file is refused with a message instead of half-read: no control characters in strings, the
+-- standard escapes and \uXXXX, nothing but whitespace after the value, nesting no deeper than MAX_DEPTH, a leading byte order mark
+-- skipped.
 --
--- Json.decode(text) returns the value, or nil and a message ("line 3, column 14: ..."). It never raises an
--- error. JSON null becomes Json.null (a table you can compare with), because Lua cannot keep nil in a table.
--- A repeated key in an object keeps the last value.
---
--- It does not use coroutines (the client crashes on them). To keep a big file from stalling a frame, the
--- caller can split the data and decode the parts on different ticks.
+-- Json.decode(text) returns the value, or nil and a message ("line 3, column 14: ..."); it never raises. JSON null is Json.null (Lua
+-- cannot keep nil in a table). A repeated key keeps the last value. No coroutines (the client crashes on them): a caller can split a
+-- big file and decode the parts on different ticks.
 
 local Json = {}
 

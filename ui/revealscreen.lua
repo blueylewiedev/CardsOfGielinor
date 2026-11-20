@@ -1,27 +1,19 @@
 -- ui/revealscreen.lua
--- The pack opening, on a screen of its own: the whole game is dimmed (and its clicks blocked) by a full-screen layer, and
--- on it, in the middle, the pack bought. However many packs were bought there is one pack; the cards of all of them
--- are shown in pages (a page is up to PAGE_SIZE cards, fewer on a small screen).
---
---   sealed    : the pack. It lifts and glows when the mouse is over it. "Tear open" (or clicking it, or dragging across
---               its top) tears it open; the Flip pack button turns it over first (then its cards are all revealed at
---               once). The cards inside are the first page's, face down.
---   tearing   : the tear runs across, the cap flies off, the pack drops away, and the stack of cards grows into place.
---   dealing   : the face-down stack is shuffled, then the cards fly out to their places in a grid (rows are balanced
---               and each is centred, so 7 cards are 4 and 3).
---   cards     : click a card to turn it over (or "Reveal all"). A card's border and glow stay hidden until it is turned,
---               so nothing gives its rarity away early. Each card's 3D model is made when the page is dealt, one card a
---               frame, so turning one is instant.
---   When every card of a page is turned the button says Next page, or Done after the last page. "Skip" at the top right
---   jumps to the cards: the rest of the animations are finished at once and every card is turned over (a card a frame, as
---   its model is made), so the player sees what they got; later pages are dealt and turned the same way. The button goes
---   once it is used. Next page and Done work as usual; the cards were already in the collection when the pack was bought.
---
--- The cards were rolled and saved by core/packs.lua before this starts; this only shows them. A card of results that has
--- not been turned over has results[i].seen == nil (Reveal.hiddenCards lists them for the collection viewer).
--- Anything that goes wrong here closes the screen (a click-blocking layer that could not be removed would trap the player).
---
--- Reveal.start(results, packTypeId, hooks) hooks.onClose() is called when the screen closes for any reason.
+-- The pack opening, on a screen of its own: a full-screen layer dims the game and blocks its clicks, and the pack
+-- bought sits in the middle (one pack however many were bought; the cards of all of them are shown in pages of up to
+-- PAGE_SIZE). Stages:
+--   sealed the pack lifts and glows under the mouse. "Tear open", a click or a drag across
+--     its top tears it; Flip pack turns it over first
+--             (then its cards are all revealed at once)
+--   tearing   the cap flies off, the pack drops away and the stack of cards grows into place
+--   dealing   the face-down stack is shuffled and the cards fly out into a grid
+--   cards click a card (or "Reveal all") to turn it over; its border and glow stay hidden
+--     until then, so nothing gives its rarity away.
+--             Next page, then Done on the last. "Skip" turns every card at once, a card a frame as its model is made.
+-- The cards were rolled and saved by core/packs.lua before this starts; this only shows them. A result not yet turned
+-- over has results[i].seen == nil (Reveal.hiddenCards lists them for the collection viewer). Anything that goes wrong
+-- here closes the screen, since a click-blocking layer that could not be removed would trap the player.
+-- Reveal.start(results, packTypeId, hooks): hooks.onClose() is called when the screen closes for any reason.
 
 local Cards = require("core/cards")
 local Logger = require("core/logger")
@@ -78,10 +70,9 @@ local SHUFFLE_SWING = 0.1                     -- how far the cards swing out to 
 local SPREAD_SECONDS, SPREAD_STAGGER = 0.6, 0.05
 local AUTO_STEP = 0.18                  -- seconds between cards when they are turned all at once
 
--- Turning a card, in four steps (each one's length in seconds): the back lifts, swelling a little; it turns edge-on
--- (its width closes to nothing); the face widens back out from the middle (see CardView.squash), still without its
--- picture and text, which cannot be squeezed; then those burst into view from the middle of the art box
--- (CardView.uncover) inside a growing ring, in a flash of the card's rarity colour.
+-- Turning a card, in four steps (seconds): the back lifts and swells; it turns edge-on; the face widens out
+-- (CardView.squash) without its picture and text, which cannot be squeezed; then those burst into view from the
+-- middle of the art box (CardView.uncover) inside a growing ring.
 local FLIP_LIFT, FLIP_TURN, FLIP_OPEN, FLIP_REVEAL = 0.12, 0.15, 0.2, 0.5
 local FLIP_SECONDS = FLIP_LIFT + FLIP_TURN + FLIP_OPEN + FLIP_REVEAL
 local FLIP_SWELL = 0.06                 -- how much bigger the back gets as it lifts
@@ -117,11 +108,10 @@ local function setHidden(component, hidden)
     pcall(function() component.hidden = hidden end)
 end
 
--- The client keeps an event handler after the component it was given to is destroyed. A handler whose closure reaches a card's
--- view and model, or the pack's parts (through a table it holds), keeps them alive, and with them the memory the client holds
--- for them (a pack opening grew the client by about 650 MB for every ten packs, until the plugin was reloaded). So a handler holds
--- only a handle or a table that is emptied here when its parts are destroyed. dev/check_reveal_ui.lua checks that no handler
--- left behind reaches a model, a model group or a sprite.
+-- The client keeps an event handler after the component it was given is destroyed, so a handler whose closure reaches
+-- a card's view and model, or the pack's parts, keeps them (and the client's memory for them) alive. A handler
+-- therefore holds only a handle or a table that is emptied here when its parts are destroyed. dev/check_reveal_ui.lua
+-- checks that no handler left behind reaches a model, a model group or a sprite.
 local function emptied(tbl)
     if tbl ~= nil then
         for key in pairs(tbl) do
@@ -919,10 +909,9 @@ local function swellPack()
     end)
 end
 
--- Turns the sealed pack over (the Flip pack button); opened back side up, its cards are all turned over once they are
--- dealt. The torn pieces themselves narrow to nothing (PackArt.squash); then, while the pack is edge-on, they are swapped
--- for the other side's pieces, which widen out. Only one side exists at a time, as each is many parts. The cards inside
--- and the tear guide are hidden meanwhile, as the narrowing pack would show them.
+-- Turns the sealed pack over (Flip pack): the torn pieces narrow to nothing (PackArt.squash), then are swapped for
+-- the other side's pieces, which widen out. Only one side exists at a time, as each is many parts. The cards inside
+-- and the tear guide are hidden meanwhile. Opened back side up, its cards are all turned over once dealt.
 flipSealed = function()
     local tear = R.tear
     local art = PackArt.designFor(R.packTypeId)

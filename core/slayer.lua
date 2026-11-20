@@ -1,37 +1,23 @@
 -- core/slayer.lua
--- Credits from Slayer tasks: a credit for each task kill (the combat level of the monster killed) and a bonus when
--- the task is completed. This file is the logic only and calls nothing from the client, so dev/check_slayer.lua can
--- replay what the game sent. core/slayerevents.lua feeds it the game's events and pays the credits out.
+-- Credits from Slayer tasks: a credit per combat level of each monster killed, and a bonus when a task is completed. Logic only, no
+-- client calls (dev/check_slayer.lua replays what the game sent); core/slayerevents.lua feeds it the game's events and pays out.
 --
--- How a kill is seen. The server counts the kills, in VarPlayer 183 (SLAYER_COUNT, the kills left): it drops when a
--- task monster is killed. That alone is not enough, because cancelling a task (or a reset) moves it too, so a drop
--- only counts if Slayer XP arrives within XP_WINDOW server ticks of it (a kill always gives Slayer XP, a cancel
--- never does), and a drop of more than MAX_DROP is never kills. The count does not say which monster died. The
--- monster leaves the world a few server ticks later (2 to 6 were seen, once its death animation ends), so after a
--- confirmed drop the NPCs that leave are looked at for WAIT_TICKS: the first ones that leave after the drop
--- and count for the task (core/slayertasks.lua) are the kills, and each is paid its own combat level. (Always after the
--- drop: in the same update as it is too soon to be the kill.) A monster that left before the drop died earlier (and a monster leaving is not always a death: it may only have walked out of
--- view), so it is never matched. A drop of 5 can be one monster (an abyssal lord counts as five), so the credits
--- are per monster killed, not per unit of the count. A drop with no monster to match still pays one kill, at the
--- level of the last monster killed for the task (or the task's example monster).
+-- A kill: the task's kills-left count (VarPlayer 183) drops and Slayer XP arrives within XP_WINDOW ticks (a cancel moves the count
+-- but gives no XP; a drop over MAX_DROP is never kills). The count does not say which monster died, so the monsters that leave the
+-- world within WAIT_TICKS after the drop and count for the task (core/slayertasks.lua) are the kills, each paid its own level; a
+-- drop with no monster to match still pays one kill at a guessed level.
 --
--- Completion. VarPlayer 10077 (SMKI_MISSION_COUNT, the streak) rises by exactly 1 when a task is completed. Cancelling
--- keeps the streak, and skipping resets it to 0, so neither is mistaken for a completion. The bonus is
--- "slayer.bonusMultiplier" times the average level of the kills paid on that task, and is paid once the last kill is.
---
--- Time here is the server tick (about 0.6 seconds): `now` counts them, and advance() is called once for each.
+-- A completion: the streak (VarPlayer 10077) rises by exactly 1; the bonus is "slayer.bonusMultiplier" times the average level of
+-- the task's kills. Time is the server tick (about 0.6 s).
 
 local SlayerTasks = require("core/slayertasks")
 local Config = require("core/config")
 
 local Slayer = {}
 
--- The variables the game keeps the task in (VarPlayer ids): Config "slayer.vars.count", ".task" and ".streak" (183, 185 and
--- 10077; a game update may move them).
--- The credits. A kill pays "slayer.creditsPerLevel" (1) for each combat level of the monster, and the bonus is
--- "slayer.bonusMultiplier" (5) times that for the average level. Whole credits only (at least 1). "slayer.levelCap", if
--- set, is the highest level that is paid for (a few bosses report levels in the thousands); none is no cap. "slayer.enabled"
--- is the switch for all Slayer credits (core/slayerevents.lua).
+-- The variables the game keeps the task in are Config "slayer.vars.count", ".task" and ".streak" (a game update may
+-- move them). A kill pays "slayer.creditsPerLevel" per combat level (at least 1), capped by "slayer.levelCap" if set;
+-- "slayer.enabled" switches all Slayer credits.
 Slayer.DEFAULT_LEVEL = 1        -- the level of a kill when nothing at all is known about it
 
 -- How the game's behaviour is read.
@@ -64,10 +50,9 @@ function Slayer.bonusForLevel(level)
     return math.max(1, math.floor(level * Config.get("slayer.creditsPerLevel") * Config.get("slayer.bonusMultiplier") + 0.5))
 end
 
--- Makes the function that says whether a monster counts for a task: isMember(task, category), where both are keys of
--- the game's Slayer task list and `names` is { key = the task's name in lower case }. A monster counts for a task
--- if its category is the task, or has the task's name, or is listed under the task in core/slayertasks.lua. With no
--- task known (nil or 0) every monster that has a category counts. A monster with no category never does.
+-- Makes isMember(task, category): a monster counts for a task if its category is the task, has the task's name, or is
+-- listed under it in core/slayertasks.lua (`names` is { key = the task's name in lower case }). With no task known
+-- every monster with a category counts.
 function Slayer.membership(names)
     local includes = {}
     for broad, list in pairs(SlayerTasks.includes) do
@@ -107,13 +92,8 @@ end
 local Tracker = {}
 Tracker.__index = Tracker
 
--- Starts following a task. `env` supplies:
---   count, task, streak : the three variables as they are now (any may be nil)
---   isMember(task, category), unitsOf(category) : see Slayer.membership and Slayer.unitsOf
---   fallbackLevel(task) : the level of the task's example monster, or nil (optional)
---   award(kind, credits, info) : called to pay out; kind is "kill" or "bonus", info has level, task, category
---     and, for a kill paid at a guessed level, fallback = true
---   log(...) : optional
+-- Starts following a task. `env` supplies count, task, streak (as they are now, may be nil), isMember, unitsOf,
+-- fallbackLevel(task) (optional), award(kind, credits, info) ("kill" or "bonus") and log(...) (optional).
 function Slayer.new(env)
     local self = setmetatable({}, Tracker)
     self.env = env

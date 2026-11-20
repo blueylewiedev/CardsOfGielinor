@@ -1,13 +1,9 @@
 -- ui/creditswindow.lua
--- A small overlay that shows the credits the logged-in character holds, and how many an hour they are earning (core/rate.lua):
--- a coin icon, the word "Credits" and the number, with "Per hour" and its number under them, on a dark see-through bar with
--- a thin border. It is not a window (no title bar, no buttons): it just sits on
--- the screen, independent of the main window, which can be closed altogether. Drag it with the mouse to move it; where
--- it was left is remembered. Clicking it (a press and release without moving) opens the main window. It is switched on
--- and off from the settings page and the ribbon page (ui/hub.lua), and main.lua remembers
--- whether it was on (the "creditsWindow" option, core/settings.lua), so it comes back the next time the plugin starts.
---
--- The number is written by Format.credits (core/format.lua), which is tested on its own.
+-- A small overlay showing the credits the character holds and how many an hour they earn (core/rate.lua): a coin
+-- icon, "Credits" and the number, "Per hour" and its number, on a dark see-through bar. It is not a window: it sits
+-- on the screen independent of the main window; drag it to move it (where it was left is remembered) and a click
+-- opens the main window. Switched on and off from the settings page and the ribbon page, and remembered
+-- ("creditsWindow").
 
 local Kit = require("ui/kit")
 local Logger = require("core/logger")

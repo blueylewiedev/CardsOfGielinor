@@ -799,6 +799,22 @@ else works from a fork. Either way:
   game. Run `prf` then `prl` in the developer console after adding new files such as images.
 - Releases are made by the project owner.
 
+### How the code is written
+
+Jagex reject code that is overly complex, so the plugin is kept simple to read. `lua dev/check_style.lua` lists where a file drifts from
+this (it only warns: a long file or function is sometimes right).
+
+- **One file, one job,** and no shipped file much over 450 lines. A file starts with a comment of one or two lines saying what it is for.
+- **Comments say why, not what,** and only where a reader could be caught out (a client quirk, a unit, a trap). Dated stories,
+  measurements and "this used to be X" go in `dev/DESIGN.md`, under the file's name, not in the code.
+- **A window keeps its state in one table** made when it opens and thrown away when it closes (see `R` in `ui/revealscreen.lua`), not in
+  file-level variables. The client keeps event handlers after a component is destroyed, so a handler must not hold the window's parts.
+- **A function that takes more than four or five parameters takes an options table.**
+- **One copy of each helper** (`ui/theme.lua`, `ui/util.lua`, `ui/kit.lua`): do not copy a helper from another file.
+- **Nothing in shipped code that only the dev tools use;** that goes in `dev/`.
+- **Every client event subscription goes through `core/events.lua`** (`dev/check_events.lua` fails the build otherwise).
+- **Check that a change that should touch only comments really did** with `python dev/check_bytecode.py`.
+
 ### Card updates between reviews (the overlay)
 
 (The full process, with the checklists, is in [RELEASING.md](RELEASING.md).)

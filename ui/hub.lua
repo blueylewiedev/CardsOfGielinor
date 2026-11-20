@@ -1,8 +1,7 @@
 -- ui/hub.lua
--- The plugin's page behind its ribbon icon (it needs the "hasRibbonIcon" flag in plugin.json).
--- It appears inside the client's Plugins window and is the way to get the main window back
--- after closing it. It has buttons for the main window, the collection, the sets, the statistics, the credits
--- overlay and the tutorial.
+-- The plugin's page behind its ribbon icon ("hasRibbonIcon" in plugin.json), in the client's Plugins window: buttons
+-- for the main window, collection, sets, statistics, credits overlay and tutorial. It is the way back to the main
+-- window after closing it.
 
 local PluginId = require("core/pluginid")
 local Logger = require("core/logger")

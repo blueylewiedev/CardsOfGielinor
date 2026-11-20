@@ -1,12 +1,8 @@
 -- ui/bars.lua
--- A progress bar with a label and "owned / total (percent)" over it, for the Stats window: the label at the left and the
--- numbers at the right of one line, a thin bar under them that fills as the share grows.
---
---   local bar = Bars.new(parent, x, y, w, "Rare", colour, labelColour, opts)   -- `colour` fills the bar
---   opts.percent = false leaves the percentage out of the numbers (for a bar too narrow to hold it)
---   bar.set(owned, total)
---   bar.destroy()
--- A bar is Bars.HEIGHT tall.
+-- A progress bar for the Stats window: a label at the left and "owned / total (percent)" at the right of one line, a
+-- thin bar under them that fills as the share grows. local bar = Bars.new(parent, x, y, w, "Rare", colour,
+-- labelColour, opts) (opts.percent = false leaves the percentage out); bar.set(owned, total); bar.destroy(). A bar is
+-- Bars.HEIGHT tall.
 
 local Kit = require("ui/kit")
 local Format = require("core/format")

@@ -1,12 +1,9 @@
 -- core/memory.lua
--- Gives the client's memory back promptly after cards are destroyed. Every card is about 10 MB of the client's memory, held by
--- the Lua objects that wrap it, which is freed only when Lua collects them. Lua decides when to collect from its own heap, which
--- is small, so it does not feel the pressure: paging quickly through the Collection's grid made cards faster than they were
--- freed, and the client's memory spiked from 4.2 GB to 8.7 GB for a few seconds before falling back by itself.
---
--- Memory.collectSoon() asks for one full collection about a second from now. Asking again before it runs changes nothing, so a
--- burst of page turns gets a collection about once a second, and always one after the last page. The collection runs from the
--- Draw event, on the frame after the wait. The Lua heap is small (tens of MB), so a collection takes a few milliseconds.
+-- Gives the client's memory back promptly after cards are destroyed. Every card is about 10 MB of the client's
+-- memory, freed only when Lua collects the objects that wrap it, and Lua decides from its own small heap.
+-- Memory.collectSoon() asks for one full collection about a second from now; asking again before it runs changes
+-- nothing, so a burst of page turns gets about one a second and always one after the last. It runs from the Draw
+-- event and takes a few milliseconds.
 
 local Events = require("core/events")
 

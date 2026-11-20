@@ -1,9 +1,8 @@
 -- core/bossevents.lua
--- Connects the boss kill credits (core/bosses.lua) to the game: it listens for the boss kill counts, checks the NPCs in view for
--- bosses, and pays the credits into the logged-in character's collection. No permission is needed for any of it.
---
--- Used by main.lua: start() once, begin() when a character's collection has loaded, finish() when it is
--- unloaded, shutdown() when the plugin stops.
+-- Connects the boss kill credits (core/bosses.lua) to the game: it listens for the boss kill counts, checks the NPCs
+-- in view for bosses and pays the credits into the logged-in character's collection. No permission is needed.
+-- main.lua calls start() once, begin() when a collection loads, finish() when it unloads and shutdown() when the
+-- plugin stops.
 
 local Bosses = require("core/bosses")
 local Logger = require("core/logger")

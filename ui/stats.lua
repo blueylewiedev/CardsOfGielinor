@@ -1,19 +1,12 @@
 -- ui/stats.lua
--- The Stats window, three tabs across its top (the window can be resized; a tab scrolls when it is taller than the room):
---   Collection        : progress bars for all the cards, the NPC cards and the item cards, the cards owned as foils and
---                       as holos, then one for each rarity
---   Regions           : a progress bar for each region, in two columns, and one for the cards that have no region (the
---                       regions' counts alone would not add up to the deck)
---   Packs and credits : an overview (packs opened, cards pulled, credits earned and spent, time played and the average
---                       credits per hour over all sessions) beside the pull rates by rarity, in the rarities' colours,
---                       and the foil and holo pull rates
--- The bars come from Browse.progress (core/browse.lua), counted in one pass over the deck and kept for a few seconds
--- (the window refreshes every tick, and nothing in a collection changes that fast); cards from a pack that is still being
--- opened do not count until they have been turned over. The text of the last tab comes from state.stats (see
--- core/storage.lua) through Stats.overview and Stats.pullRates, which have no UI, so they can be tested on their own.
+-- The Stats window, three tabs (it can be resized; a tab scrolls when taller than the room):
+--   Collection         progress bars for all cards, NPC cards, item cards, foils, holos and each rarity
+--   Regions            a bar per region in two columns, and one for the cards with no region
+--   Packs and credits  an overview (packs, cards, credits earned and spent, time played, average credits per hour) beside the pull rates
 --
--- Layout: what a tab shows is built to fit the width of its page, with the same margin (MARGIN) at both sides, and built
--- again when the window is resized (a moment after the mouse stops, so dragging an edge does not rebuild it every frame).
+-- The bars come from Browse.progress, counted in one pass and kept a few seconds (the window refreshes every tick); cards from a pack
+-- still being opened do not count until turned over. Stats.overview and Stats.pullRates have no UI, so they are tested on their own.
+-- A tab is built to its page's width and built again a moment after the window stops being resized.
 
 local Cards = require("core/cards")
 local Browse = require("core/browse")

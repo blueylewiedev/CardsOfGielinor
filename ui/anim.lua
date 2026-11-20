@@ -1,10 +1,8 @@
 -- ui/anim.lua
--- Short animations driven by the Draw event, for the pack window and the pack carousel.
---
--- Each owner (any table) runs at most one animation at a time: update(p) is called every frame
--- with p going from 0 to 1, then finish() once. Starting another, or Anim.skip, jumps the
--- running one to its end first. A step that fails is logged once and the animation ended, rather
--- than failing again every frame. Also a few easing curves, and the frame time from a Draw event.
+-- Short animations driven by the Draw event. Each owner (any table) runs at most one at a time: update(p) is called
+-- every frame with p from 0 to 1, then finish() once; starting another, or Anim.skip, jumps the running one to its
+-- end. A step that fails is logged once and the animation ended. Also a few easing curves and the frame time from a
+-- Draw event.
 
 local Logger = require("core/logger")
 local Events = require("core/events")

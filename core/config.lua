@@ -1,17 +1,11 @@
 -- core/config.lua
--- Every number, list and switch that can be tuned after release, with its default, its limits and the checks. The rest of the
--- plugin reads them here (Config.get) at the moment it needs them, never at load, so a change made later is used at once.
--- This file does no networking and calls nothing from the client, so dev/check_config.lua can test it offline.
+-- Every number, list and switch that can be tuned after release, with its default, limits and checks; the rest of the plugin reads
+-- them with Config.get at the moment it needs them. No networking and no client calls (dev/check_config.lua tests it offline).
 --
--- The limits are fixed in this file (reviewed code). A tuning table (the overlay's "tuning" line, see
--- notes/tuning overlay spec.md) goes through Config.apply, which keeps what passes and reports what does not:
---   * data only: numbers, short lists and switches;
---   * every key is checked alone: one that fails keeps its default and is reported, the others still apply;
---   * a switch (enabled) can only be turned off: it is on in the build, so "true" changes nothing;
---   * nothing is saved: Config.reset() (or a restart) puts the defaults back.
---
--- Keys are paths with dots, for example Config.get("packs.price"). A table a key holds (a list, a map) belongs to Config:
--- read it, never change it.
+-- The limits are fixed here, in reviewed code. A tuning table (the overlay's "tuning" line) goes through Config.apply, which keeps
+-- what passes and reports what does not: data only, every key checked alone, a switch can only be turned off, nothing is saved
+-- (Config.reset() puts the defaults back). Keys are dotted paths such as "packs.price"; a table a key holds belongs to Config: read
+-- it, never change it.
 
 local Config = {}
 
@@ -296,11 +290,8 @@ function Config.get(path)
     return values[path]
 end
 
--- Applies a tuning table (the overlay's "tuning" line, decoded). Returns a report:
---   applied  : the keys that were set
---   ignored  : "key: why" for what was not accepted (at most MAX_REPORTED; `more` counts the rest)
---   changed  : the keys that now differ from their default
--- Never raises, whatever it is given.
+-- Applies a tuning table (the overlay's "tuning" line). Never raises. Returns a report: applied (keys set), ignored
+-- ("key: why", at most MAX_REPORTED; `more` counts the rest) and changed (keys that now differ from their default).
 function Config.apply(raw)
     local report = { applied = {}, ignored = {}, changed = {}, more = 0 }
     local function ignore(path, why)

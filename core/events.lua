@@ -1,12 +1,10 @@
 -- core/events.lua
--- Every subscription the plugin makes to the client's events goes through here, so they can all be undone when the
--- plugin shuts down (PluginShutdown calls Events.shutdown): a handler left subscribed after a reload or a disable could
--- keep running beside the new copy of the plugin. It only keeps a list: each handler is still subscribed to the client
--- on its own, under its own name, and the client calls it exactly as if it had been subscribed directly.
---
---   Events.on("Draw", "cardcollector_shine", fn)   subscribes fn to Event.Draw under that name, and remembers it
---   Events.off("Draw", "cardcollector_shine")      unsubscribes it (never raises)
---   Events.shutdown()                              unsubscribes everything still subscribed
+-- Every subscription the plugin makes to the client's events goes through here, so PluginShutdown can undo them all
+-- (a handler left subscribed after a reload could keep running beside the new copy). It only keeps a list: each
+-- handler is still subscribed to the client on its own, under its own name.
+--   Events.on("Draw", "name", fn)    subscribes and remembers it
+--   Events.off("Draw", "name")       unsubscribes it (never raises)
+--   Events.shutdown()                unsubscribes everything still subscribed
 
 local Events = {}
 
