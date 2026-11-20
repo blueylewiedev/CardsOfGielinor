@@ -187,25 +187,6 @@ local function overrides(value)
     return clean, nil, dropped
 end
 
--- Boss ids that pay nothing: a list of up to 60, kept as { [id] = true }.
-local function ignored(value)
-    local list, why, dropped = cleanList(value, 60, function(id)
-        local whole = type(id) == "number" and math.tointeger(id) or nil
-        if whole == nil or whole < 1 or whole > 200 then
-            return nil, "is not a boss id from 1 to 200"
-        end
-        return whole
-    end)
-    if list == nil then
-        return nil, why
-    end
-    local set = {}
-    for _, id in ipairs(list) do
-        set[id] = true
-    end
-    return set, nil, dropped
-end
-
 -- The keys -----------------------------------------------------------------------------------------------------------------
 -- { default, check } for each. `merge` (a check that takes the current value too) is for a table that adds to the shipped one.
 
@@ -232,7 +213,6 @@ local SCHEMA = {
     ["bosses.activities"]       = { { BSLAY_BOSS_KILLS2 = { [65536] = { name = "Barrows chest", credits = 1800 } } }, activities,
         merge = true },
     ["bosses.overrides"]        = { {}, overrides },
-    ["bosses.ignore"]           = { {}, ignored },
     ["shine.enabled"]           = { true, switch },               -- (a foil card's shine)
     ["holo.enabled"]            = { true, switch },               -- (a holo card's rainbow)
 }

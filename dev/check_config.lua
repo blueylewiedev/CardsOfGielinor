@@ -52,7 +52,7 @@ check(Config.get("slayer.vars.count") == 183 and Config.get("slayer.vars.task") 
 check(same(Config.get("bosses.tiers"), { { 9000, 8000 }, { 5000, 4000 }, { 1000, 1800 }, { 500, 800 }, { 0, 400 } }), "the boss tiers")
 check(same(Config.get("bosses.activities"), { BSLAY_BOSS_KILLS2 = { [65536] = { name = "Barrows chest", credits = 1800 } } }),
     "the Barrows chest")
-check(next(Config.get("bosses.overrides")) == nil and next(Config.get("bosses.ignore")) == nil, "no boss overrides or ignored bosses")
+check(next(Config.get("bosses.overrides")) == nil, "no boss overrides")
 check(Config.get("bosses.enabled") == true and Config.get("shine.enabled") == true and Config.revision == nil, "the other switches are on")
 
 -- 2. The schema agrees with the rest of the plugin ------------------------------------------------------------------------
@@ -115,7 +115,7 @@ do
     Config.reset()
     -- whatever it is given, it does not raise
     for _, odd in ipairs({ 5, "x", true, function() end, { 1, 2, 3 }, { earning = 7 }, { earning = { combatSkills = 7 } },
-            { bosses = { tiers = { "a" }, activities = 3, overrides = "x", ignore = 4 } }, { odds = { rarity = 3 } } }) do
+            { bosses = { tiers = { "a" }, activities = 3, overrides = "x" } }, { odds = { rarity = 3 } } }) do
         local ok = pcall(Config.apply, odd)
         check(ok, "apply does not raise on " .. type(odd))
         Config.reset()
@@ -162,9 +162,9 @@ do
     Config.reset()
     check(Config.get("bosses.activities").BSLAY_BOSS_KILLS7 == nil, "and reset takes them away")
 
-    Config.apply({ bosses = { overrides = { ["24"] = 1800, ["0"] = 5, ["201"] = 5, ["x"] = 1, ["30"] = 20001 }, ignore = { 7, 7, 0, 300, "z" } } })
-    check(same(Config.get("bosses.overrides"), { [24] = 1800 }) and same(Config.get("bosses.ignore"), { [7] = true }),
-        "overrides and ignored bosses keep only boss ids from 1 to 200 and credits from 0 to 20,000")
+    Config.apply({ bosses = { overrides = { ["24"] = 1800, ["0"] = 5, ["201"] = 5, ["x"] = 1, ["30"] = 20001 } } })
+    check(same(Config.get("bosses.overrides"), { [24] = 1800 }),
+        "overrides keep only boss ids from 1 to 200 and credits from 0 to 20,000")
     Config.reset()
 end
 
@@ -266,7 +266,7 @@ do
     end
     local t = run()
     check(kill(t, 5, 1200) and paid[1][2] == 1800, "a level 1,200 boss pays the 1,000 tier")
-    Config.apply({ bosses = { tiers = { { 0, 77 } }, overrides = { ["5"] = 3000, ["6"] = 0 }, ignore = { 7 } } })
+    Config.apply({ bosses = { tiers = { { 0, 77 } }, overrides = { ["5"] = 3000, ["6"] = 0 } } })
     t = run()
     check(kill(t, 4, 5000) and paid[1][2] == 77, "tuned tiers pay another boss")
     t = run()
@@ -274,11 +274,9 @@ do
     t = run()
     check(not kill(t, 6, 1200) and #paid == 0, "a boss set to 0 credits pays nothing")
     t = run()
-    check(not kill(t, 7, 1200) and #paid == 0, "an ignored boss pays nothing")
-    t = run()
-    kill(t, 7, 1200)
+    kill(t, 6, 1200)
     t:advance()
-    t:seen(7, 1200, "Boss 7")
+    t:seen(6, 1200, "Boss 6")
     check(not t:onKillVar("BSLAY_BOSS_KILLS1", 1, 2) and #paid == 0, "and is not paid when it is seen again soon after")
     Config.reset()
     t = run()

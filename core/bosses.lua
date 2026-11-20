@@ -16,7 +16,7 @@ local Bosses = {}
 
 -- The credits by the boss's combat level (Config "bosses.tiers": { lowest level, credits }, highest first):
 -- placeholders until play-testing gives real credits per hour. Also Config "bosses.activities", "bosses.overrides"
--- (credits for one boss by BSLAY_ID), "bosses.ignore" and "bosses.enabled" (the switch for all boss credits).
+-- (credits for one boss by BSLAY_ID, 0 stops it paying) and "bosses.enabled" (the switch for all boss credits).
 Bosses.DEFAULT_LEVEL = 1        -- the level of a kill when the boss's level is not known
 
 -- How the game's behaviour is read.
@@ -125,10 +125,6 @@ function Tracker:onKillVar(name, old, new)
         return false
     end
     best.paidAt = self.now
-    if Config.get("bosses.ignore")[bestId] then
-        self:say("boss", bestId, best.name, "is ignored (tuning): nothing paid")
-        return false
-    end
     local credits = Config.get("bosses.overrides")[bestId] or Bosses.creditsForLevel(best.level)
     if credits <= 0 then
         self:say("boss", bestId, best.name, "pays 0 credits (tuning): nothing paid")
