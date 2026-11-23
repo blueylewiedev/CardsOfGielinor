@@ -23,6 +23,11 @@ it with the wiki page it came from: type that page into the Wiki Review's "Reope
 candidate back in the Card Builder, then press Done again. A card in dev/cut_cards.lua (cut from
 the deck by the NPC rules) is never added, though it was queued before it was cut.
 
+An NPC card that is a lookalike version of a card already in the deck (the same name but for a
+bracket, and the same look in the client's cache: "Hellhound (God Wars Dungeon)" and Hellhound) is
+not added as a card of its own: its NPC goes in that card's variants and its places in the card's
+locations instead (see dev/lookalikes.py and CONTRIBUTING, "Which NPCs get a card").
+
 A location or NPC category word that an added card uses and core/tagwords.lua does not list yet is
 added there too, as dev/add_tag_words.lua does, so a new word doesn't stop the plugin loading. Any
 other word that isn't listed is only reported (item categories go in their group by hand; regions,
@@ -32,6 +37,7 @@ and reload the plugin to check the cards load, then commit.
 """
 
 import argparse
+import functools
 import json
 import os
 import re
@@ -39,6 +45,7 @@ import sqlite3
 import time
 from pathlib import Path
 
+import lookalikes
 import wiki_pages
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -147,18 +154,40 @@ def add_block(entry, dry_run):
     return f"{'would add' if dry_run else 'added'} {entry['id']} to {entry['deck']}.lua{note}"
 
 
+@functools.lru_cache(maxsize=None)
+def look_of():
+    """The cache's look_of (dev/lookalikes.py), read once; None without a cache."""
+    found = lookalikes.cache_looks()
+    if found is None:
+        print("No readable client cache, so queued cards aren't checked for lookalikes of a card.")
+    return found
+
+
+def fold(entry, cards, dry_run):
+    """If the queued NPC card is a lookalike version of a card in the deck (dev/lookalikes.py: the same
+    name but for a bracket, and the same look), adds it to that card as a variant instead and returns
+    what was done; otherwise None."""
+    if not entry["deck"].startswith("deck/npcs/") or look_of() is None:
+        return None
+    queued = lookalikes.read_card(entry["block"])
+    card = lookalikes.twin(queued["name"], [queued["npc"]], cards, look_of(), queued["categories"])
+    if card is None:
+        return None
+    message = lookalikes.add_variant(card, queued["npc"], queued["name"], lookalikes.locations(entry["block"]), dry_run)
+    card["configs"].append(queued["npc"])
+    return f"{entry['id']} looks the same as {card['id']}: {message}"
+
+
 def list_at(text, marker):
     """The start and end of the first balanced { ... } after `marker` (a pattern)."""
     found = re.search(marker, text)
     if found is None:
         raise ValueError(f"core/tagwords.lua: no {marker}")
     first = text.index("{", found.end())
-    depth = 0
-    for i in range(first, len(text)):
-        depth += {"{": 1, "}": -1}.get(text[i], 0)
-        if depth == 0:
-            return first, i + 1
-    raise ValueError(f"core/tagwords.lua: {marker} has no end")
+    try:
+        return first, lookalikes.brace_end(text, first)
+    except ValueError:
+        raise ValueError(f"core/tagwords.lua: {marker} has no end") from None
 
 
 def words_at(text, marker):
@@ -242,13 +271,20 @@ def process(db_path, dry_run=False):
     state = load_state()
     ids, cut = all_ids(), cut_ids()
     added, to_tag, pages = 0, {}, {}
+    cards = None
     for key, entry, record in entries_with_state(db_path, state):
         if record is not None and record.get("status") == "done":
             if record.get("words_pending"):
                 to_tag[key] = entry
             continue
+        # (the deck's NPC cards are read only once there is a card to add)
+        cards = lookalikes.deck_cards() if cards is None else cards
         if entry["id"] in cut:
             status, reason = "failed", "cut from the deck (it is in dev/cut_cards.lua)"
+        elif (folded := fold(entry, cards, dry_run)) is not None:
+            status, reason = "done", ""
+            to_tag[key] = entry
+            print(folded)
         elif entry["id"] in ids:
             status, reason = "failed", "a card with the id %s is already in the deck files" % entry["id"]
         else:

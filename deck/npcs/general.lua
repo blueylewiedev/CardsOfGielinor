@@ -38,7 +38,11 @@ Set.cards = {
         id = "dog_stray", name = "Stray dog", rarity = "common",
         desc = "Follows anyone who might have snacks.",
         art = { npc = "DOG_STRAY", anim = 22417, cam = { yaw = 0.60, dist = 748, fov = 35, ty = 180, tx = -20 } },
-        tags = { category = { "animal" }, membership = { "f2p" } },
+        variants = {
+            { npc = "DOG_STRAY", name = "Stray dog" },
+            { npc = "QUEST_PRINCESS_PART_5_STRAY", name = "Stray dog (Fort Forinthry)" },
+        },
+        tags = { location = { "fort_forinthry" }, category = { "animal" }, membership = { "f2p" } },
     },
 
     {
@@ -318,7 +322,7 @@ Set.cards = {
         id = "ramsay", name = "Ramsay", rarity = "legendary",
         desc = "I'd think twice before eating anything he cooks.",
         art = { npc = "SKILLPETS_COOKING", anim = 29272, cam = { yaw = -0.20, dist = 566, ty = 220 } },
-        tags = { skills = { "cooking" }, category = { "goblin", "pet" }, membership = { "f2p" } },
+        tags = { skills = { "cooking" }, category = { "goblin", "pet", "cook" }, membership = { "f2p" } },
     },
     {
         id = "spirit_cobra", name = "Spirit cobra", rarity = "rare",
@@ -714,7 +718,11 @@ Set.cards = {
         id = "rabbit", name = "Rabbit", rarity = "common",
         desc = "Aww, how cute.",
         art = { npc = "REGICIDE_RABBIT", anim = 32186, cam = { yaw = -0.40, pitch = 0.30, dist = 749, fov = 35, ty = 180 } },
-        tags = { location = { "enchanted_valley", "burthorpe" }, category = { "animal", "monster" }, membership = { "f2p" } },
+        variants = {
+            { npc = "REGICIDE_RABBIT", name = "Rabbit" },
+            { npc = "OMGE_RABBIT", name = "Rabbit (Burthorpe)" },
+        },
+        tags = { location = { "enchanted_valley", "burthorpe", "seren_s_garden", "taverley" }, category = { "animal", "monster" }, membership = { "f2p" } },
     },
     {
         id = "raccoon", name = "Raccoon", rarity = "common",
@@ -765,10 +773,25 @@ Set.cards = {
         tags = { location = { "gorajo_hoardstalker_dungeon", "grenwall_portal", "hollow_hill", "isafdar" }, skills = { "hunter" }, category = { "grenwall" }, membership = { "p2p" } },
     },
     {
-        id = "hellhound", name = "Hellhound", rarity = "uncommon",
+        id = "hellhound_familiar", name = "Hellhound (familiar)", rarity = "uncommon",
         desc = "Hello, nice doggy...",
         art = { npc = "LORE_ANCIENT_HELLHOUND", anim = 34881, cam = { yaw = -0.60, pitch = 0.30, dist = 1308, fov = 35, ty = 220, tx = 70 } },
         tags = { skills = { "summoning" }, category = { "hellhound", "monster" }, membership = { "p2p" } },
+    },
+    -- (the hellhounds of Taverley, the God Wars Dungeon, the Zamorakian Undercity and the Wilderness share one model, so
+    -- they are one card; the variants keep the Wiki Review from offering them again)
+    {
+        id = "hellhound", name = "Hellhound", rarity = "common",
+        desc = "Hello, nice doggy...",
+        art = { npc = "HELLHOUND", anim = 34881, cam = { yaw = -0.60, pitch = 0.30, dist = 1308, fov = 35, ty = 220, tx = 70 } },
+        variants = {
+            { npc = "HELLHOUND", name = "Hellhound" },
+            { npc = "GODWARS_ANCIENT_HELLHOUND", name = "Hellhound (God Wars Dungeon)" },
+            { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_EASY_1", name = "Hellhound (The Zamorakian Undercity)" },
+            { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_EASY_SUMMONED", name = "Hellhound (summoned)" },
+            { npc = "WILD_IMP_HELLHOUND", name = "Hellhound (Wilderness)" },
+        },
+        tags = { location = { "taverley", "kuradal_s_dungeon", "god_wars_dungeon", "the_zamorakian_undercity" }, category = { "hellhound", "monster" }, membership = { "f2p" } },
     },
     {
         id = "archaeologist", name = "Archaeologist", rarity = "rare",
@@ -1044,6 +1067,10 @@ Set.cards = {
         id = "imp", name = "Imp", rarity = "common",
         desc = "A cheeky little imp.",
         art = { npc = "IMP", anim = 171, cam = { dist = 989, fov = 25, ty = 160 } },
+        variants = {
+            { npc = "IMP", name = "Imp" },
+            { npc = "GODWARS_ANCIENT_IMP", name = "Imp (God Wars Dungeon)" },
+        },
         tags = { skills = { "hunter" }, category = { "demon", "monster" }, membership = { "f2p" } },
     },
     {
@@ -1056,6 +1083,10 @@ Set.cards = {
         id = "lesser_demon", name = "Lesser demon", rarity = "uncommon",
         desc = "Lesser, but still pretty big.",
         art = { npc = "LESSER_DEMON", anim = 18829, cam = { pitch = 0.30, dist = 2971, fov = 30, ty = 540, near = 0.25 } },
+        variants = {
+            { npc = "LESSER_DEMON", name = "Lesser demon" },
+            { npc = "DRAGONSLAYER_DEMON", name = "Lesser demon (Melzar's Maze)" },
+        },
         tags = { category = { "demon", "monster" }, membership = { "f2p" } },
     },
     {
@@ -1423,7 +1454,7 @@ Set.cards = {
         id = "bryll_thoksdottir", name = "Bryll Thoksdottir", rarity = "uncommon",
         desc = "A Fremennik, requesting aid at the dungeons of Daemonheim.",
         art = { npc = "DUNGEON_REWARD_SHOP_NPC", anim = 15762, cam = { yaw = -0.20, dist = 1306, fov = 20, ty = 600 } },
-        tags = { location = { "taverley", "daemonheim" }, skills = { "dungeoneering" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
+        tags = { location = { "taverley", "daemonheim" }, skills = { "dungeoneering" }, category = { "humanoid", "shopkeeper", "skill_trainer" }, membership = { "f2p" } },
     },
     {
         id = "captain_errdo", name = "Captain Errdo", rarity = "uncommon",
@@ -1503,6 +1534,7 @@ Set.cards = {
         art = { npc = "LORE_MONKEY_3", anim = 8344, cam = { yaw = -0.63, pitch = 0.30, dist = 1137, fov = 35, ty = 260 } },
         tags = { location = { "baby_monkey_hunter" }, category = { "animal", "pet" }, membership = { "p2p" } },
     },
+    { id = "quartermaster_gully", name = "Quartermaster Gully", rarity = "uncommon", desc = "There's something off about him.", art = { npc = "ELR0_QUARTERMASTER_01_NOTRAVEL", anim = 29056, cam = { yaw = 0.02, dist = 1041, fov = 30, ty = 617, tx = 34, near = 0.25 } }, tags = { location = { "port_sarim", "menaphos", "the_arc", "daemonheim" }, category = { "humanoid", "pirate" }, membership = { "p2p" } } },
 }
 
 return Set

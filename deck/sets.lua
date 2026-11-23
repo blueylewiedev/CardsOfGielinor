@@ -19,7 +19,8 @@
 --            New variants join the set by themselves when they are added to the deck.
 --   filter : optional. Only cards that also match this are taken in, written as a pack filter (see core/packtypes.lua
 --            in core/cards.lua), e.g. { kind = "npc" } or { category = "shopkeeper" }. On its own (no `names`)
---            it takes in every card that matches.
+--            it takes in every card that matches. A set of NPCs by job (guards, cooks, bankers...) filters on that
+--            category word: dev/wiki_cards.py tags new cards with it from the wiki, so they join by themselves.
 --   add    : optional. Card ids to put in the set although the rules above leave them out.
 --   leave  : optional. Card ids to keep out of the set although the rules above take them in.
 -- A set needs at least one of names, filter or add. The cards are shown in the deck's order (lowest rarity first).
@@ -31,10 +32,12 @@ return {
     {
         id = "shopkeepers", name = "Shopkeepers",
         names = { "Shopkeeper" },
+        add = { "fairy_shopkeeper" },
     },
     {
         id = "shop_assistants", name = "Shop assistants",
         names = { "Shop assistant" },
+        add = { "fairy_shop_assistant" },
     },
     {
         id = "musicians", name = "Musicians",
@@ -45,33 +48,31 @@ return {
         names = { "Bartender" },
         add = { "cheri" },
     },
+    -- (left out: guardians, and people the wiki files with guards who only stand guard in a story)
     {
         id = "guards", name = "Guards",
-        names = { "Guard" },
-        filter = { kind = "npc" },
+        filter = { kind = "npc", category = "guard" },
+        leave = { "ashuelot_reis", "berry", "dad", "laidee_gnonock", "treznor", "achietties", "captain_rovin",
+            "captain_undak", "dartog", "cave_monk", "rune_guardian", "guardian_of_armadyl", "dagannoth_guardian" },
     },
+    -- (the wiki's goblin race: cave goblins and hobgoblins too)
     {
         id = "goblins", name = "Goblins",
-        names = { "Goblin" },
-        filter = { kind = "npc" },
+        filter = { kind = "npc", category = "goblin" },
     },
+    -- (left out: a sheep and the Spellwisp, which the wiki files with the wizards)
     {
         id = "wizards", name = "Wizards",
-        names = { "Wizard" },
-        filter = { kind = "npc" },
+        filter = { kind = "npc", category = "wizard" },
+        leave = { "sheep_2", "spellwisp" },
     },
     {
         id = "cooks", name = "Cooks",
-        names = { "Cook" },
-        filter = { kind = "npc" },
+        filter = { kind = "npc", category = "cook" },
     },
-    -- Bankers and bank keepers, named or not ("Banker" takes every "Banker (...)" added later).
     {
         id = "bankers", name = "Bankers",
-        names = { "Banker" },
-        filter = { kind = "npc" },
-        add = { "gnome_banker", "zombie_banker", "zanker", "emerald_benedict", "copperpot", "mr_pinsworth",
-            "claire_hick", "mimsy", "banky_crablet", "banky_crablet_cyclosis" },
+        filter = { kind = "npc", category = "banker" },
     },
     -- The skill masters: the NPCs who sell a skill's cape, from the wiki's Skillcape page (and the Spirit of Mastery,
     -- who sells the 120 Necromancy cape). The ones not carded yet join by themselves when they are.
@@ -85,13 +86,11 @@ return {
             "Martin Thwait", "Wilfred" },
         filter = { kind = "npc" },
     },
-    -- Skill trainers: the skill masters of Burthorpe and Taverley (OMGE_SKILL_MASTER_* in the cache), the tutorial's
-    -- instructors (TUT6_*; Vannaka is its combat instructor as well as a Slayer master) and Lumbridge's smithing tutor.
+    -- (the skill masters of Burthorpe and Taverley and the tutorial's instructors, tagged by their NPC; Vannaka, Sani
+    -- and Bryll, shown as other NPCs, were tagged by hand)
     {
         id = "skill_trainers", name = "Skill trainers",
-        add = { "ayleth_beaststalker", "carwen_essencebinder", "chaplain_sarah", "alfred_stonemason",
-            "drill_sergeant_hartman", "brace_the_prayer_instructor", "dezzick_the_mining_instructor",
-            "lev_the_master_chef", "mogle_the_financial_advisor", "terrova_the_magic_instructor", "vannaka", "sani" },
+        filter = { kind = "npc", category = "skill_trainer" },
     },
     -- The Slayer masters. The ones not carded yet join by themselves when they are.
     {
@@ -99,6 +98,14 @@ return {
         names = { "Turael", "Spria", "Mazchna", "Achtryn", "Vannaka", "Chaeldar", "Sumona", "Duradel", "Lapalok",
             "Kuradal", "Morvran", "Laniakea", "Mandrith", "Jacquelyn" },
         filter = { kind = "npc" },
+    },
+    {
+        id = "god_emissaries", name = "God emissaries",
+        filter = { kind = "npc", category = "emissary" },
+    },
+    {
+        id = "archaeology_collectors", name = "Archaeology collectors",
+        filter = { kind = "npc", category = "archaeology_collector" },
     },
 
     -- Items. These are hand-picked: the tags (category = "bar", "ore"...) also take in quest, minigame and
