@@ -55,16 +55,15 @@ return {
         leave = { "ashuelot_reis", "berry", "dad", "laidee_gnonock", "treznor", "achietties", "captain_rovin",
             "captain_undak", "dartog", "cave_monk", "rune_guardian", "guardian_of_armadyl", "dagannoth_guardian" },
     },
-    -- (the wiki's goblin race, in the places goblins live outside Dorgesh-Kaan, whose 50 would swamp the set)
+    -- (the wiki's goblin race: cave goblins and hobgoblins too)
     {
         id = "goblins", name = "Goblins",
-        filter = { kind = "npc", category = "goblin",
-            location = { "goblin_village", "lumbridge", "draynor", "god_wars_dungeon", "bandos_s_stronghold", "yu_biusk" } },
+        filter = { kind = "npc", category = "goblin" },
     },
     -- (left out: a sheep and the Spellwisp, which the wiki files with the wizards)
     {
-        id = "wizards_tower", name = "Wizards' Tower",
-        filter = { kind = "npc", category = "wizard", location = "wizards_tower" },
+        id = "wizards", name = "Wizards",
+        filter = { kind = "npc", category = "wizard" },
         leave = { "sheep_2", "spellwisp" },
     },
     {

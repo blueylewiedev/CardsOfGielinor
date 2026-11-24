@@ -10,7 +10,6 @@ the changelog box when that version is uploaded to mod.io, one change per line.
 - The Spiritual mage, ranger and warrior have a card for each god's version.
 - New roles: cook, skill trainer, emissary and archaeology collector. The Cooks, Bankers, Guards and Skill trainers sets now take in every NPC with that role.
 - New sets: God emissaries and Archaeology collectors.
-- The Goblins set is now the goblins of Goblin Village, Lumbridge, Draynor, the God Wars Dungeon, Bandos's stronghold and Yu'biusk, and the Wizards set is now the Wizards' Tower.
 - Shorter titles on four cards whose names did not fit the card.
 
 ## 1.0.0
