@@ -288,6 +288,9 @@ Set.cards = {
         tags = { regions = { "misthalin" }, category = { "undead", "monster" }, membership = { "f2p" } },
     },
     { id = "local_thug_2", name = "Local thug", rarity = "common", desc = "An axe-wielding thug who serves a dark lord.", art = { npc = "LUC2_LUCIEN_IKOV_THUG", anim = 7188, cam = { yaw = 0.16, pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "misthalin" }, location = { "east_ardougne", "edgeville", "ardougne" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "dwarven_miner", name = "Dwarven Miner", rarity = "uncommon", desc = "He works for Doric & Son.", art = { npc = "PNR_MINER", anim = 17844, cam = { yaw = -0.20, dist = 566, ty = 340 } }, tags = { regions = { "asgarnia" }, location = { "coal_truck_mine", "mining_guild", "legends_guild_south_west_mine" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "idria", name = "Idria", rarity = "uncommon", desc = "A wise, albeit flighty, lady with a keen sense of purpose.", art = { npc = "LUC2_IDRIA", anim = 7188, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.25 } }, tags = { regions = { "asgarnia" }, location = { "forester_s_arms", "white_knights_castle" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "milk_seller", name = "Milk seller", rarity = "common", desc = "She sells milk.", art = { npc = "MILKSHOP_KEEPER", anim = 3950, cam = { pitch = 0.15, dist = 859, ty = 480, near = 0.25 } }, tags = { regions = { "asgarnia" }, location = { "sinclair_mansion", "falador" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } } },
 }
 
 return Set

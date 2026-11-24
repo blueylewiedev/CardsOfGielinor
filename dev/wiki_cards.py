@@ -136,6 +136,8 @@ from functools import lru_cache
 from itertools import zip_longest
 from pathlib import Path
 
+import lookalikes
+import wiki_pages
 from npc_looks import Looks, npc_ids
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -899,11 +901,16 @@ CATEGORY_SKILLS = {
 # Category words suggested by the page's wiki categories (a category name containing the key).
 CATEGORY_WORDS = {
     "merchants": "shopkeeper", "shopkeepers": "shopkeeper", "stall": "stallholder", "monarchs": "royalty",
-    "royalty": "royalty", "bankers": "banker", "guards": "guard", "knights": "knight", "wizards": "wizard",
+    "royalty": "royalty", "bankers": "banker", "bank npcs": "banker", "guards": "guard", "knights": "knight", "wizards": "wizard",
     "priests": "priest", "monks": "priest", "pirates": "pirate", "farmers": "farmer", "thieves": "thief",
     "bosses": "boss", "dominion tower": "boss", "adventurers": "adventurer",
     "pets": "pet",                      # (every pet category: skilling, boss, companion pets...)
 }
+# Category words from a wiki category's whole name, where part of a name would catch others ("Cooks' Guild").
+# Each gives (word, unless): the word is not given to a page already tagged `unless` (the wiki's God Emissaries holds
+# the gods they speak for as well).
+CATEGORY_EXACT_WORDS = {"cooks": ("cook", None), "archaeological collectors": ("archaeology_collector", None),
+                        "god emissaries": ("emissary", "god")}
 
 
 # Item category words suggested by the equipment slot (Infobox Bonuses' slot).
@@ -1997,8 +2004,7 @@ def fetch_shops(wiki, refresh):
 
 
 DROP_ITEMS = ROOT / "dev" / "drop_items.json"      # where items drop and how often, reduced (committed)
-SITE_CARDS = ROOT / "docs" / "cards.json"          # the deck as the site has it: the item names to ask about
-DROP_BATCH = 40                                    # item names asked for in one request of the dropsline bucket
+SITE_CARDS = ROOT / "docs" / "cards.json"          # the deck as the site has it: the item names to ask aboutDROP_BATCH = 40                                    # item names asked for in one request of the dropsline bucket
 DROPLINE_ROWS = 5000                               # rows of it a request returns at most
 RATE = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*/\s*(\d[\d,]*(?:\.\d+)?)")
 
@@ -2589,6 +2595,87 @@ def region_tag(regions, words):
     return None, "region unknown: choose the deck file"
 
 
+# Gods a page's versions can be named for. A page whose infobox has versions for two or more of them (Spiritual mage:
+# Zamorak, Armadyl, Saradomin, Bandos) is a card for each god's version, as each looks and serves differently.
+GOD_VERSIONS = {"saradomin", "zamorak", "armadyl", "bandos", "zaros", "guthix", "seren", "sliske"}
+
+
+def split_god_versions(found, pages, configs_of):
+    """Each NPC candidate whose page has versions for two or more gods (GOD_VERSIONS) becomes one candidate per
+    god: "Spiritual mage (Saradomin)", with that version's NPC and examine text. Its other versions (a quest's
+    copy) are left out. Each split candidate gets its own `mark` (its name), which the Wiki Review keeps its
+    Done and Skip marks under, as they share a page. `configs_of` is { npc id: config name }."""
+    out = []
+    for c in found:
+        page = pages.get(c["page"]) if c["kind"] == "npc" else None
+        fields = npc_infobox(page)[1] if page else None
+        versions = {k[len("version"):]: plain(v).strip() for k, v in (fields or {}).items() if re.fullmatch(r"version\d+", k)}
+        gods = {n: name for n, name in versions.items() if name.lower() in GOD_VERSIONS}
+        if len(gods) < 2:
+            out.append(c)
+            continue
+        for n, god in sorted(gods.items(), key=lambda item: int(item[0])):
+            ids = [int(i) for i in re.findall(r"\d+", plain(fields.get("id" + n, "")))]
+            config = next((configs_of[i] for i in ids if i in configs_of), None)
+            if config is None:
+                continue
+            split = dict(c, name=f"{strip_bracket(c['name'])} ({god})", npc=config, others=[], also=[], mark=f"{c['page']} ({god})")
+            examine = plain(fields.get("examine" + n) or fields.get("examine", "")).strip()
+            if examine:
+                split["desc"] = examine
+            split["notes"] = [f"{god}'s version of {c['page']} ({len(gods)} gods' versions, one card each)"] + [
+                note for note in c["notes"] if not re.match(r"\d+ models", note)]
+            out.append(split)
+    return out
+
+
+# The skill trainers, by their NPC config: the skill masters of Burthorpe and Taverley and the tutorial's instructors
+# (not its guides, critters or banker). They are tagged skill_trainer, which the Skill trainers set takes in.
+TRAINER_CONFIG = re.compile(r"^(OMGE_SKILL_MASTER_|TUT6_(SURVIVAL|CHEF|MINING|COMBAT|FINANCE|PRAYER|MAGIC)$)")
+
+
+def tag_trainers(found, words):
+    """Adds skill_trainer to the NPC candidates one of whose configs is a trainer's (TRAINER_CONFIG)."""
+    if "skill_trainer" not in words["category"]:
+        return found
+    for c in found:
+        if c["kind"] != "npc":
+            continue
+        configs = [c.get("npc")] + c.get("others", []) + c.get("also", [])
+        if any(TRAINER_CONFIG.match(m or "") for m in configs):
+            category = c["tags"].get("category", [])
+            if "skill_trainer" not in category:
+                c["tags"] = dict(c["tags"], category=category + ["skill_trainer"])
+    return found
+
+
+def fold_lookalikes(found, cards, look_of):
+    """Applies the lookalike rule (dev/lookalikes.py) to the NPC candidates named with a bracket, before
+    merge_versions. One that looks the same as a card in the deck with its name but for the bracket keeps its
+    name and gets a note: Done in the Wiki Review queues it, and dev/card_queue.py adds it to that card as a
+    variant. One that looks the same as another candidate named without the bracket takes that name, so
+    merge_versions makes them one candidate. Pets, roles and DIFFERENT_NPC titles are left as they are."""
+    # The plain-named candidates, shaped like deck cards for lookalikes.twin.
+    plain = [{"id": "", "name": c["name"], "base": lookalikes.base_name(c["name"]), "configs": [c["npc"]] + c["others"],
+              "categories": c["tags"].get("category", [])}
+             for c in found if c["kind"] == "npc" and title_bracket(c["name"]) is None]
+    # (the cards made from each wiki page: a candidate is not a lookalike of its own card)
+    made_from = defaultdict(set)
+    for card_id, entry in wiki_pages.load().items():
+        made_from[entry.get("page")].add(card_id)
+    for c in found:
+        if c["kind"] != "npc" or title_bracket(c["name"]) is None or c.get("pet") or c["page"] in DIFFERENT_NPC:
+            continue
+        configs, categories = [c["npc"]] + c["others"], c["tags"].get("category", [])
+        card = lookalikes.twin(c["name"], configs, cards, look_of, categories, made_from[c["page"]])
+        if card is not None:
+            c["notes"] = [f"looks the same as the card {card['id']}: Done adds it to that card as a variant"] + c["notes"]
+        elif (other := lookalikes.twin(c["name"], configs, plain, look_of, categories)) is not None:
+            c["notes"] = [f"looks the same as {other['name']}: one card with it"] + c["notes"]
+            c["name"] = other["name"]
+    return found
+
+
 def merge_versions(found, words):
     """One NPC candidate per card. The wiki often has a page for each version of an NPC ("Lumbridge
     guard (attackable)", "Lumbridge guardsman"; not a job's, "Lumbridge guardsman (bridge)", kept
@@ -2657,10 +2744,7 @@ def merge_versions(found, words):
 ANIMAL_RACES = {"sheep", "cow", "chicken", "dog", "cat", "rat", "bird", "bear", "wolf", "goat", "horse", "frog", "spider"}
 
 # Words for a job rather than a person: an NPC whose name ends in one is a role ("Cooking Tutor").
-ROLE_WORDS = {"tutor", "instructor", "guard", "farmer", "guardsman", "guardswoman", "priest", "priestess", "herbalist",
-              "shopkeeper", "assistant", "banker", "merchant", "musician", "citizen", "villager", "monk", "nun",
-              "sailor", "worker", "cleaner", "trader", "soldier", "knight", "cook", "chef", "archaeologist",
-              "attendee", "player", "bartender", "barman", "barmaid", "innkeeper", "druid", "druidess"}
+ROLE_WORDS = lookalikes.ROLE_WORDS
 # (Not "man" or "woman": the plain Man and Woman aren't filed as characters anyway, and the Wise
 # Old Man is one.)
 NAME_LINKS = {"the", "of", "de", "von", "van", "du", "la", "le"}     # small words in real names
@@ -3161,9 +3245,13 @@ def npc_candidate(page, kind, fields, names, words):
     ids = all_ids(fields)
     # A stand-in with no model of its own is shown as the NPCs it turns into (Wizard Ellaron's id is
     # ARIANE1_ELLARON, which is ARIANE1_ELLARON_APPEARANCE in the game).
+    # A stand-in for several NPCs, one of which the page lists itself, is only "whichever shows now": Spria's
+    # SLAYER_MASTER_1_MULTI is Turael before While Guthix Sleeps and Spria after it. Only the page's own are kept.
     shown = []
     for i in ids:
         into = [t for t in LOOKS.turns_into(i) if t in names] if LOOKS.look(i) is None else []
+        if any(t in ids for t in into):
+            into = [t for t in into if t in ids]
         shown += [t for t in (into or [i]) if t not in shown]
     configs = [names[i] for i in shown if i in names]
     if not configs:
@@ -3315,6 +3403,10 @@ def npc_candidate(page, kind, fields, names, words):
     page_categories = " ".join(page.get("categories", [])).lower()
     for key, word in CATEGORY_WORDS.items():
         if key in page_categories and word in words["category"] and word not in category:
+            category.append(word)
+    for wiki_category in page.get("categories", []):
+        word, unless = CATEGORY_EXACT_WORDS.get(wiki_category.lower(), (None, None))
+        if word and word in words["category"] and word not in category and unless not in category:
             category.append(word)
     if kind == "Infobox Monster" and "monster" not in category:
         category.append("monster")
@@ -3864,7 +3956,12 @@ def main():
             found.append(made)
         else:
             skipped[reason] = skipped.get(reason, 0) + 1
+    found = split_god_versions(found, pages, names)
+    look_of = lookalikes.cache_looks(LOOKS, NPC_IDS)
+    if look_of is not None:
+        found = fold_lookalikes(found, lookalikes.deck_cards(), look_of)
     found = merge_versions(found, words)
+    found = tag_trainers(found, words)
     found.sort(key=lambda c: (c["kind"], (c["tags"].get("regions") or c["tags"].get("category") or ["~"])[0], c["name"]))
     write_candidates(found)
 

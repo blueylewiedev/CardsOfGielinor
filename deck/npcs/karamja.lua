@@ -179,6 +179,7 @@ Set.cards = {
         art = { npc = "GOWER_BLACK_KNIGHT_TITAN_ENEMY", anim = 28896, cam = { yaw = 0.20, pitch = 0.30, dist = 1731, ty = 520, tx = -180 } },
         tags = { regions = { "misthalin" }, location = { "fisher_realm", "behind_the_scenes_location" }, category = { "giant", "boss", "monster" }, membership = { "p2p" } },
     },
+    { id = "pirate", name = "Pirate", rarity = "common", desc = "Avast ye scurvy land lubbers!", art = { npc = "PIRATE3", anim = 7188, cam = { pitch = 0.15, dist = 859, ty = 480 } }, tags = { regions = { "asgarnia" }, location = { "brimhaven" }, category = { "humanoid", "pirate", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

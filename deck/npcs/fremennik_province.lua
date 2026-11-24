@@ -90,6 +90,8 @@ Set.cards = {
         art = { npc = "LUNARFM_PAULINE_HEALTHY", anim = 3480, cam = { yaw = 0.20, dist = 989, fov = 30, ty = 820, near = 0.25 } },
         tags = { location = { "lunar_isle" }, skills = { "farming" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } },
     },
+    { id = "cart_conductor", name = "Cart conductor", rarity = "common", desc = "He makes sure the carts don't run anyone over.", art = { npc = "DWARF_CITY_TRAIN_CONDUCTOR1", anim = 17844, cam = { yaw = -0.20, dist = 912, fov = 37, ty = 287, tx = 12, near = 0.25 } }, tags = { regions = { "asgarnia" }, location = { "keldagrim", "dwarven_tunnel", "dwarven_mines" }, category = { "humanoid" }, membership = { "p2p" } } },
+    { id = "oneiromancer", name = "Oneiromancer", rarity = "rare", desc = "Spiritual leader of the Moonclan.", art = { npc = "LUNAR_ONEIROMANCER", anim = 4424, cam = { yaw = 0.21, dist = 860, fov = 48, ty = 689, tx = 7, near = 0.25 } }, tags = { regions = { "asgarnia" }, location = { "lunar_isle", "burthorpe" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } } },
 }
 
 return Set
