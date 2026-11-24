@@ -302,12 +302,24 @@ lists those for you to fix.
 
 ### Sets
 
-Sets are groups of cards to collect together, such as every shopkeeper or every musician. The **Sets** window
+Sets are groups of cards to collect together, such as the shopkeepers or the musicians. The **Sets** window
 lists them with how many of each the player has, and shows a missing card as a dark silhouette. They are written
 in `deck/sets.lua` (not listed in `deck/index.lua`). A set takes in cards by name (`names = { "Musician" }` takes
 "Musician" and every "Musician (...)"), by a pack-style `filter`, or both, plus card ids to `add` and to `leave`
-out. A new variant with a name the set already uses joins it by itself. Run `lua dev/check_sets.lua` to check
-that every id is a real card and no set is empty. It also runs on every pull request.
+out, and an `except` filter that keeps out every card matching it (`except = { location = "dorgesh_kaan" }`). In a
+filter every key must match and one word of a list is enough; `name` matches part of the card's name in any case
+(`{ name = "wizard" }` takes in "Dark wizard"), and a list of filters takes in a card that matches any one of them
+(`filter = { { category = "cook" }, { name = { "chef", "baker" } } }`). A new variant with a name the set already
+uses joins it by itself.
+
+A set can name a `group` (`group = "Metal armour"`): the Sets window lists the sets of a group under one heading
+that opens and closes with a click, so a family of small sets (one per metal, say) does not crowd the list.
+
+A set is a spread of a kind of card, not every card of that kind: keep it to about 30 cards. When a kind outgrows
+that, narrow it with `except` or `leave`, split it into sets of its own (by place, say), or pick its cards by hand
+with `add`.
+Run `lua dev/check_sets.lua` to check that every id is a real card and no set is empty; it warns about a set over
+32 cards (the soft limit, `Sets.SOFT_LIMIT` in `core/sets.lua`) without failing. It also runs on every pull request.
 
 ---
 
@@ -727,7 +739,7 @@ to guess.
 
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
-- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `skill_trainer`, `cook`, `emissary`, `archaeology_collector`, `monster`, `boss`
+- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `skill_trainer`, `cook`, `emissary`, `archaeology_collector`, `witch`, `monster`, `boss`
 - `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `container`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `skill_outfit`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`, `consumable`, `treasure_trail`, `slayer_drop`, `minigame`, `discontinued` (no longer obtainable), `junk`; with `raw_material`: `log`, `ore`, `bone`, `hide`, `herb`, `gem`, `ingredient`; with `weapon`: `dagger`, `defender`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `maul`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `potion`: `flask`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`, `raw_food`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`, `clay`; with `seed`: `allotment`, `flower`, `herb_patch`, `hop`, `bush`, `tree`, `fruit_tree`, `cacti`, `mushroom`, `special`, `vine_flower`, `vine_herb`, `vine_bush`, `fertile_soil`, `dungeoneering_patch`, `berry_planter`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.

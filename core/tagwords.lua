@@ -142,7 +142,7 @@ TagWords.groups = {
             "sea_orphan", "sky_orphan_tengu_mask", "imcando_dwarf", "void_familiar", "anima_being", "wyrmwood" } },
         { title = "What it does", words = { "shopkeeper", "stallholder", "guard", "knight", "royalty", "adventurer",
             "wizard", "priest", "quest_giver", "banker", "farmer", "pirate", "thief", "skill_trainer", "cook", "emissary",
-            "archaeology_collector" } },
+            "archaeology_collector", "witch" } },
         { title = "Whether it can be fought", words = { "monster", "boss" } },
     },
 }

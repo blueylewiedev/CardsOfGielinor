@@ -1,7 +1,7 @@
 -- dev/check_sets_ui.lua
 -- Runs ui/setsviewer.lua against a stand-in for the client's ui (components that remember what was set on them and the
 -- functions given to Subscribe), and drives it the way a player would: opening, picking a set, paging, the mouse wheel,
--- a card arriving while it is open, closing and opening again. It finds a crash or a control that is not wired up; it
+-- a card arriving while it is open, closing and opening again, and opening and closing a group of sets. It finds a crash or a control that is not wired up; it
 -- cannot see how anything looks (that is checked in the client).
 --
 -- Run from the plugin's folder:  lua dev/check_sets_ui.lua
@@ -262,5 +262,55 @@ do
         "the text starts \"Packs:\" and leaves the Standard pack out (" .. text .. ")")
 end
 
+-- groups: a heading that opens and closes its sets, opened by a search, and by the set shown when the window opens
+do
+    Sets.load({
+        { id = "g_free", name = "Free set", names = { "Musician" } },
+        { id = "g_alpha", name = "Alpha set", names = { "Musician" }, group = "Test group" },
+        { id = "g_beta", name = "Beta set", names = { "Bartender" }, group = "Test group" },
+    })
+    local kept = SetsViewer.state().kept
+    kept.selectedId, kept.search, kept.kindFilter, kept.listTop, kept.openGroups = "g_free", nil, nil, 0, {}
+    local function grips()
+        local list = {}
+        for _, g in ipairs(live("Layer")) do
+            if rawget(g, "clickthrough") == false and g._handlers["ONCLICK"] ~= nil then list[#list + 1] = g end
+        end
+        return list
+    end
+    local function rows() return #SetsViewer.state().open.shownRows end
+    SetsViewer.open(api)
+    check(rows() == 2 and string.find(texts(), "+ Test group", 1, true) ~= nil and string.find(texts(), "Alpha set", 1, true) == nil,
+        "a group starts closed: the free set and the heading (" .. rows() .. " rows)")
+    check(string.find(texts(), "0 / 2", 1, true) ~= nil, "the heading counts the group's complete sets")
+    local tiles = grips()
+    tiles[2]._handlers["ONCLICK"](tiles[2])
+    check(rows() == 4 and string.find(texts(), "- Test group", 1, true) ~= nil
+        and string.find(texts(), "Alpha set", 1, true) ~= nil, "clicking the heading opens it (" .. rows() .. " rows)")
+    check(kept.selectedId == "g_free", "opening a group does not change the set shown")
+    tiles[3]._handlers["ONCLICK"](tiles[3])
+    check(kept.selectedId == "g_alpha", "a set in a group is picked by its tile")
+    tiles[2]._handlers["ONCLICK"](tiles[2])
+    check(rows() == 2 and kept.selectedId == "g_alpha", "clicking it again closes it, and the set stays shown")
+    SetsViewer.close()
+    SetsViewer.open(api)
+    check(rows() == 4, "opening the window again opens the group of the set shown")
+    tiles = grips()
+    tiles[2]._handlers["ONCLICK"](tiles[2])
+    check(rows() == 2, "and it closes")
+    local box = live("InputField")[1]
+    box.content = "beta"
+    box._handlers["ONCONTENTCHANGED"](box)
+    check(rows() == 2 and string.find(texts(), "Beta set", 1, true) ~= nil, "a search opens the group it finds a set in ("
+        .. rows() .. " rows: the heading and Beta)")
+    box.content = "test group"
+    box._handlers["ONCONTENTCHANGED"](box)
+    check(rows() == 3, "a search for the group's name finds its sets (" .. rows() .. " rows)")
+    box.content = ""
+    box._handlers["ONCONTENTCHANGED"](box)
+    SetsViewer.close()
+    Sets.load(require("deck/sets"))
+end
+
 if failures > 0 then os.exit(1) end
-print("OK: the sets window's controls pick sets, turn pages and follow the collection")
+print("OK: the sets window's controls pick sets, turn pages, open groups and follow the collection")

@@ -42,11 +42,13 @@ local BAR_FILL = Vector4.new(0.85, 0.68, 0.16, 0.95)
 -- open: { api (api.getState(), api.hiddenCards() (optional)), window, content, layout (see SetsLayout.layoutFor), widgets
 -- (text and buttons that stay while the window is open), rows (the set list's tiles, made once), gridParts (what the grid
 -- draws for the current page), shownSets (the sets the search and the drop-down let through, worked out on each redraw),
+-- shownRows (the list's rows from them: group headings, and the sets of the open groups; see ui/setslist.lua),
 -- scrollBar (its track, thumb and grip, and a drag of it while held), watchedState and watchedStamp (the collection as
 -- the window was last drawn from it), drawnKey (what the grid shows, so a tick with nothing new does not rebuild the cards) }.
 local S = {
     kept = { selectedId = nil,                -- the id of the set shown
-        listTop = 0,                          -- how many sets the list has scrolled past
+        listTop = 0,                          -- how many rows the list has scrolled past
+        openGroups = {},                      -- the groups opened in the list, as { [group name] = true }
         search = nil,                         -- what is typed in the search box (nil: nothing)
         kindFilter = nil,                     -- "npc" or "item": only the sets with cards of that kind (nil: both)
         page = 1 },
@@ -228,7 +230,7 @@ function S.redraw()
     local ownedIds = Sets.ownedIds(view)
     SetsList.find(S)
     local listRows = o.layout.listRows
-    kept.listTop = math.max(0, math.min(kept.listTop, #o.shownSets - listRows))
+    kept.listTop = math.max(0, math.min(kept.listTop, #o.shownRows - listRows))
     SetsList.show(S, view, ownedIds)
     showSet(view, ownedIds)
     local complete = 0
@@ -240,7 +242,7 @@ function S.redraw()
     end
     o.widgets.footer.content = "Sets complete: " .. complete .. " of " .. #Sets.list
         .. (#o.shownSets < #Sets.list and ("   |   Showing " .. #o.shownSets) or "")
-        .. (#o.shownSets > listRows and "   |   Scroll the list for more" or "")
+        .. (#o.shownRows > listRows and "   |   Scroll the list for more" or "")
 end
 
 -- Called about every 0.6 seconds (by the plugin's tick). Draws again when the collection has changed while the window
@@ -284,8 +286,8 @@ function SetsViewer.open(newApi)
     local screenHeight = readNumber(function() return gameWindow.height end)
     local layout = SetsLayout.layoutFor(screenHeight)
     logScreen(gameWindow, screenHeight, layout)
-    kept.listTop = math.max(0, math.min(kept.listTop, #Sets.list - layout.listRows))
-    local o = { api = newApi, layout = layout, widgets = {}, rows = {}, gridParts = {}, shownSets = {}, scrollBar = {} }
+    local o = { api = newApi, layout = layout, widgets = {}, rows = {}, gridParts = {}, shownSets = {}, shownRows = {},
+        scrollBar = {} }
     local width = SetsLayout.CONTENT_W + SetsLayout.WINDOW_SLACK
     o.window, o.content = Kit.window(gameWindow, "Sets", width, layout.height + Kit.titleBarHeight(), function()
         SetsViewer.close()

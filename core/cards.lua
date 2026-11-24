@@ -237,10 +237,20 @@ end
 -- The filter word that matches a card with no words of that tag kind (see core/packtypes.lua).
 Cards.NO_TAG = "none"
 
--- True if the card matches a pack filter (see core/packtypes.lua). No filter matches every card.
+-- True if the card matches a filter (see core/packtypes.lua and deck/sets.lua). No filter matches every card. Every key
+-- must match and one word of a list is enough; `kind` is the card's kind, `name` matches a card whose name holds the word
+-- (any case). A list of filters matches a card that matches any one of them.
 function Cards.matches(card, filter)
     if filter == nil then
         return true
+    end
+    if filter[1] ~= nil then
+        for _, one in ipairs(filter) do
+            if Cards.matches(card, one) then
+                return true
+            end
+        end
+        return false
     end
     for key, wanted in pairs(filter) do
         local words = type(wanted) == "table" and wanted or { wanted }
@@ -248,6 +258,8 @@ function Cards.matches(card, filter)
         for _, word in ipairs(words) do
             if key == "kind" then
                 hit = hit or Cards.kindOf(card) == word
+            elseif key == "name" then
+                hit = hit or string.find(string.lower(card.name or ""), string.lower(word), 1, true) ~= nil
             elseif word == Cards.NO_TAG then
                 local list = card.tags and card.tags[key]
                 hit = hit or list == nil or #list == 0
