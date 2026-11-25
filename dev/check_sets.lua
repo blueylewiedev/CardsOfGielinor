@@ -1,7 +1,8 @@
 -- dev/check_sets.lua
 -- Checks the sets (deck/sets.lua, core/sets.lua): every set in the file is usable against the real deck (its add and
--- leave ids are cards, none ends up empty), and the rules do what deck/sets.lua says: a name takes in its variants and
--- nothing else, filter narrows, add and leave win over the rules, and the progress counts what the player owns.
+-- leave ids are cards, none ends up empty; one over Sets.SOFT_LIMIT is a warning), and the rules do what deck/sets.lua
+-- says: a name takes in its variants and nothing else, filter narrows (by tags, by part of the name, or by any of a list of filters), except
+-- keeps out, add and leave win over the rules, and the progress counts what the player owns.
 --
 -- Run from the plugin's folder:  lua dev/check_sets.lua
 
@@ -41,6 +42,11 @@ end
 for _, problem in ipairs(Sets.problems()) do
     check(false, problem)
 end
+for _, messages in ipairs({ Sets.oversized(), Sets.loneGroups() }) do
+    for _, message in ipairs(messages) do
+        io.stderr:write("WARNING: " .. message .. "\n")
+    end
+end
 check(#Sets.list > 0, "deck/sets.lua has sets")
 
 -- Names take in their variants only ----------------------------------------------------------------------------------
@@ -60,6 +66,12 @@ Sets.load({
     { id = "npc_guards", name = "Guards", names = { "Guard" }, filter = { kind = "npc" } },
     { id = "by_filter", name = "Shopkeepers", filter = { category = "shopkeeper" } },
     { id = "only_added", name = "Two cards", add = { "cheri", "bartender_dancing_donkey" } },
+    { id = "except", name = "Not in Lumbridge", filter = { category = "shopkeeper" }, except = { location = "lumbridge" },
+        add = { "lumbridge_guard" } },
+    { id = "cooks_only", name = "Cooks", filter = { category = "cook" } },
+    { id = "either", name = "Either", filter = { { category = "shopkeeper" }, { category = "cook" } } },
+    { id = "by_name", name = "Wizards", filter = { kind = "npc", name = { "WIZARD", "mage" } },
+        except = { { name = "dark" }, { category = "monster" } } },
 })
 check(#Sets.loadProblems == 0, "the test sets load (" .. tostring(Sets.loadProblems[1]) .. ")")
 
@@ -83,6 +95,32 @@ check(#shopkeepers > 10, "a filter on its own takes in every card it matches (" 
 for _, card in ipairs(shopkeepers) do
     check(Cards.hasTag(card, "category", "shopkeeper"), card.id .. " is a shopkeeper")
 end
+
+local kept = Sets.cardsOf(Sets.byId.except)
+check(#kept > 0 and #kept < #shopkeepers, "except keeps some of the filter's cards out (" .. #kept .. ")")
+for _, card in ipairs(kept) do
+    check(card.id == "lumbridge_guard" or not Cards.hasTag(card, "location", "lumbridge"),
+        "except keeps " .. card.id .. " out")
+end
+check(has(ids(kept), "lumbridge_guard"), "add wins over except")
+
+local either = Sets.cardsOf(Sets.byId.either)
+check(#Sets.cardsOf(Sets.byId.cooks_only) > 0, "there are cook cards to test with")
+check(#either > #shopkeepers, "a list of filters takes in a card that matches any one (" .. #either .. ")")
+for _, card in ipairs(either) do
+    check(Cards.hasTag(card, "category", "shopkeeper") or Cards.hasTag(card, "category", "cook"),
+        card.id .. " matches one of the filters")
+end
+
+local named = Sets.cardsOf(Sets.byId.by_name)
+check(#named > 0, "name takes in cards by part of their name (" .. #named .. ")")
+for _, card in ipairs(named) do
+    local lower = string.lower(card.name)
+    check(string.find(lower, "wizard", 1, true) or string.find(lower, "mage", 1, true), card.id .. " has wizard or mage in its name")
+    check(not string.find(lower, "dark", 1, true), "except by name keeps " .. card.id .. " out")
+    check(not Cards.hasTag(card, "category", "monster"), "a list in except keeps " .. card.id .. " out")
+end
+check(has(ids(named), "wizard_mizgog"), "the name is matched in any case")
 
 local two = ids(Sets.cardsOf(Sets.byId.only_added))
 check(#two == 2, "a set of added cards only holds those (" .. #two .. ")")
@@ -115,23 +153,43 @@ Sets.load({
     { id = "no_rule", name = "Nothing" },
     { id = "names_text", name = "Text", names = "Musician" },
     { id = "bad_filter", name = "Filter", filter = { kind = 3 } },
+    { id = "bad_except", name = "Except", names = { "Musician" }, except = "lumbridge" },
+    { id = "bad_list", name = "List", filter = { { category = "cook" }, "chef" } },
+    { id = "bad_group", name = "Group", names = { "Musician" }, group = 3 },
+    { id = "blank_group", name = "Blank group", names = { "Musician" }, group = " " },
     { id = "good", name = "Twice", names = { "Cook" } },
     "not a table",
 })
 check(#Sets.list == 1 and Sets.byId.good ~= nil and Sets.byId.good.name == "Good", "only the good set loads")
-check(#Sets.loadProblems == 7, "each bad set is described (" .. #Sets.loadProblems .. ")")
+check(#Sets.loadProblems == 11, "each bad set is described (" .. #Sets.loadProblems .. ")")
+
+-- Groups: a group with one set is a warning
+Sets.load({
+    { id = "one", name = "One", names = { "Musician" }, group = "Alone" },
+    { id = "two", name = "Two", names = { "Musician" }, group = "Pair" },
+    { id = "three", name = "Three", names = { "Bartender" }, group = "Pair" },
+    { id = "free", name = "Free", names = { "Bartender" } },
+})
+check(#Sets.loadProblems == 0 and #Sets.list == 4, "sets with groups load")
+local lone = table.concat(Sets.loneGroups(), "\n")
+check(string.find(lone, "Alone", 1, true) ~= nil and string.find(lone, "Pair", 1, true) == nil,
+    "a group with one set is a warning, one with two is not")
 
 -- Problems against the deck ---------------------------------------------------------------------------------------
 Sets.load({
     { id = "unknown", name = "Unknown", add = { "no_such_card" } },
     { id = "both", name = "Both", names = { "Bartender" }, add = { "cheri" }, leave = { "cheri" } },
     { id = "empty", name = "Empty", names = { "No card is called this" } },
+    { id = "too_big", name = "Too big", filter = { kind = "npc" } },
 })
 local problems = Sets.problems()
 local text = table.concat(problems, "\n")
 check(string.find(text, "no_such_card", 1, true) ~= nil, "an unknown id is a problem")
 check(string.find(text, "both adds and leaves out cheri", 1, true) ~= nil, "an id in add and leave is a problem")
 check(string.find(text, "set empty holds no card", 1, true) ~= nil, "an empty set is a problem")
+check(string.find(text, "too_big", 1, true) == nil, "a big set is not a problem")
+check(string.find(table.concat(Sets.oversized(), "\n"), "set too_big holds", 1, true) ~= nil,
+    "but a set over Sets.SOFT_LIMIT is a warning")
 
 Sets.list, Sets.byId, Sets.loadProblems = saved.list, saved.byId, saved.loadProblems
 

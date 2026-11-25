@@ -910,7 +910,7 @@ CATEGORY_WORDS = {
 # Each gives (word, unless): the word is not given to a page already tagged `unless` (the wiki's God Emissaries holds
 # the gods they speak for as well).
 CATEGORY_EXACT_WORDS = {"cooks": ("cook", None), "archaeological collectors": ("archaeology_collector", None),
-                        "god emissaries": ("emissary", "god")}
+                        "god emissaries": ("emissary", "god"), "witches": ("witch", None)}
 
 
 # Item category words suggested by the equipment slot (Infobox Bonuses' slot).
