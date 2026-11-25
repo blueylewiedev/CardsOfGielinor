@@ -1774,9 +1774,15 @@ end
 -- camera is closest to all the others'), so the values stay together as one framing rather than
 -- being averaged into something no card uses. Worked out from the deck as it is, so it follows
 -- how cards are framed as more are made.
-local HUMANOID_WORDS = { humanoid = true, shopkeeper = true, stallholder = true, royalty = true, guard = true,
-    knight = true, wizard = true, priest = true, pirate = true, banker = true, farmer = true, thief = true,
-    adventurer = true, quest_giver = true }
+-- (humanoid, and every job word: the "What it does" group in core/tagwords.lua, so a new job is framed as a person)
+local HUMANOID_WORDS = { humanoid = true }
+for _, group in ipairs(TagWords.groups.category) do
+    if group.title == "What it does" then
+        for _, word in ipairs(group.words) do
+            HUMANOID_WORDS[word] = true
+        end
+    end
+end
 
 -- The signature heroes, by card name, and the start of their standing animations' names. Their
 -- NPCs are often named for something else (Ariane's EGWD_WEN_BOSS_MECHANIC_SWITCH_ADDS_MULTI), so

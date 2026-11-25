@@ -117,11 +117,17 @@ local function saveMarks(marks, only)
     return ok
 end
 
+-- What a candidate's mark is kept under: its page, or its own `mark` when it shares a page with others (each god's
+-- version of the Spiritual mage is a candidate of its own, see split_god_versions in dev/wiki_cards.py).
+local function markKey(candidate)
+    return candidate.mark or candidate.page
+end
+
 -- Marks a candidate. Returns false if the mark was not saved.
 local function mark(candidate, verdict)
-    local saved = reviewed()
-    saved[candidate.page] = verdict
-    return saveMarks(saved, { [bucketOf(candidate.page)] = true })
+    local saved, key = reviewed(), markKey(candidate)
+    saved[key] = verdict
+    return saveMarks(saved, { [bucketOf(key)] = true })
 end
 
 -- The item config names by id, from the client's own list (read once, the first time an item
@@ -222,7 +228,7 @@ local function loadRemaining()
         -- (and the NPC's models not offered: the rest of a long list, or ones that look the same)
         local made = anyInDeck(kind, models(candidate)) or anyInDeck(kind, candidate.also or {})
         -- (Marks used to be kept by NPC name; those still count.)
-        if not (done[candidate.page] or done[candidate.npc or ""]) and not made then
+        if not (done[markKey(candidate)] or done[candidate.npc or ""]) and not made then
             list[#list + 1] = candidate
         end
     end
@@ -435,10 +441,29 @@ local function queueCard(candidate)
     return true
 end
 
+-- The NPC configs on the cards' (and drafts') variants, as a set: where dev/card_queue.py puts a queued
+-- lookalike version of a card (dev/lookalikes.py) instead of adding it as a card of its own.
+local function variantNpcs()
+    local found = {}
+    for _, list in ipairs({ Cards.list, Cards.drafts }) do
+        for _, card in ipairs(list) do
+            for _, variant in ipairs(card.variants or {}) do
+                found[variant.npc or ""] = true
+            end
+        end
+    end
+    return found
+end
+
 -- True if the loaded deck has the card this queue entry is: the same id, and the same name, and
 -- the same description and rarity too when the entry kept them. (A card that only has the same id,
 -- an entry the script could not add as a duplicate, does not count: it must stay to be fixed.)
-local function inDeck(entry)
+-- An entry folded into another card as a variant (its NPC in `variants`, from variantNpcs) counts too.
+local function inDeck(entry, variants)
+    local npc = type(entry.block) == "string" and string.match(entry.block, 'art = {[^\n]-npc = "([^"]+)"') or nil
+    if npc ~= nil and variants[npc] then
+        return true
+    end
     local card = Cards.byId[entry.id]
     if card == nil then
         for _, draft in ipairs(Cards.drafts) do
@@ -455,11 +480,11 @@ end
 -- script has added them), so the database does not fill up. Entries not in the deck yet, or that
 -- failed, stay. When no entry is left the counter goes too, so the numbers start again.
 local function clearAdded()
-    local keys, left = {}, 0
+    local keys, left, variants = {}, 0, variantNpcs()
     local ok = pcall(function()
         PersistentDB:IterateEntries(function(key, value)
             if string.sub(key, 1, #QUEUE_KEY) == QUEUE_KEY and key ~= SEQ_KEY then
-                if type(value) == "table" and inDeck(value) then
+                if type(value) == "table" and inDeck(value, variants) then
                     keys[#keys + 1] = key
                 else
                     left = left + 1
@@ -512,7 +537,7 @@ local function reopen(text)
     end
     reload()
     for i, candidate in ipairs(queue) do
-        if candidate.page == found then
+        if markKey(candidate) == found then
             index = i
         end
     end
