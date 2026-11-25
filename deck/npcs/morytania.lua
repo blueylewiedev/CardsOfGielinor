@@ -82,7 +82,7 @@ Set.cards = {
         id = "netty", name = "Netty", rarity = "uncommon",
         desc = "An old, cranky lady.",
         art = { npc = "AHOY_CRONE", anim = 808, cam = { yaw = 0.44, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "slayer_tower", "the_last_call", "city_of_um" }, category = { "humanoid" }, membership = { "p2p" } },
+        tags = { location = { "slayer_tower", "the_last_call", "city_of_um" }, category = { "humanoid", "witch" }, membership = { "p2p" } },
     },
 }
 

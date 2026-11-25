@@ -89,7 +89,9 @@ candidates made from the [RuneScape Wiki](https://runescape.wiki) and review the
    plugin's database, and `dev/card_queue.py` (run on the computer the client runs on) adds each
    queued card to the end of its deck file. If the card can't be queued, a line under the buttons
    says why and the candidate stays on the list. The script only reads the database; what it has
-   done is kept in `dev/.card_queue_state.json`. A new location or NPC category word on an added
+   done is kept in `dev/.card_queue_state.json`. A queued NPC that is a version of a card in the
+   deck with the same look is added to that card's variants instead (see
+   [One card for versions that look the same](#one-card-for-versions-that-look-the-same)). A new location or NPC category word on an added
    card goes into `core/tagwords.lua` too; any other unlisted word is only reported. The wiki page
    each added card came from goes into `dev/wiki_pages.json`, which the card site uses to pick the
    picture of the card's own NPC version (see `dev/wiki_pages.py`; give an entry an `"image"` to
@@ -300,12 +302,24 @@ lists those for you to fix.
 
 ### Sets
 
-Sets are groups of cards to collect together, such as every shopkeeper or every musician. The **Sets** window
+Sets are groups of cards to collect together, such as the shopkeepers or the musicians. The **Sets** window
 lists them with how many of each the player has, and shows a missing card as a dark silhouette. They are written
 in `deck/sets.lua` (not listed in `deck/index.lua`). A set takes in cards by name (`names = { "Musician" }` takes
 "Musician" and every "Musician (...)"), by a pack-style `filter`, or both, plus card ids to `add` and to `leave`
-out. A new variant with a name the set already uses joins it by itself. Run `lua dev/check_sets.lua` to check
-that every id is a real card and no set is empty. It also runs on every pull request.
+out, and an `except` filter that keeps out every card matching it (`except = { location = "dorgesh_kaan" }`). In a
+filter every key must match and one word of a list is enough; `name` matches part of the card's name in any case
+(`{ name = "wizard" }` takes in "Dark wizard"), and a list of filters takes in a card that matches any one of them
+(`filter = { { category = "cook" }, { name = { "chef", "baker" } } }`). A new variant with a name the set already
+uses joins it by itself.
+
+A set can name a `group` (`group = "Metal armour"`): the Sets window lists the sets of a group under one heading
+that opens and closes with a click, so a family of small sets (one per metal, say) does not crowd the list.
+
+A set is a spread of a kind of card, not every card of that kind: keep it to about 30 cards. When a kind outgrows
+that, narrow it with `except` or `leave`, split it into sets of its own (by place, say), or pick its cards by hand
+with `add`.
+Run `lua dev/check_sets.lua` to check that every id is a real card and no set is empty; it warns about a set over
+32 cards (the soft limit, `Sets.SOFT_LIMIT` in `core/sets.lua`) without failing. It also runs on every pull request.
 
 ---
 
@@ -334,6 +348,31 @@ Not every NPC gets a card. Leave out one that:
 
 `dev/wiki_cards.py` skips these for the Wiki Review queue. The cards cut when these rules came in
 are kept in `dev/cut_cards.lua`, out of the deck.
+
+### One card for versions that look the same
+
+Some NPCs are the same creature in several places, with a page for each version: Hellhound, Hellhound (God Wars
+Dungeon), Hellhound (The Zamorakian Undercity). When a version has a card's name with a bracket added **and looks
+the same** (the same models, colours and size in the client's cache), it is not a card of its own. It goes on that
+card's `variants` instead, and its places go in the card's locations:
+
+```lua
+variants = {
+    { npc = "HELLHOUND", name = "Hellhound" },
+    { npc = "GODWARS_ANCIENT_HELLHOUND", name = "Hellhound (God Wars Dungeon)" },
+},
+```
+
+These keep their own cards:
+
+- a version that **looks different**: Cyclops (God Wars Dungeon), an ancient cyclops, next to Cyclops;
+- an NPC with **another name**, however alike it looks: Hellhound Hunter and Hellhound Alpha;
+- **pets**, which are rated by how they are got;
+- **roles**, where each one is someone else: Wizard (Rune Temple) and Wizard (Runecrafting Guild).
+
+The tools follow this rule. The Wiki Review notes a candidate that looks the same as a card ("looks the same as the
+card hellhound"). Pressing **Done** queues it as usual, and `dev/card_queue.py` adds it to that card as a variant
+instead of as a new card. `python dev/lookalikes.py` lists any cards in the deck that should be folded this way.
 
 ### Ids
 
@@ -700,7 +739,7 @@ to guess.
 
 - `location`: `lumbridge`, `falador`, `ardougne`, `draynor`, `varrock`, `ranch_out_of_time`, `lumbridge_swamp`, `dorgesh_kaan`, `burthorpe`, `chaos_tunnels`, `fremennik_slayer_dungeon`
 - `skills`: `attack`, `defence`, `strength`, `constitution`, `ranged`, `prayer`, `magic`, `cooking`, `woodcutting`, `fletching`, `fishing`, `firemaking`, `crafting`, `smithing`, `mining`, `herblore`, `agility`, `thieving`, `slayer`, `farming`, `runecrafting`, `hunter`, `construction`, `summoning`, `dungeoneering`, `divination`, `invention`, `archaeology`, `necromancy`
-- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `monster`, `boss`
+- `category` for NPC cards: `humanoid`, `animal`, `dragon`, `undead`, `demon`, `giant`, `goblin`, `troll`, `spirit`, `elemental`, `insect`, `construct`, `shopkeeper`, `stallholder`, `guard`, `knight`, `royalty`, `adventurer`, `wizard`, `priest`, `quest_giver`, `banker`, `farmer`, `pirate`, `thief`, `skill_trainer`, `cook`, `emissary`, `archaeology_collector`, `witch`, `monster`, `boss`
 - `category` for item cards: `raw_material`, `processed_material`, `food`, `drink`, `potion`, `tool`, `container`, `rune`, `seed`, `quest_item`, `currency`, `decoration`, `craftable`, `skill_outfit`, `weapon`, `armour`, `jewellery`, `pocket`, `ammunition`, `fashion`, `novelty`, `consumable`, `treasure_trail`, `slayer_drop`, `minigame`, `discontinued` (no longer obtainable), `junk`; with `raw_material`: `log`, `ore`, `bone`, `hide`, `herb`, `gem`, `ingredient`; with `weapon`: `dagger`, `defender`, `sword`, `scimitar`, `two_handed_sword`, `axe`, `mace`, `maul`, `spear`, `halberd`, `whip`, `claw`, `shortbow`, `longbow`, `crossbow`, `thrown`, `staff`, `wand`, `lantern`, `siphon`, `orb`, `book`; with `armour`: `helmet`, `body`, `legs`, `gloves`, `boots`, `off_hand`, `back`; with `potion`: `flask`; with `jewellery`: `ring`, `neck`; with `ammunition`: `arrow`, `bolt`, `spike`; with `weapon`, `armour`, `jewellery` or `ammunition`: `melee_gear`, `ranged_gear`, `magic_gear`, `necromancy_gear`, `hybrid_gear`; with `food`: `meal`, `baked_goods`, `fruit_veg`, `raw_food`; with `raw_material`: `herb`, `log`, `ore`, `bone`, `hide`; with `raw_material` or `processed_material`: `gem`; with `processed_material`: `bar`, `plank`, `clay`; with `seed`: `allotment`, `flower`, `herb_patch`, `hop`, `bush`, `tree`, `fruit_tree`, `cacti`, `mushroom`, `special`, `vine_flower`, `vine_herb`, `vine_bush`, `fertile_soil`, `dungeoneering_patch`, `berry_planter`; with `raw_material` or `food`: `fish`, `meat`
 
 For reference, the regions (set by the deck file for an NPC, chosen by hand for an item) are `misthalin`, `asgarnia`, `kandarin`, `karamja`, `kharidian_desert`, `morytania`, `tirannwn`, `fremennik_province`, `wilderness`, `anachronia`, `havenhythe`.

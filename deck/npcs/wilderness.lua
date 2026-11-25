@@ -96,9 +96,7 @@ Set.cards = {
         tags = { location = { "chaos_temple_dungeon", "varrock" }, category = { "undead" }, membership = { "p2p" } },
     },
     
-
-
-
+    { id = "bork", name = "Bork", rarity = "uncommon", desc = "That's one big Ork...", art = { npc = "TMF_BORK", anim = 8753, cam = { yaw = 0.16, pitch = 0.30, dist = 3595, fov = 30, ty = 780, near = 0.25 } }, tags = { location = { "chaos_tunnels", "bandos_arena_yu_biusk" }, skills = { "slayer" }, category = { "ork", "monster" }, membership = { "p2p" } } },
 }
 
 return Set

@@ -5,7 +5,9 @@
 --   Sets.list / Sets.byId   the usable sets (one of the wrong shape is left out and described in Sets.loadProblems)
 --   Sets.cardsOf(set)       its cards, in the deck's order
 --   Sets.progress(state, set)  { cards, owned }
---   Sets.problems()         what is wrong with the sets against the deck
+--   Sets.problems()         what is wrong with the sets against the deck (an unknown id, an empty set)
+--   Sets.oversized()        the sets over Sets.SOFT_LIMIT, as messages (a warning, not a problem)
+--   Sets.loneGroups()       the groups with only one set, as messages (a warning)
 
 local Cards = require("core/cards")
 local Browse = require("core/browse")
@@ -15,6 +17,11 @@ local Sets = {}
 Sets.list = {}
 Sets.byId = {}
 Sets.loadProblems = {}
+
+-- About how many cards a set should hold at most: a set is a spread of a kind of card to collect, not every card of
+-- that kind. (About 30; the skill masters, the biggest set picked by hand, are 31.) A soft limit: dev/check_sets.lua
+-- warns about a set over it but does not fail.
+Sets.SOFT_LIMIT = 32
 
 local function leaveOut(message)
     Sets.loadProblems[#Sets.loadProblems + 1] = message
@@ -33,6 +40,19 @@ local function isTextList(value)
     return true
 end
 
+-- True if `value` is one filter: { tag kind, "kind" or "name" = word or list of words }.
+local function isFilter(value)
+    if type(value) ~= "table" then
+        return false
+    end
+    for key, wanted in pairs(value) do
+        if type(key) ~= "string" or not (type(wanted) == "string" or isTextList(wanted)) then
+            return false
+        end
+    end
+    return true
+end
+
 -- Why a set from deck/sets.lua cannot be used, or nil.
 function Sets.shapeProblem(set)
     if type(set) ~= "table" then
@@ -44,18 +64,31 @@ function Sets.shapeProblem(set)
     if type(set.name) ~= "string" or set.name == "" then
         return "set " .. set.id .. " has no name"
     end
+    if set.group ~= nil and (type(set.group) ~= "string" or string.find(set.group, "%S") == nil) then
+        return "set " .. set.id .. ": group must be text, e.g. \"Metal armour\""
+    end
     for _, field in ipairs({ "names", "add", "leave" }) do
         if set[field] ~= nil and not isTextList(set[field]) then
             return "set " .. set.id .. ": " .. field .. " must be a list of text"
         end
     end
-    if set.filter ~= nil then
-        if type(set.filter) ~= "table" then
-            return "set " .. set.id .. ": filter must be a table, e.g. { kind = \"npc\" }"
-        end
-        for key, wanted in pairs(set.filter) do
-            if type(key) ~= "string" or not (type(wanted) == "string" or isTextList(wanted)) then
-                return "set " .. set.id .. ": filter must be words or lists of words, e.g. { category = \"shopkeeper\" }"
+    for _, field in ipairs({ "filter", "except" }) do
+        local filter = set[field]
+        if filter ~= nil then
+            if type(filter) ~= "table" then
+                return "set " .. set.id .. ": " .. field .. " must be a table, e.g. { kind = \"npc\" }"
+            end
+            local ok = isFilter(filter)
+            if not ok and filter[1] ~= nil then
+                ok = true
+                for key, one in pairs(filter) do
+                    ok = ok and type(key) == "number" and isFilter(one)
+                end
+            end
+            if not ok then
+                return "set " .. set.id .. ": " .. field .. " must be words or lists of words, e.g. "
+                    .. "{ category = \"shopkeeper\" }, or a list of those, e.g. { { category = \"cook\" }, "
+                    .. "{ name = \"chef\" } }"
             end
         end
     end
@@ -107,7 +140,7 @@ local function lookup(list)
     return set
 end
 
--- True if the set's names and filter take the card in (before `add` and `leave`).
+-- True if the set's names and filter take the card in and `except` does not keep it out (before `add` and `leave`).
 local function ruleTakes(set, card)
     if set.names == nil and set.filter == nil then
         return false
@@ -124,7 +157,7 @@ local function ruleTakes(set, card)
             return false
         end
     end
-    return set.filter == nil or Cards.matches(card, set.filter)
+    return Cards.matches(card, set.filter) and not (set.except ~= nil and Cards.matches(card, set.except))
 end
 
 -- The set's cards, in the deck's order (Cards.list: lowest rarity first). (worked out once a set, again only when an
@@ -199,6 +232,36 @@ function Sets.problems()
         end
     end
     return problems
+end
+
+-- The groups that hold only one set, as a list of messages: a group is for gathering several sets under one heading.
+function Sets.loneGroups()
+    local counts = {}
+    for _, set in ipairs(Sets.list) do
+        if set.group ~= nil then
+            counts[set.group] = (counts[set.group] or 0) + 1
+        end
+    end
+    local messages = {}
+    for _, set in ipairs(Sets.list) do
+        if counts[set.group] == 1 then
+            messages[#messages + 1] = "group \"" .. set.group .. "\" holds only one set"
+        end
+    end
+    return messages
+end
+
+-- The sets holding more than Sets.SOFT_LIMIT cards, as a list of messages.
+function Sets.oversized()
+    local messages = {}
+    for _, set in ipairs(Sets.list) do
+        local count = #Sets.cardsOf(set)
+        if count > Sets.SOFT_LIMIT then
+            messages[#messages + 1] = "set " .. set.id .. " holds " .. count .. " cards, more than about "
+                .. Sets.SOFT_LIMIT .. ": narrow it with except or leave, or split it into sets of its own"
+        end
+    end
+    return messages
 end
 
 local loaded, list = pcall(require, "deck/sets")

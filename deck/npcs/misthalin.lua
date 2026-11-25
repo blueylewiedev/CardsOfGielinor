@@ -43,7 +43,7 @@ Set.cards = {
         id = "cook", name = "Cook (Lumbridge)", rarity = "uncommon",
         desc = "Always one ingredient short of a cake.",
         art = { npc = "COOK", anim = 9870, cam = { yaw = 0.20, fov = 20, ty = 620 } },
-        tags = { location = { "lumbridge" }, skills = { "cooking" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "lumbridge" }, skills = { "cooking" }, category = { "humanoid", "cook" }, membership = { "f2p" } },
     },
     {
         id = "bob", name = "Bob", rarity = "uncommon",
@@ -79,7 +79,7 @@ Set.cards = {
         id = "aggie", name = "Aggie", rarity = "rare",
         desc = "Mixes dyes and asks for coins.",
         art = { npc = "AGGIE", anim = 5363, cam = { yaw = 0.60, pitch = -0.30, fov = 20, ty = 600, tx = 20 } },
-        tags = { skills = { "herblore" }, location = { "draynor" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
+        tags = { skills = { "herblore" }, location = { "draynor" }, category = { "humanoid", "shopkeeper", "witch" }, membership = { "f2p" } },
     },
     {
         id = "doomsayer", name = "Doomsayer", rarity = "uncommon",
@@ -115,12 +115,6 @@ Set.cards = {
         id = "cave_slime", name = "Cave slime", rarity = "uncommon",
         desc = "Animated... Slime?",
         art = { npc = "SWAMP_CAVE_SLIME", anim = 1788, cam = { yaw = 0.60, pitch = 0.30, dist = 859, fov = 35, ty = 80 } },
-        tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer" }, category = { "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "hole_in_the", name = "Wall Beast", rarity = "rare",
-        desc = "This is my wall, get yer own!",
-        art = { npc = "SWAMP_WALLBEAST", anim = 1803, cam = { yaw = -0.40, dist = 1502, fov = 35, ty = 260, tx = -90 } },
         tags = { location = { "lumbridge", "dorgesh_kaan" }, skills = { "slayer" }, category = { "monster" }, membership = { "p2p" } },
     },
     {
@@ -524,7 +518,7 @@ Set.cards = {
         id = "cook_blue_moon_inn", name = "Cook (Blue Moon Inn)", rarity = "common",
         desc = "A greasy, grimy gourmet.",
         art = { npc = "FAI_VARROCK_BLUEMOON_CHEF", anim = 896, cam = { pitch = 0.15, dist = 1401, fov = 30, ty = 480, near = 0.25 } },
-        tags = { location = { "blue_moon_inn", "varrock" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
+        tags = { location = { "blue_moon_inn", "varrock" }, category = { "humanoid", "shopkeeper", "cook" }, membership = { "f2p" } },
     },
     {
         id = "curator_haig_halen", name = "Curator Haig Halen", rarity = "epic",
@@ -638,7 +632,7 @@ Set.cards = {
         id = "head_chef", name = "Head chef", rarity = "rare",
         desc = "Despite his name, rarely actually cooks heads.",
         art = { npc = "HEAD_CHEF", anim = 4955, cam = { yaw = -0.20, pitch = 0.15, dist = 492, ty = 620 } },
-        tags = { location = { "cooks_guild", "varrock" }, skills = { "cooking" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
+        tags = { location = { "cooks_guild", "varrock" }, skills = { "cooking" }, category = { "humanoid", "shopkeeper", "cook" }, membership = { "f2p" } },
     },
     {
         id = "herald_of_varrock", name = "Herald of Varrock", rarity = "uncommon",
@@ -776,13 +770,13 @@ Set.cards = {
         id = "romily_weaklax", name = "Romily Weaklax", rarity = "common",
         desc = "A family baker, from the North.",
         art = { npc = "MERCHANT_PIES", anim = 23780, cam = { yaw = -0.40, dist = 651, fov = 40, ty = 600 } },
-        tags = { location = { "cooks_guild", "varrock" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } },
+        tags = { location = { "cooks_guild", "varrock" }, category = { "humanoid", "shopkeeper", "cook" }, membership = { "p2p" } },
     },
     {
         id = "sani", name = "Sani", rarity = "common",
         desc = "A master smith.",
         art = { npc = "AIDE_TUTOR_SMITHING_MASTER", anim = 11070, cam = { yaw = 0.20, dist = 1614, fov = 30, ty = 460, near = 0.25 } },
-        tags = { location = { "varrock" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
+        tags = { location = { "varrock" }, category = { "humanoid", "shopkeeper", "skill_trainer" }, membership = { "f2p" } },
     },
     {
         id = "varrock_sword_shop_asst", name = "Varrock Sword Shop Asst.", rarity = "common",
@@ -1028,7 +1022,7 @@ Set.cards = {
         id = "vannaka", name = "Vannaka", rarity = "uncommon",
         desc = "He looks dangerous!",
         art = { npc = "SLAYER_MASTER_3", anim = 2691, cam = { dist = 1306, fov = 20, ty = 600, tx = 20 } },
-        tags = { location = { "edgeville", "edgeville_dungeon" }, skills = { "slayer" }, category = { "humanoid", "shopkeeper" }, membership = { "p2p" } },
+        tags = { location = { "edgeville", "edgeville_dungeon" }, skills = { "slayer" }, category = { "humanoid", "shopkeeper", "skill_trainer" }, membership = { "p2p" } },
     },
     {
         id = "wandering_ramokee", name = "Wandering Ramokee", rarity = "uncommon",
@@ -1130,7 +1124,7 @@ Set.cards = {
         id = "relomia_emissary_of_sliske", name = "Relomia, Emissary of Sliske", rarity = "rare",
         desc = "The emissary of Sliske. She seems to be a bit stuck.",
         art = { npc = "GODEM_SLISKE_EMISSARY", anim = 20210, cam = { pitch = 0.30, dist = 861, fov = 30, ty = 640, tx = 30 } },
-        tags = { location = { "draynor", "empyrean_citadel" }, category = { "humanoid", "monster" }, membership = { "f2p" } },
+        tags = { location = { "draynor", "empyrean_citadel" }, category = { "humanoid", "monster", "emissary" }, membership = { "f2p" } },
     },
     {
         id = "ruantun", name = "Ruantun", rarity = "uncommon",
@@ -1239,7 +1233,7 @@ Set.cards = {
         id = "abandoned_siege_engine", name = "Abandoned siege engine", rarity = "common",
         desc = "A siege cannon abandoned by the Nodon.",
         art = { npc = "EGWD_JAS_SLAYER_SIEGE_ENGINE_POWERED_PLAYER", anim = 34241, cam = { yaw = -0.75, pitch = 0.30, dist = 1721, fov = 45, ty = 380, tx = 57 } },
-        tags = { location = { "senntisten" }, category = { "construct" }, membership = { "p2p" } },
+        tags = { location = { "senntisten" }, skills = { "construction" }, category = { "construct" }, membership = { "p2p" } },
     },
     {
         id = "abyssal_prowler", name = "Abyssal Prowler", rarity = "uncommon",
@@ -1353,7 +1347,7 @@ Set.cards = {
         id = "art_critic_jacques", name = "Art Critic Jacques", rarity = "common",
         desc = "Jacques Netis - a slightly pompous art expert.",
         art = { npc = "VM_ART_CRITIC", anim = 6389, cam = { yaw = 0.20, dist = 1986, fov = 15, ty = 600, near = 0.25 } },
-        tags = { location = { "varrock" }, category = { "humanoid" }, membership = { "p2p" } },
+        tags = { location = { "varrock" }, category = { "humanoid", "archaeology_collector" }, membership = { "p2p" } },
     },
     {
         id = "assassin", name = "Assassin", rarity = "uncommon",
@@ -1461,7 +1455,7 @@ Set.cards = {
         id = "banker_fairy", name = "Banker (fairy)", rarity = "common",
         desc = "Manages money momentarily.",
         art = { npc = "FAIRY_BANKER", anim = 793, cam = { yaw = -0.31, pitch = 0.30, dist = 1137, fov = 35, ty = 637, tx = 48 } },
-        tags = { location = { "zanaris" }, category = { "fairy" }, membership = { "p2p" } },
+        tags = { location = { "zanaris" }, category = { "fairy", "banker" }, membership = { "p2p" } },
     },
     {
         id = "barlak", name = "Barlak", rarity = "common",
@@ -1503,7 +1497,7 @@ Set.cards = {
         id = "beefy_bill", name = "Beefy Bill", rarity = "common",
         desc = "Specialist meat transporter.",
         art = { npc = "GNOMECOPTER_MERCHANT", anim = 808, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper" }, membership = { "f2p" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid", "shopkeeper", "banker" }, membership = { "f2p" } },
     },
     {
         id = "benny_city_of_um", name = "Benny (City of Um)", rarity = "common",
@@ -1587,7 +1581,7 @@ Set.cards = {
         id = "brace_the_prayer_instructor", name = "Brace the Prayer Instructor", rarity = "uncommon",
         desc = "A holy man.",
         art = { npc = "TUT6_PRAYER", anim = 808, cam = { yaw = 0.16, dist = 860, fov = 30, ty = 579, tx = -7, near = 0.25 } },
-        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "priest" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "priest", "skill_trainer" }, membership = { "f2p" } },
     },
     {
         id = "brassica_prime", name = "Brassica Prime", rarity = "legendary",
@@ -1731,37 +1725,37 @@ Set.cards = {
         id = "chaos_witch", name = "Chaos witch", rarity = "rare",
         desc = "A witch from distant lands.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_COVEN_MAGIC_MED_F_1", anim = 18019, cam = { yaw = 0.49, pitch = 0.15, dist = 1383, fov = 34, ty = 480, near = 0.25 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "witch" }, membership = { "p2p" } },
     },
     {
         id = "chaos_witch_apprentice", name = "Chaos witch apprentice", rarity = "rare",
         desc = "A witch from distant lands.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_COVEN_MAGIC_EASY_F_1", anim = 18019, cam = { yaw = -0.29, pitch = 0.15, dist = 859, ty = 474, tx = 18 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "witch" }, membership = { "p2p" } },
     },
     {
         id = "chaos_witch_channeler", name = "Chaos witch channeler", rarity = "rare",
         desc = "A witch from distant lands. She's twisting the Edicts to her will.",
         art = { npc = "EGWD_ZAMORAK_BOSS_PHASE_TRANSITION_ADD", anim = 37632, cam = { yaw = -0.05, pitch = 0.15, dist = 2122, fov = 30, ty = 586, tx = 53, near = 0.25 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "witch" }, membership = { "p2p" } },
     },
     {
         id = "chaos_witch_lifeweaver", name = "Chaos witch lifeweaver", rarity = "rare",
         desc = "A witch from distant lands.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_COVEN_HEALER_MED_F_1", anim = 18019, cam = { yaw = 0.32, pitch = 0.15, dist = 1841, fov = 26, ty = 486, tx = -12 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "witch" }, membership = { "p2p" } },
     },
     {
         id = "chaos_witch_magus", name = "Chaos witch magus", rarity = "rare",
         desc = "A witch from distant lands.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_COVEN_MAGIC_HARD_F_1", anim = 18019, cam = { pitch = 0.15, dist = 859, ty = 480 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "witch" }, membership = { "p2p" } },
     },
     {
         id = "chaos_witch_mender", name = "Chaos witch mender", rarity = "rare",
         desc = "A witch from distant lands.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_COVEN_HEALER_EASY_F_1", anim = 18019, cam = { yaw = 0.45, pitch = 0.15, dist = 2025, fov = 26, ty = 459, tx = -41 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "witch" }, membership = { "p2p" } },
     },
     {
         id = "chief_thief_robin", name = "Chief Thief Robin", rarity = "uncommon",
@@ -1785,7 +1779,7 @@ Set.cards = {
         id = "claire_hick", name = "Claire Hick", rarity = "uncommon",
         desc = "A little flaky. Looks like she'd be easy to distract.",
         art = { npc = "GOWER_BANK_RECEPTIONIST_ACTIVE", anim = 9664, cam = { yaw = 0.20, dist = 1843, fov = 13, ty = 600, near = 0.25 } },
-        tags = { location = { "behind_the_scenes_location" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "behind_the_scenes_location" }, category = { "humanoid", "banker" }, membership = { "f2p" } },
     },
     {
         id = "clan_representative", name = "Clan representative", rarity = "common",
@@ -1863,7 +1857,7 @@ Set.cards = {
         id = "cook_jolly_boar_inn", name = "Cook (Jolly Boar Inn)", rarity = "uncommon",
         desc = "He's suspiciously talented with a meat-cleaver.",
         art = { npc = "FAI_VARROCK_JOLLYBOAR_CHEF", anim = 808, cam = { yaw = 0.37, pitch = 0.15, dist = 859, ty = 480, tx = -6 } },
-        tags = { location = { "jolly_boar_inn" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "jolly_boar_inn" }, category = { "humanoid", "cook" }, membership = { "f2p" } },
     },
     {
         id = "cool_mom227", name = "Cool Mom227", rarity = "uncommon",
@@ -1875,7 +1869,7 @@ Set.cards = {
         id = "copperpot", name = "Copperpot", rarity = "uncommon",
         desc = "He's the banker!",
         art = { npc = "PLAYER_FORT_CENTRE_BANKER", anim = 28534, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "fort_forinthry" }, category = { "humanoid" }, membership = { "p2p" } },
+        tags = { location = { "fort_forinthry" }, category = { "humanoid", "banker" }, membership = { "p2p" } },
     },
     {
         id = "corpse_archer", name = "Corpse archer", rarity = "common",
@@ -1959,7 +1953,7 @@ Set.cards = {
         id = "culinaromancer", name = "Culinaromancer", rarity = "rare",
         desc = "A demented evil wizard who specialises in food spells.",
         art = { npc = "DOM_CULINAROMANCER_COMBAT", anim = 808, cam = { yaw = -0.28, pitch = 0.23, dist = 1988, fov = 20, ty = 529, tx = 10, near = 0.25 } },
-        tags = { location = { "lumbridge" }, category = { "humanoid", "wizard", "boss", "monster" }, membership = { "p2p" } },
+        tags = { location = { "lumbridge" }, category = { "humanoid", "wizard", "boss", "monster", "cook" }, membership = { "p2p" } },
     },
     {
         id = "cultist", name = "Cultist", rarity = "uncommon",
@@ -1977,13 +1971,13 @@ Set.cards = {
         id = "dark_wizard_elder", name = "Dark wizard elder", rarity = "rare",
         desc = "A practitioner of dark arts.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_DARK_MAGE_MED_M_1", anim = 18019, cam = { yaw = -0.24, pitch = 0.15, dist = 1383, fov = 31, ty = 480, near = 0.25 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "wizard" }, membership = { "p2p" } },
     },
     {
         id = "dark_wizard_master", name = "Dark wizard master", rarity = "rare",
         desc = "A practitioner of dark arts.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_DARK_MAGE_HARD_M_1", anim = 18019, cam = { yaw = 0.32, pitch = 0.15, dist = 859, ty = 480, near = 0.25 } },
-        tags = { category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { category = { "humanoid", "monster", "wizard" }, membership = { "p2p" } },
     },
     {
         id = "darrel", name = "Darrel", rarity = "uncommon",
@@ -2097,7 +2091,7 @@ Set.cards = {
         id = "dezzick_the_mining_instructor", name = "Dezzick the Mining Instructor", rarity = "uncommon",
         desc = "An expert in Mining-related skills.",
         art = { npc = "TUT6_MINING", anim = 101, cam = { yaw = 0.60, dist = 566, ty = 336, tx = 44, near = 0.25 } },
-        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "skill_trainer" }, membership = { "f2p" } },
     },
     {
         id = "diana", name = "Diana", rarity = "common",
@@ -2385,7 +2379,7 @@ Set.cards = {
         id = "fairy_chef", name = "Fairy chef", rarity = "common",
         desc = "Likes to cook mushrooms.",
         art = { npc = "FAIRY_CHEF", anim = 793, cam = { pitch = 0.30, dist = 1665, fov = 26, ty = 561, tx = -38 } },
-        tags = { location = { "zanaris" }, category = { "fairy" }, membership = { "p2p" } },
+        tags = { location = { "zanaris" }, category = { "fairy", "cook" }, membership = { "p2p" } },
     },
     {
         id = "fairy_shop_assistant", name = "Fairy shop assistant", rarity = "common",
@@ -2601,13 +2595,11 @@ Set.cards = {
         id = "glacyte", name = "Glacyte", rarity = "uncommon",
         desc = "An ancient ice elemental, fighting for the elder god Wen.",
         art = { npc = "EGWD_WEN_SLAYER_GLACYTE_MELEE", anim = 34350, cam = { pitch = 0.30, dist = 1137, fov = 45, ty = 460 } },
+        variants = {
+            { npc = "EGWD_WEN_SLAYER_GLACYTE_MELEE", name = "Glacyte" },
+            { npc = "EGWD_WEN_BOSS_ADD_GLACYTE_MELEE", name = "Glacyte (Arch-Glacor)" },
+        },
         tags = { location = { "elder_god_wars_dungeon", "glacor_front" }, category = { "elemental", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "glacyte_melee", name = "Glacyte (melee)", rarity = "rare",
-        desc = "An ancient ice elemental, fighting for the Elder God Wen.",
-        art = { npc = "EGWD_WEN_BOSS_ADD_GLACYTE_MELEE", anim = 34350, cam = { pitch = 0.30, dist = 1137, fov = 45, ty = 460 } },
-        tags = { location = { "glacor_front" }, category = { "elemental", "monster" }, membership = { "p2p" } },
     },
     {
         id = "goblin_lumbridge", name = "Goblin (Lumbridge)", rarity = "common",
@@ -2631,7 +2623,11 @@ Set.cards = {
         id = "gorak", name = "Gorak", rarity = "uncommon",
         desc = "Gorak by name, Gorak by nature.",
         art = { npc = "FAIRYTALE2_GORAK", anim = 17479, cam = { yaw = 0.78, pitch = 0.30, dist = 3901, fov = 20, ty = 516, tx = -62 } },
-        tags = { location = { "gorak_plane" }, category = { "gorak", "monster" }, membership = { "p2p" } },
+        variants = {
+            { npc = "FAIRYTALE2_GORAK", name = "Gorak" },
+            { npc = "GODWARS_GORAK", name = "Gorak (God Wars Dungeon)" },
+        },
+        tags = { regions = { "asgarnia" }, location = { "gorak_plane", "god_wars_dungeon" }, category = { "gorak", "monster" }, membership = { "p2p" } },
     },
     {
         id = "gourmet", name = "Gourmet", rarity = "common",
@@ -2654,7 +2650,7 @@ Set.cards = {
     {
         id = "greater_demon_berserker", name = "Greater demon berserker", rarity = "rare",
         desc = "Big, red and angry.",
-        art = { npc = "DUNGEON_EGWD_ZAMORAK_GREATER_DEMON_MAGIC_HARD", anim = 29876, cam = { yaw = -0.23, pitch = 0.30, dist = 2971, fov = 30, ty = 780, near = 0.25 } },
+        art = { npc = "DUNGEON_EGWD_ZAMORAK_GREATER_DEMON_MELEE_HARD", anim = 29876, cam = { yaw = -0.23, pitch = 0.30, dist = 2971, fov = 30, ty = 780, near = 0.25 } },
         tags = { skills = { "slayer" }, category = { "demon", "monster" }, membership = { "p2p" } },
     },
     {
@@ -2697,7 +2693,7 @@ Set.cards = {
         id = "guard_ham", name = "Guard (H.A.M.)", rarity = "common",
         desc = "A guard for the humans against monster group.",
         art = { npc = "DTTD_HAM_GUARD_1_POSTQUEST", anim = 808, cam = { yaw = -0.42, pitch = 0.15, dist = 859, ty = 480, tx = 48 } },
-        tags = { location = { "h_a_m", "h_a_m_hideout" }, skills = { "thieving" }, category = { "humanoid", "monster" }, membership = { "p2p" } },
+        tags = { location = { "h_a_m", "h_a_m_hideout" }, skills = { "thieving" }, category = { "humanoid", "monster", "guard" }, membership = { "p2p" } },
     },
     {
         id = "guard_sops", name = "Guard (SoPS)", rarity = "common",
@@ -2781,7 +2777,7 @@ Set.cards = {
         id = "helda", name = "Helda", rarity = "uncommon",
         desc = "A witch. The hat's a dead giveaway.",
         art = { npc = "ANMA_WITCH", anim = 808, cam = { yaw = -0.17, dist = 946, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "draynor" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "draynor" }, category = { "humanoid", "witch" }, membership = { "f2p" } },
     },
     {
         id = "helen", name = "Helen", rarity = "common",
@@ -2790,22 +2786,20 @@ Set.cards = {
         tags = { location = { "archaeology_campus" }, skills = { "archaeology" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "hellhound_summoned", name = "Hellhound (summoned)", rarity = "rare",
-        desc = "Looks like it's on a human-based diet.",
-        art = { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_EASY_SUMMONED", anim = 34881, cam = { yaw = -0.80, pitch = 0.30, dist = 1504, fov = 35, ty = 244, tx = 112 } },
-        tags = { category = { "hellhound", "monster" }, membership = { "p2p" } },
-    },
-    {
         id = "hellhound_alpha", name = "Hellhound Alpha", rarity = "rare",
         desc = "Who's an angry boy?",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_HARD_1", anim = 34881, cam = { yaw = 0.65, pitch = 0.30, dist = 1504, fov = 35, ty = 223, tx = -155 } },
-        tags = { category = { "hellhound", "monster" }, membership = { "p2p" } },
+        tags = { location = { "the_zamorakian_undercity" }, category = { "hellhound", "monster" }, membership = { "p2p" } },
     },
     {
         id = "hellhound_hunter", name = "Hellhound Hunter", rarity = "rare",
         desc = "Looks hungry, like a...hellhound.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_MED_1", anim = 34881, cam = { yaw = -0.49, pitch = 0.30, dist = 1504, fov = 35, ty = 300 } },
-        tags = { category = { "hellhound", "monster" }, membership = { "p2p" } },
+        variants = {
+            { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_MED_1", name = "Hellhound Hunter" },
+            { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_MED_SUMMONED", name = "Hellhound Hunter (summoned)" },
+        },
+        tags = { location = { "the_zamorakian_undercity" }, category = { "hellhound", "monster" }, membership = { "p2p" } },
     },
     {
         id = "hemlock", name = "Hemlock", rarity = "common",
@@ -3081,7 +3075,7 @@ Set.cards = {
         id = "lev_the_master_chef", name = "Lev the Master Chef", rarity = "uncommon",
         desc = "An expert in all things culinary.",
         art = { npc = "TUT6_CHEF", anim = 808, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "skill_trainer", "cook" }, membership = { "f2p" } },
     },
     {
         id = "lifeweaver", name = "Lifeweaver", rarity = "rare",
@@ -3165,7 +3159,7 @@ Set.cards = {
         id = "maggie", name = "Maggie", rarity = "uncommon",
         desc = "A young witch.",
         art = { npc = "SWEPT_MAGGIE", anim = 10565, cam = { yaw = 0.40, dist = 860, fov = 30, ty = 628, tx = 3, near = 0.25 } },
-        tags = { location = { "draynor" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "draynor" }, category = { "humanoid", "witch" }, membership = { "f2p" } },
     },
     {
         id = "maria", name = "Maria", rarity = "uncommon",
@@ -3315,7 +3309,7 @@ Set.cards = {
         id = "mimsy", name = "Mimsy", rarity = "common",
         desc = "Zanker's pet mimic. Also acts as a deposit box.",
         art = { npc = "NECRO_HUB_MIMIC_BANK", anim = 22673, cam = { yaw = -0.30, pitch = 0.30, dist = 1137, fov = 35, ty = 101, tx = 57 } },
-        tags = { location = { "city_of_um" }, category = { "mimic" }, membership = { "f2p" } },
+        tags = { location = { "city_of_um" }, category = { "mimic", "banker" }, membership = { "f2p" } },
     },
     {
         id = "mind_essling", name = "Mind essling", rarity = "common",
@@ -3345,7 +3339,7 @@ Set.cards = {
         id = "mogle_the_financial_advisor", name = "Mogle the Financial Advisor", rarity = "uncommon",
         desc = "An official representative from the First National Bank of RuneScape.",
         art = { npc = "TUT6_FINANCE", anim = 37961, cam = { yaw = 0.18, dist = 566, ty = 312, tx = -12 } },
-        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "banker", "skill_trainer" }, membership = { "f2p" } },
     },
     {
         id = "moira", name = "Moira", rarity = "common",
@@ -3363,7 +3357,7 @@ Set.cards = {
         id = "moldark_emissary_of_zamorak", name = "Moldark, Emissary of Zamorak", rarity = "uncommon",
         desc = "The emissary of Zamorak.",
         art = { npc = "GODEM_ZAMORAK_EMISSARY", anim = 20211, cam = { yaw = 0.20, pitch = 0.14, dist = 860, fov = 30, ty = 635, tx = 3, near = 0.25 } },
-        tags = { location = { "edgeville" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "edgeville" }, category = { "humanoid", "emissary" }, membership = { "f2p" } },
     },
     {
         id = "molly", name = "Molly", rarity = "uncommon",
@@ -3399,7 +3393,7 @@ Set.cards = {
         id = "mr_pinsworth", name = "Mr Pinsworth", rarity = "uncommon",
         desc = "Our man on the inside.",
         art = { npc = "THIGUI_BANKER", anim = 23781, cam = { yaw = -0.15, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "thieves_guild" }, category = { "humanoid", "thief" }, membership = { "p2p" } },
+        tags = { location = { "thieves_guild" }, category = { "humanoid", "thief", "banker" }, membership = { "p2p" } },
     },
     {
         id = "muncher", name = "Muncher", rarity = "uncommon",
@@ -3945,7 +3939,7 @@ Set.cards = {
         id = "soran_emissary_of_zaros", name = "Soran, Emissary of Zaros", rarity = "uncommon",
         desc = "The emissary of Zaros.",
         art = { npc = "GODEM_ZAROS_EMISSARY", anim = 20215, cam = { yaw = 0.20, pitch = 0.30, dist = 1831, fov = 24, ty = 491, tx = -33, near = 0.25 } },
-        tags = { location = { "varrock", "tuska" }, skills = { "archaeology" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "varrock", "tuska" }, skills = { "archaeology" }, category = { "humanoid", "emissary", "archaeology_collector" }, membership = { "f2p" } },
     },
     {
         id = "sostratus", name = "Sostratus", rarity = "uncommon",
@@ -4044,12 +4038,6 @@ Set.cards = {
         tags = { location = { "silvarea" }, category = { "humanoid" }, membership = { "f2p" } },
     },
     {
-        id = "stray_dog_fort_forinthry", name = "Stray dog (Fort Forinthry)", rarity = "common",
-        desc = "Has no place to go.",
-        art = { npc = "QUEST_PRINCESS_PART_5_STRAY", anim = 22416, cam = { yaw = 0.60, dist = 748, fov = 35, ty = 167, tx = 24 } },
-        tags = { location = { "fort_forinthry" }, category = { "animal" }, membership = { "p2p" } },
-    },
-    {
         id = "student", name = "Student", rarity = "common",
         desc = "A person sitting an exam.",
         art = { npc = "SOPS_STUDENT2", anim = 8779, cam = { yaw = 1.17, pitch = 0.33, dist = 946, fov = 30, ty = 465, tx = -9 } },
@@ -4089,7 +4077,7 @@ Set.cards = {
         id = "terrova_the_magic_instructor", name = "Terrova the Magic Instructor", rarity = "uncommon",
         desc = "A master of magic.",
         art = { npc = "TUT6_MAGIC", anim = 18015, cam = { yaw = 0.34, dist = 1041, fov = 30, ty = 589, tx = -14, near = 0.25 } },
-        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "wizard" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia" }, location = { "tutorial_island", "tutorial_island_beneath_cursed_tides", "mudskipper_point" }, category = { "humanoid", "wizard", "skill_trainer" }, membership = { "f2p" } },
     },
     {
         id = "terry_balando", name = "Terry Balando", rarity = "uncommon",
@@ -4353,7 +4341,7 @@ Set.cards = {
         id = "velucia", name = "Velucia", rarity = "common",
         desc = "Head of acquisitions for Varrock Museum.",
         art = { npc = "ARCH_COLLECTOR_VELUCIA_TUTORIAL", anim = 18038, cam = { yaw = -0.11, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "archaeology_campus" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "archaeology_campus" }, category = { "humanoid", "archaeology_collector" }, membership = { "f2p" } },
     },
     {
         id = "vermyx_brood_mother", name = "Vermyx, Brood Mother", rarity = "epic",
@@ -4401,7 +4389,11 @@ Set.cards = {
         id = "wall_beast", name = "Wall beast", rarity = "rare",
         desc = "A big, scary hand!",
         art = { npc = "SWAMP_WALLBEAST_COMBAT", anim = 17907, cam = { yaw = -1.39, dist = 1999, fov = 22, ty = 530, tx = 131 } },
-        tags = { location = { "lumbridge_swamp" }, skills = { "slayer" }, category = { "wall_beast", "monster" }, membership = { "p2p" } },
+        variants = {
+            { npc = "SWAMP_WALLBEAST_COMBAT", name = "Wall beast" },
+            { npc = "SWAMP_WALLBEAST", name = "Wall beast (in its hole)" },
+        },
+        tags = { location = { "lumbridge_swamp", "lumbridge", "dorgesh_kaan" }, skills = { "slayer" }, category = { "wall_beast", "monster" }, membership = { "p2p" } },
     },
     {
         id = "wandering_soul", name = "Wandering soul", rarity = "common",
@@ -4461,7 +4453,7 @@ Set.cards = {
         id = "wendy", name = "Wendy", rarity = "uncommon",
         desc = "A young witch.",
         art = { npc = "SWEPT_WENDY", anim = 10569, cam = { yaw = 0.20, dist = 860, fov = 30, ty = 600, near = 0.25 } },
-        tags = { location = { "draynor", "empyrean_citadel" }, category = { "humanoid" }, membership = { "f2p" } },
+        tags = { location = { "draynor", "empyrean_citadel" }, category = { "humanoid", "witch" }, membership = { "f2p" } },
     },
     {
         id = "willow_fort_forinthry", name = "Willow (Fort Forinthry)", rarity = "common",
@@ -4473,7 +4465,7 @@ Set.cards = {
         id = "wise_old_man", name = "Wise Old Man", rarity = "epic",
         desc = "A venerable and rich sage.",
         art = { npc = "WOM_INACTIVE", anim = 813, cam = { yaw = 0.21, dist = 858, fov = 30, ty = 624, near = 0.25 } },
-        tags = { regions = { "asgarnia" }, location = { "draynor" }, category = { "humanoid", "shopkeeper", "wizard" }, membership = { "f2p" } },
+        tags = { regions = { "asgarnia" }, location = { "draynor" }, category = { "humanoid", "shopkeeper", "wizard", "archaeology_collector" }, membership = { "f2p" } },
     },
     {
         id = "wizard_runecrafting_guild", name = "Wizard (Runecrafting Guild)", rarity = "common",
@@ -4641,7 +4633,7 @@ Set.cards = {
         id = "zanker", name = "Zanker", rarity = "common",
         desc = "A victim of nominative determinism.",
         art = { npc = "NECRO_HUB_BANKER", anim = 35252, cam = { pitch = 0.30, dist = 1137, fov = 35, ty = 368 } },
-        tags = { location = { "city_of_um" }, category = { "undead" }, membership = { "f2p" } },
+        tags = { location = { "city_of_um" }, category = { "undead", "banker" }, membership = { "f2p" } },
     },
     {
         id = "zaromark_sliver", name = "Zaromark Sliver", rarity = "epic",
@@ -4695,19 +4687,13 @@ Set.cards = {
         id = "zombie_banker", name = "Zombie banker", rarity = "common",
         desc = "A zombie banker.",
         art = { npc = "NECRO_HUB_ZOMBIE_BANKER_2", anim = 35252, cam = { yaw = -0.33, pitch = 0.30, dist = 1137, fov = 35, ty = 363, tx = 24 } },
-        tags = { location = { "city_of_um" }, category = { "undead" }, membership = { "f2p" } },
+        tags = { location = { "city_of_um" }, category = { "undead", "banker" }, membership = { "f2p" } },
     },
     {
         id = "dark_wizard_undercity", name = "Dark wizard (Undercity)", rarity = "rare",
         desc = "A practitioner of dark arts.",
         art = { npc = "DUNGEON_EGWD_ZAMORAK_DARK_MAGE_EASY_M_1", anim = 18019, cam = { yaw = -0.27, pitch = 0.15, dist = 859, ty = 480, near = 0.25 } },
-        tags = { location = { "the_zamorakian_undercity" }, category = { "humanoid", "monster" }, membership = { "p2p" } },
-    },
-    {
-        id = "hellhound_undercity", name = "Hellhound (Undercity)", rarity = "rare",
-        desc = "Looks like it's on a human-based diet.",
-        art = { npc = "DUNGEON_EGWD_ZAMORAK_HELLHOUND_EASY_1", anim = 34881, cam = { yaw = -0.60, pitch = 0.30, dist = 1308, fov = 35, ty = 220, tx = 70 } },
-        tags = { location = { "the_zamorakian_undercity" }, category = { "hellhound", "monster" }, membership = { "p2p" } },
+        tags = { location = { "the_zamorakian_undercity" }, category = { "humanoid", "monster", "wizard" }, membership = { "p2p" } },
     },
     {
         id = "pyrefiend_undercity", name = "Pyrefiend (Undercity)", rarity = "rare",
